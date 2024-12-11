@@ -33,7 +33,7 @@ public class LifecycleResource {
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
   public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
   public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
-  public static final String EVENT_MIS_REPORT = "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent";
+  public static final String EVENT_INCIDENT_REPORT = "https://www.theworldavatar.com/kg/ontoservice/IncidentReportEvent";
   public static final String EVENT_CONTRACT_COMPLETION = "https://www.theworldavatar.com/kg/ontoservice/ContractDischarge";
   public static final String EVENT_CONTRACT_RESCISSION = "https://www.theworldavatar.com/kg/ontoservice/ContractRescission";
   public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination";
@@ -82,7 +82,7 @@ public class LifecycleResource {
         return "https://www.theworldavatar.com/kg/ontoservice/CreationStage";
       case LifecycleEventType.SERVICE_EXECUTION:
       case LifecycleEventType.SERVICE_CANCELLATION:
-      case LifecycleEventType.SERVICE_MISS_REPORT:
+      case LifecycleEventType.SERVICE_INCIDENT_REPORT:
         return "https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage";
       case LifecycleEventType.ARCHIVE_COMPLETION:
       case LifecycleEventType.ARCHIVE_RESCINDMENT:
@@ -106,8 +106,8 @@ public class LifecycleResource {
         return EVENT_DELIVERY;
       case LifecycleEventType.SERVICE_CANCELLATION:
         return EVENT_CANCELLATION;
-      case LifecycleEventType.SERVICE_MISS_REPORT:
-        return EVENT_MIS_REPORT;
+      case LifecycleEventType.SERVICE_INCIDENT_REPORT:
+        return EVENT_INCIDENT_REPORT;
       case LifecycleEventType.ARCHIVE_COMPLETION:
         return EVENT_CONTRACT_COMPLETION;
       case LifecycleEventType.ARCHIVE_RESCINDMENT:
@@ -132,7 +132,7 @@ public class LifecycleResource {
         return "complete";
       case LifecycleEventType.SERVICE_CANCELLATION:
         return "cancel";
-      case LifecycleEventType.SERVICE_MISS_REPORT:
+      case LifecycleEventType.SERVICE_INCIDENT_REPORT:
         return "report";
       case LifecycleEventType.ARCHIVE_COMPLETION:
         return "completed";
@@ -336,7 +336,7 @@ public class LifecycleResource {
         + ",\"In progress\","
         + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_CANCELLATION)
         + ",\"Cancelled\","
-        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_MIS_REPORT)
+        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT)
         + ",\"Incomplete\""
         + ",\"Unknown\"))) AS ?" + STATUS_KEY + ")"
         + "FILTER(?event_date=\"" + date + "\"^^xsd:date)"

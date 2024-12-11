@@ -156,7 +156,7 @@ public class LifecycleController {
       return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to report an unfulfilled service...");
-    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_MISS_REPORT);
+    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_INCIDENT_REPORT);
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
         LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
