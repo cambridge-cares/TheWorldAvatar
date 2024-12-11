@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoWasteManagement,TBox,https://www.theworldavatar.com/kg/ontowastemanagement/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoWasteManagement,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoWasteManagement,TBox,1.2,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoWasteManagement,TBox,"OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoWasteManagement,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 WasteService,Class,https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service,IS-A,,,,"A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials and equipment from residential, commercial, or industrial sources.",https://www.theworldavatar.com/kg/ontowastemanagement/,Waste service
@@ -61,9 +61,6 @@ NetWasteWeight,Class,https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQ
 BinStatus,Class,,,,,,The current state of a bin. ,https://www.theworldavatar.com/kg/ontowastemanagement/,Bin status
 hasBinType,Object Property,,,WasteService,http://www.w3.org/2002/07/owl#Class,minimum 1,A relationship describing the bin type for a series of waste services.,https://www.theworldavatar.com/kg/ontowastemanagement/,has bin type
 hasWasteType,Object Property,,,WasteCollectionService,http://www.w3.org/2002/07/owl#Class,minimum 1,A relationship describing the waste category for a series of waste services.,https://www.theworldavatar.com/kg/ontowastemanagement/,has waste type
-hasAssignedBin,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence,Bin,minimum 1,A relationship assigning the bin to a service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has assigned bin
-hasReplacementBin,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence,Bin,,A relationship denoting the replacement bin for a service that will be delivered to the site. ,https://www.theworldavatar.com/kg/ontowastemanagement/,has replacement bin
-hasDisposalCharge,Object Property,,,WasteDisposalService,https://www.theworldavatar.com/kg/ontoservice/VariableCharge,,A relationship describing the disposal charge of a waste disposal service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal charge
 hasStatus,Object Property,,,Bin,BinStatus,,A relationship describing the current bin status.,https://www.theworldavatar.com/kg/ontowastemanagement/,has status
 hasBinNumber,Data Property,,,Bin,string,exactly 1,An identifier for a bin.,https://www.theworldavatar.com/kg/ontowastemanagement/,has bin number
 isRecyclable,Data Property,,,Waste,boolean,,A property indicating if the waste is recyclable or not.,https://www.theworldavatar.com/kg/ontowastemanagement/,is recyclable

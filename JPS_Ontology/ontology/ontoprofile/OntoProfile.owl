@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoprofile="https://www.theworldavatar.com/kg/ontoprofile/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoprofile/">
-        <dc:date>19 September 2024</dc:date>
+        <dc:date>10 December 2024</dc:date>
         <rdfs:comment>OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.</rdfs:comment>
-        <owl:versionInfo>1</owl:versionInfo>
+        <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -52,19 +52,6 @@
      -->
 
 
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/hasFacility -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoprofile/hasFacility">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-        <rdfs:comment>A relationship describing the facility that the organisation is using for any of their operational needs.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
-        <rdfs:label>has facility</rdfs:label>
-    </owl:ObjectProperty>
     
 
 
@@ -140,17 +127,17 @@
     
 
 
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization"/>
-    
-
-
     <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember -->
 
 
     <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole"/>
     
 
 
@@ -161,14 +148,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/Driver -->
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployedDriver -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Driver">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployedDriver">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
         <rdfs:comment>A person who is employed to drive a vehicle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
-        <rdfs:label>Driver</rdfs:label>
+        <rdfs:label>Employed Driver</rdfs:label>
     </owl:Class>
     
 
@@ -239,6 +226,18 @@
         <rdfs:comment>A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
         <rdfs:label>Student</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/VehicleDriver -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/VehicleDriver">
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole"/>
+        <rdfs:comment>A person who is expected to be assigned to a vehicle, which they will drive.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Vehicle Driver</rdfs:label>
     </owl:Class>
 </rdf:RDF>
 
