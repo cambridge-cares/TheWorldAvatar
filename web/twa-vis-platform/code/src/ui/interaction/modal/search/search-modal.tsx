@@ -9,9 +9,9 @@ import { setFilterFeatureIris } from 'state/map-feature-slice';
 import { SEARCH_FORM_TYPE } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import { FormComponent } from 'ui/interaction/form/form';
-import { HttpResponse } from 'utils/server-actions';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import ResponseComponent from 'ui/text/response/response';
+import { HttpResponse } from 'utils/server-actions';
 
 interface SearchModalProps {
   id: string;
@@ -28,24 +28,19 @@ export const SHOW_ALL_FEATURE_INDICATOR: string = "all";
 export default function SearchModal(props: Readonly<SearchModalProps>) {
   Modal.setAppElement("#globalContainer");
   const dispatch = useDispatch();
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
 
-  const handleFormSubmittingChange = (submitting: boolean) => {
-    setIsSubmitting(submitting);
+  // Show all features upon click
+  const showAllFeatures: React.MouseEventHandler<HTMLDivElement> = () => {
+    dispatch(setFilterFeatureIris([SHOW_ALL_FEATURE_INDICATOR]));
+    setTimeout(() => props.setShowState(false), 1000);
   };
 
-  const onSubmit = () => {
+  const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
     if (formRef.current) {
       formRef.current.requestSubmit();
     }
-  };
-
-  // Show all features upon click
-  const showAllFeatures = () => {
-    dispatch(setFilterFeatureIris([SHOW_ALL_FEATURE_INDICATOR]));
-    setTimeout(() => props.setShowState(false), 1000);
   };
 
   // Closes the search modal only if response is successfull
@@ -78,12 +73,11 @@ export default function SearchModal(props: Readonly<SearchModalProps>) {
             formType={SEARCH_FORM_TYPE}
             agentApi={`${props.stack}/vis-backend-agent`}
             setResponse={setResponse}
-            onSubmittingChange={handleFormSubmittingChange}
           />
         </section>
         <section className={styles["section-footer"]}>
-          {isSubmitting && <LoadingSpinner isSmall={false} />}
-          {!isSubmitting && (<ResponseComponent response={response} />)}
+          {formRef.current?.formState?.isSubmitting && <LoadingSpinner isSmall={false} />}
+          {!formRef.current?.formState?.isSubmitting && (<ResponseComponent response={response} />)}
           <div className={styles["footer-button-row"]}>
             <MaterialIconButton
               iconName={"search"}

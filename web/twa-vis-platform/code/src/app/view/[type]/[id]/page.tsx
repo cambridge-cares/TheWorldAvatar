@@ -9,10 +9,10 @@ import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 import FormContainerComponent from 'ui/interaction/form/form-container';
 
 interface ViewFormPageProps {
-  params: {
-    type: string,
+  params: Promise<{
     id: string,
-  }
+    type: string,
+  }>
 }
 
 /**
@@ -33,14 +33,18 @@ export async function generateMetadata(): Promise<Metadata> {
  * 
  * @returns React component for display. 
  */
-export default function ViewFormPage(props: Readonly<ViewFormPageProps>) {
+export default async function ViewFormPage(props: Readonly<ViewFormPageProps>) {
+  const resolvedParams = await props.params;
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
+
   return (
     <div className="formContainer">
-    <FormContainerComponent
-      entityType={props.params?.type}
-      formType={Paths.REGISTRY}
-      agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
-    />
-  </div>
+      <FormContainerComponent
+        entityType={resolvedParams?.type}
+        formType={Paths.REGISTRY}
+        agentApi={uiSettings?.resources?.registry?.url}
+        isPrimaryEntity={uiSettings?.resources?.registry?.data === resolvedParams?.type}
+      />
+    </div>
   );
 }
