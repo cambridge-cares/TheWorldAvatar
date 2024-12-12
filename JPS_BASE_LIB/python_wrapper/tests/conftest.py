@@ -186,7 +186,7 @@ def get_service_url(session_scoped_container_getter):
                 time.sleep(3)
 
         if not service_available:
-            raise RuntimeError("Blazegraph service did not become available within the timeout period")
+            raise RuntimeError(f"Blazegraph service did not become available within the timeout period: {timeout} seconds")
 
         return service_url
     return _get_service_url
