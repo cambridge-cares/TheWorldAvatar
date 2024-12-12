@@ -367,8 +367,11 @@ class BaseOntology(BaseModel):
         g.add((URIRef(cls.namespace_iri), RDF.type, OWL.Ontology))
         g.add((URIRef(cls.namespace_iri), DC.date, Literal(datetime.now().isoformat())))
         if bool(cls.rdfs_comment):
-            for comment in cls.rdfs_comment:
-                g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(comment)))
+            if isinstance(cls.rdfs_comment, str):
+                g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(cls.rdfs_comment)))
+            elif isinstance(cls.rdfs_comment, set):
+                for comment in cls.rdfs_comment:
+                    g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(comment)))
         if bool(cls.owl_versionInfo):
             g.add((URIRef(cls.namespace_iri), OWL.versionInfo, Literal(cls.owl_versionInfo)))
         # handle all classes
@@ -807,8 +810,13 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         if self.__class__.object_lookup is None:
             self.__class__.object_lookup = {}
         if self.instance_iri in self.__class__.object_lookup:
-            raise ValueError(
-                f"An object with the same IRI {self.instance_iri} has already been registered.")
+            if type(self.__class__.object_lookup[self.instance_iri]) == type(self):
+                # TODO and not self.__class__.rdfs_isDefinedBy.is_dev_mode()?
+                raise ValueError(
+                    f"An object with the same IRI {self.instance_iri} has already been instantiated and registered with the same type {type(self)}.")
+            else:
+                warnings.warn(f"An object with the same IRI {self.instance_iri} has already been instantiated and registered with type {type(self.__class__.object_lookup[self.instance_iri])}. Replacing its regiatration now with type {type(self)}.")
+                del self.__class__.object_lookup[self.instance_iri]
         self.__class__.object_lookup[self.instance_iri] = self
 
     @classmethod
@@ -928,16 +936,49 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         for iri, props in node_dct.items():
             # TODO optimise the time complexity of the following code when the number of instances is large
             # check if the rdf:type of the instance matches the calling class or any of its subclasses
-            try:
-                target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
-            except Exception as e:
+            target_clz_rdf_types = set(props.get(RDF.type.toPython(), [])) # NOTE this supports instance instantiated with multiple rdf:type
+            if not target_clz_rdf_types:
                 raise ValueError(f"The instance {iri} has no rdf:type, retrieved outgoing links and attributes: {props}.")
-            if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
+            cls_subclasses = set(cls.construct_subclass_dictionary().keys())
+            cls_subclasses.add(cls.rdf_type)
+            intersection = target_clz_rdf_types & cls_subclasses
+            if intersection:
+                if len(intersection) == 1:
+                    target_clz_rdf_type = next(iter(intersection))
+                else:
+                    # NOTE instead of using the first element of the intersection
+                    # we find the deepest subclass as target_clz_rdf_type
+                    # so that the created object could inherite all the properties of its parent classes
+                    # which prevents the loss of information
+                    parent_classes = set()
+                    for c in intersection:
+                        if c in parent_classes:
+                            # skip if it's already a parent class
+                            continue
+                        for other in intersection:
+                            if other != c and issubclass(cls.retrieve_subclass(c), cls.retrieve_subclass(other)):
+                                parent_classes.add(other)
+                    deepest_subclasses = intersection - parent_classes
+                    if len(deepest_subclasses) > 1:
+                        # TODO [future] add support for allowing users to specify the target class
+                        KnowledgeGraph._remove_iri_from_loading(iri)
+                        raise ValueError(
+                            f"""The instance {iri} is of type {target_clz_rdf_types}.
+                            Amongst the pulling class {cls.__name__} ({cls.rdf_type})
+                            and its subclasses ({cls.construct_subclass_dictionary()}),
+                            there exist classes that are not in the same branch of the inheritance tree,
+                            including {deepest_subclasses},
+                            therefore it cannot be instantiated by pulling with class {cls.__name__}.
+                            Please consider pulling the instance directly with one of the class in {deepest_subclasses}
+                            Alternatively, please check the inheritance tree is correctly defined in Python.""")
+                    else:
+                        target_clz_rdf_type = next(iter(deepest_subclasses))
+            else:
                 # if there's any error, remove the iri from the loading status
                 # otherwise it will block any further pulling of the same object
                 KnowledgeGraph._remove_iri_from_loading(iri)
                 raise ValueError(
-                    f"""The instance {iri} is of type {props[RDF.type.toPython()]},
+                    f"""The instance {iri} is of type {target_clz_rdf_types},
                     it doesn't match the rdf:type of class {cls.__name__} ({cls.rdf_type}),
                     nor any of its subclasses ({cls.construct_subclass_dictionary()}),
                     therefore it cannot be instantiated.""")
@@ -981,7 +1022,7 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             if RDFS.comment.toPython() in props:
                 rdfs_properties_dict['rdfs_comment'] = set(list(props[RDFS.comment.toPython()]))
             # instantiate the object
-            if inst is not None:
+            if inst is not None and type(inst) is target_clz:
                 for op_iri, op_dct in ops.items():
                     if flag_pull:
                         # below lines pull those object properties that are NOT connected in the remote KG,
@@ -1380,6 +1421,8 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                 recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
 
                 p_cache = self._latest_cache.get(f, set())
+                if p_cache is None:
+                    p_cache = set() # allows set operations
                 p_now = getattr(self, f)
                 if p_now is None:
                     p_now = set() # allows set operations
