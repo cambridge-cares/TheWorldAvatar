@@ -22,17 +22,19 @@
 
    Further documentation on git-filter-repo and its extended capabilities [here](https://github.com/newren/git-filter-repo)
 
-6) Create the new repository on Github, leave it empty (do not accept the Github suggestions of adding a README or License).
+6) Create the new repository on Github (using the template repo if present), leave it empty (do not accept the Github suggestions of adding a README or License).
 7) Set the new repo as the remote origin for the TWA clone with the rewritten history and filtered out directories.
 
    ```bash
    git remote add origin https://github.com/TheWorldAvatar/<newrepo>.git
    ```
-
-8) Push any branches you want to keep to the new remote:
+8) Move the content of the filtered directory to the top of the repository.
+9) Either pull the `LICENSE.txt`, `.gitattributes` and `.gitignore` files from the remote repo (if you used the template repo), or copy them from the original TWA repo.
+   You may need to merge the `.gitignore` and `.gitattributes` files if the filtered directory already has them.
+10)  Push any branches you want to keep to the new remote:
  
    ```bash
    git push -u origin main
    ```
 
-9) Delete any branches that are not relevant.
+11) Delete any branches that are not relevant.
