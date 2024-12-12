@@ -951,11 +951,11 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                     # so that the created object could inherite all the properties of its parent classes
                     # which prevents the loss of information
                     parent_classes = set()
-                    for c in list(intersection):
+                    for c in intersection:
                         if c in parent_classes:
                             # skip if it's already a parent class
                             continue
-                        for other in list(intersection):
+                        for other in intersection:
                             if other != c and issubclass(cls.retrieve_subclass(c), cls.retrieve_subclass(other)):
                                 parent_classes.add(other)
                     deepest_subclasses = intersection - parent_classes
