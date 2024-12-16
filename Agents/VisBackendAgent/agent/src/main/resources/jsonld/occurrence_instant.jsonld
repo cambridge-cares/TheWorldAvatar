@@ -16,13 +16,13 @@
     "@type": "literal",
     "datatype": "http://www.w3.org/2001/XMLSchema#date"
   },
+  "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies": {
+    "@id": {
+      "@replace": "event",
+      "@type": "iri"
+    }
+  },
   "@reverse": {
-    "https://www.omg.org/spec/Commons/Classifiers/classifies": {
-      "@id": {
-        "@replace": "event",
-        "@type": "iri"
-      }
-    },
     "https://www.omg.org/spec/Commons/Collections/comprises": {
       "@id": {
         "@replace": "stage",

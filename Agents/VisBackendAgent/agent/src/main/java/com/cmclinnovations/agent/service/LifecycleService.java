@@ -1,5 +1,7 @@
 package com.cmclinnovations.agent.service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import com.cmclinnovations.agent.utils.StringResource;
 @Service
 public class LifecycleService {
   private final AddService addService;
+  private final DateTimeService dateTimeService;
   private final KGService kgService;
   private final FileService fileService;
 
@@ -35,8 +38,10 @@ public class LifecycleService {
    * 
    * @param kgService KG service for performing the query.
    */
-  public LifecycleService(AddService addService, KGService kgService, FileService fileService) {
+  public LifecycleService(AddService addService, DateTimeService dateTimeService, KGService kgService,
+      FileService fileService) {
     this.addService = addService;
+    this.dateTimeService = dateTimeService;
     this.kgService = kgService;
     this.fileService = fileService;
   }
@@ -184,14 +189,24 @@ public class LifecycleService {
           HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
       LOGGER.info("Detected a matching day of week! Continue execution...");
-      String activeServiceQuery = LifecycleResource.genActiveServiceQuery(dayOfWeekInstance);
+      LocalDate today = LocalDate.now();
+      String activeServiceQuery = LifecycleResource.genActiveServiceQuery(dayOfWeekInstance,
+          this.dateTimeService.parseDateToString(today));
       Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
       Map<String, Object> params = new HashMap<>();
       // While there are active services to be instantiated
       while (!results.isEmpty()) {
         params.clear();
+        SparqlBinding currentContract = results.poll();
+
+        // If the active contract should be filter ie ignored, continue to next
+        // iteration
+        if (shouldFilterActiveContract(currentContract, today)) {
+          continue;
+        }
+
         // retrieve the contract IRI to instantiate a new occurrence
-        String contract = results.poll().getFieldValue(LifecycleResource.IRI_KEY);
+        String contract = currentContract.getFieldValue(LifecycleResource.IRI_KEY);
         params.put(LifecycleResource.CONTRACT_KEY, contract);
         params.put(LifecycleResource.REMARKS_KEY, ""); // Empty remarks
         this.addOccurrenceParams(params, LifecycleEventType.SERVICE_EXECUTION);
@@ -231,5 +246,47 @@ public class LifecycleService {
         "}";
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
+  }
+
+  /**
+   * Check if the target contract should be active on the target date.
+   * 
+   * @param contract   The target contract.
+   * @param targetDate The target date of occurrence.
+   * @return true if the contract should be ignored.
+   */
+  private boolean shouldFilterActiveContract(SparqlBinding contract, LocalDate targetDate) {
+    String startDateField = contract.getFieldValue(LifecycleResource.DATE_KEY);
+    LocalDate startDate = this.dateTimeService.parseDate(startDateField);
+
+    // Ignorable as the agreement has not yet started
+    if (startDate.isAfter(targetDate)) {
+      return true;
+    }
+
+    String scheduledDuration = contract.getFieldValue(LifecycleResource.SCHEDULE_DURATION_KEY);
+    // For alternate day schedules
+    if (scheduledDuration.equals("P2D")) {
+      // Calculate the days passed since start date from the target date
+      long daysDifference = ChronoUnit.DAYS.between(startDate, targetDate);
+      // Ignorable if the current date is not an alternate day from the start
+      if (daysDifference % 2 != 0) {
+        return true;
+      }
+      // For single time schedule
+    } else if (scheduledDuration.equals("P1D")) {
+      // Ignorable if the target date is not the start date
+      if (!startDate.isEqual(targetDate)) {
+        return true;
+      }
+    } else {
+      // For weekly schedules
+      String scheduledDay = contract.getFieldValue(LifecycleResource.SCHEDULE_DAY_KEY);
+      // Ignorable if no scheduled day is return as this is invalid data
+      if (scheduledDay == null) {
+        return true;
+      }
+    }
+    return false;
   }
 }

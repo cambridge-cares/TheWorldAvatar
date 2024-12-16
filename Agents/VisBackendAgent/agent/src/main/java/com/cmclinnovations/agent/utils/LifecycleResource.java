@@ -19,6 +19,8 @@ public class LifecycleResource {
   public static final String STAGE_KEY = "stage";
   public static final String STATUS_KEY = "status";
   public static final String REMARKS_KEY = "remarks";
+  public static final String SCHEDULE_DURATION_KEY = "duration";
+  public static final String SCHEDULE_DAY_KEY = "scheduleday";
   public static final String SCHEDULE_START_DATE_KEY = "start date";
   public static final String SCHEDULE_END_DATE_KEY = "end date";
   public static final String SCHEDULE_START_TIME_KEY = "start time";
@@ -27,9 +29,9 @@ public class LifecycleResource {
 
   public static final String LIFECYCLE_STAGE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>";
   public static final String LIFECYCLE_STAGE_EVENT_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Collections/comprises>";
-  public static final String LIFECYCLE_EVENT_TYPE_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Classifiers/classifies>";
+  public static final String LIFECYCLE_EVENT_TYPE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies>";
   public static final String LIFECYCLE_EVENT_PREDICATE_PATH = LIFECYCLE_STAGE_PREDICATE_PATH + "/"
-      + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/^" + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH;
+      + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/" + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH;
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
   public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
   public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
@@ -174,7 +176,7 @@ public class LifecycleResource {
         + "{SELECT DISTINCT ?iri (MAX(?priority_val) AS ?priority) WHERE{"
         + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage/<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
-        + "?event_type <https://www.omg.org/spec/Commons/Classifiers/classifies> ?event."
+        + "?event " + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH + " ?event_type."
         + "BIND(IF(?event_type=ontoservice:ContractDischarge||?event_type=ontoservice:ContractRescission||?event_type=ontoservice:ContractTermination,"
         + "2,IF(?event_type=ontoservice:ContractApproval,1,0)"
         + ") AS ?priority_val)"
@@ -251,37 +253,38 @@ public class LifecycleResource {
 
   /**
    * Generates a SPARQL query for retrieving active services that are scheduled
-   * for today.
+   * for the target date.
    * 
    * @param dayOfWeekInstance the day of week instance to target.
+   * @param targetDate        the date of execution.
    */
-  public static String genActiveServiceQuery(String dayOfWeekInstance) {
+  public static String genActiveServiceQuery(String dayOfWeekInstance, String targetDate) {
     StringBuilder stageFilters = new StringBuilder();
-    // A query line to ensure that the agreement must be approved before any
-    // services are delivered
-    StringResource.appendTriple(stageFilters, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(EVENT_APPROVAL));
-    // Generate FILTER NOT EXISTS to ensure no occurrence exist yet for today
-    String occurenceFilterQuery = "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?today.";
+    // Generate MINUS to ensure no occurrence exist yet for the target date
+    String occurenceFilterQuery = "BIND(\"" + targetDate + "\"^^xsd:date AS ?event_date)" +
+        "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?event_date.";
     LifecycleResource.appendFilterExists(stageFilters, occurenceFilterQuery, false);
+    appendArchivedFilterExists(stageFilters, false);
+    String startDateVar = ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + DATE_KEY;
+    String durationVar = ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + SCHEDULE_DURATION_KEY;
+    String scheduleDayVar = ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + SCHEDULE_DAY_KEY;
     return genPrefixes()
-        + "SELECT DISTINCT ?iri WHERE{"
+        + "SELECT DISTINCT ?iri" + startDateVar + durationVar + scheduleDayVar + "{"
         + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
+        // find only approved agreements before any services are delivered
+        + LIFECYCLE_EVENT_PREDICATE_PATH + ShaclResource.WHITE_SPACE + StringResource.parseIriForQuery(EVENT_APPROVAL)
+        + ";"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
         + "?stage fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
-        + "fibo-fnd-dt-fd:hasSchedule/cmns-dt:hasStartDate/cmns-dt:hasDateValue ?start_date;"
-        + "fibo-fnd-dt-fd:hasSchedule/fibo-fnd-dt-fd:hasRecurrenceInterval/cmns-dt:hasDurationValue ?duration."
-        + "OPTIONAL{?stage fibo-fnd-dt-fd:hasSchedule/fibo-fnd-dt-fd:hasRecurrenceInterval ?schedule_day.}"
-        + "BIND(xsd:date(NOW()) AS ?today)"
-        // Calculate the days passed since start date
-        + "BIND(xsd:integer(?today-?start_date) AS ?days_from_start)"
-        // Filters for services that have commenced
-        + "FILTER(?today>=?start_date)"
-        // Filters to match today with the scheduled requirements
-        // day of week must match for weekly schedules
-        + "FILTER((?schedule_day=" + StringResource.parseIriForQuery(dayOfWeekInstance) + "&& ?duration=\"P7D\")"
-        + "||(?days_from_start-FLOOR(?days_from_start/2)*2=0 && ?duration=\"P2D\"))" // for alternate day schedules
+        + "fibo-fnd-dt-fd:hasSchedule ?schedule."
+        + "?schedule cmns-dt:hasStartDate/cmns-dt:hasDateValue" + startDateVar + ";"
+        + "fibo-fnd-dt-fd:hasRecurrenceInterval/cmns-dt:hasDurationValue" + durationVar + "."
+        + "OPTIONAL{"
+        // Bind to ensure current day matches today
+        + "BIND(" + StringResource.parseIriForQuery(dayOfWeekInstance) + " AS" + scheduleDayVar + ")"
+        + "?schedule fibo-fnd-dt-fd:hasRecurrenceInterval " + scheduleDayVar + "."
+        + "}"
         + stageFilters.toString()
         + "}";
   }
@@ -304,9 +307,9 @@ public class LifecycleResource {
         + "?stage fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
         + "<https://www.omg.org/spec/Commons/Collections/comprises> ?iri."
-        + "?iri fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date."
-        + StringResource.parseIriForQuery(EVENT_DELIVERY)
-        + " <https://www.omg.org/spec/Commons/Classifiers/classifies> ?iri."
+        + "?iri fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date;"
+        + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH + ShaclResource.WHITE_SPACE
+        + StringResource.parseIriForQuery(EVENT_DELIVERY) + ShaclResource.FULL_STOP
         + "}";
   }
 
@@ -329,8 +332,8 @@ public class LifecycleResource {
         + "?stage fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
         + "<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
-        + "?event fibo-fnd-dt-oc:hasEventDate ?event_date."
-        + "?eventtype <https://www.omg.org/spec/Commons/Classifiers/classifies> ?event."
+        + "?event fibo-fnd-dt-oc:hasEventDate ?event_date;"
+        + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH + " ?eventtype."
         + "BIND("
         + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_DELIVERY)
         + ",\"In progress\","
@@ -374,7 +377,7 @@ public class LifecycleResource {
     String eventVar = ShaclResource.VARIABLE_MARK + EVENT_KEY;
     StringBuilder tempBuilder = new StringBuilder();
     StringResource.appendTriple(tempBuilder, ShaclResource.VARIABLE_MARK + IRI_KEY,
-        LIFECYCLE_STAGE_PREDICATE_PATH + "/" + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/^"
+        LIFECYCLE_STAGE_PREDICATE_PATH + "/" + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/"
             + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH,
         ShaclResource.VARIABLE_MARK + EVENT_KEY);
     String statement = "BIND("
@@ -398,12 +401,11 @@ public class LifecycleResource {
    * @param exists Indicate if using FILTER EXISTS or FILTER NOT EXISTS.
    */
   public static void appendArchivedFilterExists(StringBuilder query, boolean exists) {
-    String stageVar = ShaclResource.VARIABLE_MARK + STAGE_KEY;
+    String stageVar = ShaclResource.VARIABLE_MARK + STAGE_KEY + "_archived";
     StringBuilder tempBuilder = new StringBuilder();
     StringResource.appendTriple(tempBuilder, ShaclResource.VARIABLE_MARK + IRI_KEY,
         LIFECYCLE_STAGE_PREDICATE_PATH, stageVar);
-    StringResource.appendTriple(tempBuilder, stageVar,
-        "<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies>",
+    StringResource.appendTriple(tempBuilder, stageVar, LIFECYCLE_EVENT_TYPE_PREDICATE_PATH,
         StringResource.parseIriForQuery(LifecycleResource.getStageClass(LifecycleEventType.ARCHIVE_COMPLETION)));
     StringResource.appendTriple(tempBuilder, stageVar, LIFECYCLE_STAGE_EVENT_PREDICATE_PATH,
         ShaclResource.VARIABLE_MARK + EVENT_KEY);
@@ -433,12 +435,14 @@ public class LifecycleResource {
    * @param exists   Indicate if using FILTER EXISTS or FILTER NOT EXISTS.
    */
   private static void appendFilterExists(StringBuilder query, String contents, boolean exists) {
-    query.append("FILTER").append(ShaclResource.WHITE_SPACE);
+    String constraintKeyword = "";
     // Add NOT parameter if this filter should not exist
-    if (!exists) {
-      query.append("NOT").append(ShaclResource.WHITE_SPACE);
+    if (exists) {
+      constraintKeyword = "FILTER EXISTS";
+    } else {
+      constraintKeyword = "MINUS";
     }
-    query.append("EXISTS{").append(contents).append("}");
+    query.append(constraintKeyword).append("{").append(contents).append("}");
   }
 
   /**

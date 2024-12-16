@@ -98,10 +98,8 @@
           "@type": "literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#date"
         },
-        "@reverse": {
-          "https://www.omg.org/spec/Commons/Classifiers/classifies": {
-            "@id": "https://www.theworldavatar.com/kg/ontoservice/ContractCreation"
-          }
+        "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies": {
+          "@id": "https://www.theworldavatar.com/kg/ontoservice/ContractCreation"
         }
       }
     },
