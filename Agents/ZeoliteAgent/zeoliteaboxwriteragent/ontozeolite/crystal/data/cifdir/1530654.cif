@@ -1,0 +1,88 @@
+#------------------------------------------------------------------------------
+#$Date: 2016-02-13 21:28:24 +0200 (Sat, 13 Feb 2016) $
+#$Revision: 176429 $
+#$URL: svn://www.crystallography.net/cod/cif/1/53/06/1530654.cif $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Crystallography Open Database (COD),
+# http://www.crystallography.net/
+#
+# All data on this site have been placed in the public domain by the
+# contributors.
+#
+data_1530654
+loop_
+_publ_author_name
+'Rouse, R.C.'
+'Peacor, D.R.'
+_publ_section_title
+;
+ Crystal structure of the zeolite mineral goosecreekite, Ca Al2 Si6 O16
+ (H2 O)5
+;
+_journal_name_full               'American Mineralogist'
+_journal_page_first              1494
+_journal_page_last               1501
+_journal_volume                  71
+_journal_year                    1986
+_chemical_formula_sum            'Al2 Ca H10 O21 Si6'
+_chemical_name_systematic        'Ca (Al2 Si6 O16) (H2 O)5'
+_space_group_IT_number           4
+_symmetry_space_group_name_Hall  'P 2yb'
+_symmetry_space_group_name_H-M   'P 1 21 1'
+_cell_angle_alpha                90
+_cell_angle_beta                 105.44
+_cell_angle_gamma                90
+_cell_formula_units_Z            2
+_cell_length_a                   7.401
+_cell_length_b                   17.439
+_cell_length_c                   7.293
+_cell_volume                     907.308
+_citation_journal_id_ASTM        AMMIAY
+_cod_data_source_file            Rouse_AMMIAY_1986_1342.cif
+_cod_data_source_block           H10Al2Ca1O21Si6
+_cod_original_cell_volume        907.3076
+_cod_original_formula_sum        'H10 Al2 Ca1 O21 Si6'
+_cod_database_code               1530654
+loop_
+_symmetry_equiv_pos_as_xyz
+x,y,z
+-x,y+1/2,-z
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_U_iso_or_equiv
+O18 O-2 0.6565 0.2989 0.8717 1 0.0
+O2 O-2 0.5336 0.1478 0.6346 1 0.0
+O14 O-2 0.1728 0.0585 0.0904 1 0.0
+O15 O-2 0.1202 0.3741 0.0505 1 0.0
+O8 O-2 0.2017 0.2065 0.5155 1 0.0
+O17 O-2 0.3512 0.2234 0.0964 1 0.0
+O10 O-2 0.2515 0.0596 0.4581 1 0.0
+Si5 Si+4 0.0892 0.3877 0.8325 1 0.0
+O3 O-2 0.8372 0.2097 0.5064 1 0.0
+O21 O-2 0.565 0.4074 0.1595 1 0.0
+Si6 Si+4 0.2394 0.0045 0.2768 1 0.0
+O1 O-2 0.7228 0.0612 0.4105 1 0.0
+Si1 Si+4 0.3374 0.4732 0.6282 1 0.0
+Si4 Si+4 0.1044 0.0578 0.8612 1 0.0
+O5 O-2 0.2607 0.4392 0.8023 1 0.0
+O4 O-2 0.9065 0.1001 0.7936 1 0.0
+O19 O-2 0.5102 0.3063 0.4504 1 0.0
+O6 O-2 0.2666 0.4226 0.4408 1 0.0
+O20 O-2 0.7574 0.153 0.1048 1 0.0
+O7 O-2 0.5594 0.4662 0.7062 1 0.0
+Al2 Al+3 0.0682 0.3982 0.2632 1 0.0
+Si2 Si+4 0.3168 0.1294 0.5997 1 0.0
+O16 O-2 0.9022 0.4346 0.7315 1 0.0
+O13 O-2 0.9052 0.4718 0.2174 1 0.0
+Ca1 Ca+2 0.6557 0.2721 0.1969 1 0.0
+O9 O-2 0.2657 0.1069 0.7949 1 0.0
+Si3 Si+4 0.0219 0.2599 0.5249 1 0.0
+O12 O-2 0.9698 0.3179 0.3431 1 0.0
+O11 O-2 0.0811 0.3051 0.7261 1 0.0
+Al1 Al+3 0.7482 0.1285 0.5887 1 0.0

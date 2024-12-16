@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  stack-manager:
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - "STACK_NAME=${STACK_NAME}"
+      - "EXECUTABLE=${EXECUTABLE}"
+      - "API_SOCK=${API_SOCK}"
+    security_opt:
+      - label=disable
+    volumes:
+      - scratch:/stack_scratch:z
+      - $API_SOCK:/var/run/docker.sock
+    networks:
+      - stack
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
+
+volumes:
+  scratch:
+    name: ${STACK_NAME}_scratch
+    labels:
+      - com.docker.stack.namespace:${STACK_NAME}
+
+configs:
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
+    external: true
+
+networks:
+  stack:
+    name: ${STACK_NAME}
+    driver: overlay
+    attachable: true
+    external: false
+
+secrets:
+  postgis_password:
+    name: ${STACK_NAME}_postgis_password
+    external: true
+  geoserver_password:
+    name: ${STACK_NAME}_geoserver_password
+    external: true

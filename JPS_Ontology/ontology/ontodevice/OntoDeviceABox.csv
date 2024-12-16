@@ -1,0 +1,5 @@
+Source,Type,Target,Relation,Value,Data Type
+ABoxOntoDevice,Ontology,https://www.theworldavatar.com/kg/ontodevice,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoDevice,Ontology,https://www.theworldavatar.com/kg/ontodevice,base,,
+NormallyClosedPosition,Instance,https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition,,,
+NormallyOpenPosition,Instance,https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition,,,

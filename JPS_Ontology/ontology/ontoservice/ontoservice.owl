@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoservice/"
+     xml:base="https://www.theworldavatar.com/kg/ontoservice/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
+        <dc:date>10 December 2024</dc:date>
+        <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
+        <owl:versionInfo>1.2</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt -->
+
+
+    <owl:ObjectProperty rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/DatesAndTimes/hasTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.omg.org/spec/Commons/DatesAndTimes/hasTime"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasScheduledTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasScheduledTime">
+        <rdfs:subPropertyOf rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/hasTime"/>
+        <rdfs:range rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/TemporalEntity"/>
+        <rdfs:comment>specifies a scheduled time that can be associated with any element</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>has scheduled time</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation">
+        <rdfs:subPropertyOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
+        <rdfs:comment>A relationship describing the service location, typically a point, within the building or site.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>has service location</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/servesAsContactFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/servesAsContactFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContactService"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:comment>A relationship describing the contact point for another service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>serves as contact for</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/UnitPrice -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/UnitPrice"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+    
+
+
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/DatesAndTimes/TemporalEntity -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/DatesAndTimes/TemporalEntity"/>
+    
+
+
+    <!-- https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ContactService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContactService">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:comment>A service that acts as a point of contact for communication, support, or assistance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Contact service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/EventStatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/EventStatus">
+        <rdfs:comment>A classifier that indicates the current state of an event during a contract lifecycle</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Event status</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleEvent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleEvent">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
+        <rdfs:comment>A kind of event that occurs during one or more stages of the lifecycle of an agreement that governs a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Service agreement lifecycle event</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleStage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+        <rdfs:comment>A phase in the lifecycle for an agreement governing some service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Service agreement lifecycle stage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/VariableFee -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/VariableFee">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/UnitPrice"/>
+        <rdfs:comment>A monetary charge that is based on a well-known measurable unit. This charge varies according to the specific metrics such as weight, distance, or volumes with lower and upper bounds.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Variable fee</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

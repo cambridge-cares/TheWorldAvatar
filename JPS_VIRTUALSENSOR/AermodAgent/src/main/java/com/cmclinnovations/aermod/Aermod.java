@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -52,6 +53,11 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.geoserver.MultidimSettings;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -64,6 +70,15 @@ public class Aermod {
     private Path aermodDirectory;
     private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
+    // this keeps the number of timesteps in the GeoServer layers to the number
+    // specified by NUMBER_OF_LAYERS
+    String sqlCleanupTemplate = """
+            DELETE FROM %s WHERE time NOT IN (
+                SELECT DISTINCT time
+                FROM %s
+                ORDER BY time DESC
+                LIMIT %d)
+                """;
 
     public Aermod(Path simulationDirectory) {
         LOGGER.info("Creating directory for simulation files");
@@ -104,7 +119,7 @@ public class Aermod {
             String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation();
             sb.append(inputLine).append(System.lineSeparator());
             LinearRing base = build.getFootprint();
-            String originalSrid = "EPSG:" + base.getSRID();
+            String originalSrid = build.getSrid();
             inputLine = base.getNumPoints() + " " + build.getHeight();
             sb.append(inputLine).append(System.lineSeparator());
 
@@ -132,41 +147,49 @@ public class Aermod {
     }
 
     public void runBPIPPRM() {
-        try {
-            Process process = Runtime.getRuntime().exec(
-                    new String[] { EnvConfig.BPIPPRM_EXE, "bpipprm.inp", "building.dat", "buildings_summary.dat" },
-                    null, bpipprmDirectory.toFile());
 
+        Process process = null;
+
+        try {
+            ProcessBuilder builder = new ProcessBuilder(EnvConfig.BPIPPRM_EXE, "bpipprm.inp", "building.dat",
+                    "buildings_summary.dat");
+            builder.directory(bpipprmDirectory.toFile());
+            process = builder.start();
             process.waitFor();
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                // Read the output from the command
+                LOGGER.info("Here is the standard output of BPIPPRM:");
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    LOGGER.info(s);
+                }
 
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of BPIPPRM:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of BPIPPRM (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
+                // Read any errors from the attempted command
+                LOGGER.info("Here is the standard error of BPIPPRM (if any):");
+                while ((s = stdError.readLine()) != null) {
+                    LOGGER.error(s);
+                }
             }
         } catch (IOException e) {
-            String errmsg = "Error running bpipprm";
-            LOGGER.error(e.getMessage());
+            String errmsg = "Error executing bpipprm";
             LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            String errmsg = "Error running bpipprm";
-            LOGGER.error(e.getMessage());
+            String errmsg = "Error executing bpipprm";
             LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
+
     }
 
     public void createAERMODBuildingsInput(boolean createEmptyFile) {
@@ -240,33 +263,94 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.STATIC_SOURCE_TABLE, EnvConfig.STATIC_SOURCE_TABLE,
+                numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
+    }
+
+    void createShipsLayer(List<Ship> pointSources, long simulationTime, String derivationIri) {
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        pointSources.forEach(pointSource -> {
+            String originalSrid = "EPSG:" + pointSource.getLocation().getSRID();
+            double[] xyOriginal = { pointSource.getLocation().getX(), pointSource.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
+
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray().put(xyTransformed[0]).put(xyTransformed[1]));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+
+            JSONObject properties = new JSONObject();
+            properties.put("iri", pointSource.getIri());
+            properties.put("time", simulationTime);
+            properties.put("derivation", derivationIri);
+
+            if (pointSource.getLabel() != null) {
+                properties.put("name", pointSource.getLabel());
+            } else {
+                properties.put("name", "Ship");
+            }
+
+            feature.put("properties", properties);
+
+            features.put(feature);
+        });
+
+        featureCollection.put("features", features);
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SHIPS_LAYER_NAME,
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
+        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.SHIPS_LAYER_NAME, EnvConfig.SHIPS_LAYER_NAME,
+                numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
-        List<Double> xDoubles = new ArrayList<>();
-        List<Double> yDoubles = new ArrayList<>();
 
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-
-            String originalSrid = "EPSG:4326";
-            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-
-            xDoubles.add(xyTransformed[0]);
-            yDoubles.add(xyTransformed[1]);
-        }
-
-        double xlo = Collections.min(xDoubles);
-        double xhi = Collections.max(xDoubles);
-        double ylo = Collections.min(yDoubles);
-        double yhi = Collections.max(yDoubles);
-
-        double dx = (xhi - xlo) / nx;
-        double dy = (yhi - ylo) / ny;
+        AermodGrid ag = new AermodGrid(scope, nx, ny, simulationSrid);
 
         StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
         sb.append(System.lineSeparator());
-        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
+        String rec = String.format("                 XYINC %f %d %f %f %d %f", ag.xlo, nx, ag.dx, ag.ylo, ny, ag.dy);
         sb.append(rec).append(System.lineSeparator());
         sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
 
@@ -275,30 +359,12 @@ public class Aermod {
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid,
             List<List<Double>> elevationValues) {
-        List<Double> xDoubles = new ArrayList<>();
-        List<Double> yDoubles = new ArrayList<>();
 
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-
-            String originalSrid = "EPSG:4326";
-            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-
-            xDoubles.add(xyTransformed[0]);
-            yDoubles.add(xyTransformed[1]);
-        }
-
-        double xlo = Collections.min(xDoubles);
-        double xhi = Collections.max(xDoubles);
-        double ylo = Collections.min(yDoubles);
-        double yhi = Collections.max(yDoubles);
-
-        double dx = (xhi - xlo) / nx;
-        double dy = (yhi - ylo) / ny;
+        AermodGrid ag = new AermodGrid(scope, nx, ny, simulationSrid);
 
         StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
         sb.append(System.lineSeparator());
-        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
+        String rec = String.format("                 XYINC %f %d %f %f %d %f", ag.xlo, nx, ag.dx, ag.ylo, ny, ag.dy);
         sb.append(rec).append(System.lineSeparator());
 
         for (int i = 0; i < elevationValues.size(); i++) {
@@ -321,6 +387,36 @@ public class Aermod {
         sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
 
         writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());
+    }
+
+    private class AermodGrid {
+        public final double xlo;
+        public final double dx;
+        public final double ylo;
+        public final double dy;
+
+        public AermodGrid(Polygon scope, int nx, int ny, int simulationSrid) {
+            List<Double> xDoubles = new ArrayList<>();
+            List<Double> yDoubles = new ArrayList<>();
+
+            for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+                String originalSrid = "EPSG:4326";
+                double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
+                double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+                xDoubles.add(xyTransformed[0]);
+                yDoubles.add(xyTransformed[1]);
+            }
+
+            this.xlo = Collections.min(xDoubles);
+            double xhi = Collections.max(xDoubles);
+            this.ylo = Collections.min(yDoubles);
+            double yhi = Collections.max(yDoubles);
+
+            this.dx = (xhi - this.xlo) / nx;
+            this.dy = (yhi - this.ylo) / ny;
+        }
     }
 
     String addLeadingZero(String variable, int length) {
@@ -433,7 +529,9 @@ public class Aermod {
         createAermetInput(scope);
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("raob_soundings15747.FSL")) {
-            Files.copy(is, aermetDirectory.resolve("raob_soundings15747.FSL"));
+            if (!Files.exists(aermetDirectory.resolve("raob_soundings15747.FSL"))) {
+                Files.copy(is, aermetDirectory.resolve("raob_soundings15747.FSL"));
+            }
         } catch (IOException e) {
             String errmsg = "Failed to copy raob_soundings15747.FSL";
             LOGGER.error(e.getMessage());
@@ -441,39 +539,45 @@ public class Aermod {
             throw new RuntimeException(errmsg, e);
         }
 
+        Process process = null;
+
         try {
-            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMET_EXE, AERMET_INPUT }, null,
-                    aermetDirectory.toFile());
+            ProcessBuilder builder = new ProcessBuilder(EnvConfig.AERMET_EXE, AERMET_INPUT);
+            builder.directory(aermetDirectory.toFile());
+            process = builder.start();
             process.waitFor();
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                // Read the output from the command
+                LOGGER.info("Here is the standard output of AERMET:");
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    LOGGER.info(s);
+                }
 
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of AERMET:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
+                // Read any errors from the attempted command
+                LOGGER.info("Here is the standard error of AERMET (if any):");
+                while ((s = stdError.readLine()) != null) {
+                    LOGGER.error(s);
+                }
             }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of AERMET (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
         } catch (IOException e) {
             String errmsg = "Error executing aermet";
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             String errmsg = "Error executing aermet";
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
 
         // check if outputs are generated
@@ -558,41 +662,48 @@ public class Aermod {
         writeToFile(aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(String.valueOf(z))
                 .resolve(aermodInputFile), templateContent);
 
+        Process process = null;
+
         try {
-            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMOD_EXE, aermodInputFile }, null,
-                    aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(String.valueOf(z))
-                            .toFile());
+            ProcessBuilder builder = new ProcessBuilder(EnvConfig.AERMOD_EXE, aermodInputFile);
+            builder.directory(aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType))
+                    .resolve(String.valueOf(z)).toFile());
+            process = builder.start();
             process.waitFor();
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                // Read the output from the command
+                LOGGER.info("Here is the standard output of AERMOD:");
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    LOGGER.info(s);
+                }
 
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of AERMOD:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of AERMOD (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
+                // Read any errors from the attempted command
+                LOGGER.info("Here is the standard error of AERMOD (if any):");
+                while ((s = stdError.readLine()) != null) {
+                    LOGGER.error(s);
+                }
             }
         } catch (IOException e) {
             String errmsg = String.format("Error executing aermod for pollutant: %s and height: %f",
                     Pollutant.getPollutantLabel(pollutantType), z);
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             String errmsg = String.format("Error executing aermod for pollutant: %s and height: %f",
                     Pollutant.getPollutantLabel(pollutantType), z);
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
     }
 
@@ -661,7 +772,7 @@ public class Aermod {
         GDALTranslateOptions gdalTranslateOptions = new GDALTranslateOptions();
         gdalTranslateOptions.setSridIn("EPSG:" + simSrid);
         gdalClient.uploadRasterFilesToPostGIS(EnvConfig.DATABASE, "public", EnvConfig.DISPERSION_RASTER_TABLE,
-                rasterDirectory.toString(), gdalTranslateOptions, append);
+                rasterDirectory.toString(), gdalTranslateOptions, new MultidimSettings(), append);
     }
 
     /**
@@ -691,47 +802,6 @@ public class Aermod {
             LOGGER.error(outputFileURL);
             throw new RuntimeException(e);
         }
-    }
-
-    JSONObject getBuildingsGeoJSON(List<Building> buildings) {
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-
-        JSONArray features = new JSONArray();
-        buildings.stream().forEach(building -> {
-            JSONObject feature = new JSONObject();
-            feature.put("type", "Feature");
-
-            JSONObject properties = new JSONObject();
-            properties.put("color", "#666666");
-            properties.put("opacity", 0.66);
-            properties.put("base", 0);
-            properties.put("height", building.getHeight());
-            feature.put("properties", properties);
-
-            JSONObject geometry = new JSONObject();
-            geometry.put("type", "Polygon");
-            JSONArray coordinates = new JSONArray();
-
-            JSONArray footprintPolygon = new JSONArray();
-            String srid = building.getSrid();
-            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
-                JSONArray point = new JSONArray();
-                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
-                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
-                point.put(xyTransformed[0]).put(xyTransformed[1]);
-                footprintPolygon.put(point);
-            }
-            coordinates.put(footprintPolygon);
-            geometry.put("coordinates", coordinates);
-
-            feature.put("geometry", geometry);
-            features.put(feature);
-        });
-
-        featureCollection.put("features", features);
-
-        return featureCollection;
     }
 
     void createSimulationSubDirectory(PollutantType pollutantType, int z) {
@@ -770,6 +840,23 @@ public class Aermod {
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
+
+        // clean up table
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                EnvConfig.DISPERSION_CONTOURS_TABLE, numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     void createElevationLayer(JSONObject geoJSON, String derivationIri) {
@@ -796,5 +883,17 @@ public class Aermod {
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.ELEVATION_CONTOURS_TABLE, geoServerVectorSettings);
+    }
+
+    boolean validAermodInput(WeatherData weatherData, List<PointSource> sourcesWithEmissions) {
+        if (weatherData.getWindDirectionInTensOfDegrees()==0 && weatherData.getWindSpeedInKnots()==0) {
+            LOGGER.warn("AERMOD cannot simulate calm (no wind) condition.");
+            return false;
+        }
+        if (sourcesWithEmissions.isEmpty()) {
+            LOGGER.warn("No emission source within scope, no AERMOD simulation will be executed.");
+            return false;
+        }
+        return true;
     }
 }

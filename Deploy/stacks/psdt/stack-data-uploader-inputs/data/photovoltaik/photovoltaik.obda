@@ -1,0 +1,149 @@
+[PrefixDeclaration]
+xsd:		http://www.w3.org/2001/XMLSchema#
+ub:         http://www.theworldavatar.com/kg/ontoubemmp/
+be:         http://www.theworldavatar.com/kg/ontobuiltenv/
+beai:       http://www.theworldavatar.com/kg/ontobuiltenvadmininfo/
+om:         http://www.ontology-of-units-of-measure.org/resource/om-2/
+oum:        https://www.theworldavatar.com/kg/ontouom/
+gml:        http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
+db:         http://www.purl.org/oema/enaeq/
+bot:        http://w3id.org/bot#
+bim:        http://www.theworldavatar.com/ontology/ontobim/ontoBIM#
+iri:        https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	photovoltaik
+target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
+            iri:DABGEO/Building_{geb_id} a db:Building ;
+                be:hasOntoCityGMLRepresentation iri:OntoCityGML/Building_{geb_id} ;
+                beai:locatedInDistrict {gemarkung_nr}^^xsd:string ;
+                beai:locatedInDistrict {gemarkung_name}^^xsd:string ;
+                beai:belongsToManagementGroup {vg_nr}^^xsd:string ;
+                beai:belongsToAdminCommunity {vg_name}^^xsd:string ;
+                beai:belongsToCommunity {gem_nr}^^xsd:string ;
+                beai:belongsToCommunity {gem_name}^^xsd:string ;
+                beai:locatedInCounty {kreis_nr}^^xsd:string ;
+                beai:locatedInCounty {kreis_name}^^xsd:string ;
+                beai:hasGovernorateNumber {regierung_nr}^^xsd:integer ;
+                beai:hasBuildingID {geb_id}^^xsd:string ;
+                bot:containsElement iri:OntoBIM/Roof_{mod_id} .
+            iri:OntoUBEMMP/PVRoofPanels_{mod_id} a ub:RoofPVPanels ;
+                ub:hasSpecificYield iri:OntoUBEMMP/SpecificYieldQuantity_{mod_id} ;
+                db:producesEnergy iri:OntoUBEMMP/AnnualElectricitySupplyQuantity_{mod_id} ;
+                ub:producesCO2Savings iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{mod_id} ;
+                ub:hasPeakPower iri:OntoUBEMMP/PeakPowerQuantity_{mod_id} .
+            iri:OntoUBEMMP/SpecificYieldQuantity_{mod_id} a oum:SpecificYield ;
+                om:hasValue iri:OntoUBEMMP/SpecificYieldValue_{mod_id} .
+            iri:OntoUBEMMP/SpecificYieldValue_{mod_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerKilowatt ;
+                om:hasNumericalValue {kwh_kwp}^^xsd:double .
+            iri:OntoUBEMMP/AnnualElectricitySupplyQuantity_{mod_id} a ub:AnnualElectricitySupply ;
+                om:hasDimension om:energy-Dimension ;
+                om:hasValue iri:OntoUBEMMP/AnnualElectricitySupplyValue_{mod_id} .
+            iri:OntoUBEMMP/AnnualElectricitySupplyValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilowattHour ;
+                om:hasNumericalValue {str_19_5}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 30 degree south was taken as a basis for photovoltaic systems."^^xsd:string .
+            iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{mod_id} a ub:AnnualCO2Savings ;
+                om:hasDimension om:mass-Dimension ;
+                om:hasValue iri:OntoUBEMMP/AnnualCO2SavingsValue_{mod_id} .
+            iri:OntoUBEMMP/AnnualCO2SavingsValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilogram ;
+                om:hasNumericalValue {co2_19_5}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at 0.504 kg/kWh (assuming module efficiency 19.5%). In the case of flat surfaces, an elevation of 30° south was taken as a basis for photovoltaic systems."^^xsd:string .
+            iri:OntoUBEMMP/PeakPowerQuantity_{mod_id} a om:Power ;
+                om:hasDimension om:power-Dimension ;
+                om:hasValue iri:OntoUBEMMP/PeakPowerValue_{mod_id} .
+            iri:OntoUBEMMP/PeakPowerValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilowattHour ;
+                om:hasNumericalValue {kw_19_5}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 30 degree south was taken as a basis for photovoltaic systems."^^xsd:string .
+            iri:OntoUBEMMP/OWAnnualElectricitySupplyQuantity_{mod_id} a ub:AnnualElectricitySupply ;
+                om:hasDimension om:energy-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWAnnualElectricitySupplyValue_{mod_id} .
+            iri:OntoUBEMMP/OWAnnualElectricitySupplyValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilowattHour ;
+                om:hasNumericalValue {str_19_5_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string .
+            iri:OntoUBEMMP/OWAnnualCO2SavingsQuantity_{mod_id} a ub:AnnualCO2Savings ;
+                om:hasDimension om:mass-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWAnnualCO2SavingsValue_{mod_id} .
+            iri:OntoUBEMMP/OWAnnualCO2SavingsValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilogram ;
+                om:hasNumericalValue {co2_19_5_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at 0.504 kg/kWh (assuming module efficiency 19.5%). In the case of flat areas, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string .
+            iri:OntoUBEMMP/OWPeakPowerQuantity_{mod_id} a om:Power ;
+                om:hasDimension om:power-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWPeakPowerValue_{mod_id} .
+            iri:OntoUBEMMP/OWPeakPowerValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilowatt ;
+                om:hasNumericalValue {kw_19_5_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string .
+            iri:OntoBIM/Roof_{mod_id} a bim:Roof ;
+                ub:hasDevice iri:OntoUBEMMP/PVRoofPanels_{mod_id} ;
+                ub:receivesRadiation iri:OntoUBEMMP/MonthlyAverageSolarIrradiationQuantity_{mod_id} ;
+                ub:receivesRadiation iri:OntoUBEMMP/WinAnnualSolarIrradiationQuantity_{mod_id} ;
+                ub:receivesRadiation iri:OntoUBEMMP/AnnualSolarIrradiationQuantity_{mod_id} ;
+                ub:receivesRadiation iri:OntoUBEMMP/OWAnnualSolarIrradiationQuantity_{mod_id} ;
+                bim:hasSlope  iri:OM/SlopeAngleQuantity_{mod_id} ;
+                bim:hasOrientation iri:OM/OrientationAngleQuantity_{mod_id} ;
+                bim:isPVPanelSuitable {eigngpvi}^^xsd:boolean ;
+                bim:hasArea iri:OntoBIM/SolarSuitableAreaQuantity_{mod_id} .
+            iri:OntoUBEMMP/MonthlyAverageSolarIrradiationQuantity_{mod_id} a ub:SolarIrradiation ;
+                om:hasDimension om:powerDensity-Dimension ;
+                om:hasValue iri:OntoUBEMMP/MonthlyAverageSolarIrradiationValue_{mod_id} .
+            iri:OntoUBEMMP/MonthlyAverageSolarIrradiationValue_{mod_id} a om:Measure ;
+                om:hasUnit oum:wattHourPerSquareMetrePerDay .
+            iri:OntoUBEMMP/WinAnnualSolarIrradiationQuantity_{mod_id} a ub:AnnualSolarIrradiation ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OntoUBEMMP/WinAnnualSolarIrradiationValue_{mod_id} .
+            iri:OntoUBEMMP/WinAnnualSolarIrradiationValue_{mod_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {win_median}^^xsd:double ;
+                ub:hasCalculationBasis "Mean global radiation in the heating period."^^xsd:string .
+            iri:OntoUBEMMP/AnnualSolarIrradiationQuantity_{mod_id} a ub:AnnualSolarIrradiation ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OntoUBEMMP/AnnualSolarIrradiationValue_{mod_id} .
+            iri:OntoUBEMMP/AnnualSolarIrradiationValue_{mod_id} a om:Measure ;
+                oum:hasUnit om:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {radabs}^^xsd:double ;
+                ub:hasCalculationBasis "Mean annual global radiation taking into account shading; In the case of flat roofs, the incident radiation is given on the elevated surface facing south."^^xsd:string .
+            iri:OntoUBEMMP/OWAnnualSolarIrradiationQuantity_{mod_id} a ub:AnnualSolarIrradiation ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWAnnualSolarIrradiationValue_{mod_id} .
+            iri:OntoUBEMMP/OWAnnualSolarIrradiationValue_{mod_id} a om:Measure ;
+                oum:hasUnit om:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {radabs_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Mean annual global radiation taking into account shading; In the case of flat roofs, the incident radiation on the east/west elevated surface is specified."^^xsd:string .
+            iri:OntoBIM/SolarSuitableAreaQuantity_{mod_id} a bim:SolarSuitableRoofArea ;
+                om:hasDimension om:area-Dimension ;
+                om:hasValue iri:OntoBIM/2DSolarSuitableAreaValue_{mod_id} ;
+                om:hasValue iri:OntoBIM/3DSolarSuitableAreaValue_{mod_id} ;
+                om:hasValue iri:OntoBIM/3DOWSolarSuitableAreaValue_{mod_id} .
+            iri:OntoBIM/2DSolarSuitableAreaValue_{mod_id} a om:Measure ;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue {area_2d}^^xsd:double ;
+                ub:hasCalculationBasis "Rounded 2D surface suitable for solar use."^^xsd:string.
+            iri:OntoBIM/3DSolarSuitableAreaValue_{mod_id} a om:Measure ;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue {modarea}^^xsd:double ;
+                ub:hasCalculationBasis "Gross roof area size suitable for solar use in m² (3D area). In the case of flat roofs, an elevation of 30° south was taken as a basis for PV systems."^^xsd:string.
+            iri:OntoBIM/3DOWSolarSuitableAreaValue_{mod_id} a om:Measure ;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue {modArea_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Gross roof area size suitable for solar use in m² (3D area). In the case of flat roofs, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string.
+            iri:OM/SlopeAngleQuantity_{mod_id} a om:Angle ;
+                om:hasDimension om:dimensionOne ;
+                om:hasValue iri:SlopeAngleValue_{mod_id} .
+            iri:OM/SlopeAngleValue_{mod_id} a om:Measure ;
+                om:hasUnit om:degree ;
+                om:hasNumericalValue {neigung}^^xsd:double .
+            iri:OM/OrientationAngleQuantity_{mod_id} a om:Angle ;
+                om:hasDimension om:dimensionOne ;
+                om:hasValue iri:OrientationAngleValue_{mod_id} .
+            iri:OM/OrientationAngleValue_{mod_id} a om:Measure ;
+                om:hasUnit om:degree ;
+                om:hasNumericalValue {richtung}^^xsd:double .
+source      SELECT geb_id, mod_id, win_median, radabs, radabs_OW, kwh_kwp, str_19_5, co2_19_5, kw_19_5, str_19_5_OW, co2_19_5_OW, kw_19_5_OW, eigngpvi, area_2d, modarea, modArea_OW, richtung, neigung, gemarkung_nr, gemarkung_name, vg_nr, vg_name, gem_nr, gem_name, kreis_nr, kreis_name, regierung_nr FROM "photovoltaik"
+           ]]
+

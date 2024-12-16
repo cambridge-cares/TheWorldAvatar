@@ -9,10 +9,10 @@ import com.android.volley.toolbox.Volley;
 public class SingletonConnection {
     private static SingletonConnection instance;
     private RequestQueue requestQueue;
-    private static Context context;
+    private final Context context;
 
     private SingletonConnection(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         requestQueue = getRequestQueue();
 
     }

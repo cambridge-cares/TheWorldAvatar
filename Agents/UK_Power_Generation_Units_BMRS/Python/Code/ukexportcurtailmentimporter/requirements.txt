@@ -1,0 +1,12 @@
+configobj
+pandas
+py4jps
+pytz
+tqdm
+numpy
+psycopg2
+wget
+requests
+httplib2
+openpyxl
+validators

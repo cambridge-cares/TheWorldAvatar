@@ -13,6 +13,7 @@ import java.util.Map;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
+import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -105,6 +106,7 @@ public class UsageMatcher {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
         Map<String, String> columns = new HashMap<>();
+        columns.put("area", "DOUBLE PRECISION");
         columns.put("building_iri", "TEXT");
         columns.put("ontobuilt", "TEXT");
 
@@ -115,6 +117,9 @@ public class UsageMatcher {
                         String addColumnSql = "ALTER TABLE " + tableName +
                                 " ADD COLUMN " + entry.getKey() + " " + entry.getValue();
                         executeSql(connection, addColumnSql);
+                        if (tableName.equals(polygonTable) && entry.getKey().equals("area")) {
+                            calculateArea(polygonTable);
+                        }
                     } else {
                         System.out.println("Column " + entry.getKey() + " already exists in " + tableName + ".");
                     }
@@ -125,6 +130,13 @@ public class UsageMatcher {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
+
+    }
+
+    public void calculateArea(String polygonTable) {
+        String update = String.format("UPDATE %s SET area = public.ST_Area(\"geometryProperty\"::public.geography)", polygonTable);
+
+        rdbStoreClient.executeUpdate(update);
     }
 
     /**
@@ -133,21 +145,54 @@ public class UsageMatcher {
      * @param polygonTable table containing OSM data with the geometries being polygons
      * @param usageTable centralised table to store usage information
      */
-    public void copyFromOSM(String pointTable, String polygonTable, String usageTable) {
-        String usageSchema = usageTable.split("\\.")[0];
-        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + usageSchema;
-        String initialiseTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
-
-        initialiseTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, usageshare FLOAT)";
-
+    public void copyUsage(String pointTable, String polygonTable, String schema, String usageTable) {
+        // initialise schema
+        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
         rdbStoreClient.executeUpdate(initialiseSchema);
-        rdbStoreClient.executeUpdate(initialiseTable);
 
-        String copyIri = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) " +
-                "SELECT building_iri, ontobuilt FROM table WHERE table.building_iri IS NOT NULL AND table.ontobuilt IS NOT NULL";
+        // initialise usage table
+        String initialiseUsageTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
 
-        rdbStoreClient.executeUpdate(copyIri.replace("table", pointTable));
-        rdbStoreClient.executeUpdate(copyIri.replace("table", polygonTable));
+        initialiseUsageTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, area DOUBLE PRECISION, source TEXT)";
+
+        rdbStoreClient.executeUpdate(initialiseUsageTable);
+
+        // insert usage data from OSM into usage table
+        String copyUsage = "INSERT INTO %s (building_iri, ontobuilt, area, source)\n" +
+                "SELECT o.building_iri, o.ontobuilt, o.area, %s FROM %s o\n" +
+                "LEFT JOIN %s u on u.building_iri = o.building_iri AND u.ontobuilt = o.ontobuilt\n" +
+                "WHERE u.building_iri IS NULL AND u.ontobuilt IS NULL\n" +
+                "AND o.building_iri IS NOT NULL AND o.ontobuilt IS NOT NULL";
+
+        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, "\'osm_points\'", pointTable, usageTable));
+        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, "\'osm_polygons\'", polygonTable, usageTable));
+    }
+
+    public void copyAddress(String pointTable, String polygonTable, String schema, String addressTable) {
+        // initialise schema
+        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
+        rdbStoreClient.executeUpdate(initialiseSchema);
+
+        // initialise address table
+        String initialiseAddressTable = "CREATE TABLE IF NOT EXISTS " + addressTable;
+
+        initialiseAddressTable += " (building_iri TEXT, address_iri TEXT, country TEXT, city TEXT, street TEXT, house_number TEXT, postcode TEXT)";
+
+        rdbStoreClient.executeUpdate(initialiseAddressTable);
+
+        String copyAddress = "INSERT INTO %s (building_iri , country, city, street, house_number, postcode)\n" +
+                "SELECT DISTINCT o.building_iri, o.addr_country, o.addr_city, o.addr_street, o.addr_housenumber, o.addr_postcode FROM %s o\n" +
+                "WHERE o.building_iri NOT IN (SELECT building_iri FROM %s) AND o.building_iri is NOT null AND\n" +
+                "COALESCE(o.addr_country, o.addr_city, o.addr_street, o.addr_housenumber, o.addr_postcode) IS NOT NULL";
+
+        rdbStoreClient.executeUpdate(String.format(copyAddress, addressTable, polygonTable, addressTable));
+        rdbStoreClient.executeUpdate(String.format(copyAddress, addressTable, pointTable, addressTable));
+
+        String updateAddressIri = "UPDATE %s\n" +
+                "SET address_iri = 'Address_' || uuid_generate_v4()::text\n" +
+                "WHERE address_iri IS NULL";
+
+        rdbStoreClient.executeUpdate(String.format(updateAddressIri, addressTable));
     }
 
     /**

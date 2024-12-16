@@ -1,0 +1,6 @@
+openai
+pandas
+tqdm
+huggingface_hub[cli]
+vllm
+llama_cpp[server]

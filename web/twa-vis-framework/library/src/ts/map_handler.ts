@@ -7,12 +7,12 @@ abstract class MapHandler {
     /**
      * Username for mapping libary (may be null).
      */
-    public static MAP_USER: String = "cmclinnovations";
+    public static MAP_USER: string = "cmclinnovations";
  
     /**
      * API key for mapping libary (may be null).
      */
-    public static MAP_API: String;
+    public static MAP_API: string;
 
     /**
      * Main map object.

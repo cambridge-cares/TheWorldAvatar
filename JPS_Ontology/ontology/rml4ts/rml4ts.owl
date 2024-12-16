@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/rml4ts/"
+     xml:base="https://www.theworldavatar.com/kg/rml4ts/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     >
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/rml4ts/"/>
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatype Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/rml4ts/time_iterator">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/rml4ts/TimeSeriesMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/rml4ts/value_iterator">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/rml4ts/TimeSeriesMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+        <!--
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Object Properties
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////
+         -->
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/rml4ts/has_ts_mapping">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/kg/rml4ts/TimeSeriesMap"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/rml4ts/hasDynamicTarget">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="https://www.w3.org/2019/wot/td#PropertyAffordance"/>
+    </owl:ObjectProperty>
+
+        <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/rml4ts/hasMapFunction">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/rml4ts/TimeSeriesMap"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/rml4ts/MapFunction"/>
+        </owl:ObjectProperty>
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/rml4ts/TimeSeriesMap">
+        <rdfs:subClassOf rdf:resource="https://www.w3.org/ns/r2rml#TriplesMap"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/rml4ts/MapFunction">
+        <rdfs:subClassOf rdf:resource="http://schema.org/Enumeration"/>
+    </owl:Class>
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/rml4ts/Sum">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/rml4ts/MapFunction"/>
+    </owl:NamedIndividual>
+
+</rdf:RDF>

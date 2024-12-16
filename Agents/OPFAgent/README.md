@@ -32,7 +32,7 @@ The agent is reachable on localhost port 39999 by default (you can change this i
 - Replace information in the `client.properties` file in `opf-agent`->`config` folder with details of the blazegraph and relational database you are connecting to. Replace the placeholders for stack name with the name of your stack if you are connecting to the blazegraph in stack.
 - To build Docker image of OPFAgent, from the command line, and in the same directory as this README, run (replace the version number if applicable):
 ```
-docker build -t "opf-agent:1.0.0" .
+docker build -t "opf-agent:1.1.0" .
 ```
 - In the `access-agent.json` file in `JPS_ACCESS_AGENT/access-agent-dev-stack` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack. 
 - Copy the `access-agent.json` file and `opf-agent.json` file in `stack-manager-input-config` folder of OPFAgent into the `inputs/config/services` folder of the stack manager.

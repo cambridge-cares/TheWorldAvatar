@@ -1,0 +1,14 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.data'
+}
+
+dependencies {
+    implementation 'com.android.volley:volley:1.2.1'
+
+    implementation project(path: ':core:network')
+    implementation project(path: ':core:model')
+    implementation project(path: ':core:utils')
+}

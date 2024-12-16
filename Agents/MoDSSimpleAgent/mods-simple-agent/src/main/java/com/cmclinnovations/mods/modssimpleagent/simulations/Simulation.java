@@ -2,6 +2,7 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public abstract class Simulation {
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
         String simulationType = request.simulationType();
-        BackendInputFile inputFile = TemplateLoader.load(simulationType);
+        BackendInputFile inputFile;
 
         MoDSBackend modsBackend = MoDSBackendFactory.createMoDSBackend();
 
@@ -85,6 +86,9 @@ public abstract class Simulation {
         SimulationLoader simulationLoader = new SimulationLoader(modsBackend);
         if (request.getSurrogateToLoad() != null) {
             simulationLoader.loadSurrogate(request.getSurrogateToLoad());
+            inputFile = TemplateLoader.load(simulationType + "_" + detectSurrogateType(modsBackend));
+        } else {
+            inputFile = TemplateLoader.load(simulationType);
         }
         if (request.getModelToLoad() != null) {
             simulationLoader.loadModel(request.getModelToLoad());
@@ -388,6 +392,15 @@ public abstract class Simulation {
 
     public InputMetaData getInputMetaData() {
         return inputMetaData;
+    }
+
+    private static String detectSurrogateType(MoDSBackend modsBackend) {
+        if (!Files.exists(modsBackend.getSimDir().resolve(MoDSBackend.DEFAULT_SURROGATE_ALGORITHM_NAME)
+                .resolve(MoDSBackend.DEFAULT_SURROGATE_ALGORITHM_NAME + "_Sens_file"))) {
+            return "HDMR";
+        } else {
+            return "DKL";
+        }
     }
 
     public static Path getSurrogateSaveDirectoryPath() {

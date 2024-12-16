@@ -1,0 +1,11 @@
+PREFIX env:  <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+
+SELECT ?building ?usage ?usageShare ?gfa
+WHERE {
+  ?building a bldg:Building;
+    env:hasPropertyUsage ?property;
+    env:hasGFA ?gfa.
+  ?property a ?usage;
+    env:hasUsageShare ?usageShare.
+}

@@ -1,0 +1,7 @@
+<resources>
+    <dimen name="title_font_size">24sp</dimen>
+    <dimen name="button_font_size">18sp</dimen>
+    <dimen name="button_height">100dp</dimen>
+    <dimen name="secondary_button_height">75dp</dimen>
+    <dimen name="double_col_button_width">180dp</dimen>
+</resources>

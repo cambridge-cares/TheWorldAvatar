@@ -10,7 +10,7 @@ class DispersionHandler {
                 dispersionHandler.dispersions = dispersionsJson;
                 dispersionHandler.selectedSimulation = Object.keys(dispersionHandler.dispersions)[0];
             });
-            dispersionHandler.queryForDispersions(dispersionHandler, setDispersionFunction).then(() => resolve());
+            dispersionHandler.queryForDispersions(dispersionHandler, setDispersionFunction).always(() => resolve());
         });
     }
 
@@ -153,7 +153,11 @@ class DispersionHandler {
             let timestep = timesteps[i];
             let timestepOption = document.createElement("option");
             timestepOption.setAttribute("value", timestep);
-            timestepOption.innerHTML = timestep;
+
+            // convert unix timestamp into human readable date
+            let date = new Date(timestep * 1000);
+
+            timestepOption.innerHTML = date.toString();
             timestepElementSelect.appendChild(timestepOption);
 
             if (i == 0) {
@@ -191,7 +195,7 @@ class DispersionHandler {
 
         let heights = Object.keys(dispersion['z']).sort(function (a, b) { return a - b });
         for (let i in heights) {
-            let height = heights[i];
+            let height = Number(heights[i]);
             let heightOption = document.createElement("option");
             heightOption.setAttribute("value", height);
             heightOption.innerHTML = height + " m";
@@ -209,12 +213,12 @@ class DispersionHandler {
     }
 
     onTimestepChange(timestep) {
-        this.selectedTimestep = timestep;
+        this.selectedTimestep = Number(timestep);
         this.plotData();
     }
 
     onHeightChange(height) {
-        this.selectedHeight = height;
+        this.selectedHeight = Number(height);
         this.plotData();
     }
 
@@ -228,30 +232,26 @@ class DispersionHandler {
     }
 
     plotData() {
-        this.updateVirtualSensors(this.dispersions[this.selectedSimulation].derivationIri);
-        let dataJsonUrl = this.agentBaseUrl;
-        dataJsonUrl += '/dispersion-interactor/GetDataJson?';
+        MapHandler.MAP.setFilter('0.0.dispersion-layer', ["all",
+            ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri],
+            ['==', ['to-number', ['get', 'time']], this.selectedTimestep],
+            ['==', ['to-number', ['get', 'z']], this.selectedHeight],
+            ['==', ['string', ['get', 'pollutant']], this.selectedPollutant]
+        ]);
 
-        let params = {
-            pollutant: this.selectedPollutant,
-            timestep: this.selectedTimestep,
-            scopeLabel: this.selectedSimulation,
-            derivationIri: this.dispersions[this.selectedSimulation].derivationIri,
-            pollutantLabel: this.dispersions[this.selectedSimulation].pollutants[this.selectedPollutant],
-            weatherStation: JSON.stringify(this.dispersions[this.selectedSimulation].weatherStation),
-            z: this.selectedHeight
-        };
+        MapHandler.MAP.setFilter('0.0.ships-layer', ["all",
+            ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri],
+            ['==', ['to-number', ['get', 'time']], this.selectedTimestep]
+        ]);
 
-        let searchParams = new URLSearchParams(params);
-        dataJsonUrl += searchParams;
+        MapHandler.MAP.setFilter('0.0.weather-layer', ["all",
+            ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri]
+        ]);
 
-        let plotFunction = (function () {
-            this.manager.plotData();
-        }).bind(this);
+        MapHandler.MAP.setFilter('0.0.elevation-layer', ["all",
+            ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri]
+        ]);
 
-        this.manager.loadDefinitionsFromURL(dataJsonUrl).then(() =>
-            plotFunction()
-        );
         this.addColourBar();
     }
 
@@ -299,17 +299,19 @@ class DispersionHandler {
         return $.post(url);
     }
 
-    updateVirtualSensors(derivation) {
-        let url = this.agentBaseUrl;
-        url += '/dispersion-interactor/UpdateVirtualSensors?';
+    updateVirtualSensors() {
+        for (let i in Object.keys(this.dispersions)) {
+            let url = this.agentBaseUrl;
+            url += '/dispersion-interactor/UpdateVirtualSensors?';
 
-        let params = {
-            derivation: derivation
-        };
+            let params = {
+                derivation: this.dispersions[Object.keys(this.dispersions)[i]].derivationIri
+            };
 
-        let searchParams = new URLSearchParams(params);
-        url += searchParams;
+            let searchParams = new URLSearchParams(params);
+            url += searchParams;
 
-        $.post(url);
+            $.post(url);
+        }
     }
 }

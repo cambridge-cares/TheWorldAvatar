@@ -47,8 +47,10 @@ abstract class DataLayer {
         this.id = id;
         this.name = name;
         this.source = source;
+    }
 
-        console.info("Created DataLayer instance '" + this.name + "' with id '" + this.id + "'.");
+    public setID(id: string) {
+        this.id =id;
     }
 
     /**

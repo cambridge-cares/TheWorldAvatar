@@ -5,7 +5,7 @@
 #
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-VENV_NAME='entityrdfizer_venv'
+VENV_NAME='venv'
 TEST_VENV_NAME='test_venv'
 PROJECT_NAME='entityrdfizer'
 TEST_PYPI="https://test.pypi.org/legacy/"
@@ -20,22 +20,18 @@ usage() {
     echo
     echo "Please run the script with following options:"
     echo "---------------------------------------------------------------------------------------------------------------"
-    echo " Usage:"
-    echo "  -v NEXT_VERSION"
-    echo "  -h"
+    echo "Usage:"
+    echo "  -v NEXT_VERSION     : Release the $PROJECT_NAME with the following version."
+    echo "  -h                  : Print this usage message."
     echo ""
-    echo "Options"
-	echo "  -v              : Release the $PROJECT_NAME with the following version."
-	echo "  -h              : Print this usage message."
-    echo ""
-	echo "Example usage:"
-    echo "./release_pyuploader_to_pypi.sh -v 1.0.14   - release version 1.0.14"
-	echo "==============================================================================================================="
-	read -n 1 -s -r -p "Press any key to continue"
+    echo "Example usage:"
+    echo "./$(basename $0) -v 1.0.14"
+    echo "==============================================================================================================="
     exit
 }
 
 main() {
+    install_packages_for_building
     bump_package_version_number
     install_and_test_package
     build_package_for_release
@@ -44,6 +40,17 @@ main() {
     release_package_to_pypi main-pypi
     test_package_release main-pypi $PYPI_WAIT_TIME_SEC
     read -n 1 -s -r -p "Press any key to continue"
+}
+
+install_packages_for_building() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Installing wheel and twine for building/releasing $PROJECT_NAME"
+    echo "-------------------------------------------------------------------------"
+    echo ; echo
+
+    pip install wheel twine
+
+    STEP_NR=$((STEP_NR+1))
 }
 
 bump_package_version_number() {
@@ -70,7 +77,7 @@ install_and_test_package() {
 
     $SPATH/install_script_pip.sh -v -i -e -n $VENV_NAME -d $SPATH -s
 
-    if [ -d "$SPATH/$VENV_NAME/bin/pip3" ]; then
+    if [ -d "$SPATH/$VENV_NAME/bin" ]; then
         PYTHON_EXEC=$SPATH/$VENV_NAME/bin/python
     else
         PYTHON_EXEC=$SPATH/$VENV_NAME/Scripts/python
@@ -110,7 +117,7 @@ build_package_for_release() {
     python setup.py sdist bdist_wheel
     if [ $? -eq 0 ]; then
         echo "Build successfull. Checking the distribution artifacts."
-        twine check dist/*
+        python -m twine check dist/*
         if [ $? -ne 0 ]; then
             echo "Problem with distribution artifacts. Aborting the release."
             read -n 1 -s -r -p "Press any key to continue"
@@ -136,10 +143,10 @@ release_package_to_pypi() {
     echo
     if [ $1 = "main-pypi" ]; then
         echo "main release"
-        twine upload -u $username -p $password $SPATH/dist/*
+        python -m twine upload -u $username -p $password $SPATH/dist/*
     else
         echo "test release"
-        twine upload -u $username -p $password --repository-url $TEST_PYPI $SPATH/dist/*
+        python -m twine upload -u $username -p $password --verbose --repository-url $TEST_PYPI $SPATH/dist/*
     fi
     if [ $? -ne 0 ]; then
         echo "Couldnt upload artifacts to $1. Have you forgotten to increse the $PROJECT_NAME version number?"
@@ -162,7 +169,7 @@ test_package_release() {
     sleep .5
     python -m venv $SPATH/../$TEST_VENV_NAME
 
-    if [ -d "$SPATH/../$TEST_VENV_NAME/bin/pip3" ]; then
+    if [ -d "$SPATH/../$TEST_VENV_NAME/bin" ]; then
         PYTHON_EXEC=$SPATH/../$TEST_VENV_NAME/bin/python
     else
         PYTHON_EXEC=$SPATH/../$TEST_VENV_NAME/Scripts/python

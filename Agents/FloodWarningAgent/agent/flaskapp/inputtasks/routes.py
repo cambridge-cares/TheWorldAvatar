@@ -53,7 +53,7 @@ def api_update_all_warnings():
         return jsonify(return_dict), 200
 
     except Exception as ex:
-        logger.error('Update failed: ' + str(ex), ex)
+        logger.error('Update failed: ' + str(ex))
         return jsonify({'msg': 'Update failed: ' + str(ex)}), 500
 
 

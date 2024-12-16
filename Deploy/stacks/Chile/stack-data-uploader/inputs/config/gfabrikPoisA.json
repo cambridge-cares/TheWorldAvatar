@@ -1,0 +1,21 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "gfabrikPoisA",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "gfabrikPoisA",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"]
+                }
+            }
+        }
+    ]
+   
+
+}

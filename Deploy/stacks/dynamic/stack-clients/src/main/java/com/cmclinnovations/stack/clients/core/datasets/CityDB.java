@@ -10,12 +10,11 @@ import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CityDB extends GeoServerDataSubset {
 
@@ -109,7 +108,7 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     protected void augmentData(String database) {
-        
+
         logger.info("Setting tables to unlogged for better write performance...");
         CityDBClient.getInstance().unlogTable(database);
 
@@ -136,17 +135,15 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     @Override
+    public String getSchema() {
+        return PostGISClient.DEFAULT_SCHEMA_NAME;
+    }
+
+    @Override
     public void createLayers(String workspaceName, String database) {
-
         logger.info("Publishing to geoserver...");
-
-        GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
-        if (null != virtualTable) {
-            virtualTable.setSql(handleFileValues(virtualTable.getSql()));
-        }
-
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getSchema(), getTable(), geoServerSettings);
     }
 
     public void createLayer(String database) {

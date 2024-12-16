@@ -13,7 +13,7 @@
 	<artifactId>mods-simple-agent</artifactId>
 	<version>0.5.0-sampling-SNAPSHOT</version>
 	<name>mods-simple-agent</name>
-	<description>Demo project for Spring Boot</description>
+	<description>MoDS Simple Agent</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20230227</version>
+			<version>20231013</version>
 		</dependency>
 
 		<dependency>

@@ -1,0 +1,131 @@
+@prefix owl:                <http://www.w3.org/2002/07/owl#> .
+@prefix os:                 <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cmns-col:           <https://www.omg.org/spec/Commons/Collections/> .
+@prefix cmns-dt:            <https://www.omg.org/spec/Commons/DatesAndTimes/> .
+@prefix cmns-dsg:           <https://www.omg.org/spec/Commons/Designators/> .
+@prefix cmns-qtu:           <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
+@prefix cmns-txt:           <https://www.omg.org/spec/Commons/TextDatatype/> .
+@prefix fibo-fnd-arr-lif:   <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/> .
+@prefix fibo-fbc-pas-fpas:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
+
+fibo-fbc-pas-fpas:ContractLifecycle fibo-fnd-arr-lif:hasStage os:CreationStage ;
+  fibo-fnd-arr-lif:hasStage os:ServiceExecutionStage ;
+  fibo-fnd-arr-lif:hasStage os:ExpirationStage .
+
+os:CreationStage cmns-col:comprises os:ContractCreation ;
+  cmns-col:comprises os:ContractApproval .
+
+os:ServiceExecutionStage cmns-dt:succeeds os:CreationStage ;
+  cmns-col:comprises os:ServiceDeliveryEvent ;
+  cmns-col:comprises os:IncidentReport ;
+  cmns-col:comprises os:TerminatedServiceEvent .
+
+os:ExpirationStage cmns-dt:succeeds os:ServiceExecutionStage ;
+  cmns-col:comprises os:ContractDischarge ;
+  cmns-col:comprises os:ContractRescission ;
+  cmns-col:comprises os:ContractTermination .
+
+os:ServiceAgreementLifecycleStage owl:oneOf (
+  os:CreationStage
+  os:ServiceExecutionStage
+  os:ExpirationStage
+) .
+
+os:CreationStage a os:ServiceAgreementLifecycleStage ;
+  rdfs:label "Creation Stage";
+  rdfs:comment "The phase in the lifecycle of a contract to create a new contract.".
+
+os:ServiceExecutionStage a os:ServiceAgreementLifecycleStage ;
+  rdfs:label "Service Execution Stage";
+  rdfs:comment "The phase in the lifecycle of a contract where the services agreed should be executed.".
+
+os:ExpirationStage a os:ServiceAgreementLifecycleStage ;
+  rdfs:label "Expiration Stage";
+  rdfs:comment "The phase in the lifecycle of a contract where the contract has ended.".
+
+os:ServiceAgreementLifecycleEvent owl:oneOf (
+  os:OrderReceivedEvent
+  os:ServiceDispatchEvent
+  os:ServiceDeliveryEvent
+  os:TerminatedServiceEvent
+  os:IncidentReportEvent
+  os:ContractCreation
+  os:ContractApproval
+  os:ContractDischarge
+  os:ContractRescission
+  os:ContractTermination
+) .
+
+os:OrderReceivedEvent a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Order Received Event";
+  rdfs:comment "This event occurs when a new order is received and acknowledged by the system. It marks the beginning of the service execution stage.".
+  
+os:ServiceDispatchEvent a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Service Dispatch Event";
+  rdfs:comment "This event represents the assignment of service personnel, resources, and/or locations to perform the requested service on a specific day.".
+
+os:ServiceDeliveryEvent a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Service Delivery Event";
+  rdfs:comment "This event represents a delivery for the requested service.".
+
+os:TerminatedServiceEvent a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Terminated Service Event";
+  rdfs:comment "This event represents a requested service that has been terminated either by the service provider or the client.".
+
+os:IncidentReportEvent a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Incident Report Event";
+  rdfs:comment "This event involves the formal reporting of an incident during a specific service delivery, documenting the specifics and any immediate actions taken. Incidents may include accidents and incomplete service delivery.".
+
+os:ContractCreation a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Contract Creation";
+  rdfs:comment "An event to draft and create a new contract during the creation lifecycle stage of a contract.".
+
+os:ContractApproval a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Contract Approval";
+  rdfs:comment "An event to approve the contract during the creation lifecycle stage of a contract.".
+
+os:ContractDischarge a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Contract Discharge";
+  rdfs:comment "An event ending the contract as all contractual obligations have been performed.".
+
+os:ContractRescission a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Contract Rescission";
+  rdfs:comment "An event rendering the contract null, void, and no longer legally binding as one contractual party is a victim of a vitiating factor during the expiration lifecycle stage of a contract.".
+
+os:ContractTermination a os:ServiceAgreementLifecycleEvent ;
+  rdfs:label "Contract Termination";
+  rdfs:comment "An event ending the contract before all contractual obligations have been performed. Typically the contract may have been concluded earlier with the agreement of all parties involved.".
+
+os:EventStatus owl:oneOf (
+  os:PendingStatus
+  os:InProgressStatus
+  os:CompletedStatus
+) .
+
+os:PendingStatus a os:EventStatus ;
+  rdfs:label "Pending";
+  rdfs:comment "Indicates that the event is pending some action or trigger.".
+
+os:InProgressStatus a os:EventStatus ;
+  rdfs:label "In Progress";
+  rdfs:comment "Signifies that the activities related to the event are actively carried out.".
+
+os:CompletedStatus a os:EventStatus ;
+  rdfs:label "Completed";
+  rdfs:comment "Marks that all action and tasks has been executed for the event.".
+
+os:pricePerTonne a cmns-qtu:MeasurementUnit ;
+  cmns-dsg:hasName os:pricePerTonneName;
+  rdfs:comment "The monetary price per tonne".
+
+os:pricePerTonneName a cmns-qtu:QuantityName ;
+  cmns-txt:hasTextValue "$/tonne" .
+  
+os:tonne a cmns-qtu:MeasurementUnit ;
+  cmns-dsg:hasName os:tonneName;
+  rdfs:comment "The tonne is a unit of mass defined as 1000 kilogram.".
+
+os:tonneName a cmns-qtu:QuantityName ;
+  cmns-txt:hasTextValue "tonne" .

@@ -1,0 +1,21 @@
+Provide a compilation of chemical compounds exhibiting {PropertyName} within the range of {minvalue} to {maxvalue}.
+What are some species that display {PropertyName} within the {minvalue} to {maxvalue} range?
+List chemical compounds having {PropertyName} values falling between {minvalue} and {maxvalue}
+Can you name some molecules where {PropertyName} is within {minvalue} and {maxvalue}?
+What chemical species exhibit {PropertyName} within the {minvalue} to {maxvalue} range?
+Enumerate compounds with {PropertyName} ranging from {minvalue} to {maxvalue}.
+Which chemical compounds have {PropertyName} values within {minvalue} and {maxvalue}?
+Provide a list of species that demonstrate {PropertyName} in the {minvalue} to {maxvalue} range
+Name some molecules with {PropertyName} falling between {minvalue} and {maxvalue}.
+What are the chemical compounds or species that possess {PropertyName} within {minvalue} and {maxvalue}?
+Can you list some examples of molecules exhibiting {PropertyName} between {minvalue} and {maxvalue}?
+Enumerate the chemical compounds or species with {PropertyName} values within {minvalue} and {maxvalue}
+Provide a compilation of chemical species having {PropertyName} ranging from {minvalue} to {maxvalue}.
+What molecules demonstrate {PropertyName} within the {minvalue} to {maxvalue} range?
+List some examples of chemical compounds with {PropertyName} values between {minvalue} and {maxvalue}.
+Can you name some species that exhibit {PropertyName} falling within the {minvalue} to {maxvalue} range?
+What are the chemical compounds or species that show {PropertyName} in the {minvalue} to {maxvalue} range?
+Enumerate compounds with {PropertyName} within the {minvalue} and {maxvalue} values.
+Provide a list of chemical compounds demonstrating {PropertyName} values within {minvalue} and {maxvalue}.
+Name some molecules that possess {PropertyName} within the range of {minvalue} to {maxvalue}.
+Species with {PropertyName} between {minvalue} to {maxvalue}.

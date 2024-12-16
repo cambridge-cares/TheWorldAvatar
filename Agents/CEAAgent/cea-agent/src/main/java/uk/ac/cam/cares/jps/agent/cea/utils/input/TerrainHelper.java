@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import org.locationtech.jts.geom.*;
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
@@ -29,89 +30,95 @@ public class TerrainHelper {
 
     /**
      * Gets terrain data for building
-     * @param uriString building IRI
-     * @param endpoint endpoint to building geometry data
+     * @param buildings ArrayList of CEABuildingData of target buildings
+     * @param surroundings list of CEA
      * @param table PostGIS table name
      * @return terrain data as byte[]
      */
-    public byte[] getTerrain(String uriString, String endpoint, List<CEAGeometryData> surroundings, String table) {
-        RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
-
+    public byte[] getTerrain(ArrayList<CEABuildingData> buildings, List<CEAGeometryData> surroundings, String table) {
         // query for the coordinate reference system used by the terrain data
         String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM %s LIMIT 1", table);
 
-        Coordinate centerCoordinate;
+        Double bufferDistance;
 
-        Double radius;
+        Coordinate center;
 
         String crs;
 
-        try {
-            if (!surroundings.isEmpty()) {
-                Envelope envelope = new Envelope();
+        Envelope envelope = new Envelope();
 
+        try {
+            RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
+
+            JSONArray sridResult = postgisClient.executeQuery(sridQuery);
+
+            if (sridResult.isEmpty()) {
+                System.out.println("No terrain data retrieved, agent will run CEA with CEA's default terrain.");
+                return null;
+            }
+
+            Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
+
+            if (!surroundings.isEmpty()) {
                 for (CEAGeometryData ceaGeometryData : surroundings) {
                     for (Geometry geometry : ceaGeometryData.getFootprint()) {
                         envelope.expandToInclude(geometry.getEnvelopeInternal());
                     }
                 }
-                centerCoordinate = envelope.centre();
-
-                Double w = envelope.getWidth();
-                Double h = envelope.getHeight();
-
-                radius = w > h ? w/2 : h/2;
 
                 crs = surroundings.get(0).getCrs();
 
-                radius += 30;
-            }
-            else {
-                CEAGeometryData ceaGeometryData = GeometryQueryHelper.getBuildingGeometry(uriString, endpoint, true);
+                center = envelope.centre();
 
-                Envelope envelope = new Envelope();
+                Polygon polygon = envelopeToPolygon(envelope);
 
-                for (Geometry geometry : ceaGeometryData.getFootprint()) {
-                    envelope.expandToInclude(geometry.getEnvelopeInternal());
+                polygon = (Polygon) GeometryHandler.transformGeometry(polygon, "EPSG:"+crs, "EPSG:"+postgisCRS);
+
+                envelope = new Envelope();
+                for (Coordinate coordinate : polygon.getCoordinates()) {
+                    envelope.expandToInclude(coordinate);
                 }
 
-                centerCoordinate = envelope.centre();
+                double w = envelope.getWidth();
+                double h = envelope.getHeight();
 
-                crs = ceaGeometryData.getCrs();
+                bufferDistance = w >= h ? w /2 : h/2;
 
-                radius = 160.0;
+                bufferDistance += 30.0;
             }
-
-            crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
-
-            List<byte[]> result = new ArrayList<>();
-
-
-                JSONArray sridResult = postgisClient.executeQuery(sridQuery);
-
-                if (sridResult.isEmpty()) {return null;}
-                Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
-
-                Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
-
-                // query for terrain data
-                String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);
-
-                try (Connection conn = postgisClient.getConnection()) {
-                    Statement stmt = conn.createStatement();
-                    ResultSet terrainResult = stmt.executeQuery(terrainQuery);
-                    while(terrainResult.next()) {
-                        byte[] rasterBytes = terrainResult.getBytes("data");
-                        result.add(rasterBytes);
+            else {
+                for (CEABuildingData building : buildings) {
+                    for (Geometry geometry : building.getGeometry().getFootprint()) {
+                        envelope.expandToInclude(geometry.getEnvelopeInternal());
                     }
                 }
 
-                if (result.size() == 1) {
-                    return result.get(0);
+                crs = buildings.get(0).getGeometry().getCrs();
+
+                center = envelope.centre();
+                bufferDistance = 160.0;
+            }
+
+            List<byte[]> result = new ArrayList<>();
+
+            // query for terrain data
+            String terrainQuery = getTerrainQuery(center.getX(), center.getY(), bufferDistance, Integer.valueOf(crs), postgisCRS, table);
+
+            try (Connection conn = postgisClient.getConnection()) {
+                Statement stmt = conn.createStatement();
+                ResultSet terrainResult = stmt.executeQuery(terrainQuery);
+                while(terrainResult.next()) {
+                    byte[] rasterBytes = terrainResult.getBytes("data");
+                    result.add(rasterBytes);
                 }
-                else{
-                    return null;
-                }
+            }
+
+            if (result.size() == 1) {
+                return result.get(0);
+            }
+            else{
+                return null;
+            }
         }
         catch (Exception e) {
             System.out.println("No terrain data retrieved, agent will run CEA with CEA's default terrain.");
@@ -124,13 +131,14 @@ public class TerrainHelper {
      * @param x first coordinate of center point
      * @param y second coordinate of center point
      * @param radius length of the square bounding box divided by 2
+     * @param originalCRS coordinate reference system of center point
      * @param postgisCRS coordinate reference system of the raster data queried
      * @param table table storing raster data
      * @return SQL query string
      */
-    private String getTerrainQuery(Double x, Double y, Double radius, Integer postgisCRS, String table) {
+    private String getTerrainQuery(Double x, Double y, Double radius, Integer originalCRS, Integer postgisCRS, String table) {
         // SQL commands for creating a square bounding box
-        String terrainBoundary = String.format("ST_Expand(ST_SetSRID(ST_MakePoint(%f, %f), %d), %f)", x, y, postgisCRS, radius);
+        String terrainBoundary = String.format("ST_Expand(ST_Transform(ST_SetSRID(ST_MakePoint(%f, %f), %d), %d), %f)", x, y, originalCRS, postgisCRS, radius);
 
         // query result to be converted to TIF format
         String query = String.format("SELECT ST_AsTIFF(ST_Union(ST_Clip(rast, %s))) as data ", terrainBoundary);
@@ -138,5 +146,23 @@ public class TerrainHelper {
         query = query + String.format("WHERE ST_Intersects(rast, %s);", terrainBoundary);
 
         return query;
+    }
+
+    /**
+     * Converts an Envelope object to Polygon object
+     * @param envelope Envelope object
+     * @return envelope as a Polygon object
+     */
+    private Polygon envelopeToPolygon(Envelope envelope) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coordinates = new Coordinate[5];
+        coordinates[0] = new Coordinate(envelope.getMinX(), envelope.getMinY());
+        coordinates[1] = new Coordinate(envelope.getMinX(), envelope.getMaxY());
+        coordinates[2] = new Coordinate(envelope.getMaxX(), envelope.getMaxY());
+        coordinates[3] = new Coordinate(envelope.getMaxX(), envelope.getMinY());
+        coordinates[4] = coordinates[0];
+
+        return geometryFactory.createPolygon(coordinates);
     }
 }

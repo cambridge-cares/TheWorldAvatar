@@ -1,0 +1,18 @@
+{
+    "name": "The World Avatar",
+    "stack": "http://localhost:3838",
+    "sources": [
+        {
+            "id": "buildings",
+            "type": "tiles",
+            "uri": "http://localhost:3838/3dtiles/postgres/citydb/lod2-buildings/tileset.json"
+        }
+    ],
+    "layers": [
+        {
+            "id": "3d-tiles-layer",
+            "name": "Buildings",
+            "source": "buildings"
+        }
+    ]
+}

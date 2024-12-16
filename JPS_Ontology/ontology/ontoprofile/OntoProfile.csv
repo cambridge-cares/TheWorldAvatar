@@ -1,0 +1,16 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoProfile,TBox,https://www.theworldavatar.com/kg/ontoprofile/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoProfile,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoProfile,TBox,"OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoProfile,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+VehicleDriver,Class,https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole,IS-A,,,,"A person who is expected to be assigned to a vehicle, which they will drive.",https://www.theworldavatar.com/kg/ontoprofile/,Vehicle Driver
+EmployedDriver,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,IS-A,,,,A person who is employed to drive a vehicle.,https://www.theworldavatar.com/kg/ontoprofile/,Employed Driver
+OperationManager,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,IS-A,,,,A person who is employed to manage and supervise the operational conditions of a service.,https://www.theworldavatar.com/kg/ontoprofile/,Operation manager
+OperationScheduler,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,IS-A,,,,A person who is employed to manage the operational schedule of a service.,https://www.theworldavatar.com/kg/ontoprofile/,Operation scheduler
+SalesAdmin,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,IS-A,,,,A person who is employed to communicate with clients about the company's products and/or services. The person is primarily based at the front-desk.,https://www.theworldavatar.com/kg/ontoprofile/,Sales admin
+Student,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember,IS-A,,,,"A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators.",https://www.theworldavatar.com/kg/ontoprofile/,Student
+Initials,Class,,,,,,The initials of a person are the first letters of their first name and last name (and sometimes middle name).,https://www.theworldavatar.com/kg/ontoprofile/,Initials
+EmployeeStatus,Class,,,,,,The work availability of an employee.,https://www.theworldavatar.com/kg/ontoprofile/,Employee status
+hasInitials,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName,Initials,,A relationship that describes a person's initials.,https://www.theworldavatar.com/kg/ontoprofile/,has initials
+worksAt,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,https://www.theworldavatar.com/kg/ontobim/Facility,,A relationship describing the facility that the employee is working in.,https://www.theworldavatar.com/kg/ontoprofile/,works at
+hasStatus,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,EmployeeStatus,only,A relationship describing the current status of an employee.,https://www.theworldavatar.com/kg/ontoprofile/,has status

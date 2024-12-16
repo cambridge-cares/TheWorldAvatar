@@ -33,10 +33,14 @@ abstract class SearchHandler {
         let attrContainer = document.getElementById("attributionContainer");
 
         if(finderContainer.style.display === "table") {
+            finderContainer.style.display = "none";
+
             // Re-enable attributions if content was set
             if(attrContainer != null && Manager.SETTINGS.getSetting("attribution") != null) {
                 attrContainer.style.display = "block";
             }
+            this.cancelSearch();
+            
         } else {
             finderContainer.style.display = "table";
 

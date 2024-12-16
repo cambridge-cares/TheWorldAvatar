@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -45,7 +46,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,10 +75,12 @@ public class QueryClient {
     private static final Prefix P_OM = SparqlBuilder.prefix("om",
             iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
     public static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
+    public static final String HINT_STRING = "http://www.bigdata.com/queryHints#";
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.NAMESPACE));
     private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
     private static final Prefix P_TIME = SparqlBuilder.prefix("time", iri(TIME.NAMESPACE));
+    public static final Prefix P_HINT = SparqlBuilder.prefix("hint", iri(HINT_STRING));
 
     // classes
     private static final Iri MEASURE = P_OM.iri("Measure");
@@ -94,6 +99,10 @@ public class QueryClient {
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
     private static final Iri STATIC_POINT_SOURCE_LAYER = P_DISP.iri("StaticPointSourceLayer");
     private static final Iri ELEVATION_LAYER = P_DISP.iri("Elevation");
+
+    public static final Iri QUERY = P_HINT.iri("Query");
+    public static final Iri OPTIMISER = P_HINT.iri("optimizer");
+    public static final GraphPattern OPTIMISER_NONE = QUERY.has(OPTIMISER, "None");
 
     private static final String NO_X = PREFIX + "NOx";
     private static final String UHC = PREFIX + "uHC";
@@ -126,6 +135,10 @@ public class QueryClient {
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
+    private static final Iri HAS_SRID = P_DISP.iri("hasSRID");
+    private static final Iri HAS_TIME = P_TIME.iri("hasTime");
+    private static final Iri IN_TIME_POSITION = P_TIME.iri("inTimePosition");
+    private static final Iri NUMERIC_POSITION = P_TIME.iri("numericPosition");
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient,
             TimeSeriesClient<Long> tsClient, TimeSeriesClient<Instant> tsClientInstant) {
@@ -475,6 +488,7 @@ public class QueryClient {
         // get dispersion output at lowest height
         double minHeight = heightToDispOutputMap.keySet().stream().mapToDouble(d -> d).min().getAsDouble();
         List<String> inputs = heightToDispOutputMap.get(minHeight);
+        String name = String.format("Virtual sensor at %.2f m", minHeight);
 
         // output (OntoEMS reporting station)
         String mainUuid = "virtualsensor_" + UUID.randomUUID();
@@ -482,7 +496,7 @@ public class QueryClient {
         Iri station = iri(stationIri);
 
         // Update triples for station in blazegraph
-        modify.insert(station.isA(REPORTING_STATION));
+        modify.insert(station.isA(REPORTING_STATION).andHas(iri(RDFS.LABEL), name));
 
         List<String> dataListForTimeSeries = new ArrayList<>();
 
@@ -513,7 +527,7 @@ public class QueryClient {
         feature.put("geometry", geometry);
         feature.put("iri", stationIri);
         feature.put("main_uuid", mainUuid);
-        feature.put("name", String.format("Virtual sensor at %.2f m", minHeight));
+        feature.put("name", name);
         feature.put("endpoint", sparqlEndpoint);
         feature.put("geom_uuid", UUID.randomUUID());
 
@@ -530,6 +544,134 @@ public class QueryClient {
         geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
         geoserverclient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.SENSORS_TABLE_NAME,
                 new GeoServerVectorSettings());
+    }
+
+    public List<String> getOutputsAtLowestHeight(String scopeIri) {
+        // Get data IRIs of dispersion outputs belonging to the input derivation
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+
+        SelectQuery query = Queries.SELECT();
+        Variable entity = query.var();
+        Variable derivation = query.var();
+        Variable heightVar = query.var();
+        query.where(iri(scopeIri).isA(SCOPE), derivation.has(isDerivedFrom, iri(scopeIri)),
+                entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
+                        .andHas(PropertyPaths.path(HAS_HEIGHT, HAS_VALUE, HAS_NUMERICALVALUE), heightVar))
+                .prefix(P_DISP, P_OM)
+                .select(entity, heightVar).distinct();
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        // one output per pollutant
+        Map<Double, List<String>> heightToDispOutputMap = new HashMap<>();
+        for (int j = 0; j < queryResult.length(); j++) {
+            double height = queryResult.getJSONObject(j).getDouble(heightVar.getQueryString().substring(1));
+            String dispOutput = queryResult.getJSONObject(j).getString(entity.getQueryString().substring(1));
+            heightToDispOutputMap.computeIfAbsent(height, k -> new ArrayList<>());
+            heightToDispOutputMap.get(height).add(dispOutput);
+        }
+
+        // get dispersion output at lowest height
+        double minHeight = heightToDispOutputMap.keySet().stream().mapToDouble(d -> d).min().getAsDouble();
+        return heightToDispOutputMap.get(minHeight);
+    }
+
+    public Map<String, String> getDispersionRasterIris(List<String> dispersionOutput) {
+        // Get data IRIs of dispersion derivations
+        SelectQuery query = Queries.SELECT();
+        Variable pollutantIri = query.var();
+        Variable pollutant = query.var();
+        Variable dispRaster = query.var();
+        Variable dispOutputVar = query.var();
+
+        ValuesPattern values = new ValuesPattern(dispOutputVar,
+                dispersionOutput.stream().map(Rdf::iri).collect(Collectors.toList()));
+
+        // dispMatrix is the timeseries data IRI of the fileServer URL of the AERMOD
+        // concentration output (averageConcentration.dat).
+        // There is exactly one such data IRI for each pollutant ID.
+        query.where(dispOutputVar.has(HAS_POLLUTANT_ID, pollutantIri)
+                .andHas(HAS_DISPERSION_RASTER, dispRaster),
+                pollutantIri.isA(pollutant), values).prefix(P_DISP, P_OM, P_EMS)
+                .select(pollutant, dispRaster);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        Map<String, String> pollutantToDispRaster = new HashMap<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String dispMatrixIri = queryResult.getJSONObject(i).getString(dispRaster.getQueryString().substring(1));
+            String pollutantId = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            pollutantToDispRaster.put(pollutantId, dispMatrixIri);
+        }
+        return pollutantToDispRaster;
+    }
+
+    JSONObject getConcentrationsFromRaster(Map<String, String> pollutantToDispRaster, Point location, Connection conn) {
+        List<String> dispRasterIriList = new ArrayList<>(pollutantToDispRaster.values());
+        Map<String, String> pollutantToLabelMap = new HashMap<>();
+        pollutantToLabelMap.put(QueryClient.CO, "CO");
+        pollutantToLabelMap.put(QueryClient.CO2, "CO2");
+        pollutantToLabelMap.put(QueryClient.NO_X, "NOx");
+        pollutantToLabelMap.put(QueryClient.UHC, "uHC");
+        pollutantToLabelMap.put(QueryClient.SO2, "SO2");
+        pollutantToLabelMap.put(QueryClient.PM10, "PM10");
+        pollutantToLabelMap.put(QueryClient.PM25, "PM2.5");
+
+        JSONObject overallResult = new JSONObject();
+
+        long latestTime = tsClient.getMaxTime(dispRasterIriList.get(0), conn);
+        long earliestTime = tsClient.getMinTime(dispRasterIriList.get(0), conn);
+
+        if ((latestTime - earliestTime) > 86400) {
+            earliestTime = latestTime - 86400;
+        }
+
+        TimeSeries<Long> dispRasterTimeSeries = tsClient.getTimeSeriesWithinBounds(dispRasterIriList, earliestTime,
+                latestTime, conn);
+
+        List<Instant> timeStampList = dispRasterTimeSeries.getTimes().stream().map(Instant::ofEpochSecond)
+                .collect(Collectors.toList());
+
+        // loop over each pollutant type and obtain the time series values from raster
+        // data
+        for (Map.Entry<String, String> polToRasterIri : pollutantToDispRaster.entrySet()) {
+            String dispRasterIri = polToRasterIri.getValue();
+            List<String> dispersionRasterFileNames = dispRasterTimeSeries.getValuesAsString(dispRasterIri);
+
+            if (dispersionRasterFileNames.contains(null)) {
+                continue;
+            }
+
+            List<Double> concentrations = new ArrayList<>();
+
+            for (String rasterFileName : dispersionRasterFileNames) {
+                String sql = String.format(
+                        "SELECT ST_Value(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) AS val "
+                                + "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) "
+                                + "AND filename='%s'",
+                        location.toString(),
+                        "dispersion_raster", location.toString(), rasterFileName);
+                try (ResultSet result = conn.createStatement().executeQuery(sql)) {
+                    if (result.next()) {
+                        double concentration = result.getDouble("val");
+                        concentrations.add(concentration);
+                    } else {
+                        LOGGER.warn("Mismatch between uploaded raster data and time series records");
+                        concentrations.add(null);
+                    }
+                } catch (SQLException e) {
+                    String errmsg = "Possible error at reading sql query result";
+                    LOGGER.error(e.getMessage());
+                    LOGGER.error(errmsg);
+                    throw new RuntimeException(errmsg, e);
+                }
+            }
+
+            overallResult.put(pollutantToLabelMap.get(polToRasterIri.getKey()), concentrations);
+        }
+
+        overallResult.put("time", timeStampList);
+
+        return overallResult;
     }
 
     public List<String> getVirtualSensorDerivations(String dispersionDerivation) {
@@ -641,6 +783,90 @@ public class QueryClient {
         return new ArrayList<>(iriToDispSimMap.values());
     }
 
+    public List<DispersionMetadata> getDispersionMetadata() {
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+
+        SelectQuery query = Queries.SELECT();
+
+        Variable derivation = query.var();
+        Variable scope = query.var();
+        Variable dispersionOutput = query.var();
+        Variable scopelabelVar = query.var();
+        Variable pollutantType = query.var();
+        Variable pollutantLabel = query.var();
+        Variable dispOutVar = query.var();
+        Variable scopeWktVar = query.var();
+        Variable zVar = query.var();
+        Variable zValueVar = query.var();
+        Variable dispersionOutputSRID = query.var();
+        Variable timeVar = query.var();
+        Variable timePosition = query.var();
+        Variable timeNumericPosition = query.var();
+
+        ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
+
+        query.select(derivation, scope, scopelabelVar, pollutantType, pollutantLabel, dispOutVar, scopeWktVar,
+                zValueVar,
+                dispersionOutputSRID, timeNumericPosition);
+
+        query.where(OPTIMISER_NONE,
+                derivation.has(isDerivedFrom, scope).andHas(HAS_TIME, timeVar),
+                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
+                timeVar.has(IN_TIME_POSITION, timePosition), timePosition.has(NUMERIC_POSITION, timeNumericPosition),
+                scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
+                dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
+                        .andHas(HAS_DISPERSION_RASTER, dispOutVar)
+                        .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
+                        .andHas(HAS_HEIGHT, zVar).andHas(HAS_SRID, dispersionOutputSRID),
+                zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), zValueVar),
+                pollutantType.has(RDFS.COMMENT, pollutantLabel).optional())
+                .prefix(P_DISP, P_GEO, P_OM, P_HINT, P_TIME);
+
+        Map<String, DispersionMetadata> iriToDispSimMap = new HashMap<>();
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        for (int i = 0; i < queryResult.length(); i++) {
+
+            String derivationIri = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
+
+            iriToDispSimMap.computeIfAbsent(derivationIri, DispersionMetadata::new);
+
+            String scopeIri = queryResult.getJSONObject(i).getString(scope.getQueryString().substring(1));
+            String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
+            String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
+            String dispOut = queryResult.getJSONObject(i).getString(dispOutVar.getQueryString().substring(1));
+            int srid = queryResult.getJSONObject(i).getInt(dispersionOutputSRID.getQueryString().substring(1));
+            int lastUpdateTime = queryResult.getJSONObject(i).getInt(timeNumericPosition.getQueryString().substring(1));
+
+            int zValue = queryResult.getJSONObject(i).getInt(zValueVar.getQueryString().substring(1));
+
+            DispersionMetadata dispersionMetadata = iriToDispSimMap.get(derivationIri);
+
+            // if pollutant type does not have the label attached (requires uploading of
+            // tbox, use IRI as the user facing label)
+            String polLabel;
+            if (queryResult.getJSONObject(i).has(pollutantLabel.getQueryString().substring(1))) {
+                polLabel = queryResult.getJSONObject(i).getString(pollutantLabel.getQueryString().substring(1));
+            } else {
+                polLabel = pol;
+            }
+
+            dispersionMetadata.addDispOut(dispOut, polLabel, zValue, srid);
+            dispersionMetadata.setScope(scopeIri, scopeLabel);
+            dispersionMetadata.setLastUpdateTime(lastUpdateTime);
+
+            String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
+            org.locationtech.jts.geom.Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
+            scopePolygon.setSRID(4326);
+
+            dispersionMetadata.setScopePolygon((Polygon) scopePolygon);
+
+        }
+
+        return new ArrayList<>(iriToDispSimMap.values());
+    }
+
     /**
      * by checking for null in the time series columns
      * 
@@ -673,12 +899,48 @@ public class QueryClient {
             if (latestTime != null) {
                 String dispersionRaster = dispersionSimulation
                         .getDispersionRaster(dispersionSimulation.getPollutants().get(0));
-                simulationTimes = tsClient.getTimeSeries(List.of(dispersionRaster), conn).getTimes();
+                if (Config.VIS_TIME_LIMIT > 0.) {
+                    simulationTimes = tsClient
+                            .getTimeSeriesWithinBounds(List.of(dispersionRaster), latestTime - Config.VIS_TIME_LIMIT,
+                                    latestTime, conn)
+                            .getTimes();// VIS_TIME_LIMIT = 86400 = 24 hours
+                } else {
+                    Long firstTime = tsClient.getMinTime(dispersionLayers.get(0), conn);
+                    simulationTimes = tsClient
+                            .getTimeSeriesWithinBounds(List.of(dispersionRaster), firstTime, latestTime, conn)
+                            .getTimes();
+                }
             } else {
                 simulationTimes = new ArrayList<>();
             }
+            int numLayers;
+            try {
+                numLayers = Integer.parseInt(Config.NUMBER_OF_LAYERS);
+            } catch (NumberFormatException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+                numLayers = 20;
+            }
 
-            dispersionSimulation.setTimesteps(simulationTimes);
+            dispersionSimulation.setTimesteps(
+                    simulationTimes.subList(Math.max(simulationTimes.size() - numLayers, 0), simulationTimes.size()));
+        });
+    }
+
+    public void queryDispersionOut(List<DispersionMetadata> dispersionMetadatas,
+            Connection conn) {
+        dispersionMetadatas.forEach(dispersionMetadata -> {
+            List<String> dispersionOuts = dispersionMetadata.getDispOutsIRI();
+            Long latestTime = tsClient.getMaxTime(dispersionOuts.get(0), conn);
+            List<Long> simulationTimes;
+            if (latestTime != null) {
+                for (String dispersionOut : dispersionOuts) {
+                    TimeSeries<Long> ts = tsClient.getTimeSeries(List.of(dispersionOut), conn);
+                    simulationTimes = ts.getTimes();
+                    List<String> dispersionOutfiles = ts.getValuesAsString(dispersionOut);
+                    dispersionMetadata.updateDispOut(dispersionOut, simulationTimes, dispersionOutfiles);
+                }
+            }
         });
     }
 
@@ -777,5 +1039,26 @@ public class QueryClient {
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         return queryResult.getJSONObject(0).getString(derivationVar.getQueryString().substring(1));
+    }
+
+    public byte[] getRaster(String filename, String scopeIri) {
+        String sqlTemplate = "WITH RasterData AS (SELECT rast, ST_SRID(rast) AS raster_srid FROM dispersion_raster " +
+                "WHERE filename='%s'), PolygonData AS (SELECT geom, ST_SRID(geom) AS polygon_srid FROM scopes " +
+                "WHERE iri = '%s') SELECT ST_AsTiff(ST_Clip(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid),-1.0)) as rData "
+                +
+                "FROM RasterData, PolygonData WHERE ST_Intersects(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))";
+        String sql = String.format(sqlTemplate, filename, scopeIri);
+        byte[] rasterBytes = new byte[0];
+        try (Connection conn = remoteRDBStoreClient.getConnection();
+                Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                rasterBytes = result.getBytes("rData");
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Fail to get raster");
+        }
+        return rasterBytes;
     }
 }

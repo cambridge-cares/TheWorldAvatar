@@ -1,0 +1,129 @@
+prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+prefix dabgeo:    <http://www.purl.org/oema/infrastructure/>
+prefix icontact:  <http://ontology.eil.utoronto.ca/icontact.owl#>
+prefix time:      <https://www.w3.org/2006/time#>
+prefix om:        <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix lrppi:     <http://landregistry.data.gov.uk/def/ppi/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  # Address information
+  { 
+    BIND ("Administrative District" AS ?Property )
+    [IRI] obe:locatedIn/rdfs:label ?Value .
+  } UNION { 
+    BIND ("Postcode" AS ?Property )
+    [IRI] obe:hasAddress/obe:hasPostalCode/rdfs:label ?Value .
+  } UNION { 
+    BIND ("Building name" AS ?Property )
+    [IRI] obe:hasAddress/icontact:hasBuilding ?Value . 
+  } UNION { 
+    BIND ("Address" AS ?Property )
+    [IRI] obe:hasAddress ?address .
+    OPTIONAL {?address icontact:hasStreet ?street_ini . }
+    BIND( IF( EXISTS{ ?address icontact:hasStreet ?street_ini }, str(?street_ini), "") AS ?street ) 
+    OPTIONAL {?address icontact:hasStreetNumber ?nr_ini . } 
+    BIND( IF( EXISTS{ ?address icontact:hasStreetNumber ?nr_ini }, str(?nr_ini), "") AS ?nr ) 
+    OPTIONAL {?address obe:hasUnitName ?Unit_name_ini . }
+    BIND( IF( EXISTS{ ?address obe:hasUnitName ?Unit_name_ini }, concat(", ", str(?Unit_name_ini)), "") AS ?Unit_name ) 
+    BIND (concat(?street, " ", ?nr, " ", ?Unit_name) as ?Value)
+  }
+  # General building information
+  UNION
+  { BIND ("Type" AS ?Property )
+    [IRI] rdf:type ?Value_ini .
+    BIND (replace(replace(str(?Value_ini), str(dabgeo:), ''), str(obe:), '') as ?Value)
+  } UNION { 
+    BIND ("Identifier" AS ?Property )
+    BIND ("UPRN where available" AS ?Unit )
+    [IRI] obe:hasIdentifier ?Value .
+  } UNION { 
+    BIND ("EPC rating" AS ?Property )
+    [IRI] obe:hasEnergyRating ?Value .
+  } UNION { 
+    BIND ("Latest EPC" AS ?Property )
+    BIND ("(i.e. individual lodgement identifier)" AS ?Unit )
+    [IRI] obe:hasLatestEPC ?Value .
+  } UNION { 
+    BIND ("Property type" AS ?Property )
+    [IRI] obe:hasPropertyType/rdf:type ?Value_ini .
+    BIND (replace(str(?Value_ini), str(obe:), '') as ?Value)
+  } UNION { 
+    BIND ("Built form" AS ?Property )
+    [IRI] obe:hasBuiltForm/rdf:type ?Value_ini .
+    BIND (replace(str(?Value_ini), str(obe:), '') as ?Value)
+  } UNION { 
+    BIND ("Property usage" AS ?Property )
+    [IRI] obe:hasPropertyUsage ?usage .
+    ?usage rdf:type ?Value_ini .
+    OPTIONAL { ?usage obe:hasUsageShare ?Unit_ini . }
+    BIND (replace(str(?Value_ini), str(obe:), '') as ?Value)
+    BIND (concat(str(?Unit_ini*100), ' %') as ?Unit)
+  }
+  # Numerical building information
+  UNION { 
+    BIND ("Number of rooms" AS ?Property )
+    [IRI] obe:hasNumberOfHabitableRooms ?Value .
+  } UNION { 
+    BIND ("Floor area" AS ?Property )
+    [IRI] obe:hasTotalFloorArea/om:hasValue ?measure .
+    ?measure om:hasNumericalValue ?Value ;
+             om:hasUnit/om:symbol ?Unit
+  } UNION { 
+    BIND ("Ground elevation (above MSL)" AS ?Property )
+    [IRI] obe:hasGroundElevation/om:hasValue ?measure .
+    ?measure om:hasNumericalValue ?Value ;
+             om:hasUnit/om:symbol ?Unit
+  } UNION { 
+    BIND ("Built before" AS ?Property )
+    [IRI] obe:hasConstructionDate/time:hasEnd/time:inXSDDateTimeStamp ?Value_ini .
+    BIND (STRBEFORE(str(?Value_ini), '-') as ?Value)
+  }
+  # Construction information
+  UNION { 
+    BIND ("Wall description" AS ?Property )
+    [IRI] obe:hasConstructionComponent ?comp .
+    ?comp rdf:type obe:Wall ;
+          rdfs:comment ?Value_ini .
+    BIND (replace(replace(str(?Value_ini), 'W/m\\?K', 'W/m²K'), 'W/m-ÃÂ¦K', 'W/m²K') as ?Value)
+  } UNION { 
+    BIND ("Roof description" AS ?Property )
+    [IRI] obe:hasConstructionComponent ?comp .
+    ?comp rdf:type obe:Roof ;
+          rdfs:comment ?Value_ini .
+    BIND (replace(replace(str(?Value_ini), 'W/m\\?K', 'W/m²K'), 'W/m-ÃÂ¦K', 'W/m²K') as ?Value)
+  } UNION { 
+    BIND ("Floor description" AS ?Property )
+    [IRI] obe:hasConstructionComponent ?comp .
+    ?comp rdf:type obe:Floor ;
+          rdfs:comment ?Value_ini .
+    BIND (replace(replace(str(?Value_ini), 'W/m\\?K', 'W/m²K'), 'W/m-ÃÂ¦K', 'W/m²K') as ?Value)
+  } UNION { 
+    BIND ("Windows description" AS ?Property )
+    [IRI] obe:hasConstructionComponent ?comp .
+    ?comp rdf:type obe:Windows ;
+          rdfs:comment ?Value_ini .
+    BIND (replace(replace(str(?Value_ini), 'W/m\\?K', 'W/m²K'), 'W/m-ÃÂ¦K', 'W/m²K') as ?Value)
+  } 
+  # Value estimations
+  UNION { 
+    BIND ("Last sold" AS ?Property )
+    [IRI] obe:hasLatestTransactionRecord/lrppi:transactionDate ?Value
+  } UNION { 
+    BIND ("Last sold for" AS ?Property )
+    [IRI] obe:hasLatestTransactionRecord/lrppi:pricePaid ?Value_ini .
+    BIND (strlen(str(?Value_ini)) as ?l)
+	  BIND (replace(replace(str(?Value_ini), '\\,' ,''), '\\.', '') as ?Value_interim)
+    BIND (concat(substr(?Value_interim, 0, ?l-2), ',', substr(?Value_interim, ?l-2, 3)) as ?Value)
+    BIND ("£" AS ?Unit )
+  } UNION { 
+    BIND ("Current market value (estimate)" AS ?Property )
+    [IRI] obe:hasMarketValue/om:hasValue/om:hasNumericalValue ?Value_ini .
+    BIND (strlen(str(?Value_ini)) as ?l)
+	  BIND (replace(replace(str(?Value_ini), '\\,' ,''), '\\.', '') as ?Value_interim)
+    BIND (concat(substr(?Value_interim, 0, ?l-2), ',', substr(?Value_interim, ?l-2, 3)) as ?Value)
+    BIND ("£" AS ?Unit )
+  }
+}

@@ -1,0 +1,37 @@
+{
+    "ServiceSpec": {
+        "Name": "access-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/access-agent:1.7.0",
+                "Env": [
+                    "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
+                    "STOREROUTER_ENDPOINT=http://dhstack-blazegraph:8080/blazegraph/namespace/kb/sparql",
+                    "RDB_STOREROUTER_ENDPOINT=http://dhstack-blazegraph:8080/blazegraph/namespace/kb/sparql"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/access-agent/",
+            "externalPath": "/access-agent/"
+        }
+    }
+}

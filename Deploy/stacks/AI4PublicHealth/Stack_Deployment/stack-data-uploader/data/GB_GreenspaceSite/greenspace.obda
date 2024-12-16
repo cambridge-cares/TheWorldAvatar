@@ -1,0 +1,24 @@
+[PrefixDeclaration]
+ontogreenspace: https://www.theworldavatar.com/kg/ontogreenspace/
+rdf:            http://www.w3.org/1999/02/22-rdf-syntax-ns#
+owl:            http://www.w3.org/2002/07/owl#
+xsd:            http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId       GreenspaceBasicInfo
+target      ontogreenspace:{id} a ontogreenspace:Greenspace ;
+                     ontogreenspace:hasFunction "{function}"^^xsd:string ;
+                     ontogreenspace:hasDistrictName1 "{distName1}"^^xsd:string ;
+                     ontogreenspace:hasDistrictName2 "{distName2}"^^xsd:string ;
+                     ontogreenspace:hasDistrictName3 "{distName3}"^^xsd:string ;
+                     ontogreenspace:hasDistrictName4 "{distName4}"^^xsd:string .
+source      SELECT "id", "function", "distName1", "distName2", "distName3", "distName4"
+            FROM "GB_GreenspaceSite"
+
+mappingId       GreenspaceLocation
+target      ontogreenspace:GeoPoint_{id} a ontogreenspace:SpatialLocation ;
+                     ontogreenspace:hasGeometry "{geometry}"^^xsd:string ;
+                     ontogreenspace:linkedToGreenspace ontogreenspace:{id} .
+source      SELECT "id", ST_AsText("wkb_geometry") AS "geometry"
+            FROM "GB_GreenspaceSite"
+]]

@@ -1,0 +1,23 @@
+{
+    "ServiceSpec": {
+        "Name": "dh-instantiation",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "district-heating-instantiation:2020",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    }
+}

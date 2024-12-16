@@ -1,0 +1,60 @@
+.custom-button1 {
+    font-size: 15px;
+    padding: 7px 15px;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.custom-button1:hover {
+    background-color: #45a049;
+}
+.custom-button2 {
+    font-size: 15px;
+    padding: 7px 10px;
+    color: white;
+    background-color: #146a7a;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin:3px;
+}
+.custom-button2:hover {
+    background-color: #5989de;
+}
+
+.custom-button3 {
+    font-size: 15px;
+    width: 30px; /* Set width for the circle */
+    height: 30px; /* Set height for the circle */
+    line-height: 30px; /* Center the text vertically */
+    text-align: center; /* Center the text horizontally */
+    color: white;
+    background-color: #146a7a;
+    border: none;
+    border-radius: 50%; /* Makes the button a perfect circle */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 3px;
+}
+.custom-button3:hover {
+    background-color: #5989de;
+}
+
+.dotted-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.dotted-list li:before {
+    content: '\2022';   /* Unicode character for a bullet */
+    font-size: 1.5em;   /* Adjust size as needed */
+    line-height: 0.5;   /* Adjust line-height for positioning */
+    margin-right: 10px; /* Space between the bullet and the text */
+    color: black;       /* Color of the bullet */
+    vertical-align: middle;
+    font-family: "Times New Roman", Times, serif; /* Adjust font-family as needed */
+}

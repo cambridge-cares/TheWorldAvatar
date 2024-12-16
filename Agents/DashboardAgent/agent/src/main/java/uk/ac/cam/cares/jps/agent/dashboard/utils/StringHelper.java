@@ -7,13 +7,20 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  */
 public class StringHelper {
     public static final String FACILITY_KEY = "facilities";
-    public static final String ASSET_KEY = "assets";
-    public static final String ROOM_KEY = "Rooms";
+    public static final String ROOM_KEY = "rooms";
     public static final String SYSTEM_KEY = "systems";
-    public static final String THRESHOLD_KEY = "threshold";
+    public static final String WEATHER_STATION_KEY = "weather";
+    public static final String WEATHER_STATION_TIMING_FIELD = "timing";
+    public static final String WEATHER_STATION_PRECIPITATION_FIELD = "rainfall";
+    public static final String WEATHER_STATION_HUMIDITY_FIELD = "humidity";
+    public static final String WEATHER_STATION_UV_INDEX_FIELD = "uvindex";
+    public static final String WEATHER_STATION_TEMPERATURE_FIELD = "temperature";
+    public static final String WEATHER_STATION_FEELS_LIKE_TEMPERATURE_FIELD = "feelsliketemperature";
+    public static final String WEATHER_STATION_WIND_DIRECTION_FIELD = "winddirection";
+    public static final String WEATHER_STATION_WIND_CHILL_FIELD = "windchill";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
     public static final String INTERVAL_VARIABLE_NAME = "Time Interval";
-
+    public static final String REF_MONTH_VARIABLE_NAME = "Reference Month";
 
     // Private constructor to prevent instantiation.
     private StringHelper() {
@@ -30,7 +37,7 @@ public class StringHelper {
      * Formats the variable names to remove white spaces, dashes, and underscores and use only lower cases for Grafana syntax.
      */
     public static String formatVariableName(String variable) {
-        return variable.toLowerCase().replaceAll("[\\s\\-_]", "");
+        return variable.toLowerCase().replaceAll("[\\s\\-_/]", "");
     }
 
     /**
@@ -61,5 +68,12 @@ public class StringHelper {
             result.append(c);
         }
         return result.toString();
+    }
+
+    /**
+     * Formats the input string with an escape quote to ensure compliance with SQL queries.
+     */
+    public static String formatEscapeQuoteSQL(String input) {
+        return "\\\"" + input + "\\\"";
     }
 }

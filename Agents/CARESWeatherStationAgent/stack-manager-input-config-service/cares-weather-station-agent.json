@@ -3,12 +3,21 @@
     "Name": "cares-weather-station-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/caresweatherstation-agent:1.4.0",
+        "Image": "ghcr.io/cambridge-cares/cares-weather-station-agent:1.6.0",
+        "Env": [
+					"CARESWeatherStation_AGENTPROPERTIES=/usr/local/tomcat/config/agent.properties",
+          "CARESWeatherStation_APIPROPERTIES=/usr/local/tomcat/config/api.properties",
+          "CARESWeatherStation_CLIENTPROPERTIES=/usr/local/tomcat/config/client.properties",
+          "CARESWeatherStation_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings",
+          "LAYERNAME=weatherstations",
+          "DATABASE=postgres",
+          "GEOSERVER_WORKSPACE=weatherstations"
+				],
         "Mounts": [
           {
             "Type": "bind",
             "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/CARESWeatherStationAgent/config",
-            "Target": "/root/config"
+            "Target": "/usr/local/tomcat/config"
           }
         ],
         "Configs": [
@@ -17,6 +26,9 @@
           },
           {
               "ConfigName": "postgis"
+          },
+          {
+              "ConfigName": "geoserver"
           }
       ],
       "Secrets": [
@@ -25,6 +37,9 @@
           },
           {
               "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
           }
       ]
       }
@@ -32,7 +47,7 @@
   },
   "endpoints": {
     "ui": {
-      "url": "http://localhost:8080/caresweatherstation-agent/",
+      "url": "http://localhost:8080/cares-weather-station-agent/",
       "externalPath": "/cares-weather-station-agent/"
     }
   }

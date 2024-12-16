@@ -1,0 +1,1663 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/kg/ontocrystal/"
+     xml:base="http://www.theworldavatar.com/kg/ontocrystal/"
+     xmlns:ontocrystal="http://www.theworldavatar.com/kg/ontocrystal/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontocrystal/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 April 2024</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoCrystal is an ontology developed for representing crystal structure information</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasAbscissaData -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasAbscissaData">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PlotXY"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AbscissaData"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The X axis of the xRD spectrum. In crystallography the axis is 2*theta, and measured in degrees.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Abscissa Data</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasAtomSite -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasAtomSite">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomicStructure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects AtomicStructure with individual AtomSites.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Atom Site</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasAtomicStructure -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasAtomicStructure">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomicStructure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects CrystalInformation class with its AtomicStructure, which is information about all containing atoms.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Atomic Structure</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasAuthor -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasAuthor">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Citation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Author"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the publication (Citation) and the author. This replaces the standard bibo:author_list</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Author</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasAuthorIndex -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasAuthorIndex">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Citation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AuthorIndex"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The link between the publication and the Author.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Author Index</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasCartesianPosition -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasCartesianPosition">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PositionVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Similarly, relates an AtomSite with a Vector, but in this case, the position is given in fractional coordinates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Cartesian Position</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasCharacteristicPeak -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasCharacteristicPeak">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/XRDSpectrum"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property to link the XRD spectrum and with each of its characteristic peaks</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Characteristic Peak</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasCoordinateTransformation -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasCoordinateTransformation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links a CIF to the collection of CoordinateTransformation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Coordinate Transformation</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasCrystalInformation -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasCrystalInformation">
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation property to specify the Crystallization Information of a material. It should be used by an external ontology.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Crystal Information</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasElement -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasElement">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The specific atom site in the crystal lattice is occupied by a particular type of atom or chemical species.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Element</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasFractionalPosition -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasFractionalPosition">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PositionVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relates an AtomSite to a Vector representing its position in Cartesian coordinates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Fractional Position</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasMatrixComponent -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasMatrixComponent">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureMatrix"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Associates a Matrix with its MatrixComponents. Matrix has multiple components.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Matrix Component</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasMillerIndices -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasMillerIndices">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MillerIndices"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direction of reflection plane, that generated the characteristic peak. Optional parameter, may not be avaiable for experimentally measured spectrum.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Miller Indices</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasOrdinateData -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasOrdinateData">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PlotXY"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/OrdinateData"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Y axis of the XRD spectrum. In crystallography the axis is in arbitrary units. Here in percent of the highest peak (range 0 to 100).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Ordinate Data</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasPlotData -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasPlotData">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/XRDSpectrum"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PlotXY"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property to link the XRD spectrum and its 2D plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Plot</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasPosition -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasPosition">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileVertex"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cartesian coordinates of the vertex in the tile face. Collection of all vertices can reproduce the entire tile face in 3D.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Position</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellAngles -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellAngles">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellAngles"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a UnitCell to a Vector representing the angles between the axes in its reciprocal space. The reciprocal space is a mathematical construct used in crystallography and solid-state physics. The Vector labels are typically alpha*, beta*, gamma*, the Units of measure is degrees.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Reciprocal Unit Cell Angles</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellLengths -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellLengths">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLengths"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a UnitCell with a Vector that stores the lengths of its axes in the reciprocal space. The Vector labels are typically a*, b*, c*, the Units of measure reciprocalAngstrom.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Reciprocal Unit Cell Lengths</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellVectorSet -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellVectorSet">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links a UnitCell to a set of vectors (ReciprocalUnitCellVectorSet) that define the three vectors in reciprocal space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Reciprocal Unit Cell Vector Set</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTile -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TiledStructure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the TiledStructure to the Tile entity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTileFace -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTileFace">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileFace"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the Tile to its Faces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile Face</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTileFaceNumber -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTileFaceNumber">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileFaceNumber"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the tile and the number of faces in that tile.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile Face Number</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTileNumber -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTileNumber">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TiledStructure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileNumber"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of tiles in a crystal unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile Number</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTileVertex -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTileVertex">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileVertex"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Information about all vertices of the given Tile Face. In cartesian coordinates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile Vertex</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTiledStructure -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTiledStructure">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TiledStructure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connect the CrystalInformation class to its TileStrcuture.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tiled Structure</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTransformationMatrixToCartesian -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationMatrixToCartesian">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationMatrix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a CoordinateTransformation to a Matrix that describes how to transform from the crystal&apos;s fractional coordinate to Cartesian.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Transformation Matrix To Cartesian</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTransformationMatrixToFractional -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationMatrixToFractional">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationMatrix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a CoordinateTransformation to a Matrix representing the transformation from Cartesian coordinates back to the crystal&apos;s fractional coordinates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Transformation Matrix To Fractional</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTransformationVectorToCartesian -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationVectorToCartesian">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a CoordinateTransformation with a Vector detailing the transformation to Cartesian coordinates, the translation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Transformation Vector To Cartesian</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTransformationVectorToFractional -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationVectorToFractional">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a CoordinateTransformation to a Vector that indicates the coordinate shift for transformation to fractional coordinates of the crystal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Transformation Vector To Fractional</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTransitivity -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTransitivity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TiledStructure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Transitivity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Link between the TiledStructure and the transitivity vector.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Transitivity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnit">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MeasureMatrix"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MeasureWithUncertainty"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates that a Vector or Matrix or their components have specific unit of measure, defined in Ontology of Units of Measure (OM-2). Each Component may have individual Unit value. If both Vector and its Component have Units, the latter has priority. Same rules apply to Matrix Components.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Unit</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnitCell -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCell">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relates a CIF (Crystallographic Information File) to a specific UnitCell class.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Unit Cell</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellAngles -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellAngles">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellAngles"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a UnitCell with a Vector that represents the angles between crystal axes. The vector components typically have labels alpha, beta, and have Unit of measure (usually degree).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Unit Cell Angles</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellLengths -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellLengths">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLengths"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a UnitCell with a Vector that stores the lengths of its axes. These vector labels are a, b, and c, the Unit of measurement is typically angstrom.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Unit Cell Lengths</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVector -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVector">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLatticeVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connect a UnitCellVectorSet or ReciprocalUnitCellVectorSet with individual Vectors that make up the set, in the real (Cartesian) space of the unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Vector</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVectorSet -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVectorSet">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a UnitCell to a set of vectors (UnitCellVectorSet) that define its axes in real space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Unit Cell Vector Set</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVolume -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVolume">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVolume"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links a UnitCell to its Value (of class Measure from the OM-2 ontology). Contains numerical value and unit of measure.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Unit Cell Volume</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Associates the Vector with its VectorComponents.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Vector Component</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasXRDSpectrum -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasXRDSpectrum">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/XRDSpectrum"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The raltion property between a material and the XRDSpectrum of that material.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has XRD Spectrum</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/isAbscissaOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/isAbscissaOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/OrdinateData"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AbscissaData"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Correspondance between data sets to construct plot. The sets must have the same length.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is Abscissa Of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/isAuthorIndexOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/isAuthorIndexOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AuthorIndex"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Author"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The link between the publication and the Author.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is Author Index Of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/isNumberOfTileFaces -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/isNumberOfTileFaces">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileFaceNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileFace"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The number of faces in the Tile Face.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is Number Of Tile Faces</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/isNumberOfTiles -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/isNumberOfTiles">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class stores the numerical value for the number of tiles in the unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is Number Of Tiles</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/ontology/bibo/doi -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/ontology/bibo/doi">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Citation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasAtomSiteLabel -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasAtomSiteLabel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the AtomSite in a crystal to its unique identifier, as it is defined in CIF file. A unit cell may contain several atoms corresponding to the same atom site label due to symmetry of the unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Atom Site Label</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasColumnIndex -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasColumnIndex">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This data property of a MatrixComponent. It specifies in which column of a matrix this specific component (or element) is found. This property may be omitted if the hasLabel property is specified.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Column Index</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasComponentIndex -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasComponentIndex">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This property specifies the index of the VectorComponent in the Vector. This property may be omitted if the hasLabel property is specified.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Vector Index</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasComponentLabel -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasComponentLabel">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A unique VectorComponent string idendifier (e.g. &quot;x&quot; in vector component &quot;r_x&quot;). Optional parameter: it can be omitter if hasComponentIndex is specified. Similarly, it can be an identifyer for MatrixComponent.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Component Label</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasComponentUncertainty -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasComponentUncertainty">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a VectorComponent or MatrixComponent to its value, which is a literal (a specific value like a number or a string). This property provides the actual numerical (or string) value of a Component of a Vector or a Matrix.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Component Value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasComponentValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasComponentValue">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connects a VectorComponent or MatrixComponent to its value, which is a literal (a specific value like a number or a string). This property provides the actual numerical (or string) value of a Component of a Vector or a Matrix.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Component Value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasFaceCode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasFaceCode">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TileFace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The face code of the tile face.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Face Code</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasLatticeSystem -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasLatticeSystem">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The lattice symmetry family of the crystal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Lattice System</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasNumberOfEdges -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasNumberOfEdges">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileFace"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total number of edges in given tile, or in given tile face.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Number Of Edges</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasNumberOfFaces -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasNumberOfFaces">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total number of faces in given tile.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Number Of Faces</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasNumberOfVertices -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasNumberOfVertices">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total number of vertices in given tile.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Number Of Vectices</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasOccupancy -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasOccupancy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Occupancy of AtomSite in a crystal unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Atom Site Label</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasPeakWidth -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasPeakWidth">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A floaring point number, the parameter of the</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Peak Width</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasRelativeIntensity -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasRelativeIntensity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A floating point number between 0 and 100, the height of the peak in range 0 to 100. It is measured in percent of the highest peak in the spectrum.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Relative Intensity</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasRowIndex -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasRowIndex">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This data property specifies of a MatrixComponent. It specifies in which row of the Matrix the Component is located. This property may be omitted if the hasLabel property is specified.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Row Index</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasSpaceGroupHM -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasSpaceGroupHM">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The symmetry symbol in Hermann-Mauguin notation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Space GroupHM</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasSpaceGroupSymbol -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasSpaceGroupSymbol">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The symmetry space group symbol.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Space Group Symbol</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasSymmetryNumber -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasSymmetryNumber">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The space group code accroding to the International Tables for Crystallography Vol. A (2002). An integer value from 1 to 230.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Symmetry Number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTileCode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTileCode">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The signature of a single tile. Different tiles may have the same TileCode.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile Code</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTileSignature -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTileSignature">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/Tile"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TiledStructure"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Natural tiling signature. A string of the format &apos;k1[l1^m1.n1^p1...]+k2[l2^m2...]+...&apos; Each bracket [...] represents a tile, k is the multiplicity of the tile. Values m and p are the numbers of polygons with l and n edges, respectively.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Tile Signature</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasTwoThetaPosition -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasTwoThetaPosition">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Position of peak, in crystallography the x axis is measured in 2*theta.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Two Theta Position</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasUncertaintyValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasUncertaintyValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureWithUncertainty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The value of uncertainty of a Measure. Both value and uncertainty use the same unit of measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Uncertainty Value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasValue">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileFaceNumber"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileNumber"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An integer value, the number of Tiles or TileFaces, respectively.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/hasVectorLabel -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/hasVectorLabel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLatticeVector"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Vector label in a VectorSet. In crystallography the label values for the unit cell vectors are one of &quot;a&quot;, &quot;b&quot;, &quot;c&quot;.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Vector Label</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/isSimulated -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/isSimulated">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An flag whether the peak position was computed from atomic structure (True), or from fitting experimental data.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is Simulated</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/rdfs:label -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontocrystal/rdfs:label">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation used in OM-2 ontology to store the human readable names of Units</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2000/01/rdf-schema#</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RDFS label</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/family_name -->
+
+
+    <owl:DatatypeProperty rdf:about="http://xmlns.com/foaf/0.1/family_name">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Author"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://xmlns.com/foaf/0.1/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/firstName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://xmlns.com/foaf/0.1/firstName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Author"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://xmlns.com/foaf/0.1/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object to store a numerical value together with units of measurement. A class from OM-2 ontology.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit of measurement for a Measure class. Intities of this class are defined in OM-2.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/AbscissaData -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/AbscissaData">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A set of data points to be used as Abscissa of a plot. Units of measurement correspond to the quantity on the axis.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Abscissa Data</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/AtomCartesianPosition -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/AtomCartesianPosition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The atom-site coordinates specified according to a set of orthogonal Cartesian axes related to the cell axes. Corresponds to _atom_site_fract_ in CIF file.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom Cartesian Position</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/AtomFractionalPosition -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/AtomFractionalPosition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom-site coordinates as fractions of the CellLengths values. Corresponds to _atom_site_fract_ in CIF file.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom Fractional Position</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/AtomSite -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/AtomSite">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasCartesianPosition"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PositionVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasElement"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasFractionalPosition"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/PositionVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Information of an in individual atom within a crystallographic unit cell. It stores the 3D coordinates, atom type, and possibly other properties of the atom.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom Site</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/AtomicStructure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/AtomicStructure">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasAtomSite"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomSite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A class to store atomic positions of all atoms in the crystal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atomic Structure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/Author -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/Author">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The article author. Derived from foaf:Person class.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Author</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/AuthorIndex -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/AuthorIndex">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The position of the author in the list of authors.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Author Index</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/CharacteristicPeak">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A continuous spectrum can be approximated by a set of characteristic peaks, that approximate the spectrum.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characteristic Peak</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/Citation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/Citation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Citation (article/book/proceeding/etc)</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Citation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationMatrixToCartesian"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationMatrix"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationMatrixToFractional"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationMatrix"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationVectorToCartesian"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasTransformationVectorToFractional"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/TransformationVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A class to store all spatial coordinate transformations between fractional and cartesian coordinate systems.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coordinate Transformation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/CrystalInformation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasAtomicStructure"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/AtomicStructure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasCoordinateTransformation"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/CoordinateTransformation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCell"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCell"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CrystalInformation is a subset of CIF file, contains data and properties of a crystaline matter.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Crystal Information</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Individual component of the Matrix.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Matrix Component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/MatrixWithUncertainty -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MatrixWithUncertainty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureMatrix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A class to store a 2D array data with uncertainties.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Matrix With Uncertainty</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/MeasureMatrix -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MeasureMatrix">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasMatrixComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MatrixComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents an NxM matrix with unit of measurement. In the context of crystallography matrices can be used for transformations and symmetry operations.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure Matrix</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/MeasureVector -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents an N-dimensional array-like structure with units of measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure Vector</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/MeasureWithUncertainty -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MeasureWithUncertainty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object to store the numerucal value with units and uncertainty.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure With Uncertainty</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/MillerIndices -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/MillerIndices">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A set of 3 numbers (h,k,l). In crystallography it represents a direction with respect to the unit cell axes directions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Miller Indices</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/OrdinateData -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/OrdinateData">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A set of data points to be used as Abscissa of a plot. Units of measurement correspond to the quantity on the axis.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ordinate Data</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/PlotXY -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/PlotXY">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A 2D scatter plot to represent data.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PlotXY</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/PositionVector -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/PositionVector">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AtomPosition is a subclass of VectorWithUncertainty that store the position of atom. The labels are usually &quot;x&quot;, &quot;y&quot;, &quot;z&quot;. The units depend on the type of position (fractional or cartesian).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Position Vector</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/Tile -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/Tile">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Class to store information about individual tile</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TileFace -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileFace">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Class to describe tile face.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tile Face</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TileFaceNumber -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileFaceNumber">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of faces in a tile</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tile Face Number</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TileNumber -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileNumber">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of tiles of given tipe in a unit cell</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tile Number</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TileVertex -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TileVertex">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Position of the vertex in the unit cell together with its id.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tile Vertex</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TiledStructure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TiledStructure">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Class contains all information about tile information of the crystal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tiled Structure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TransformationMatrix -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TransformationMatrix">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MatrixWithUncertainty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coordinate transformation matrix from relative to absolute coordinates and vice versa.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transformation Matrix</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/TransformationVector -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/TransformationVector">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/VectorWithUncertainty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coordinate transformation vector from relative to absolute coordinates and vice versa.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transformation Vector</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/Transitivity -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/Transitivity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A combination of four values: p - number of kinds of vertices, q - number of kinds of edges, r - number of kinds of edges, s - number of kinds of faces. For more detailes doi:10.1007/s004540010035</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transitivity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/UnitCell -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/UnitCell">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellAngles"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellAngles"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellLengths"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLengths"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasReciprocalUnitCellVectorSet"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellAngles"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellAngles"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellLengths"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLengths"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVectorSet"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVolume"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVolume"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A class to store all information related to the crystal unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit Cell</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/UnitCellAngles -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/UnitCellAngles">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In crystallography a part of unit cell parameters. Three values &quot;alpha&quot;, &quot;beta&quot;, &quot;gamma&quot; for the angles between the unit cell edges.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit Cell Angles</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/UnitCellLatticeVector -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLatticeVector">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A special case of vector: 3 component with uncertainty and with label: &quot;a&quot;, &quot;b&quot;, or &quot;c&quot;.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit Cell Lattice Vector</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/UnitCellLengths -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLengths">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In crystallography a part of unit cell parameters. Three values &quot;a&quot;, &quot;b&quot;, &quot;c&quot; for the lengths of the edges of the unit cell.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit Cell Lengths</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVectorSet">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellVector"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/UnitCellLatticeVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A set of vectors that define the unit cell in the real space (Cartesian coordinates).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit Cell Vector Set</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/UnitCellVolume -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/UnitCellVolume">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureWithUncertainty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents the volume of the unit cell of a crystal. Contains value and units of measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit Cell Volume</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/VectorComponent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/VectorComponent">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/hasUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Individual components (i.e., x, y, z) of a vector.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vector Component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/VectorWithUncertainty -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/VectorWithUncertainty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/MeasureVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A subclass of Vector class, with information about the uncertainty values. Consists of the main Vector with the values and its Uncertainty Vector.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vector With Uncertainty</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocrystal/XRDSpectrum -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocrystal/XRDSpectrum">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Information about XRD spectrum of the crystal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontocrystal/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">XRD Spectrum</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">External class for chemical species.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Species</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

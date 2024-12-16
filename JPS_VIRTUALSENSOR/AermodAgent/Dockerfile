@@ -1,7 +1,7 @@
 #==================================================================================================
 # Download the Java dependencies (allows them to be cached if unchanged)
 #==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 AS retriever
+FROM maven:3.9.3-eclipse-temurin-17 AS retriever
 
 # Copy in Maven settings templates and credentials 
 COPY docker/credentials /root/credentials
@@ -23,7 +23,7 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 # Build war file
 #==================================================================================================
 
-FROM maven:3.8.3-adoptopenjdk-11 AS war_builder
+FROM maven:3.9.3-eclipse-temurin-17 AS war_builder
 
 COPY --from=retriever /root/.m2 /root/.m2
 
@@ -39,7 +39,7 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 #==================================================================================================
 # Build aermod components
 #==================================================================================================
-FROM ubuntu:22.10 AS aermod_builder
+FROM ubuntu:24.04 AS aermod_builder
 
 RUN apt-get update
 RUN apt-get install gfortran dos2unix -y

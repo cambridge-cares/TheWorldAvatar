@@ -1,0 +1,56 @@
+PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obe:      <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX icontact: <http://ontology.eil.utoronto.ca/icontact.owl#>
+PREFIX disp:	 <https://www.theworldavatar.com/kg/ontodispersion/>
+PREFIX deriv:    <https://www.theworldavatar.com/kg/ontoderivation/>
+PREFIX time: 	 <http://www.w3.org/2006/time#>
+PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX temp:     <https://www.theworldavatar.com/kg/>
+
+SELECT DISTINCT ?Property ?Value ?Unit
+WHERE {
+    {
+        BIND ("Plant name" AS ?Property )
+        [IRI] rdfs:label ?Value
+    } UNION {
+        BIND ("Operator" AS ?Property )
+        [IRI] temp:hasOperator ?value_ini
+        BIND (replace(replace(str(?value_ini), "Ã", "ß"), "Ã¼", "ü") AS ?Value)
+    } UNION {
+        [IRI] obe:hasAddress ?address .
+        {
+            BIND ("Street" AS ?Property )
+            ?address icontact:hasStreet ?value_ini
+            BIND (replace(replace(str(?value_ini), "Ã", "ß"), "Ã¼", "ü") AS ?Value)
+        } UNION {
+            BIND ("Street Number" AS ?Property )
+            ?address icontact:hasStreetNumber ?Value
+        } UNION {
+            BIND ("Postal Code" AS ?Property )
+            ?address obe:hasPostalCode/rdfs:label ?Value
+        }
+    } UNION {
+        [IRI] disp:emits ?emission .
+        ?emission disp:hasPollutantID/rdf:type/rdfs:comment ?Property ;
+                  om:hasQuantity ?quantity .
+        ?quantity rdf:type om:MassFlow ;
+                  om:hasValue ?measure .
+        ?measure om:hasNumericalValue ?Value ;
+                 om:hasUnit/om:symbol ?Unit .
+    } UNION {
+        [IRI] disp:emits/om:hasQuantity ?quantity .
+        BIND ("Flue gas temperature" AS ?Property )
+        ?quantity rdf:type om:Temperature ;
+                  om:hasValue ?measure .
+        ?measure om:hasNumericalValue ?Value ;
+                 om:hasUnit/om:symbol ?Unit .
+    } UNION {
+        [IRI] ^deriv:isDerivedFrom ?derivation .
+        ?derivation deriv:isDerivedFrom ?input .
+        ?input rdf:type disp:SimulationTime ;
+               time:inTimePosition/time:numericPosition ?Value .
+        BIND ("Simulation time" as ?Property)
+        BIND ("unix s" as ?Unit)
+    }
+}

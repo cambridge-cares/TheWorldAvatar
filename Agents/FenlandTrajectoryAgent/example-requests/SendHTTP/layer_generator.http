@@ -1,0 +1,8 @@
+POST http://localhost:3840/fenland-trajectory-agent/layer_generator
+Content-Type: application/json
+
+{
+"table_name": "",// Provide the name of the target trajectory table in PostGIS. The table name is typically formed by a UUID.
+"lat_column": "",
+"lon_column": ""
+}

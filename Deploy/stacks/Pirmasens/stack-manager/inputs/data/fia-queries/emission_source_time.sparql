@@ -1,0 +1,37 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX deriv: <https://www.theworldavatar.com/kg/ontoderivation/>
+PREFIX ohn:   <https://www.theworldavatar.com/kg/ontoheatnetwork/>
+prefix ts:    <https://www.theworldavatar.com/kg/ontotimeseries/>
+PREFIX om:    <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+
+SELECT DISTINCT ?Measurable ?TimeSeries ?Name ?Unit
+WHERE {
+    {
+       [IRI] ^deriv:isDerivedFrom ?derivation .
+        ?derivation deriv:isDerivedFrom ?input .
+        ?input rdf:type ohn:ProvidedHeatAmount  ;
+               ts:hasForecast ?Measurable ;
+               om:hasValue/om:hasUnit/om:symbol ?Unit .
+        BIND ("Sourced heat amount" as ?Name)
+    } UNION { 
+       [IRI] ^deriv:isDerivedFrom ?derivation .
+        ?derivation deriv:isDerivedFrom ?input .
+        ?input rdf:type ohn:ConsumedGasAmount  ;
+               ts:hasForecast ?Measurable ;
+               om:hasValue/om:hasUnit/om:symbol ?Unit ;
+      	       ^ohn:hasConsumedGasAmount/rdfs:label ?label .
+        BIND (concat(?label, ": burned gas amount") as ?Name)
+    }  UNION { 
+       [IRI] ^deriv:isDerivedFrom ?derivation .
+        ?derivation deriv:isDerivedFrom ?input .
+        ?input rdf:type ohn:ConsumedGasAmount ;
+               ^ohn:hasConsumedGasAmount ?gen .
+        ?gen ohn:hasGeneratedHeatAmount ?heat ;
+             rdfs:label ?label .
+         ?heat ts:hasForecast ?Measurable ;
+               om:hasValue/om:hasUnit/om:symbol ?Unit .
+        BIND (concat(?label, ": generated heat amount") as ?Name)
+    }
+}

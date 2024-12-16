@@ -4,7 +4,7 @@
 FROM ubuntu:23.10 AS build
 
 # Install latest NodeJS and NPM
-RUN apt update && apt install -y nodejs npm
+RUN apt update && apt install -y nodejs npm && apt clean
 
 # Install Grunt and typescript
 RUN npm install -g grunt-cli typescript
@@ -22,7 +22,9 @@ RUN npm install && tsc && grunt package
 FROM alpine:3.14.0 AS run
 
 # Install utilities, Apache, and PHP
-RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix apache2 php7-apache2
+RUN apk update \
+    && apk add procps nano wget bash busybox-initscripts dos2unix apache2 php7-apache2 \
+    && rm -rf /var/cache/apk/*
 
 # Copy the final TWA-VF files
 RUN mkdir -p /var/www/twa-vf

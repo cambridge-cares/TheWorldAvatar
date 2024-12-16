@@ -10,6 +10,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import com.github.stefanbirkner.systemlambda.Statement;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -104,11 +108,15 @@ public class AQMeshInputAgentIntegrationTest {
         writePropertyFile(gasMappingFile, gasMappings);
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder.getCanonicalPath().
-                replace("\\","/")));
+        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=AQMESH_MAPPINGS"));
         // Create agent
-        agent = new AQMeshInputAgent(propertiesFile);
-
+        try {
+            SystemLambda.withEnvironmentVariable("AQMESH_MAPPINGS", mappingFolder.getCanonicalPath()).execute((Statement) () -> {
+                agent = new AQMeshInputAgent( propertiesFile);
+            });
+        } catch (Exception e) {
+            //no Exception should be thrown here
+        }
         // Create and set time-series client //
         // Set endpoint to the triple store. The host and port are read from the container
         String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();

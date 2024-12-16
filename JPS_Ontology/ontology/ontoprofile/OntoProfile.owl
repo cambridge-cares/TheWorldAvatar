@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoprofile/"
+     xml:base="https://www.theworldavatar.com/kg/ontoprofile/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontoprofile="https://www.theworldavatar.com/kg/ontoprofile/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoprofile/">
+        <dc:date>10 December 2024</dc:date>
+        <rdfs:comment>OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.</rdfs:comment>
+        <owl:versionInfo>1.1</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontoprofile/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/hasInitials -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoprofile/hasInitials">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Initials"/>
+        <rdfs:comment>A relationship that describes a person&apos;s initials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>has initials</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/hasStatus -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoprofile/hasStatus">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus"/>
+        <rdfs:comment>A relationship describing the current status of an employee.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>has status</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/worksAt -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoprofile/worksAt">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+        <rdfs:comment>A relationship describing the facility that the employee is working in.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>works at</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/hasStatus"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployedDriver -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployedDriver">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to drive a vehicle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Employed Driver</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus">
+        <rdfs:comment>The work availability of an employee.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Employee status</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Initials -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Initials">
+        <rdfs:comment>The initials of a person are the first letters of their first name and last name (and sometimes middle name).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Initials</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/OperationManager -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/OperationManager">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to manage and supervise the operational conditions of a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Operation manager</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/OperationScheduler -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/OperationScheduler">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to manage the operational schedule of a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Operation scheduler</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/SalesAdmin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/SalesAdmin">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to communicate with clients about the company&apos;s products and/or services. The person is primarily based at the front-desk.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Sales admin</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Student -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Student">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember"/>
+        <rdfs:comment>A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Student</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/VehicleDriver -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/VehicleDriver">
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole"/>
+        <rdfs:comment>A person who is expected to be assigned to a vehicle, which they will drive.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Vehicle Driver</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

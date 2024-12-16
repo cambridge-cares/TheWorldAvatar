@@ -12,4 +12,13 @@
   <servlet-name>BMSUpdateAgent</servlet-name>
   <url-pattern>/</url-pattern>
 </servlet-mapping>
+
+<filter>
+  <filter-name>Keycloak Filter</filter-name>
+  <filter-class>org.keycloak.adapters.servlet.KeycloakOIDCFilter</filter-class>
+</filter>
+<filter-mapping>
+  <filter-name>Keycloak Filter</filter-name>
+  <url-pattern>/set</url-pattern>
+</filter-mapping>
 </web-app>

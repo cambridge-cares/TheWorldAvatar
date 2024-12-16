@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} between {minvalue1} and {maxvalue1} and {PropertyName2} between {minvalue2} and {maxvalue2}
+Provide a roster of chemical entities exhibiting {PropertyName1} within the range of {minvalue1} to {maxvalue1}, and {PropertyName2} spanning from {minvalue2} to {maxvalue2}.
+Compile a list of molecules featuring {PropertyName1} that falls between {minvalue1} and {maxvalue1}, along with {PropertyName2} ranging from {minvalue2} to {maxvalue2}.
+Enumerate compounds showcasing {PropertyName1} in the interval of {minvalue1} to {maxvalue1}, while also displaying {PropertyName2} between {minvalue2} and {maxvalue2}.
+Offer a catalog of chemical species demonstrating {PropertyName1} within {minvalue1} to {maxvalue1}, and {PropertyName2} within {minvalue2} to {maxvalue2}.
+Present a compilation of molecules exhibiting {PropertyName1} within {minvalue1} to {maxvalue1}, and {PropertyName2} within {minvalue2} to {maxvalue2}.
+List compounds with {PropertyName1} ranging from {minvalue1} to {maxvalue1}, and {PropertyName2} from {minvalue2} to {maxvalue2}.
+Generate a roster of chemical entities having {PropertyName1} between {minvalue1} and {maxvalue1}, and {PropertyName2} between {minvalue2} and {maxvalue2}.
+Display a list of molecules with {PropertyName1} falling within {minvalue1} and {maxvalue1}, and {PropertyName2} encompassing {minvalue2} and {maxvalue2}.
+Catalog chemical compounds that possess {PropertyName1} values within {minvalue1} to {maxvalue1}, in addition to {PropertyName2} values between {minvalue2} and {maxvalue2}.
+Compile a record of species where {PropertyName1} is within {minvalue1} to {maxvalue1}, and {PropertyName2} is within {minvalue2} to {maxvalue2}.
+Offer a list of molecules characterized by {PropertyName1} within {minvalue1} and {maxvalue1}, and {PropertyName2} within {minvalue2} and {maxvalue2}.
+Present a catalog of chemical species showcasing {PropertyName1} values from {minvalue1} to {maxvalue1}, as well as {PropertyName2} values spanning {minvalue2} to {maxvalue2}.
+Provide a compilation of compounds with {PropertyName1} ranging between {minvalue1} and {maxvalue1}, along with {PropertyName2} ranging between {minvalue2} and {maxvalue2}.
+Enumerate chemical entities featuring {PropertyName1} within {minvalue1} to {maxvalue1}, and {PropertyName2} within {minvalue2} to {maxvalue2}.
+List molecules that exhibit {PropertyName1} within {minvalue1} to {maxvalue1}, and {PropertyName2} within {minvalue2} to {maxvalue2}.
+Generate a list of compounds with {PropertyName1} values ranging from {minvalue1} to {maxvalue1}, and {PropertyName2} values ranging from {minvalue2} to {maxvalue2}.
+Display chemical species that show {PropertyName1} within the bounds of {minvalue1} to {maxvalue1}, and {PropertyName2} within the bounds of {minvalue2} to {maxvalue2}.
+Compile a roster of molecules demonstrating {PropertyName1} in the range of {minvalue1} to {maxvalue1}, and {PropertyName2} in the range of {minvalue2} to {maxvalue2}.
+Present a list of compounds having {PropertyName1} between {minvalue1} and {maxvalue1}, and {PropertyName2} between {minvalue2} and {maxvalue2}.
+Offer an inventory of chemical entities with {PropertyName1} falling between {minvalue1} and {maxvalue1}, and {PropertyName2} falling between {minvalue2} and {maxvalue2}.

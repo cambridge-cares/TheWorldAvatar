@@ -38,7 +38,7 @@ COPY ./config/Bus_node_specs.xlsx /root/Bus_node_specs.xlsx
 COPY ./config/Branch_specs.xlsx /root/Branch_specs.xlsx
 COPY ./config/Generator_specs.xlsx /root/Generator_specs.xlsx
 COPY ./config/PV_specs.xlsx /root/PV_specs.xlsx
-COPY ./config/Venue_info.xlsx /root/Venue_info.xlsx
+COPY ./config/venue_info.xlsx /root/venue_info.xlsx
 COPY ./config/minimised_class_schedule.xlsx /root/minimised_class_schedule.xlsx
 
 
@@ -55,7 +55,7 @@ ENV BUSNODE_SPECS="/root/Bus_node_specs.xlsx"
 ENV BRANCH_SPECS="/root/Branch_specs.xlsx"
 ENV GENERATOR_SPECS="/root/Generator_specs.xlsx"
 ENV PV_SPECS="/root/PV_specs.xlsx"
-ENV VENUE_INFO="/root/Venue_info.xlsx"
+ENV VENUE_INFO="/root/venue_info.xlsx"
 ENV CLASS_SCHEDULE="/root/minimised_class_schedule.xlsx"
 
 COPY --from=builder /root/HistoricalNTUEnergyAgentCode/output/historical-ntuenergy-agent##1.0.0.war $CATALINA_HOME/webapps/

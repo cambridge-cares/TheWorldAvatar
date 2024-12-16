@@ -1,0 +1,22 @@
+What are the {PropertyName1} and {PropertyName2} of species classified as {ChemClass}?
+What are the {PropertyName1} and {PropertyName2} of {ChemClass} species?
+What are the {PropertyName1} and {PropertyName2} of chemical species grouped as {ChemClass}?
+What are the {PropertyName1} and {PropertyName2} of molecules categorized under {ChemClass}?
+What are the {PropertyName1} and {PropertyName2} of compounds designated as {ChemClass}?
+What {PropertyName1} and {PropertyName2} do species of the {ChemClass} classification possess?
+What {PropertyName1} and {PropertyName2} are associated with chemical species classified as {ChemClass}?
+Which {PropertyName1} and {PropertyName2} characterize molecules falling into the {ChemClass} category?
+Identify the {PropertyName1} and {PropertyName2} of compounds belonging to the {ChemClass} classification.
+Enumerate the {PropertyName1} and {PropertyName2} traits of species that fit the {ChemClass} category.
+Provide details about the {PropertyName1} and {PropertyName2} of chemical species that fall under {ChemClass}.
+Elaborate on the {PropertyName1} and {PropertyName2} of molecules attributed to the {ChemClass} grouping.
+Explain the {PropertyName1} and {PropertyName2} inherent to compounds classified as {ChemClass}.
+Outline the {PropertyName1} and {PropertyName2} features exhibited by species characterized as {ChemClass}.
+Delve into the {PropertyName1} and {PropertyName2} of chemical species placed in the {ChemClass} category.
+Elucidate the {PropertyName1} and {PropertyName2} associated with molecules that pertain to {ChemClass}.
+Describe the {PropertyName1} and {PropertyName2} traits of compounds falling within the {ChemClass} classification.
+What are the {PropertyName1} and {PropertyName2} attributes of species labeled as {ChemClass}?
+What are the {PropertyName1} and {PropertyName2} qualities of molecules sorted into the {ChemClass} category?
+What are the {PropertyName1} and {PropertyName2} elements of compounds grouped as {ChemClass}?
+Mention the {PropertyName1} and {PropertyName2} that define species recognized as {ChemClass}.
+Point out the {PropertyName1} and {PropertyName2} traits of chemical species identified under {ChemClass}.

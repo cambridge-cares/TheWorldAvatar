@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -132,20 +133,21 @@ class WeatherQueryClient {
         if (name != null) {
             properties.put("name", name);
         } else {
-            properties.put("name", String.format("Weather Station at (%f, %f)", lat, lon));
+            name = String.format("Weather Station at (%f, %f)", lat, lon);
+            properties.put("name", name);
         }
 
         geojson.put("type", "Feature").put("properties", properties).put("geometry", geometry);
 
         LOGGER.info("Uploading GeoJSON to PostGIS");
-        GDALClient gdalclient = new GDALClient();
+        GDALClient gdalclient = GDALClient.getInstance();
         gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.LAYERNAME, geojson.toString(),
                 new Ogr2OgrOptions(), true);
 
         LOGGER.info("Creating layer in Geoserver");
-        GeoServerClient geoserverclient = new GeoServerClient();
+        GeoServerClient geoserverclient = GeoServerClient.getInstance();
         geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-        geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME,
+        geoserverclient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME,
                 new GeoServerVectorSettings());
 
         LOGGER.info("Instantiating weather station in triple-store");
@@ -153,7 +155,7 @@ class WeatherQueryClient {
 
         Iri station = iri(stationIri);
 
-        modify.insert(station.isA(ReportingStation));
+        modify.insert(station.isA(ReportingStation).andHas(iri(RDFS.LABEL), name));
 
         List<String> dataListForTimeSeries = new ArrayList<>();
         List<Class<?>> classListForTimeSeries = new ArrayList<>();

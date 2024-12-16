@@ -1,0 +1,39 @@
+{
+    "ServiceSpec": {
+      "Name": "fh-agent",
+      "TaskTemplate": {
+        "ContainerSpec": {
+          "Image": "docker.io/library/fh-agent:1.0.1",
+          "Mounts": [
+            {
+              "Type": "bind",
+              "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/FHAgent/config",
+              "Target": "/root"
+            }
+          ],
+          "Configs": [
+            {
+              "ConfigName": "blazegraph"
+            },
+            {
+                "ConfigName": "postgis"
+            }
+        ],
+        "Secrets": [
+            {
+                "SecretName": "blazegraph_password"
+            },
+            {
+                "SecretName": "postgis_password"
+            }
+        ]
+        }
+      }
+    },
+    "endpoints": {
+      "ui": {
+        "url": "http://localhost:8080/fh-agent/",
+        "externalPath": "/fh-agent/"
+      }
+    }
+  }

@@ -1,18 +1,15 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,8 +19,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentVisualizationBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 
 public class VisualizationFragment extends Fragment {
 
@@ -32,8 +29,16 @@ public class VisualizationFragment extends Fragment {
      */
     static class JsObject {
         public String equipmentIri;
-        public JsObject(String equipmentIri) {
+        public final String hostAddr;
+        public final String fiaPath;
+        private VisualizationFragment fragment;
+
+        public JsObject(String equipmentIri, VisualizationFragment fragment, Context context) {
             this.equipmentIri = equipmentIri;
+            this.fragment = fragment;
+
+            this.hostAddr = context.getString(R.string.host);
+            this.fiaPath = context.getString(R.string.feature_info_agent_get_path);
         }
 
         /**
@@ -43,6 +48,21 @@ public class VisualizationFragment extends Fragment {
         @JavascriptInterface
         public String getEquipmentIri() {
             return equipmentIri;
+        }
+
+        @JavascriptInterface
+        public void notifyChartReady() {
+            fragment.finishLoading();
+        }
+
+        @JavascriptInterface
+        public String getHostAddr() {
+            return hostAddr;
+        }
+
+        @JavascriptInterface
+        public String getFiaPath() {
+            return fiaPath;
         }
     }
 
@@ -87,14 +107,12 @@ public class VisualizationFragment extends Fragment {
 
         WebView dtvfViz = binding.dtvfViz;
 
-        JsObject jsObject = new JsObject(equipmentIri);
+        JsObject jsObject = new JsObject(equipmentIri, this, requireContext());
 
         dtvfViz.getSettings().setJavaScriptEnabled(true);
         binding.dtvfViz.addJavascriptInterface(jsObject, "jsObject");
         binding.dtvfViz.loadUrl("file:///android_asset/visualisation/index.html");
         LOGGER.info("view created");
-
-        dtvfViz.setVisibility(View.VISIBLE);
 
         WebSettings webSettings = binding.dtvfViz.getSettings();
         if (webSettings.getTextZoom() > 150) {
@@ -106,5 +124,9 @@ public class VisualizationFragment extends Fragment {
         binding.dtvfViz.evaluateJavascript("refreshChart();", reloadCallback);
     }
 
+    public void finishLoading() {
+        requireActivity().runOnUiThread(() -> binding.progressBarWrapper.setVisibility(View.GONE));
+        requireActivity().runOnUiThread(() -> binding.dtvfViz.setVisibility(View.VISIBLE));
+    }
 
 }

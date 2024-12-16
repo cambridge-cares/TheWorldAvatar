@@ -1,0 +1,32 @@
+{
+    "ServiceSpec": {
+        "Name": "historical-ntuenergy-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/historical-ntuenergy-agent:1.0.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/historical-ntuenergy-agent/",
+            "externalPath": "/historical-ntuenergy-agent/retrieve"
+        }
+    }
+}

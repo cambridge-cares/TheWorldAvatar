@@ -1,0 +1,25 @@
+[REQUIRED]
+Pipe_label,Pipe-006
+CHW_label,CHW-006
+
+[OPTIONAL]
+TempSetpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1_P6_TempSetpoint
+TempSetpoint_IRI_label,MAU-C7-1 P6 temperature setpoint
+PressureSetpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1_P6_PressureSetpoint
+PressureSetpoint_IRI_label,MAU-C7-1 P6 pressure setpoint
+[DELETE WRONG UNIT]
+WaterFlowRate_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU1_WaterFlowRate
+WaterFlowRate_unit,cubicMetrePerHour
+WaterFlowRate_unit,litrePerMinute
+
+WaterFlowRate_label,Pipe-006 water flow rate
+
+PressureSensor_label,Pressure P6 Sensor 1
+Pressure_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1_P6Pressure
+
+Pressure_label,Chilled water supply pressure P1 of MAU-C7-1
+
+TemperatureSensor_label,Supply Temperature P6 Sensor
+Temperature_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1_P6Temperature
+
+Temperature_label,Chilled water supply temperature P1 of MAU-C7-1

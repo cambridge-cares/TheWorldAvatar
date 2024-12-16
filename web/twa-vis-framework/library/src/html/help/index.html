@@ -70,7 +70,10 @@
             <br/>
 
             <h3>Moving the map</h3>
-            <p>Users can interact with the map via their mouse or pointing device, keyboard shortcuts are not supported at the time of writing. Panning can be achieved with the left mouse button, rotating with the right, and zooming can be achieved by zooming the scroll wheel.</p>
+            <p>Users can interact with the map via their mouse or pointing device, keyboard shortcuts are not supported at the time of writing. Panning can be achieved with the left mouse button, rotating with the right, and zooming can be achieved by zooming the scroll wheel.
+
+                As of `twa-vf` version `4.5.0` there are now visual elements on the map to show scale, position, compass, pitch and zoom level
+            </p>
             <div class="imgContainer">
                 <img src="./mouse-controls.png" width="400px"/>
             </div>
@@ -146,7 +149,8 @@
                     </td>
                 </tr>
             </table>      
-            
+            <br/>
+
             <h3>Clipping Planes</h3>
             <p>In some 3D visualisations, an optional feature is present to vertically bisect data, providing a view of the model(s) up until a changeable height. When supported, users can enable this option by selecting the 
             "Enable clipping planes?" option. Once enabled, selecting an appropriate target layer will enable the clipping plane as well as display a sliding control to change the cut-off height. At the time of writing, the 
@@ -158,6 +162,14 @@
                 <img src="./clipping-planes.jpg" width="800px"/>
             </div>
             <span class="caption">Clipping plane feature</span> 
+            <br/>
+
+            <h3>Scenarios</h3>
+            <p>In some visualisations, data is organised into separate, distinct scenarios. Only a single scenario can be viewed at a time. However, the "Change scenario" control to the left of the map can be used to view a list of available scenarios, and change the currently selected scenario.</p>
+            <div class="imgContainer">
+                <img src="./scenarios.png" width="400px"/>
+            </div>
+            <span class="caption">Changing the current scenario</span>
         </div>
     </body>
 </html>

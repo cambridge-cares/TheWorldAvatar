@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "workspace": "population",
+    "datasetDirectory": "population",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "population",
+            "subdirectory": "population",
+            "gdalTranslateOptions": {
+                "sridIn": "EPSG:27700"
+            },
+            "skip": false
+        }
+    ]
+}

@@ -1,0 +1,4 @@
+assets/
+*.csv.owl
+*_to_compare
+pytest_report.html

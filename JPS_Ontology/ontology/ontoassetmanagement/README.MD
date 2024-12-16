@@ -160,6 +160,7 @@ The ontology can be divided into these respective domains:
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "bot:Element" : isStoredAt
+    "bot:Element" ||--o{ "UserDefinedCategory" : isCategorizedUnder
     "bot:Element" ||--o{ "ontocape_technical_system:TechnicalSystem" : isStoredAt
     "bot:Element" ||--o{ "fibo-parties:IndependentParty" : assignedTo
     "bot:Element" ||--o{ "fibo-parties:IndependentParty" : previouslyAssignedTo
@@ -193,6 +194,7 @@ The ontology can be divided into these respective domains:
 ```mermaid
     erDiagram
     "ontocape_technical_system:TechnicalSystem" ||--o{ "bot:Element" : isStoredAt
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "UserDefinedCategory" : isCategorizedUnder
     "ontocape_technical_system:TechnicalSystem" ||--o{ "ontocape_technical_system:TechnicalSystem" : isStoredAt
     "ontocape_technical_system:TechnicalSystem" ||--o{ "fibo-parties:IndependentParty" : assignedTo
     "ontocape_technical_system:TechnicalSystem" ||--o{ "fibo-parties:IndependentParty" : previouslyAssignedTo

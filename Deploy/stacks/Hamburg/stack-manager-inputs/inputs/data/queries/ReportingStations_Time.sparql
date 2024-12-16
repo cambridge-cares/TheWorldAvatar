@@ -1,0 +1,122 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
+prefix owl:  <http://www.w3.org/2002/07/owl#>
+
+
+
+SELECT ?Measurement ?Name ?Unit
+WHERE { 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/CloudCover>.
+        ?quantity om:hasValue ?Measurement.
+        BIND("Cloud cover" AS ?Name).
+        BIND("%" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/WindSpeed>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Wind speed" AS ?Name).
+        BIND("m/s" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/RelativeHumidity>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Relative humidity" AS ?Name).
+        BIND("%" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/AirTemperature>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Temperature" AS ?Name).
+        BIND("&deg;C" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/WindDirection>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Wind direction" AS ?Name).
+        BIND("&deg;" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/Rainfall>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Rainfall" AS ?Name).
+        BIND("mm" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/AtmosphericPressure>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Atmospheric pressure" AS ?Name).
+        BIND("mbar" AS ?Unit).
+    }
+    UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/PM10Concentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("PM10" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+    UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/NitrogenOxidesConcentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("NO&#x2093;" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/PM2.5Concentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("PM2.5" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/UhcConcentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("Unburned hydrocarbons" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("CO" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("CO&#x2082;" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+	UNION 
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/SulfurDioxideConcentration>.
+		?quantity om:hasValue ?Measurement.
+        BIND("SO&#x2082;" AS ?Name).
+        BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+}

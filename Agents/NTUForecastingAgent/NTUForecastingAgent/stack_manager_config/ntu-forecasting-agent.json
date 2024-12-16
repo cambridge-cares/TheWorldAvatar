@@ -1,0 +1,36 @@
+{
+  "ServiceSpec": {
+    "Name": "ntu-forecasting-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ntu_forecasting_agent:1.0.0",
+        "Env": [
+          "ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
+          "DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/"
+      ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "ontop"
+          },
+          {
+            "ConfigName": "postgis"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:6000/",
+      "externalPath": "/ntu-forecasting-agent/"
+    }
+  }
+}

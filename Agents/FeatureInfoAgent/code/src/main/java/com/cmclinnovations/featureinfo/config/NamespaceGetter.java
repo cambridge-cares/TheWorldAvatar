@@ -81,8 +81,6 @@ public class NamespaceGetter {
         if(this.url == null) {
             throw new IllegalArgumentException("Root URL for Blazegraph is required!");
         }
-        LOGGER.info("Blazegraph username: {}", this.username);
-        LOGGER.info("Blazegraph password: {}", this.password);
 
         if(this.username != null && this.password == null) {
             throw new IllegalArgumentException("Must supply Blazegraph password if username is not null!");
@@ -100,6 +98,8 @@ public class NamespaceGetter {
         } else {
             requestURL += "/namespace?describe-each-named-graph=false";
         }
+        
+        LOGGER.debug("Determing Blazegraph URLs through XML at: {}", requestURL);
         
         // Create the client
         HttpClient client = HttpClient.newHttpClient();

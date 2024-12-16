@@ -1,0 +1,8 @@
+@prefix : <https://www.theworldavatar.com/test/> .
+@prefix ontocountry: <https://www.theworldavatar.com/kg/ontocountry/> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+
+:Country_uuid rdf:type ontocountry:Country;
+	            rdfs:label	'Singapore';
+	            ontocountry:hasTotalDwellingUnits :Number_uuid.
+:Number_uuid rdf:type ontocountry:AggregateDwellingUnits.

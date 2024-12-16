@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.10.2</version>
+            <version>1.14.3</version>
         </dependency>
         
         <!-- Java servlet API, version pulled from parent -->
@@ -127,6 +127,13 @@
             <artifactId>json</artifactId>
             <version>20230618</version>
             <type>jar</type>
+        </dependency>
+
+          <!-- parse wkt literals from ontop -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-geosparql</artifactId>
+            <version>4.6.1</version>
         </dependency>
         
         <!-- Logging, versions pulled from parent -->

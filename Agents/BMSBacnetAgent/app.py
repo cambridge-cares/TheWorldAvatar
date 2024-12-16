@@ -1,4 +1,5 @@
 from config.config import *
-import agents
-agent = agents.bms_bacnet_agent
+from agents.bms_bacnet_agent import bmsBacnetAgent
+agent = bmsBacnetAgent()
+agent.init()
 agent.run(UPDATE_DURATION)

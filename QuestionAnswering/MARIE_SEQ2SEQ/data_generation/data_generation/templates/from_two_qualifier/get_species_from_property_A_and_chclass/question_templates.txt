@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} around {value} and are classified as {ChemClass}
+Provide a roster of chemical species displaying {PropertyName} approximately at {value} and falling under the category of {ChemClass}.
+Enumerate molecules that exhibit {PropertyName} at roughly {value} and are categorized as {ChemClass}.
+List compounds with {PropertyName} circling {value} and falling into the {ChemClass} classification.
+Give me an inventory of species manifesting {PropertyName} around {value} while being classified as {ChemClass}.
+Compile a record of chemical entities featuring {PropertyName} at about {value} and falling within {ChemClass}.
+Jot down a catalog of molecules demonstrating {PropertyName} approximately at {value} and falling into the {ChemClass} category.
+Note down compounds exhibiting {PropertyName} around {value} and classified as {ChemClass}.
+Provide a rundown of chemical species indicating {PropertyName} at roughly {value} and belonging to the {ChemClass} grouping.
+Enumerate molecules that display {PropertyName} close to {value} and are categorized as {ChemClass}.
+List compounds with {PropertyName} near {value} and falling under the {ChemClass} classification.
+Give me an inventory of species showing {PropertyName} in the vicinity of {value} and falling into the {ChemClass} category.
+Compile a record of chemical entities with {PropertyName} situated at approximately {value} and belonging to {ChemClass}.
+Jot down a catalog of molecules with {PropertyName} positioned around {value} and classified as {ChemClass}.
+Note down compounds demonstrating {PropertyName} at about {value} and categorized as {ChemClass}.
+Provide a rundown of chemical species having {PropertyName} close to {value} and falling into the {ChemClass} grouping.
+Enumerate molecules that indicate {PropertyName} near {value} and are classified as {ChemClass}.
+List compounds displaying {PropertyName} approximately at {value} and falling within the {ChemClass} category.
+Give me an inventory of species revealing {PropertyName} around {value} while being categorized as {ChemClass}.
+Compile a record of chemical entities exhibiting {PropertyName} at roughly {value} and belonging to the {ChemClass} class.
+Jot down a catalog of molecules showcasing {PropertyName} circling {value} and classified under {ChemClass}.

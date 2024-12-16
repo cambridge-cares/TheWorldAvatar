@@ -1,0 +1,15 @@
+{
+  "name": "NTU_Water_Station",
+  "database": "postgres",
+  "workspace": "the_world_avatar",
+  "datasetDirectory": "NTU_Water",
+  "skip": false,
+  "dataSubsets": [
+    {
+      "type": "tabular",
+      "name": "NTU_Water",
+      "skip": false,
+      "schema": "public"
+    }
+  ]
+}

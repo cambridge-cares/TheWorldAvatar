@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   opf-agent:
-    image: opf-agent:1.0.0
+    image: opf-agent:1.1.0
     build: .
     container_name: opf-agent
     environment:

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="20dp"
+    android:gravity="center|top"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="103dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/pslogo"
+        android:contentDescription="Logo"
+        app:layout_constraintEnd_toStartOf="@+id/weather"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/weather"
+        android:layout_width="261dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/weather"
+        android:contentDescription="Weather Panel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/notice"
+        android:layout_width="wrap_content"
+        android:layout_height="291dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Notifications"
+        android:scaleType="fitCenter"
+        android:src="@drawable/event_cover"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weather"
+        tools:srcCompat="@drawable/event_cover"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/amenity"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableStart="@drawable/outline_map_24"
+        android:padding="8dp"
+        android:text="@string/amenity_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/events"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notice" />
+
+    <Button
+        android:id="@+id/report"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableStart="@drawable/baseline_warning_24"
+        android:padding="8dp"
+        android:text="@string/report_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/events"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/amenity" />
+
+    <Button
+        android:id="@+id/events"
+        android:layout_width="0dp"
+        android:layout_height="106dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/baseline_calendar_month_24"
+        android:paddingTop="24dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/event_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notice" />
+
+    <Button
+        android:id="@+id/profile"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/secondary_button_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/outline_person_24"
+        android:paddingTop="12dp"
+        android:text="@string/profile_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/news"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/report" />
+
+    <Button
+        android:id="@+id/news"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/secondary_button_height"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/baseline_newspaper_24"
+        android:paddingTop="12dp"
+        android:text="@string/news_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/contacts"
+        app:layout_constraintStart_toEndOf="@+id/profile"
+        app:layout_constraintTop_toBottomOf="@+id/report" />
+
+    <Button
+        android:id="@+id/contacts"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/secondary_button_height"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/outline_contacts_24"
+        android:paddingTop="12dp"
+        android:text="@string/contact_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/news"
+        app:layout_constraintTop_toBottomOf="@+id/report" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

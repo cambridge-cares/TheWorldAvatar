@@ -1,0 +1,21 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "IDE_climate",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "IDE_climate",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"]
+                }
+            }
+        }
+    ]
+   
+
+}
