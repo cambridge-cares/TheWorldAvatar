@@ -19,6 +19,7 @@ public class LifecycleResource {
   public static final String STAGE_KEY = "stage";
   public static final String STATUS_KEY = "status";
   public static final String REMARKS_KEY = "remarks";
+  public static final String TIMESTAMP_KEY = "timestamp";
   public static final String SCHEDULE_DURATION_KEY = "duration";
   public static final String SCHEDULE_DAY_KEY = "scheduleday";
   public static final String SCHEDULE_START_DATE_KEY = "start date";

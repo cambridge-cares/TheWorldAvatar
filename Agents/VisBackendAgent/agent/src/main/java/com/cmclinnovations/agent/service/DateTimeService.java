@@ -1,6 +1,8 @@
 package com.cmclinnovations.agent.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Service;
@@ -13,8 +15,7 @@ public class DateTimeService {
    * Constructs a new service with the following dependencies.
    */
   public DateTimeService() {
-    this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+    this.formatter = DateTimeFormatter.ISO_LOCAL_DATE;
   }
 
   /**
@@ -28,11 +29,16 @@ public class DateTimeService {
   }
 
   /**
-   * Parses the date input into a String.
+   * Retrieve the date as a string in the YYYY-MM-DD format from the timestamp
+   * input.
    * 
-   * @param date The LocalDate input.
+   * @param timestamp The timestamp input in UNIX seconds.
    */
-  public String parseDateToString(LocalDate date) {
-    return date.format(this.formatter);
+  public String getDateFromTimestamp(long timestamp) {
+    // Convert Unix timestamp (seconds) to LocalDate
+    return Instant.ofEpochSecond(timestamp)
+        .atZone(ZoneId.systemDefault()) // Adjust to the system default time zone
+        .toLocalDate()
+        .format(this.formatter);
   }
 }

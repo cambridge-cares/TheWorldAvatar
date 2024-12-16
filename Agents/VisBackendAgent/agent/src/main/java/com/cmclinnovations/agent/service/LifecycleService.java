@@ -133,10 +133,12 @@ public class LifecycleService {
    * Retrieve all service related occurrences in the lifecycle for the specified
    * date.
    * 
-   * @param date Target date in YYYY-MM-DD format.
+   * @param timestamp Timestamp in UNIX format.
    */
-  public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String date) {
-    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(date);
+  public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(long timestamp) {
+    // Get date from timestamp
+    String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
+    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(targetDate);
     Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
     return new ResponseEntity<>(
         results.stream()
@@ -159,10 +161,12 @@ public class LifecycleService {
   }
 
   /**
-   * Generate occurrences for all active services that should be scheduled for
-   * today.
+   * Generate occurrences for all active services that should be scheduled on
+   * the specified day.
+   * 
+   * @param timestamp Timestamp in UNIX format.
    */
-  public ResponseEntity<ApiResponse> genActiveServiceOccurrences() {
+  public ResponseEntity<ApiResponse> genActiveServiceOccurrences(long timestamp) {
     LOGGER.info("Generating today's tasks for active services...");
     boolean hasError = false;
     // Iterate through all possible endpoints to find the current day of week
@@ -189,9 +193,9 @@ public class LifecycleService {
           HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
       LOGGER.info("Detected a matching day of week! Continue execution...");
-      LocalDate today = LocalDate.now();
-      String activeServiceQuery = LifecycleResource.genActiveServiceQuery(dayOfWeekInstance,
-          this.dateTimeService.parseDateToString(today));
+      // Get date from timestamp
+      String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
+      String activeServiceQuery = LifecycleResource.genActiveServiceQuery(dayOfWeekInstance, targetDate);
       Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
       Map<String, Object> params = new HashMap<>();
       // While there are active services to be instantiated
@@ -199,9 +203,9 @@ public class LifecycleService {
         params.clear();
         SparqlBinding currentContract = results.poll();
 
-        // If the active contract should be filter ie ignored, continue to next
-        // iteration
-        if (shouldFilterActiveContract(currentContract, today)) {
+        // If the active contract should be filter ie ignored,
+        if (shouldFilterActiveContract(currentContract, targetDate)) {
+          // continue to next iteration
           continue;
         }
 
@@ -251,13 +255,14 @@ public class LifecycleService {
   /**
    * Check if the target contract should be active on the target date.
    * 
-   * @param contract   The target contract.
-   * @param targetDate The target date of occurrence.
+   * @param contract        The target contract.
+   * @param targetDateInput The target date of occurrence.
    * @return true if the contract should be ignored.
    */
-  private boolean shouldFilterActiveContract(SparqlBinding contract, LocalDate targetDate) {
+  private boolean shouldFilterActiveContract(SparqlBinding contract, String targetDateInput) {
     String startDateField = contract.getFieldValue(LifecycleResource.DATE_KEY);
     LocalDate startDate = this.dateTimeService.parseDate(startDateField);
+    LocalDate targetDate = this.dateTimeService.parseDate(targetDateInput);
 
     // Ignorable as the agreement has not yet started
     if (startDate.isAfter(targetDate)) {

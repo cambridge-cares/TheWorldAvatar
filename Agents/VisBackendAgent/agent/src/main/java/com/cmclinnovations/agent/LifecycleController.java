@@ -1,10 +1,6 @@
 package com.cmclinnovations.agent;
 
 import java.text.MessageFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -125,12 +121,14 @@ public class LifecycleController {
   }
 
   /**
-   * Schedules today's tasks.
+   * Schedules tasks for the specified date.
    */
   @PostMapping("/contracts/service/schedule")
-  public ResponseEntity<ApiResponse> scheduleTodayTasks() {
-    LOGGER.info("Received request to schedule tasks for today...");
-    return this.lifecycleService.genActiveServiceOccurrences();
+  public ResponseEntity<ApiResponse> scheduleTasksOnDate(@RequestBody Map<String, Object> params) {
+    LOGGER.info("Received request to schedule tasks...");
+    // Defaults to current time if no parameters are given
+    long timestamp = (long) params.getOrDefault(LifecycleResource.TIMESTAMP_KEY, System.currentTimeMillis() / 1000L);
+    return this.lifecycleService.genActiveServiceOccurrences(timestamp);
   }
 
   /**
@@ -330,7 +328,8 @@ public class LifecycleController {
   }
 
   /**
-   * Retrieve the schedule details for the specified contract to populate the form template
+   * Retrieve the schedule details for the specified contract to populate the form
+   * template
    */
   @GetMapping("/contracts/schedule/{id}")
   public ResponseEntity<Map<String, SparqlResponseField>> getSchedule(@PathVariable String id) {
@@ -378,14 +377,7 @@ public class LifecycleController {
   public ResponseEntity<?> getAllInstances(
       @PathVariable(name = "timestamp") long timestamp) {
     LOGGER.info("Received request to retrieve contracts in progress...");
-    // Convert Unix timestamp (seconds) to LocalDate
-    LocalDate date = Instant.ofEpochSecond(timestamp)
-        .atZone(ZoneId.systemDefault()) // Adjust to the system default time zone
-        .toLocalDate();
-
-    // Format LocalDate to 'YYYY-MM-DD'
-    String formattedDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-    return this.lifecycleService.getOccurrences(formattedDate);
+    return this.lifecycleService.getOccurrences(timestamp);
   }
 
   /**
