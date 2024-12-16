@@ -74,7 +74,7 @@ public class LifecycleService {
     params.put(LifecycleResource.STAGE_KEY, stage);
     params.put(LifecycleResource.EVENT_KEY, LifecycleResource.getEventClass(eventType));
     // Only retrieve the current date if no date input is given
-    params.putIfAbsent(LifecycleResource.DATE_KEY, LifecycleResource.getCurrentDate());
+    params.putIfAbsent(LifecycleResource.DATE_KEY, this.dateTimeService.getCurrentDate());
   }
 
   /**

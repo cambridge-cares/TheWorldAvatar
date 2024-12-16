@@ -20,6 +20,7 @@ import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.AddService;
+import com.cmclinnovations.agent.service.DateTimeService;
 import com.cmclinnovations.agent.service.DeleteService;
 import com.cmclinnovations.agent.service.LifecycleService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
@@ -27,6 +28,7 @@ import com.cmclinnovations.agent.utils.LifecycleResource;
 @RestController
 public class LifecycleController {
   private final AddService addService;
+  private final DateTimeService dateTimeService;
   private final DeleteService deleteService;
   private final LifecycleService lifecycleService;
 
@@ -34,8 +36,10 @@ public class LifecycleController {
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
-  public LifecycleController(AddService addService, DeleteService deleteService, LifecycleService lifecycleService) {
+  public LifecycleController(AddService addService, DateTimeService dateTimeService, DeleteService deleteService,
+      LifecycleService lifecycleService) {
     this.addService = addService;
+    this.dateTimeService = dateTimeService;
     this.deleteService = deleteService;
     this.lifecycleService = lifecycleService;
   }
@@ -53,7 +57,7 @@ public class LifecycleController {
     }
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     // Add current date into parameters
-    params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
+    params.put(LifecycleResource.CURRENT_DATE_KEY, this.dateTimeService.getCurrentDate());
     LOGGER.info("Received request to generate a new lifecycle for contract <{}>...", contractId);
     ResponseEntity<ApiResponse> response = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE,
         params);
@@ -268,7 +272,7 @@ public class LifecycleController {
         targetId);
     if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
       // Add current date into parameters
-      params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
+      params.put(LifecycleResource.CURRENT_DATE_KEY, this.dateTimeService.getCurrentDate());
       ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(
           LifecycleResource.LIFECYCLE_RESOURCE, targetId,
           params);

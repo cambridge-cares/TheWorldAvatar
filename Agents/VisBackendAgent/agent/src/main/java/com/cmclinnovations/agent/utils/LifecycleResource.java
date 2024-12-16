@@ -1,7 +1,6 @@
 package com.cmclinnovations.agent.utils;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.FileService;
@@ -44,14 +43,6 @@ public class LifecycleResource {
   // Private constructor to prevent instantiation
   private LifecycleResource() {
     throw new UnsupportedOperationException("This class cannot be instantiated!");
-  }
-
-  /**
-   * Get current date in YYYY-MM-DD format.
-   */
-  public static String getCurrentDate() {
-    // Define the date format
-    return LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
   }
 
   /**

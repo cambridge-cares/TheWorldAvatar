@@ -19,6 +19,14 @@ public class DateTimeService {
   }
 
   /**
+   * Get current date in YYYY-MM-DD format.
+   */
+  public String getCurrentDate() {
+    // Define the date format
+    return LocalDate.now().format(this.formatter);
+  }
+
+  /**
    * Parses the date input string into a LocalDate object with the specified
    * formatter.
    * 
