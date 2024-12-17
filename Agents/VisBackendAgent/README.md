@@ -515,16 +515,6 @@ Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/ser
 
 There is also an additional optional parameter `label` to retrieve in progress contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
 
-> Schedule tasks
-
-Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/schedule` endpoint to schedule tasks for the specified date in UNIX format. Note that this action task can also be scheduled and executed at 6am daily on the same day, by setting `TASKS_ENABLED=true`.
-
-```json
-{
-  /* parameters */
-  "timestamp": "UNIX timestamp"
-}
-```
 
 > Records of service tasks
 

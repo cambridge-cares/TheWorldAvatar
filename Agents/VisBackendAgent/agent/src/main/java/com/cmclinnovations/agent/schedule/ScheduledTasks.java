@@ -21,7 +21,6 @@ public class ScheduledTasks {
 
   @Scheduled(cron = "0 0 6 * * *")
   public void generateTasksForToday() {
-    LOGGER.info("Performing the scheduled task to generate today's tasks.");
-    this.lifecycleService.genActiveServiceOccurrences(System.currentTimeMillis() / 1000L);
+    LOGGER.info("Performing the scheduled task.");
   }
 }

@@ -217,28 +217,6 @@ public class LifecycleResource {
   }
 
   /**
-   * Generates a SPARQL query to get today's day of week IRI from the cmns-dt
-   * ontology.
-   */
-  public static String genTodayDayOfWeekQuery() {
-    return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
-        + "SELECT DISTINCT ?iri WHERE{"
-        // Day of week individuals
-        + "?iri a cmns-dt:TimeInterval;"
-        + "a owl:NamedIndividual;"
-        + "rdfs:label ?day_of_week."
-        // Calculate the days passed since 2000-01-01, which was Saturday
-        + "BIND(NOW()-\"2000-01-01\"^^xsd:date AS ?days_diff)"
-        // Map the day of week to their modulus based on 2000-01-01, where 0 represents
-        // Saturday and 6 represents Friday
-        + "VALUES(?day ?day_of_week){(0 \"Saturday\")(1 \"Sunday\")(2 \"Monday\")(3 \"Tuesday\")(4 \"Wednesday\")(5 \"Thursday\")(6 \"Friday\")}"
-        // Match the day of week to the computed modulus of the days passed since
-        // 2000-01-01
-        + "FILTER(?day=xsd:integer(floor(?days_diff-(7*floor(?days_diff/7)))))"
-        + "}";
-  }
-
-  /**
    * Generates a query template for human readable schedule details.
    */
   public static String genReadableScheduleQuery() {
@@ -248,44 +226,6 @@ public class LifecycleResource {
         + "CONCAT(\"Regular Service\")"
         + ")" // Close IF statement
         + ") AS ?" + StringResource.parseQueryVariable(SCHEDULE_TYPE_KEY) + ")";
-  }
-
-  /**
-   * Generates a SPARQL query for retrieving active services that are scheduled
-   * for the target date.
-   * 
-   * @param dayOfWeekInstance the day of week instance to target.
-   * @param targetDate        the date of execution.
-   */
-  public static String genActiveServiceQuery(String dayOfWeekInstance, String targetDate) {
-    StringBuilder stageFilters = new StringBuilder();
-    // Generate MINUS to ensure no occurrence exist yet for the target date
-    String occurenceFilterQuery = "BIND(\"" + targetDate + "\"^^xsd:date AS ?event_date)" +
-        "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?event_date.";
-    LifecycleResource.appendFilterExists(stageFilters, occurenceFilterQuery, false);
-    appendArchivedFilterExists(stageFilters, false);
-    String startDateVar = ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + DATE_KEY;
-    String durationVar = ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + SCHEDULE_DURATION_KEY;
-    String scheduleDayVar = ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + SCHEDULE_DAY_KEY;
-    return genPrefixes()
-        + "SELECT DISTINCT ?iri" + startDateVar + durationVar + scheduleDayVar + "{"
-        + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
-        // find only approved agreements before any services are delivered
-        + LIFECYCLE_EVENT_PREDICATE_PATH + ShaclResource.WHITE_SPACE + StringResource.parseIriForQuery(EVENT_APPROVAL)
-        + ";"
-        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
-        + "?stage fibo-fnd-rel-rel:exemplifies <"
-        + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
-        + "fibo-fnd-dt-fd:hasSchedule ?schedule."
-        + "?schedule cmns-dt:hasStartDate/cmns-dt:hasDateValue" + startDateVar + ";"
-        + "fibo-fnd-dt-fd:hasRecurrenceInterval/cmns-dt:hasDurationValue" + durationVar + "."
-        + "OPTIONAL{"
-        // Bind to ensure current day matches today
-        + "BIND(" + StringResource.parseIriForQuery(dayOfWeekInstance) + " AS" + scheduleDayVar + ")"
-        + "?schedule fibo-fnd-dt-fd:hasRecurrenceInterval " + scheduleDayVar + "."
-        + "}"
-        + stageFilters.toString()
-        + "}";
   }
 
   /**

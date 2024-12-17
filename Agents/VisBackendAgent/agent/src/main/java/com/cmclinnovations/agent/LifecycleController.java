@@ -134,17 +134,6 @@ public class LifecycleController {
   }
 
   /**
-   * Schedules tasks for the specified date.
-   */
-  @PostMapping("/contracts/service/schedule")
-  public ResponseEntity<ApiResponse> scheduleTasksOnDate(@RequestBody Map<String, Object> params) {
-    LOGGER.info("Received request to schedule tasks...");
-    // Defaults to current time if no parameters are given
-    long timestamp = (long) params.getOrDefault(LifecycleResource.TIMESTAMP_KEY, System.currentTimeMillis() / 1000L);
-    return this.lifecycleService.genActiveServiceOccurrences(timestamp);
-  }
-
-  /**
    * Reports any unfulfilled service delivery.
    */
   @PostMapping("/contracts/service/report")
