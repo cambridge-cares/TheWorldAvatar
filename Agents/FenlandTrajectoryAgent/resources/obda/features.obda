@@ -9,7 +9,7 @@ xsd:        http://www.w3.org/2001/XMLSchema#
 mappingId       FoodHygieneDomain
 target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a fh:Domain ; fh:hasDomainName "Food Hygiene Rating"^^xsd:string ; fh:hasFeatureType "POINT"^^xsd:string .
 source      SELECT DISTINCT 'Food Hygiene Rating' AS "DomainName"
-            FROM "fhr_cambridge";
+            FROM "fhr_cambridge"
 
 mappingId       BasicBusinessInfo
 target      fh:{FHRSID} a fh:BusinessEstablishment ; fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> ; fh:hasBusinessName "{BusinessName}"^^xsd:string ; fh:hasBusinessType "{BusinessType}"^^xsd:string ; fh:hasPostcode "{PostCode}"^^xsd:string .
@@ -29,7 +29,7 @@ source      SELECT "FHRSID", "RatingValue", "RatingDate"
 mappingId       GreenspaceDomain
 target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a gs:Domain ; gs:hasDomainName "Greenspace"^^xsd:string ; gs:hasFeatureType "AREA"^^xsd:string .
 source      SELECT DISTINCT 'Greenspace' AS "DomainName"
-            FROM "GB_GreenspaceSite";
+            FROM "GB_GreenspaceSite"
 
 mappingId       GreenspaceBasicInfo
 target      gs:{id} a gs:Greenspace ; gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ; gs:hasFunction "{function}"^^xsd:string ; gs:hasDistrictName1 "{distName1}"^^xsd:string ; gs:hasDistrictName2 "{distName2}"^^xsd:string ; gs:hasDistrictName3 "{distName3}"^^xsd:string ; gs:hasDistrictName4 "{distName4}"^^xsd:string .

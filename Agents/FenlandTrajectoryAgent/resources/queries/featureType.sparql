@@ -1,0 +1,11 @@
+PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
+
+SELECT ?domainName ?featureType
+WHERE {
+  <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> 
+    exposure:hasDomainName ?domainName ;
+    exposure:hasFeatureType ?featureType .
+}
+
