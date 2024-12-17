@@ -35,6 +35,7 @@ public class LifecycleResource {
       + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/" + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH;
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
   public static final String EVENT_ORDER_RECEIVED = "https://www.theworldavatar.com/kg/ontoservice/OrderReceivedEvent";
+  public static final String EVENT_DISPATCH = "https://www.theworldavatar.com/kg/ontoservice/ServiceDispatchEvent";
   public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
   public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
   public static final String EVENT_INCIDENT_REPORT = "https://www.theworldavatar.com/kg/ontoservice/IncidentReportEvent";
@@ -263,25 +264,32 @@ public class LifecycleResource {
     LifecycleResource.appendFilterExists(stageFilters, true, EVENT_APPROVAL);
     LifecycleResource.appendArchivedFilterExists(stageFilters, false);
     return genPrefixes()
-        + "SELECT DISTINCT ?iri ?client ?location ?event_date ?" + STATUS_KEY + "{"
-        + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "SELECT DISTINCT ?iri ?contract ?client ?location ?event_date ?" + STATUS_KEY + "{"
+        + "?contract a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-rep:isRequestedBy/cmns-rlcmp:isPlayedBy/cmns-dsg:hasName/<https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/hasTransliteratedName> ?client;"
-        + "fibo-fnd-rel-rel:governs/fibo-fnd-rel-rel:provides/fibo-fnd-rel-rel:involves/^ontobim:hasFacility/<https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation>/geo:hasGeometry/geo:asWKT ?location;"
-        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
-        + "?stage fibo-fnd-rel-rel:exemplifies <"
+        + "fibo-fnd-rel-rel:governs/fibo-fnd-rel-rel:provides/fibo-fnd-rel-rel:involves/^ontobim:hasFacility/<https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation>/geo:hasGeometry/geo:asWKT ?location."
+        + "{SELECT DISTINCT ?contract (SAMPLE(?event) AS ?iri) (SAMPLE(?event_date) AS ?event_date) (MAX(?priority_val) AS ?priority) "
+        + "WHERE{?event ^<https://www.omg.org/spec/Commons/Collections/comprises>/^fibo-fnd-arr-lif:hasStage/^fibo-fnd-arr-lif:hasLifecycle ?contract;"
+        + "^<https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
-        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
-        + "?event fibo-fnd-dt-oc:hasEventDate ?event_date;"
-        + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH + " ?eventtype."
-        + "BIND("
-        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_DELIVERY)
-        + ",\"In progress\","
-        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_CANCELLATION)
-        + ",\"Cancelled\","
-        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT)
-        + ",\"Incomplete\""
-        + ",\"Unknown\"))) AS ?" + STATUS_KEY + ")"
+        + "fibo-fnd-rel-rel:exemplifies ?event_type;"
+        + "fibo-fnd-dt-oc:hasEventDate ?event_date."
         + "FILTER(?event_date=\"" + date + "\"^^xsd:date)"
+        + "BIND("
+        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ",0,"
+        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DISPATCH) + ",1,"
+        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DELIVERY) + ",2,"
+        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_CANCELLATION) + ",3,"
+        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT) + ",4,"
+        + "5))))) AS ?priority_val)"
+        + "}GROUP BY ?contract}"
+        + "BIND("
+        + "IF(?priority=0,\"Pending dispatch\","
+        + "IF(?priority=1,\"Pending execution\","
+        + "IF(?priority=2,\"Completed\","
+        + "IF(?priority=3,\"Cancelled\","
+        + "IF(?priority=4,\"Incomplete\""
+        + ",\"Unknown\"))))) AS ?" + STATUS_KEY + ")"
         + "}";
   }
 
