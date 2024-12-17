@@ -93,7 +93,7 @@ public class LifecycleService {
    * 
    * @param contract The target contract id.
    */
-  public ResponseEntity<ApiResponse> getStatus(String contract) {
+  public ResponseEntity<ApiResponse> getContractStatus(String contract) {
     LOGGER.debug("Retrieving the status of the contract...");
     String query = LifecycleResource.genServiceStatusQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);

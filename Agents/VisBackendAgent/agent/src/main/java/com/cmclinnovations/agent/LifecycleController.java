@@ -324,9 +324,9 @@ public class LifecycleController {
    * Retrieve the status of the contract
    */
   @GetMapping("/contracts/status/{id}")
-  public ResponseEntity<ApiResponse> getStatus(@PathVariable String id) {
+  public ResponseEntity<ApiResponse> getContractStatus(@PathVariable String id) {
     LOGGER.info("Received request to retrieve the status for the contract: {}...", id);
-    return this.lifecycleService.getStatus(id);
+    return this.lifecycleService.getContractStatus(id);
   }
 
   /**
