@@ -1,5 +1,5 @@
 # MoDS Simple Agent
-This agent is able to access a limited amount of the functionality of [the Model Development Suite (MoDS)](https://cmclinnovations.com/solutions/products/mods/). 
+This agent is able to access a limited amount of the functionality of [the Model Development Suite (MoDS)](https://cmcl.io/our-work/software-suite/mods/). 
 
 ## Deployment
 This agent is currently deployed at `https://kg.cmclinnovations.com/mods-agent` however if you require local deployment you can follow the following instructions. 
@@ -30,6 +30,10 @@ Others will return only the "jobID" and the "SimulationType" in a JSON object an
 - Multi-Objective Optimisation with a pregenerated saved surrogate (`MOOonly`)
 - Evaluation of a pregenerated saved surrogate (`Evaluate`)
 - Deep Kernel Learning Surrogate Generation (`DKL`)
+- Simulation of [kinetics & SRM Engine Suite](https://cmcl.io/our-work/software-suite/kinetics) (`SampleSRM`)*
+
+* Example JSON file is not provided for `SampleSRM` due to confidentiality.
+
 The JSON object returned by this query (URL-encoded if working through a browser) can then be passed as the "`query`" parameter to this URL https://kg.cmclinnovations.com/mods-agent/output/request (remote on KG server) or http://localhost:58085/output/request (local) to retrieve the results when the simulation is complete.
 
 The MoDS Simple Agent supports the loading and saving of surrogates generated.
@@ -42,3 +46,7 @@ Add the following files to the [`credentials`](./credentials/) directory.
 - `cmcl_repo_password.txt` password for nexus on bradman repo
 - `wa_repo_username.txt` username for into [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar)
 - `wa_repo_password.txt` password (or preferably token) for [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar)
+
+## Contact
+
+If you are interested in obtaining an licence to use the MoDS Simple Agent, please contact [CMCL](mailto:support@cmcl.io).
