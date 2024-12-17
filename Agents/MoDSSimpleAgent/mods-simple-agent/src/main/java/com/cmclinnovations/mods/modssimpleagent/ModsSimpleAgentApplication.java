@@ -7,8 +7,6 @@ import javax.xml.bind.JAXBException;
 
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.SpringApplication;
