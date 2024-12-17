@@ -487,7 +487,7 @@ A successful request will return `{"message": "Schedule has been successfully dr
 
 #### 2.6.4 Service commencement route
 
-The endpoint serves to commence the delivery of services by approving the specified contract. Users must send a `POST` request to approve the contract at the following endpoint:
+The endpoint serves to commence the delivery of services by approving the specified contract. This endpoint will also generate the occurrences on their scheduled dates. Users must send a `POST` request to approve the contract at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/service/commence

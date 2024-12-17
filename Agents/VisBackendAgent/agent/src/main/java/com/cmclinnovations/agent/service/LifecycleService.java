@@ -2,6 +2,7 @@ package com.cmclinnovations.agent.service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class LifecycleService {
   private final KGService kgService;
   private final FileService fileService;
 
+  private static final String ORDER_INITIALISE_MESSAGE = "Order received and is being processed.";
   private static final Logger LOGGER = LogManager.getLogger(LifecycleService.class);
 
   /**
@@ -61,11 +63,23 @@ public class LifecycleService {
 
   /**
    * Populate the remaining occurrence parameters into the request parameters.
+   * Defaults to the current date as date is not supplied.
    * 
    * @param params    The target parameters to update.
    * @param eventType The target event type to retrieve.
    */
   public void addOccurrenceParams(Map<String, Object> params, LifecycleEventType eventType) {
+    addOccurrenceParams(params, eventType, this.dateTimeService.getCurrentDate());
+  }
+
+  /**
+   * Populate the remaining occurrence parameters into the request parameters.
+   * 
+   * @param params    The target parameters to update.
+   * @param eventType The target event type to retrieve.
+   * @param date      Date in YYYY-MM-DD format.
+   */
+  public void addOccurrenceParams(Map<String, Object> params, LifecycleEventType eventType, String date) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding occurrence parameters for {}...", contractId);
     String stage = this.getStageInstance(contractId, eventType);
@@ -74,7 +88,7 @@ public class LifecycleService {
     params.put(LifecycleResource.STAGE_KEY, stage);
     params.put(LifecycleResource.EVENT_KEY, LifecycleResource.getEventClass(eventType));
     // Only retrieve the current date if no date input is given
-    params.putIfAbsent(LifecycleResource.DATE_KEY, this.dateTimeService.getCurrentDate());
+    params.putIfAbsent(LifecycleResource.DATE_KEY, date);
   }
 
   /**
@@ -158,6 +172,67 @@ public class LifecycleService {
     String activeServiceQuery = LifecycleResource.genActiveServiceTaskQuery(contract, date);
     Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
     return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
+  }
+
+  /**
+   * Generate occurrences for the order received event of a specified contract.
+   * 
+   * @param contract Target contract.
+   * @return boolean indicating if the occurrences have been generated
+   *         successfully.
+   */
+  public boolean genOrderReceivedOccurrences(String contract) {
+    LOGGER.info("Generating all orders for the active contract {}...", contract);
+    // Retrieve schedule information for the specific contract
+    String query = LifecycleResource.genServiceScheduleQuery(contract);
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    SparqlBinding bindings = this.kgService.getSingleInstance(results);
+    // Extract specific schedule info
+    String startDate = bindings
+        .getFieldValue(StringResource.parseQueryVariable(LifecycleResource.SCHEDULE_START_DATE_KEY));
+    String endDate = bindings.getFieldValue(StringResource.parseQueryVariable(LifecycleResource.SCHEDULE_END_DATE_KEY));
+    String recurrence = bindings
+        .getFieldValue(StringResource.parseQueryVariable(LifecycleResource.SCHEDULE_RECURRENCE_KEY));
+    Queue<String> occurrences = new ArrayDeque<>();
+    // Extract date of occurrences based on the schedule information
+    // For single time schedules, simply add the start date
+    if (recurrence.equals("P1D")) {
+      occurrences.offer(startDate);
+    } else if (recurrence.equals("P2D")) {
+      // Alternate day recurrence should have dual interval
+      occurrences = this.dateTimeService.getOccurrenceDates(startDate, endDate, 2);
+    } else {
+      // Note that this may run for other intervals like P3D but
+      // an error will be thrown in the following method unless the recurrence is in
+      // intervals of 7
+      int weeklyInterval = this.dateTimeService.getWeeklyInterval(recurrence);
+      occurrences = this.dateTimeService.getOccurrenceDates(startDate, endDate, bindings, weeklyInterval);
+    }
+    // Add parameter template
+    Map<String, Object> params = new HashMap<>();
+    params.put(LifecycleResource.CONTRACT_KEY, contract);
+    params.put(LifecycleResource.REMARKS_KEY, ORDER_INITIALISE_MESSAGE); // Empty remarks
+    this.addOccurrenceParams(params, LifecycleEventType.SERVICE_ORDER_RECEIVED);
+    String orderPrefix = StringResource.getPrefix(params.get(LifecycleResource.STAGE_KEY).toString()) + "/"
+        + LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_RECEIVED) + "/";
+    // Instantiate each occurrence
+    boolean hasError = false;
+    while (!occurrences.isEmpty()) {
+      // Retrieve and update the date of occurrence
+      String occurrenceDate = occurrences.poll();
+      // set new id each time
+      params.put("id", orderPrefix + UUID.randomUUID());
+      params.put(LifecycleResource.DATE_KEY, occurrenceDate);
+      ResponseEntity<ApiResponse> response = this.addService.instantiate(
+          LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
+      // Error logs for any specified occurrence
+      if (response.getStatusCode() != HttpStatus.CREATED) {
+        LOGGER.error("Error encountered while creating order for {} on {}! Read error message for more details: {}",
+            contract, occurrenceDate, response.getBody().getMessage());
+        hasError = true;
+      }
+    }
+    return hasError;
   }
 
   /**

@@ -25,6 +25,7 @@ public class LifecycleResource {
   public static final String SCHEDULE_END_DATE_KEY = "end date";
   public static final String SCHEDULE_START_TIME_KEY = "start time";
   public static final String SCHEDULE_END_TIME_KEY = "end time";
+  public static final String SCHEDULE_RECURRENCE_KEY = "recurrence";
   public static final String SCHEDULE_TYPE_KEY = "schedule type";
 
   public static final String LIFECYCLE_STAGE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>";
@@ -33,6 +34,7 @@ public class LifecycleResource {
   public static final String LIFECYCLE_EVENT_PREDICATE_PATH = LIFECYCLE_STAGE_PREDICATE_PATH + "/"
       + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/" + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH;
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
+  public static final String EVENT_ORDER_RECEIVED = "https://www.theworldavatar.com/kg/ontoservice/OrderReceivedEvent";
   public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
   public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
   public static final String EVENT_INCIDENT_REPORT = "https://www.theworldavatar.com/kg/ontoservice/IncidentReportEvent";
@@ -74,6 +76,7 @@ public class LifecycleResource {
     switch (eventType) {
       case LifecycleEventType.APPROVED:
         return "https://www.theworldavatar.com/kg/ontoservice/CreationStage";
+      case LifecycleEventType.SERVICE_ORDER_RECEIVED:
       case LifecycleEventType.SERVICE_EXECUTION:
       case LifecycleEventType.SERVICE_CANCELLATION:
       case LifecycleEventType.SERVICE_INCIDENT_REPORT:
@@ -96,6 +99,8 @@ public class LifecycleResource {
     switch (eventType) {
       case LifecycleEventType.APPROVED:
         return EVENT_APPROVAL;
+      case LifecycleEventType.SERVICE_ORDER_RECEIVED:
+        return EVENT_ORDER_RECEIVED;
       case LifecycleEventType.SERVICE_EXECUTION:
         return EVENT_DELIVERY;
       case LifecycleEventType.SERVICE_CANCELLATION:
@@ -122,6 +127,8 @@ public class LifecycleResource {
     switch (eventType) {
       case LifecycleEventType.APPROVED:
         return "approve";
+      case LifecycleEventType.SERVICE_ORDER_RECEIVED:
+        return "order";
       case LifecycleEventType.SERVICE_EXECUTION:
         return "complete";
       case LifecycleEventType.SERVICE_CANCELLATION:
@@ -236,8 +243,8 @@ public class LifecycleResource {
    */
   public static String genReadableScheduleQuery() {
     return genScheduleTemplateQuery()
-        + "BIND(IF(?recurrence=\"P1D\",\"Single Service\","
-        + "IF(?recurrence=\"P2D\",\"Alternate Day Service\", "
+        + "BIND(IF(?" + SCHEDULE_RECURRENCE_KEY + "=\"P1D\",\"Single Service\","
+        + "IF(?" + SCHEDULE_RECURRENCE_KEY + "=\"P2D\",\"Alternate Day Service\", "
         + "CONCAT(\"Regular Service\")"
         + ")" // Close IF statement
         + ") AS ?" + StringResource.parseQueryVariable(SCHEDULE_TYPE_KEY) + ")";
@@ -451,6 +458,7 @@ public class LifecycleResource {
         + StringResource.parseQueryVariable(SCHEDULE_START_TIME_KEY) + ";"
         + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?"
         + StringResource.parseQueryVariable(SCHEDULE_END_TIME_KEY) + ";"
-        + "<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasRecurrenceInterval>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDurationValue> ?recurrence.";
+        + "<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasRecurrenceInterval>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDurationValue> ?"
+        + SCHEDULE_RECURRENCE_KEY + ShaclResource.FULL_STOP;
   }
 }

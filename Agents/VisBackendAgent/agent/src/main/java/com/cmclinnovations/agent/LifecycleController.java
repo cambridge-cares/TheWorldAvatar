@@ -33,6 +33,7 @@ public class LifecycleController {
   private final LifecycleService lifecycleService;
 
   private static final String MISSING_FIELD_MSG_TEMPLATE = "Missing `{0}` field in request parameters!";
+  private static final String SOME_ORDER_GEN_FAIL_MSG = "Some orders have failed to be generated. Please read logs for more information.";
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
@@ -112,15 +113,23 @@ public class LifecycleController {
           HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to commence the services for a contract...");
-    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
-    ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
-        params);
-    if (response.getStatusCode() == HttpStatus.CREATED) {
-      LOGGER.info("Contract has been approved for service execution!");
-      return new ResponseEntity<>("Contract has been approved for service execution!", HttpStatus.OK);
+    String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
+    boolean hasError = this.lifecycleService.genOrderReceivedOccurrences(contractId);
+    if (hasError) {
+      LOGGER.error(SOME_ORDER_GEN_FAIL_MSG);
+      return new ResponseEntity<>(SOME_ORDER_GEN_FAIL_MSG, HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
-      return response;
+      LOGGER.info("All orders has been successfully received!");
+      this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
+      ResponseEntity<ApiResponse> response = this.addService.instantiate(
+          LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+          params);
+      if (response.getStatusCode() == HttpStatus.CREATED) {
+        LOGGER.info("Contract has been approved for service execution!");
+        return new ResponseEntity<>("Contract has been approved for service execution!", HttpStatus.OK);
+      } else {
+        return response;
+      }
     }
   }
 
