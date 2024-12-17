@@ -24,7 +24,7 @@ Some `SimulationType`s will be returned the results of the simulation immediatel
 - Multi-Criteria Decision Making (`MCDM`)
 - Sensitivity Analysis (`Sensitivity`)
 
-Others will return only return a the "jobID" and the "SimulationType" in a JSON object and run asynchronously.
+Others will return only the "jobID" and the "SimulationType" in a JSON object and run asynchronously.
 - High-Dimensional Model Representation Surrogate Generation (`HDMR`)
 - Surrogate Generation and Multi-Objective Optimisation (`MOO`)
 - Multi-Objective Optimisation with a pregenerated saved surrogate (`MOOonly`)
