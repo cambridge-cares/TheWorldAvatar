@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -706,10 +707,10 @@ public class QueryClient {
             shipToMeasuresMap.entrySet().forEach(entry -> {
                 String ship = entry.getKey();
                 List<String> measures = entry.getValue();
-                Instant latestTime = tsClient.getLatestData(measures.get(0), conn).getTimes().get(0);
+                TimeSeries<Instant> tsLatest = tsClient.getLatestData(measures.get(0), conn);
                 Instant earliestTimeTokeep = Instant.now().minus(daysBefore, ChronoUnit.DAYS);
 
-                if (latestTime == null || latestTime.isBefore(earliestTimeTokeep)) {
+                if (tsLatest.getTimes().isEmpty() || tsLatest.getTimes().get(0).isBefore(earliestTimeTokeep)) {
                     shipsToDeleteCompletely.add(entry.getKey());
                     tsClient.deleteTimeSeries(shipToTsMap.get(ship), conn);
                 } else {

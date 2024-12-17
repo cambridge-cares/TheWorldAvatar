@@ -8,13 +8,13 @@ from requests.auth import HTTPBasicAuth
 
 
 
-# convert heat value unit
-def unit_convert_hv(hv):
-    return hv/1e6
+# Divide by million
+def unit_convert_million(value):
+    return value/1e6
 
-# convert population to thousands of population
-def unit_convert_thousand(ppl):
-    return ppl/1000
+# Divide by thousands
+def unit_convert_thousand(value):
+    return value/1000
 
 def query_data_agent(agent_url):
     return requests.get(agent_url).json()
@@ -43,7 +43,7 @@ def query_all(querylist):
             result = query_single_ep(qobj)
             for k in result:
                 if k == 'hhv' or k=='lhv':#Plug in unit conversion
-                    results[k] = unit_convert_hv(float(result[k]))
+                    results[k] = unit_convert_million(float(result[k]))
                 elif k == 'population':
                     results[k] = unit_convert_thousand(float(result[k]))
                 else:

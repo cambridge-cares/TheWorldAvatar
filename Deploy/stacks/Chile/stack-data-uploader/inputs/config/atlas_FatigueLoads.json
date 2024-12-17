@@ -1,0 +1,26 @@
+{
+    "name": "atlas_FatigueLoads",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlas_FatigueLoads",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "atlas_FatigueLoads",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "atlas_fatigue_loads"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "atlas_fatigue_loads",
+            "file": "atlas_fatigue_loads.sld"
+        }
+    ]
+}

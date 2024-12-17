@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This fixes issues with WSL not mounting the Windows directories in a stable way.
+cd .
+
 COMMAND=$1
 shift
 

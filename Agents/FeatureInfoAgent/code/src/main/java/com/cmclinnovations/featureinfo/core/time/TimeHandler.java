@@ -34,6 +34,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClientFactory;
 
 /**
  * This class handles the Knowledge Graph to determine measurement IRIs, then
@@ -146,6 +147,9 @@ public class TimeHandler {
         // Pool of all constructed and populated timeseries objects
         Map<TimeSeries<Instant>, List<Measurable>> allTimeSeries = new LinkedHashMap<>();
 
+        // construct TimeSeriesClient using TimeSeriesClientFactory
+        tsClient = getTimeSeriesClientViaFactory(allMeasurables);
+
         // Iterate through unique database names
         for (Map.Entry<String, List<Measurable>> entryByDB : groupByDatabase.entrySet()) {
             LOGGER.debug("Running queries for time series in database: {}", entryByDB);
@@ -255,6 +259,29 @@ public class TimeHandler {
         // Fill in timeseries IRI if missing
         this.populateTimeSeriesIRIs(measurables);
         return measurables;
+    }
+
+    private TimeSeriesClient<Instant> getTimeSeriesClientViaFactory(List<Measurable> measurables) {
+        // Run query
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
+
+        try {
+            if (endpoints.size() == 1) {
+                LOGGER.debug("Generating time series client via non-federated query.");
+
+                kgClient.setQueryEndpoint(endpoints.get(0));
+
+                return (TimeSeriesClient<Instant>) TimeSeriesClientFactory.getInstance(kgClient,
+                        measurables.stream().map(m -> m.getEntityIRI()).collect(Collectors.toList()));
+            } else {
+                return (TimeSeriesClient<Instant>) TimeSeriesClientFactory.getInstance(endpoints,
+                        measurables.stream().map(m -> m.getEntityIRI()).collect(Collectors.toList()));
+            }
+        } catch (Exception e) {
+            // return default tsClient
+            LOGGER.warn(e.getMessage());
+            return tsClient;
+        }
     }
 
     /**

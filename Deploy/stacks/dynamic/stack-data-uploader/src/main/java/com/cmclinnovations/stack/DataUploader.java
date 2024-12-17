@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 
 /**
@@ -9,7 +10,7 @@ import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 public class DataUploader {
     public static void main(String[] args) {
 
-        DatasetLoader.uploadInputDatasets();
+       new DatasetLoader().loadInputDatasets(StackClient.STACK_CONFIG_DIR, StackClient.getStackName());
 
     }
 }

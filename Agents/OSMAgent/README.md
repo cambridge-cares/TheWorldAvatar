@@ -125,7 +125,7 @@ curl -X POST localhost:3838/osmagent/update
 
 As an example, to run the agent for a selected area, run the following cURL command:
 ```
- curl -X POST -d "bound_wkt=Polygon ((7.59874554 49.20197125, 7.60999879 49.20420408, 7.61422963 49.19662298, 7.603001 49.19423612, 7.603001 49.19423612, 7.59874554 49.20197125))" -d "bound_srid=4326" localhost:3838/osmagent/update```
+ curl -X POST -d "bound_wkt=Polygon ((7.59874554 49.20197125, 7.60999879 49.20420408, 7.61422963 49.19662298, 7.603001 49.19423612, 7.603001 49.19423612, 7.59874554 49.20197125))" -d "bound_srid=4326" localhost:3838/osmagent/update
 ```
 
 ## 5. Debugging

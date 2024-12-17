@@ -11,10 +11,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
 import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
+import com.cmclinnovations.stack.clients.docker.DockerConfigHandler;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -123,6 +126,10 @@ public class ContainerService extends AbstractService {
         dockerClient.sendFilesContent(containerId, files, remoteDirPath);
     }
 
+    public boolean fileExists(String filePath) {
+        return dockerClient.fileExists(containerId, filePath);
+    }
+
     public final void executeCommand(String... cmd) {
         dockerClient.executeSimpleCommand(containerId, cmd);
     }
@@ -151,12 +158,12 @@ public class ContainerService extends AbstractService {
         return dockerClient.configExists(configName);
     }
 
-    private <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
-        dockerClient.writeEndpointConfig(endpointConfig);
+    private <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+        DockerConfigHandler.writeEndpointConfig(endpointConfig);
     }
 
     public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
-        return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
+        return DockerConfigHandler.readEndpointConfig(endpointName, endpointConfigClass);
     }
 
     /**
@@ -192,6 +199,10 @@ public class ContainerService extends AbstractService {
             Map<String, String> upstreams, Entry<String, Connection> endpoint) {
         // Do nothing by default, override if container needs to add an NGINX location
         // configuration block
+    }
+
+    public String getDNSIPAddress(){
+        return dockerClient.getDNSIPAddress();
     }
 
 }

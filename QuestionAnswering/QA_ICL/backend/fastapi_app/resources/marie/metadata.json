@@ -1,0 +1,4 @@
+{
+    "title": "Marie",
+    "subtitle": "This website presents a proof-of-concept search engine system for accessing chemical data from the World Avatar Knowledge Graph. The Knowledge Graphs offers inter-connected data from chemical kinetics to chemical and physical properties of species and many other domains. Please note that Marie is still under development and the accuracy of the results will increase with further refinement of the underlying ontologies.\nTo use the search engine, type a question into the field below, or select one of the provided sample questions."
+}

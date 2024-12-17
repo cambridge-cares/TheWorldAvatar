@@ -40,6 +40,7 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 /**
  * a separate mapping is required for each SRID, currently only supports 4326
@@ -64,7 +65,8 @@ public class InitialiseSimulation extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient);
     }
 

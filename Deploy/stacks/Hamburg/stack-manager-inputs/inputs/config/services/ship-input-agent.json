@@ -1,0 +1,63 @@
+{
+    "ServiceSpec": {
+        "Name": "ship-input-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.7",
+                "Env": [
+                    "DATABASE=postgres",
+                    "DATA_DIR=/data",
+                    "LAST_READ_FILE=/misc/last_read_file",
+                    "TIME_OFFSET_FILE=/misc/time_offset_file",
+                    "GEOSERVER_WORKSPACE=dispersion",
+                    "EMISSIONS_AGENT_URL=http://${STACK_NAME}-emissions-agent:8080/EmissionsAgent/",
+                    "EMISSIONS_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/EmissionsAgent",
+                    "PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
+                    "PARALLELISE_CALCULATIONS=true",
+                    "USE_LIVE_DATA=false",
+                    "API_KEY=",
+                    "BOUNDING_BOXES=[[[53.489, 9.881], [53.596, 10.06]]]",
+                    "UPLOAD_INTERVAL_MINUTES=30",
+                    "SKIP_UPDATE_RDB=true",
+                    "SHIP_DATA_AGENT_URL=http://${STACK_NAME}-ship-data-agent:8080/ShipDataAgent/",
+                    "SHIP_DATA_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/ShipDataAgent"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "misc",
+                        "Target": "/misc"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ship-input-agent": {
+            "url": "http://localhost:8080/ShipInputAgent/",
+            "externalPath": "/ship-input-agent/"
+        }
+    }
+}

@@ -33,6 +33,48 @@ To deploy the docker image, plese follow below steps:
 
 You should now be able to access the fileserver with a username `fs_user` and the credential you set.
 
+## Integration with the Stack Manager
+
+The fileserver can also be integrated with the stack manager. Please refer to the general stack-manager documentation for more information, especially the "Specifying a custom container" section. ([Link to stack manager README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#specifying-custom-containers))  
+
+In short, you need to add a service configuration file and include the file server in the stack configuration file. The following example can be used as a starting point for the service configuration file. Make sure to name the secrets file with the stored credentials "file_server_password", otherwise a default password will be used. After spinning up the stack, you should be able to access the file server with the username `fs_user` and the credentials you set.
+
+```json
+{
+    "ServiceSpec": {
+        "Name": "file-server",
+        "TaskTemplate": {
+            "ContainerSpec":    {
+                                "Image": "ghcr.io/cambridge-cares/fileserver:1.1.0",
+                                "Mounts":   [
+                                                {
+                                                "Type": "volume",
+                                                "Source": "vis_files",
+                                                "Target": "/app/fs_root"
+                                                }
+                                            ],
+                                "Secrets": [
+                                                {
+                                                "SecretName": "file_server_password"
+                                                }
+                                            ]
+                                }
+                        }
+                    }, 
+    "endpoints":    {
+                    "file-server": {
+                                    "url": "http://localhost:8080/FileServer/",
+                                    "externalPath": "/file-server/"
+                                    }
+                    }
+}
+```
+
+### Mount Type
+If mount type is "volume", changes to the fileserver via POST or DELETE requests will not be reflected in the the source directory. HTTP requests will only affect the target directory which is located inside the Docker container. This means, when the container crashes or stack gets restarted, all changes in the meantime will be effectively discarded.  
+If mount type is "bind" on the other side, any changes to the target folder inside the container (via POST or DELETE requests) will be synced to the source folder outside the container. If the stack is restarted, all changes will still be there. 
+
+See https://github.com/cambridge-cares/TheWorldAvatar/issues/1416 for more details.
 
 ## POST
 

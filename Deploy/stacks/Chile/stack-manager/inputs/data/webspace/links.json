@@ -1,0 +1,33 @@
+{
+    "intro": "The data contained in this visualisation has been gathered from different sources. We used the * symbol to indicate adapted or calculated data from a source.     (1) Mapbox Countries v1, https://docs.mapbox.com/data/tilesets/reference/mapbox-countries-v1/, accessed in November 2023. (2) IDE: These layers come from the Geoportal de Chile, Infraestructura de Datos Geoespaciales, downloaded in July-August 2023. License: --. (3) gov: These layers come from the Geo Portal CNE, downloaded in July-August 2023. License: Policy of privacy declared. (4) Atlas: The layer related to winds come from the Global Wind Atlas, downloaded in July-August 2023. License: CC BY 4.0, except where expressly stated that another license applies. (5) Solar Atlas: These layers come from the Solar Global Atlas, downloaded in August 2023. License: CC BY 4.0, except where expressly stated. (6) HumData: The buildings layer comes from an OpenStreetMap contributor, Humanitarian OpenStreetMap Team posted in The Humanitarian Data Exchange website (https://data.humdata.org/), updated on 2020. It contains a limited amount of building information. License: Open Database License. (7) GFabrik: This package of layers comes from OpenStreetMap, downloaded in July-August 2023. License: Open Database 1.0 License. www.openstreetmap.org (8) P. Sarricolea, M. Herrera-Ossandon and Ó. Meseguer-Ruiz. Climatic regionalisation of continental Chile. Journal of Maps, 13(2):66–73, 2017. (9) National Statistics Institute of Chile, INE, https://www.ine.gob.cl/, accessed in October 2023. CC BY-SA 4.0 DEED.",
+
+
+    
+    
+    "links": [
+        {
+            "text": "HumData",
+            "url": "https://data.humdata.org/dataset/hotosm_chl_buildings"
+        },
+        {
+            "text": "Global Wind Atlas: obtained from the “Global Wind Atlas 3.0, a free, web-based application developed, owned and operated by the Technical University of Denmark (DTU). The Global Wind Atlas 3.0 is released in partnership with the World Bank Group, utilizing data provided by Vortex, using funding provided by the Energy Sector Management Assistance Program (ESMAP). For additional information: https://globalwindatlas.info”",
+            "url": "https://globalwindatlas.info/en/about/TermsOfUse"
+        },
+        {
+            "text": "GFabrik - OpenStreetMap",
+            "url": "http://download.geofabrik.de/south-america/chile.html"
+        },
+        {
+            "text": "Geo Portal CNE",
+            "url": "https://energiamaps.cne.cl/"
+        },
+        {
+            "text": "Geoportal de Chile",
+            "url": "https://www.ide.cl/"
+        },
+        {
+            "text": "Global Solar Atlas: obtained from the “Global Solar Atlas 2.0, a free, web-based application is developed and operated by the company Solargis s.r.o. on behalf of the World Bank Group, utilizing Solargis data, with funding provided by the Energy Sector Management Assistance Program (ESMAP). For additional information: https://globalsolaratlas.info",
+            "url": "https://globalsolaratlas.info/"
+        }
+    ]
+}

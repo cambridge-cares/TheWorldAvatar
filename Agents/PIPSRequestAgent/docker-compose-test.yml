@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  test_pips_request_agent:
+    build:
+      context: .
+      target: test
+      dockerfile: Dockerfile
+    image: test_pips_request_agent:1.0.0
+    container_name: test_pips_request_agent
+
+  mockserver:
+    image: mockserver/mockserver
+    ports:
+      - "1111:1080"
+    environment:
+      MOCKSERVER_LOG_LEVEL: INFO
+    restart: always
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    environment:
+      KC_HOSTNAME: test_pips_request_agent-keycloak-1
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://test_pips_request_agent-keycloak-1:7080/health/ready"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm"]
+    volumes:
+      - ./PIPSRequestAgent/src/test/resources/exported-realm.json:/opt/keycloak/data/import/exported-realm.json
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+    restart: always

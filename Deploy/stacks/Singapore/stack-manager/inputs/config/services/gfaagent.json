@@ -1,0 +1,47 @@
+{
+    "ServiceSpec": {
+        "Name": "gfaagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/gfaagent:1.0.0-SNAPSHOT",
+                "Env": [
+                  "STACK_NAME=${STACK_NAME}",
+                  "DATABASE=postgres",
+                  "floors_csv=/data/HDBfloors/HDBPropertyInformation.csv"
+                ],
+                "Mounts": [
+                  {
+                    "Type": "bind",
+                    "Source": "../../../gfa_config/",
+                    "Target": "/data/HDBfloors/"
+                  }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                      "ConfigName": "geoserver"
+                    }
+                  ],
+                "Secrets": [
+                  {
+                    "SecretName": "postgis_password"
+                  },
+                  {
+                    "SecretName": "geoserver_password"
+                  }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "gfaagent": {
+          "url": "http://localhost:8080/gfaagent/",
+          "externalPath": "/gfaagent/"
+        }
+    }
+}

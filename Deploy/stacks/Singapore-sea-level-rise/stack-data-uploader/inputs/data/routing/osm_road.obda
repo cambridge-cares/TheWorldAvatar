@@ -1,0 +1,28 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+geo:    http://www.opengis.net/ont/geosparql#
+osm: https://w3id.org/openstreetmap/terms#
+openstreetmap: https://www.openstreetmap.org/
+ontosl:    https://www.theworldavatar.com/kg/ontosealevel/
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId	OSM Road
+target		openstreetmap:way/{osm_id} a osm:Way ;
+                osm:highway osm:{road_type}_{osm_id} ;
+                a geo:Geometry ;
+                ontosl:hasLength :length_{osm_id};
+                osm:name {name};
+                osm:oneway {oneway}; 
+                osm:maxspeed {maxspeed_forward};
+                geo:asWKT "{geom_comb}"^^geo:wktLiteral.
+            osm:{road_type}_{osm_id} a osm:{road_type}.
+            :length_{osm_id} a om:Length; 
+                om:hasValue :measure_length_{osm_id}.
+            :measure_length_{osm_id} a om:Measure; 
+                om:hasUnit om:metre;
+                om:hasNumericalValue {total_length_m}.
+source		SELECT osm_id, name, total_length_m, road_type, oneway, maxspeed_forward, maxspeed_backward, ST_ASTEXT(geom) as geom_comb FROM osm_road_mat_view
+]]

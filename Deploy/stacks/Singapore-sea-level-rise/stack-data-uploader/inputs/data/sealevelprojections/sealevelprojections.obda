@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+ontosl:    https://www.theworldavatar.com/kg/ontosealevel/
+geo:    http://www.opengis.net/ont/geosparql#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+
+[MappingDeclaration] @collection [[
+mappingId	Sea Level Projections
+target		ontosl:SeaLevelChange/{uuid} a ontosl:SeaLevelChange ;
+                a geo:Geometry ;
+                ontosl:hasSSP ontosl:SharedSocioeconomicPathway{ssp}_{uuid};
+                ontosl:hasRCP ontosl:RepresentativeConcentrationPathway{rcp}_{uuid};
+                ontosl:hasHeight ontosl:sealevelrise_{uuid} ;
+                ontosl:hasProjectionYear {projectionyear} ;
+                ontosl:hasBaselineYear {projectionreferenceyear} ;
+                geo:asWKT "{geom}"^^geo:wktLiteral ;
+                ontosl:hasPercentageQuantile {quantile} ;
+                ontosl:hasConfidenceLevel ontosl:{confidence}Confidence_{uuid} .
+            ontosl:sealevelrise_{uuid} a om:Height ; 
+                om:hasValue ontosl:sealevelrise_measure_{uuid}. 
+            ontosl:sealevelrise_measure_{uuid} a om:Measure;
+                om:hasUnit om:metre;
+                om:hasNumericalValue {sealevelriseinmeters}.
+            ontosl:{confidence}Confidence_{uuid} a ontosl:{confidence}Confidence.
+            ontosl:SharedSocioeconomicPathway{ssp}_{uuid} a ontosl:SharedSocioeconomicPathway{ssp}.
+            ontosl:RepresentativeConcentrationPathway{rcp}_{uuid} a ontosl:RepresentativeConcentrationPathway{rcp};
+                ontosl:hasRadioactiveForcingValues ontosl:RadioactiveForcing_{uuid}.
+            ontosl:RadioactiveForcing_{uuid} a om:Irradiance;
+                 om:hasValue ontosl:RadioactiveForcingMeasure_{uuid}.
+            ontosl:RadioactiveForcingMeasure_{uuid} a om:Measure;
+                om:hasUnit om:wattPerSquareMetre;
+                om:hasNumericalValue {rcp_num}.
+source		SELECT confidence, ssp, rcp, rcp / 10 AS rcp_num, quantile, projectionreferenceyear, projectionyear, sealevelriseinmeters, uuid, ST_ASTEXT(geom) as geom  FROM sealevelprojections
+]]

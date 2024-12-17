@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -108,7 +109,7 @@ public class IsochroneAgentTest {
                 });
 
         agent = new IsochroneAgent();
-        String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women";
+        String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women\nupdateOntop=true";
 
         //Create Mockclasses
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
@@ -142,14 +143,14 @@ public class IsochroneAgentTest {
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
         verify(routeSegmentizationMock.constructed().get(0), times(1)).segmentize(any(RemoteRDBStoreClient.class), anyDouble());
-        verify(isochroneGeneratorMock.constructed().get(0), times(1)).generateIsochrone(any(RemoteRDBStoreClient.class), anyInt(), anyInt(),  any(Map.class));
+        verify(isochroneGeneratorMock.constructed().get(0), times(1)).generateIsochrone(any(RemoteRDBStoreClient.class), anyInt(), anyInt(),  any(Map.class), anyBoolean());
         verify(isochroneGeneratorMock.constructed().get(0), times(1)).createIsochroneBuilding(any(RemoteRDBStoreClient.class));
         verify(populationMapperMock.constructed().get(0), times(1)).checkAndAddColumns(any(RemoteRDBStoreClient.class), any(ArrayList.class));
         verify(populationMapperMock.constructed().get(0), times(1)).mapPopulation(any(RemoteRDBStoreClient.class), any(ArrayList.class));
         verify(geoserverClientMock.constructed().get(0), times(1)).createWorkspace(anyString());
         verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISDataStore(anyString(), anyString(), anyString(), anyString());
-        verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(), anyString(), any(GeoServerVectorSettings.class));
-        verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));  
+        verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(), anyString(), anyString(), any(GeoServerVectorSettings.class));
+        verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));
     }
 
 }

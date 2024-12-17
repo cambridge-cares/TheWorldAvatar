@@ -1,6 +1,5 @@
 from services.translate.sparql import SparqlQuery
 from services.translate.sparql.graph_pattern import (
-    BindClause,
     GraphPattern,
     ServicePattern,
     TriplePattern,

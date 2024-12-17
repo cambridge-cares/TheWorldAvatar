@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  TrafficIncidentAgent:
+    image: ghcr.io/cambridge-cares/traffic-incident-agent:1.5.0
+    container_name: traffic-incident-agent
+    ports:
+      - "1016:8080"

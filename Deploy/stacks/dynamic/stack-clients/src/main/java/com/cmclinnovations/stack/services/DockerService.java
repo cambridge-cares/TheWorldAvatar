@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.services.config.Connection;
@@ -30,6 +33,7 @@ import com.github.dockerjava.api.command.ListTasksCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.command.RemoveServiceCmd;
+import com.github.dockerjava.api.model.AuthConfig;
 import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -49,12 +53,15 @@ import com.github.dockerjava.api.model.ServiceSpec;
 import com.github.dockerjava.api.model.SwarmInfo;
 import com.github.dockerjava.api.model.SwarmSpec;
 import com.github.dockerjava.api.model.Task;
+import com.github.dockerjava.api.model.TaskSpec;
 import com.github.dockerjava.api.model.TaskState;
 import com.github.dockerjava.api.model.TaskStatus;
 import com.github.dockerjava.api.model.VolumeOptions;
 
 public class DockerService extends AbstractService
         implements ContainerManagerService<DockerClient> {
+
+    private static final Logger logger = LoggerFactory.getLogger(DockerService.class);
 
     // External path to socket on host
     private static final String API_SOCK = "API_SOCK";
@@ -209,9 +216,9 @@ public class DockerService extends AbstractService
         potentialNetwork.ifPresent(nw -> this.network = nw);
     }
 
-    protected Optional<Service> getSwarmService(ContainerService service) {
+    private Optional<Service> getSwarmService(String containerName) {
         try (ListServicesCmd listServicesCmd = dockerClient.getInternalClient().listServicesCmd()) {
-            return listServicesCmd.withNameFilter(List.of(service.getContainerName()))
+            return listServicesCmd.withNameFilter(List.of(containerName))
                     .exec().stream().findAny();
         }
     }
@@ -229,7 +236,7 @@ public class DockerService extends AbstractService
         service.doPostStartUpConfiguration();
     }
 
-    public void writeEndpointConfigs(ContainerService service){
+    public void writeEndpointConfigs(ContainerService service) {
         service.writeEndpointConfigs();
     }
 
@@ -263,7 +270,7 @@ public class DockerService extends AbstractService
 
     protected Optional<Container> configureContainerWrapper(ContainerService service) {
         Optional<Container> container;
-        removeSwarmService(service);
+        removeService(service);
 
         container = startSwarmService(service);
         return container;
@@ -309,8 +316,12 @@ public class DockerService extends AbstractService
         }
     }
 
-    private void removeSwarmService(ContainerService service) {
-        Optional<Service> swarmService = getSwarmService(service);
+    final void removeService(ContainerService service) {
+        removeService(service.getContainerName());
+    }
+
+    void removeService(String serviceName) {
+        Optional<Service> swarmService = getSwarmService(serviceName);
 
         if (swarmService.isPresent()) {
             try (RemoveServiceCmd removeServiceCmd = dockerClient.getInternalClient()
@@ -325,9 +336,15 @@ public class DockerService extends AbstractService
         ServiceSpec serviceSpec = service.getServiceSpec()
                 .withName(service.getContainerName())
                 .withLabels(StackClient.getStackNameLabelMap());
-        service.getTaskTemplate()
-                .withRestartPolicy(new ServiceRestartPolicy().withCondition(ServiceRestartCondition.NONE))
-                .withNetworks(List.of(new NetworkAttachmentConfig().withTarget(network.getId())));
+        TaskSpec taskTemplate = service.getTaskTemplate();
+        if (null == taskTemplate.getRestartPolicy()) {
+            taskTemplate.withRestartPolicy(new ServiceRestartPolicy()
+                    .withCondition(ServiceRestartCondition.ON_FAILURE)
+                    .withMaxAttempts(3l));
+        }
+        taskTemplate.withNetworks(List.of(new NetworkAttachmentConfig()
+                .withTarget(network.getId())
+                .withAliases(List.of(service.getName()))));
         ContainerSpec containerSpec = service.getContainerSpec()
                 .withLabels(StackClient.getStackNameLabelMap())
                 .withHostname(service.getName());
@@ -369,7 +386,7 @@ public class DockerService extends AbstractService
         mounts.add(new Mount()
                 .withType(MountType.VOLUME)
                 .withSource("scratch")
-                .withTarget(StackClient.SCRATCH_DIR));
+                .withTarget(StackClient.getScratchDir()));
 
         // Add the Docker API socket as a bind mount
         // This is required for a container to make Docker API calls
@@ -516,21 +533,35 @@ public class DockerService extends AbstractService
     }
 
     protected void pullImage(ContainerService service) {
-        String image = service.getImage();
-        if(!image.contains(":")){
-            throw new RuntimeException("Docker image '"+ image +"' must include a version.");
+        String imageName = service.getImage();
+        if (!imageName.contains(":")) {
+            throw new RuntimeException("Docker image '" + imageName + "' must include a version.");
         }
-        if (dockerClient.getInternalClient().listImagesCmd().withReferenceFilter(image).exec().isEmpty()) {
-            // No image with the requested image ID, so try to pull image
-            try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(image)) {
-                pullImageCmd
-                        .exec(new PullImageResultCallback())
-                        .awaitCompletion();
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Docker image pull command interupted", ex);
+
+        try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(imageName)) {
+            // Add an AuthConfig that causes Docker to check the stored credentials.
+            AuthConfig authConfig = new AuthConfig().withRegistryAddress(imageName.replaceFirst("/.*", ""));
+            if (null != authConfig) {
+                pullImageCmd.withAuthConfig(authConfig);
+            }
+            pullImageCmd.exec(new PullImageResultCallback()).awaitCompletion();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Docker image pull command interrupted", ex);
+        } catch (RuntimeException ex) {
+            // Check using the full and Docker shortened image references.
+            List<String> imageReferences = Stream.of(imageName, imageName.replace("docker.io/", ""))
+                    .distinct().collect(Collectors.toList());
+            if (dockerClient.getInternalClient().listImagesCmd()
+                    .withFilter("reference", imageReferences).exec().isEmpty()) {
+                // No local image with the requested image ID, so throw exception
+                throw new RuntimeException(
+                        "Image '" + imageName + "' not present locally and attempt to pull it failed.", ex);
+            } else {
+                // Local image found so ignore failed pull attempt
+                logger.warn("Image '" + imageName + "' present locally but attempt to pull failed.", ex);
             }
         }
-    }
 
+    }
 }

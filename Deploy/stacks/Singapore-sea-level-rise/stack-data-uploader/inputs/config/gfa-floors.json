@@ -1,0 +1,13 @@
+{
+    "name": "gfa-floors",
+	"database": "postgres",
+    "datasetDirectory": "gfa_floors",
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "subdirectory": "sql",
+            "sql": "@/inputs/data/gfa_floors/sql/gfa_floors.sql"
+        }
+    ],
+    "mappings": ["gfa_floors.obda"]
+}

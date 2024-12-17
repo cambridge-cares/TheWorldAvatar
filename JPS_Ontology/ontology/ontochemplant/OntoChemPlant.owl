@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontochemplant="http://www.theworldavatar.com/kg/ontochemplant#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontochemplant">
-        <dc:date>18 May 2024</dc:date>
+        <dc:date>31 May 2024</dc:date>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment>An ontology defined for representing the processes, business and geospatial information of a chemical plant</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
@@ -1128,6 +1128,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontochemplant#FeedTank -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#FeedTank">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontochemplant#ChemicalStorageTank"/>
+        <rdfs:comment>Vessel for holding untreated fluids.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
+        <rdfs:label>Feed tank</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontochemplant#FillLevel -->
 
 
@@ -1247,6 +1259,18 @@
         <rdfs:comment>The number of moles of a material that passes a reference plane within a unit time interval</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
         <rdfs:label>Molar flow rate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontochemplant#PermeateTank -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#PermeateTank">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontochemplant#ChemicalStorageTank"/>
+        <rdfs:comment>Vessel for holding the permeate produced by a treatment system.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
+        <rdfs:label>Permeate tank</rdfs:label>
     </owl:Class>
     
 

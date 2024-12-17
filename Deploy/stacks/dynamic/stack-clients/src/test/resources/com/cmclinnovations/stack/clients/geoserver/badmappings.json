@@ -1,0 +1,26 @@
+[
+    {
+        "source": "a1.txt",
+        "target": ""
+    },
+    {
+        "source": "d1",
+        "target": ""
+    },
+    {
+        "source": "a1.txt",
+        "target": "/"
+    },
+    {
+        "source": "d1",
+        "target": "/"
+    },
+    {
+        "source": "d1",
+        "target": "/asasdad"
+    },
+    {
+        "source": "/d1",
+        "target": "asasdad"
+    }
+]

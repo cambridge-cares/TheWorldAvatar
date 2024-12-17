@@ -1,0 +1,6 @@
+{
+    "name": "ontopExplicitURL",
+    "hostName": "hosty",
+    "port": "1234",
+    "url": "http://hosty:1234/test"
+}
