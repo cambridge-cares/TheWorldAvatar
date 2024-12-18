@@ -269,17 +269,13 @@ public class LifecycleResource {
     LifecycleResource.appendFilterExists(stageFilters, true, EVENT_APPROVAL);
     LifecycleResource.appendArchivedFilterExists(stageFilters, false);
     return genPrefixes()
-        + "SELECT DISTINCT ?iri ?contract ?client ?location ?event_date ?" + STATUS_KEY + "{"
-        + "?contract a fibo-fnd-pas-pas:ServiceAgreement;"
-        + "fibo-fnd-arr-rep:isRequestedBy/cmns-rlcmp:isPlayedBy/cmns-dsg:hasName/<https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/hasTransliteratedName> ?client;"
-        + "fibo-fnd-rel-rel:governs/fibo-fnd-rel-rel:provides/fibo-fnd-rel-rel:involves/^ontobim:hasFacility/<https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation>/geo:hasGeometry/geo:asWKT ?location."
-        + "{SELECT DISTINCT ?contract (SAMPLE(?event) AS ?iri) (SAMPLE(?event_date) AS ?event_date) (MAX(?priority_val) AS ?priority) "
+        + "SELECT DISTINCT ?contract (SAMPLE(?event) AS ?iri) (\"" + date
+        + "\"^^xsd:date AS ?event_date) (MAX(?priority_val) AS ?priority) "
         + "WHERE{?event ^<https://www.omg.org/spec/Commons/Collections/comprises>/^fibo-fnd-arr-lif:hasStage/^fibo-fnd-arr-lif:hasLifecycle ?contract;"
         + "^<https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
         + "fibo-fnd-rel-rel:exemplifies ?event_type;"
-        + "fibo-fnd-dt-oc:hasEventDate ?event_date."
-        + "FILTER(?event_date=\"" + date + "\"^^xsd:date)"
+        + "fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date. "
         + "BIND("
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ",0,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DISPATCH) + ",1,"
@@ -287,15 +283,7 @@ public class LifecycleResource {
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_CANCELLATION) + ",3,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT) + ",4,"
         + "5))))) AS ?priority_val)"
-        + "}GROUP BY ?contract}"
-        + "BIND("
-        + "IF(?priority=0,\"Pending dispatch\","
-        + "IF(?priority=1,\"Pending execution\","
-        + "IF(?priority=2,\"Completed\","
-        + "IF(?priority=3,\"Cancelled\","
-        + "IF(?priority=4,\"Incomplete\""
-        + ",\"Unknown\"))))) AS ?" + STATUS_KEY + ")"
-        + "}";
+        + "}GROUP BY ?contract";
   }
 
   /**
