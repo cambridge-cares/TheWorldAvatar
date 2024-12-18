@@ -383,6 +383,15 @@ public class LifecycleController {
   }
 
   /**
+   * Retrieves the form template for the dispatch order from the knowledge graph.
+   */
+  @GetMapping("/contracts/service/dispatch/form")
+  public ResponseEntity<?> getDispatchForm() {
+    LOGGER.info("Received request to get form template for order dispatch...");
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_ORDER_DISPATCHED);
+  }
+
+  /**
    * Validate if the request parameters are invalid or not. Returns true if
    * invalid.
    */

@@ -78,6 +78,7 @@ public class LifecycleResource {
       case LifecycleEventType.APPROVED:
         return "https://www.theworldavatar.com/kg/ontoservice/CreationStage";
       case LifecycleEventType.SERVICE_ORDER_RECEIVED:
+      case LifecycleEventType.SERVICE_ORDER_DISPATCHED:
       case LifecycleEventType.SERVICE_EXECUTION:
       case LifecycleEventType.SERVICE_CANCELLATION:
       case LifecycleEventType.SERVICE_INCIDENT_REPORT:
@@ -102,6 +103,8 @@ public class LifecycleResource {
         return EVENT_APPROVAL;
       case LifecycleEventType.SERVICE_ORDER_RECEIVED:
         return EVENT_ORDER_RECEIVED;
+      case LifecycleEventType.SERVICE_ORDER_DISPATCHED:
+        return EVENT_DISPATCH;
       case LifecycleEventType.SERVICE_EXECUTION:
         return EVENT_DELIVERY;
       case LifecycleEventType.SERVICE_CANCELLATION:
@@ -130,6 +133,8 @@ public class LifecycleResource {
         return "approve";
       case LifecycleEventType.SERVICE_ORDER_RECEIVED:
         return "order";
+      case LifecycleEventType.SERVICE_ORDER_DISPATCHED:
+        return "dispatch";
       case LifecycleEventType.SERVICE_EXECUTION:
         return "complete";
       case LifecycleEventType.SERVICE_CANCELLATION:

@@ -233,6 +233,30 @@ public class LifecycleService {
   }
 
   /**
+   * Retrieves the form template for the specified event type.
+   * 
+   * @param eventType The target event type.
+   */
+  public ResponseEntity<?> getForm(LifecycleEventType eventType) {
+    // Ensure that there is a specific event type target
+    String replacementQueryLine = "<https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence>;"
+        + "sh:property/sh:hasValue " + StringResource.parseIriForQuery(LifecycleResource.getEventClass(eventType));
+    String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, replacementQueryLine);
+    Map<String, Object> results = this.kgService.queryForm(query, new HashMap<>());
+    if (results.isEmpty()) {
+      LOGGER.error(KGService.INVALID_SHACL_ERROR_MSG);
+      return new ResponseEntity<>(
+          KGService.INVALID_SHACL_ERROR_MSG,
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    } else {
+      LOGGER.info("Request has been completed successfully!");
+      return new ResponseEntity<>(
+          results,
+          HttpStatus.OK);
+    }
+  }
+
+  /**
    * Retrieve the stage occurrence instance associated with the target contract.
    * 
    * @param query     The query to execute.

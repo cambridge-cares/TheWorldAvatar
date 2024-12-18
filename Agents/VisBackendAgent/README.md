@@ -515,10 +515,13 @@ Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/ser
 
 There is also an additional optional parameter `label` to retrieve in progress contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
 
-
 > Records of service tasks
 
 Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{timestamp}` endpoint to retrieve all tasks for the target date, where `timestamp` is the UNIX timestamp.
+
+> Form template for service dispatch
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch/form` endpoint to retrieve the form template associated with the dispatch event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceDispatchOccurrenceShape` is defined in `./resources/shacl.ttl`, which can be extended for your specific requirements.
 
 > Report unfulfilled service tasks
 

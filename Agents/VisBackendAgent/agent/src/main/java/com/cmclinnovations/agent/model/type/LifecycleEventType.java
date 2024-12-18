@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.model.type;
 public enum LifecycleEventType {
   APPROVED,
   SERVICE_ORDER_RECEIVED,
+  SERVICE_ORDER_DISPATCHED,
   SERVICE_EXECUTION,
   SERVICE_CANCELLATION,
   SERVICE_INCIDENT_REPORT,
