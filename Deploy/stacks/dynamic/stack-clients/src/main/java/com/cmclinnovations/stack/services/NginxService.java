@@ -99,7 +99,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                 try {
                     NgxConfig upstreamConfigOut = new NgxConfig();
                     for (Entry<String, String> upstream : upstreams.entrySet()) {
-                        addUpstream(upstreamConfigOut, upstream);
+                        addUpstream(upstreamConfigOut, upstream, service.getName());
                     }
                     sender.addConfig(upstreamConfigOut, "upstreams/" + service.getName() + ".conf");
 
@@ -111,7 +111,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
         }
     }
 
-    private void addUpstream(NgxConfig upstreamConfigOut, Entry<String, String> upstream)
+    private void addUpstream(NgxConfig upstreamConfigOut, Entry<String, String> upstream, String serviceName)
             throws ParseException, IOException {
         try (InputStream inStream = new BufferedInputStream(
                 NginxService.class.getResourceAsStream(UPSTREAM_CONF_TEMPLATE))) {
@@ -122,6 +122,9 @@ public final class NginxService extends ContainerService implements ReverseProxy
             NgxParam serverParam = upstreamBlock.findParam("server");
             serverParam.addValue(upstream.getValue());
             serverParam.addValue("resolve");
+            NgxParam zoneParam = upstreamBlock.findParam("zone");
+            zoneParam.addValue(serviceName);
+            zoneParam.addValue("64K");
             upstreamConfigOut.addEntry(upstreamBlock);
         }
     }
