@@ -95,7 +95,7 @@ WHERE {{
         )
 
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        iris = [binding["GBU"] for binding in bindings]
+        iris = [binding["GBUType"] for binding in bindings]
         return iris
 
     def linkAM(self, text: str | None, **kwargs):
