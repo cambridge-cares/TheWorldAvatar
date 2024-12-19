@@ -1,0 +1,4 @@
+{
+    "ontospecies": "http://localhost:48082/blazegraph/namespace/ontomops/sparql",
+    "ontomops": "http://localhost:48082/blazegraph/namespace/ontomops/sparql"
+}

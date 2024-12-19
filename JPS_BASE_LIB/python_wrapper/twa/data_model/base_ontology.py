@@ -170,7 +170,7 @@ class KnowledgeGraph(BaseModel):
         cls.ontology_lookup[ontology.namespace_iri] = ontology
 
     @classmethod
-    def _register_class(cls, ontology_class: BaseClass):
+    def _register_class(cls, ontology_class: BaseClass, dev_mode: bool = False):
         """
         This method registers a BaseClass (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -180,12 +180,12 @@ class KnowledgeGraph(BaseModel):
         if cls.class_lookup is None:
             cls.class_lookup = {}
 
-        if ontology_class.rdf_type in cls.class_lookup:
+        if ontology_class.rdf_type in cls.class_lookup and not dev_mode:
             raise ValueError(f'Class with rdf_type {ontology_class.rdf_type} already exists in the knowledge graph: {cls.class_lookup[ontology_class.rdf_type]}.')
         cls.class_lookup[ontology_class.rdf_type] = ontology_class
 
     @classmethod
-    def _register_property(cls, prop: BaseProperty):
+    def _register_property(cls, prop: BaseProperty, dev_mode: bool = False):
         """
         This method registers a BaseProperty (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -195,7 +195,7 @@ class KnowledgeGraph(BaseModel):
         if cls.property_lookup is None:
             cls.property_lookup = {}
 
-        if prop.predicate_iri in cls.property_lookup:
+        if prop.predicate_iri in cls.property_lookup and not dev_mode:
             raise ValueError(f'Property with predicate IRI {prop.predicate_iri} already exists in the knowledge graph: {cls.property_lookup[prop.predicate_iri]}.')
         cls.property_lookup[prop.predicate_iri] = prop
 
@@ -260,8 +260,9 @@ class BaseOntology(BaseModel):
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
     object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = None
     data_property_lookup: ClassVar[Dict[str, DatatypeProperty]] = None
-    rdfs_comment: ClassVar[str] = None
+    rdfs_comment: ClassVar[Set[str]] = None
     owl_versionInfo: ClassVar[str] = None
+    _dev_mode: ClassVar[bool] = False
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
@@ -277,6 +278,21 @@ class BaseOntology(BaseModel):
         KnowledgeGraph._register_ontology(cls)
 
     @classmethod
+    def is_dev_mode(cls):
+        """This method returns whether the KnowledgeGraph is in development mode."""
+        return cls._dev_mode
+
+    @classmethod
+    def set_dev_mode(cls):
+        """This method sets the KnowledgeGraph to development mode, where duplicate class or property registration will be allowed that the existing ones will be overwritten."""
+        cls._dev_mode = True
+
+    @classmethod
+    def set_prod_mode(cls):
+        """This method sets the KnowledgeGraph to production mode, where duplicate class or property registration will raise an error."""
+        cls._dev_mode = False
+
+    @classmethod
     def _register_class(cls, ontolgy_class: BaseClass):
         """
         This method registers a BaseClass (the Pydantic class itself) to the BaseOntology class.
@@ -289,12 +305,12 @@ class BaseOntology(BaseModel):
         if cls.class_lookup is None:
             cls.class_lookup = {}
 
-        if ontolgy_class.rdf_type in cls.class_lookup:
+        if ontolgy_class.rdf_type in cls.class_lookup and not cls.is_dev_mode():
             raise ValueError(f'Class with rdf_type {ontolgy_class.rdf_type} already exists in {cls}: {cls.class_lookup[ontolgy_class.rdf_type]}.')
         cls.class_lookup[ontolgy_class.rdf_type] = ontolgy_class
 
         # also register with knowledge graph
-        KnowledgeGraph._register_class(ontolgy_class)
+        KnowledgeGraph._register_class(ontolgy_class, cls.is_dev_mode())
 
     @classmethod
     def _register_object_property(cls, prop: ObjectProperty):
@@ -309,12 +325,12 @@ class BaseOntology(BaseModel):
         if cls.object_property_lookup is None:
             cls.object_property_lookup = {}
 
-        if prop.predicate_iri in cls.object_property_lookup:
+        if prop.predicate_iri in cls.object_property_lookup and not cls.is_dev_mode():
             raise ValueError(f'Object property with predicate IRI {prop.predicate_iri} already exists in {cls}: {cls.object_property_lookup[prop.predicate_iri]}.')
         cls.object_property_lookup[prop.predicate_iri] = prop
 
         # also register with knowledge graph
-        KnowledgeGraph._register_property(prop)
+        KnowledgeGraph._register_property(prop, cls.is_dev_mode())
 
     @classmethod
     def _register_data_property(cls, prop: DatatypeProperty):
@@ -329,12 +345,12 @@ class BaseOntology(BaseModel):
         if cls.data_property_lookup is None:
             cls.data_property_lookup = {}
 
-        if prop.predicate_iri in cls.data_property_lookup:
+        if prop.predicate_iri in cls.data_property_lookup and not cls.is_dev_mode():
             raise ValueError(f'Data property with predicate IRI {prop.predicate_iri} already exists in {cls}: {cls.data_property_lookup[prop.predicate_iri]}.')
         cls.data_property_lookup[prop.predicate_iri] = prop
 
         # also register with knowledge graph
-        KnowledgeGraph._register_property(prop)
+        KnowledgeGraph._register_property(prop, cls.is_dev_mode())
 
     @classmethod
     def export_to_graph(cls, g: Graph = None) -> Graph:
@@ -351,7 +367,11 @@ class BaseOntology(BaseModel):
         g.add((URIRef(cls.namespace_iri), RDF.type, OWL.Ontology))
         g.add((URIRef(cls.namespace_iri), DC.date, Literal(datetime.now().isoformat())))
         if bool(cls.rdfs_comment):
-            g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(cls.rdfs_comment)))
+            if isinstance(cls.rdfs_comment, str):
+                g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(cls.rdfs_comment)))
+            elif isinstance(cls.rdfs_comment, set):
+                for comment in cls.rdfs_comment:
+                    g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(comment)))
         if bool(cls.owl_versionInfo):
             g.add((URIRef(cls.namespace_iri), OWL.versionInfo, Literal(cls.owl_versionInfo)))
         # handle all classes
@@ -426,6 +446,8 @@ class BaseProperty(set, Generic[T]):
     """
     rdfs_isDefinedBy: ClassVar[Type[BaseOntology]] = None
     predicate_iri: ClassVar[str] = None
+    rdfs_comment_clz: ClassVar[Set[str]] = None
+    rdfs_label_clz: ClassVar[Set[str]] = None
     owl_minQualifiedCardinality: ClassVar[int] = 0
     owl_maxQualifiedCardinality: ClassVar[int] = None
 
@@ -513,6 +535,13 @@ class BaseProperty(set, Generic[T]):
             idx = cls.__mro__.index(DatatypeProperty)
         for i in range(1, idx):
             g.add((URIRef(property_iri), RDFS.subPropertyOf, URIRef(cls.__mro__[i].predicate_iri)))
+        # add rdfs_comment_clz and rdfs_label_clz for class
+        if bool(cls.rdfs_comment_clz):
+            for comment in cls.rdfs_comment_clz:
+                g.add((URIRef(property_iri), RDFS.comment, Literal(comment)))
+        if bool(cls.rdfs_label_clz):
+            for label in cls.rdfs_label_clz:
+                g.add((URIRef(property_iri), RDFS.label, Literal(label)))
         # add domain
         if len(rdfs_domain) == 0:
             # it is possible that a property is defined without specifying its domain, so we only print a warning
@@ -704,8 +733,10 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
     rdf_type: ClassVar[str] = OWL_BASE_URL + 'Class'
     """ > NOTE rdf_type is the automatically generated IRI of the class which can also be accessed at the instance level. """
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
-    rdfs_comment: Optional[str] = Field(default=None)
-    rdfs_label: Optional[str] = Field(default=None)
+    rdfs_comment_clz: ClassVar[Set[str]] = None
+    rdfs_label_clz: ClassVar[Set[str]] = None
+    rdfs_comment: Optional[Set[str]] = Field(default_factory=set)
+    rdfs_label: Optional[Set[str]] = Field(default_factory=set)
     instance_iri: str = Field(default='')
     # format of the cache for all properties: {property_name: property_object}
     _latest_cache: Dict[str, Any] = PrivateAttr(default_factory=dict)
@@ -732,6 +763,24 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         # register the class to the ontology
         cls.rdfs_isDefinedBy._register_class(cls)
 
+    @classmethod
+    def init_instance_iri(cls) -> str:
+        return init_instance_iri(cls.rdfs_isDefinedBy.namespace_iri, cls.__name__)
+
+    def __init__(self, **data):
+        # handle the case when rdfs_comment and rdfs_label are provided as a non-set value
+        if 'rdfs_comment' in data and not isinstance(data['rdfs_comment'], set):
+            if isinstance(data['rdfs_comment'], list):
+                data['rdfs_comment'] = set(data['rdfs_comment'])
+            else:
+                data['rdfs_comment'] = {data['rdfs_comment']}
+        if 'rdfs_label' in data and not isinstance(data['rdfs_label'], set):
+            if isinstance(data['rdfs_label'], list):
+                data['rdfs_label'] = set(data['rdfs_label'])
+            else:
+                data['rdfs_label'] = {data['rdfs_label']}
+        super().__init__(**data)
+
     def __str__(self) -> str:
         return self.instance_iri
 
@@ -751,10 +800,7 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             None: It calls the super().model_post_init(__context) to finish the post init process
         """
         if not bool(self.instance_iri):
-            self.instance_iri = init_instance_iri(
-                self.__class__.rdfs_isDefinedBy.namespace_iri,
-                self.__class__.__name__
-            )
+            self.instance_iri = self.__class__.init_instance_iri()
         # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
         self._register_object()
         return super().model_post_init(__context)
@@ -770,8 +816,13 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         if self.__class__.object_lookup is None:
             self.__class__.object_lookup = {}
         if self.instance_iri in self.__class__.object_lookup:
-            raise ValueError(
-                f"An object with the same IRI {self.instance_iri} has already been registered.")
+            if type(self.__class__.object_lookup[self.instance_iri]) == type(self):
+                # TODO and not self.__class__.rdfs_isDefinedBy.is_dev_mode()?
+                raise ValueError(
+                    f"An object with the same IRI {self.instance_iri} has already been instantiated and registered with the same type {type(self)}.")
+            else:
+                warnings.warn(f"An object with the same IRI {self.instance_iri} has already been instantiated and registered with type {type(self.__class__.object_lookup[self.instance_iri])}. Replacing its regiatration now with type {type(self)}.")
+                del self.__class__.object_lookup[self.instance_iri]
         self.__class__.object_lookup[self.instance_iri] = self
 
     @classmethod
@@ -826,6 +877,7 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         for obj in cls.object_lookup.values():
             g_to_remove, g_to_add = obj._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
         sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
+        return g_to_remove, g_to_add
 
     @classmethod
     def clear_object_lookup(cls):
@@ -890,13 +942,49 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         for iri, props in node_dct.items():
             # TODO optimise the time complexity of the following code when the number of instances is large
             # check if the rdf:type of the instance matches the calling class or any of its subclasses
-            target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
-            if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
+            target_clz_rdf_types = set(props.get(RDF.type.toPython(), [])) # NOTE this supports instance instantiated with multiple rdf:type
+            if not target_clz_rdf_types:
+                raise ValueError(f"The instance {iri} has no rdf:type, retrieved outgoing links and attributes: {props}.")
+            cls_subclasses = set(cls.construct_subclass_dictionary().keys())
+            cls_subclasses.add(cls.rdf_type)
+            intersection = target_clz_rdf_types & cls_subclasses
+            if intersection:
+                if len(intersection) == 1:
+                    target_clz_rdf_type = next(iter(intersection))
+                else:
+                    # NOTE instead of using the first element of the intersection
+                    # we find the deepest subclass as target_clz_rdf_type
+                    # so that the created object could inherite all the properties of its parent classes
+                    # which prevents the loss of information
+                    parent_classes = set()
+                    for c in intersection:
+                        if c in parent_classes:
+                            # skip if it's already a parent class
+                            continue
+                        for other in intersection:
+                            if other != c and issubclass(cls.retrieve_subclass(c), cls.retrieve_subclass(other)):
+                                parent_classes.add(other)
+                    deepest_subclasses = intersection - parent_classes
+                    if len(deepest_subclasses) > 1:
+                        # TODO [future] add support for allowing users to specify the target class
+                        KnowledgeGraph._remove_iri_from_loading(iri)
+                        raise ValueError(
+                            f"""The instance {iri} is of type {target_clz_rdf_types}.
+                            Amongst the pulling class {cls.__name__} ({cls.rdf_type})
+                            and its subclasses ({cls.construct_subclass_dictionary()}),
+                            there exist classes that are not in the same branch of the inheritance tree,
+                            including {deepest_subclasses},
+                            therefore it cannot be instantiated by pulling with class {cls.__name__}.
+                            Please consider pulling the instance directly with one of the class in {deepest_subclasses}
+                            Alternatively, please check the inheritance tree is correctly defined in Python.""")
+                    else:
+                        target_clz_rdf_type = next(iter(deepest_subclasses))
+            else:
                 # if there's any error, remove the iri from the loading status
                 # otherwise it will block any further pulling of the same object
                 KnowledgeGraph._remove_iri_from_loading(iri)
                 raise ValueError(
-                    f"""The instance {iri} is of type {props[RDF.type.toPython()]},
+                    f"""The instance {iri} is of type {target_clz_rdf_types},
                     it doesn't match the rdf:type of class {cls.__name__} ({cls.rdf_type}),
                     nor any of its subclasses ({cls.construct_subclass_dictionary()}),
                     therefore it cannot be instantiated.""")
@@ -936,15 +1024,11 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             # handle rdfs:label and rdfs:comment (also fetch of the remote KG)
             rdfs_properties_dict = {}
             if RDFS.label.toPython() in props:
-                if len(props[RDFS.label.toPython()]) > 1:
-                    raise ValueError(f"The instance {iri} has multiple rdfs:label {props[RDFS.label.toPython()]}.")
-                rdfs_properties_dict['rdfs_label'] = list(props[RDFS.label.toPython()])[0]
+                rdfs_properties_dict['rdfs_label'] = set(list(props[RDFS.label.toPython()]))
             if RDFS.comment.toPython() in props:
-                if len(props[RDFS.comment.toPython()]) > 1:
-                    raise ValueError(f"The instance {iri} has multiple rdfs:comment {props[RDFS.comment.toPython()]}.")
-                rdfs_properties_dict['rdfs_comment'] = list(props[RDFS.comment.toPython()])[0]
+                rdfs_properties_dict['rdfs_comment'] = set(list(props[RDFS.comment.toPython()]))
             # instantiate the object
-            if inst is not None:
+            if inst is not None and type(inst) is target_clz:
                 for op_iri, op_dct in ops.items():
                     if flag_pull:
                         # below lines pull those object properties that are NOT connected in the remote KG,
@@ -1079,6 +1163,13 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         cls_iri = cls.rdf_type
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
         g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.namespace_iri)))
+        # add rdfs_comment_clz and rdfs_label_clz for class
+        if bool(cls.rdfs_comment_clz):
+            for comment in cls.rdfs_comment_clz:
+                g.add((URIRef(cls_iri), RDFS.comment, Literal(comment)))
+        if bool(cls.rdfs_label_clz):
+            for label in cls.rdfs_label_clz:
+                g.add((URIRef(cls_iri), RDFS.label, Literal(label)))
         # add super classes
         idx = cls.__mro__.index(BaseClass)
         for i in range(1, idx):
@@ -1225,9 +1316,9 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
 
         # compare rdfs_comment and rdfs_label
         for r in ['rdfs_comment', 'rdfs_label']:
-            fetched_value = fetched.get(r, None)
-            cached_value = self._latest_cache.get(r, None)
-            local_value = getattr(self, r)
+            fetched_value = fetched.get(r, set())
+            cached_value = self._latest_cache.get(r, set())
+            local_value = getattr(self, r) if getattr(self, r) is not None else set()
             # apply the same logic as above
             if fetched_value != cached_value:
                 if local_value == cached_value:
@@ -1336,6 +1427,8 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                 recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
 
                 p_cache = self._latest_cache.get(f, set())
+                if p_cache is None:
+                    p_cache = set() # allows set operations
                 p_now = getattr(self, f)
                 if p_now is None:
                     p_now = set() # allows set operations
@@ -1363,18 +1456,20 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                             g_to_remove, g_to_add = d_py._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
 
             elif f == 'rdfs_comment':
-                if self._latest_cache.get(f) != self.rdfs_comment:
-                    if self._latest_cache.get(f) is not None:
-                        g_to_remove.add((URIRef(self.instance_iri), RDFS.comment, Literal(self._latest_cache.get(f))))
-                    if self.rdfs_comment is not None:
-                        g_to_add.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
+                rdfs_comment_cache = self._latest_cache.get(f, set())
+                rdfs_comment_now = self.rdfs_comment if self.rdfs_comment is not None else set()
+                for comment in rdfs_comment_cache - rdfs_comment_now:
+                    g_to_remove.add((URIRef(self.instance_iri), RDFS.comment, Literal(comment)))
+                for comment in rdfs_comment_now - rdfs_comment_cache:
+                    g_to_add.add((URIRef(self.instance_iri), RDFS.comment, Literal(comment)))
 
             elif f == 'rdfs_label':
-                if self._latest_cache.get(f) != self.rdfs_label:
-                    if self._latest_cache.get(f) is not None:
-                        g_to_remove.add((URIRef(self.instance_iri), RDFS.label, Literal(self._latest_cache.get(f))))
-                    if self.rdfs_label is not None:
-                        g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+                rdfs_label_cache = self._latest_cache.get(f, set())
+                rdfs_label_now = self.rdfs_label if self.rdfs_label is not None else set()
+                for label in rdfs_label_cache - rdfs_label_now:
+                    g_to_remove.add((URIRef(self.instance_iri), RDFS.label, Literal(label)))
+                for label in rdfs_label_now - rdfs_label_cache:
+                    g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(label)))
 
         if not self._exist_in_kg:
             g_to_add.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
@@ -1409,10 +1504,12 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                 prop = getattr(self, f) if getattr(self, f) is not None else set()
                 for o in prop:
                     g.add((URIRef(self.instance_iri), URIRef(tp.predicate_iri), Literal(o)))
-            elif f == 'rdfs_comment' and self.rdfs_comment is not None:
-                    g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
-            elif f == 'rdfs_label' and self.rdfs_label is not None:
-                    g.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+            elif f == 'rdfs_comment' and bool(self.rdfs_comment):
+                for comment in self.rdfs_comment:
+                    g.add((URIRef(self.instance_iri), RDFS.comment, Literal(comment)))
+            elif f == 'rdfs_label' and bool(self.rdfs_label):
+                for label in self.rdfs_label:
+                    g.add((URIRef(self.instance_iri), RDFS.label, Literal(label)))
         return g
 
     def triples(self) -> str:
