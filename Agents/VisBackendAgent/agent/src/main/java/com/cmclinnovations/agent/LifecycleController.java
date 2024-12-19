@@ -392,6 +392,42 @@ public class LifecycleController {
   }
 
   /**
+   * Retrieves the form template to report the order from the knowledge graph.
+   */
+  @GetMapping("/contracts/service/report/form")
+  public ResponseEntity<?> getOrderReportForm() {
+    LOGGER.info("Received request to get form template to report the order...");
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_INCIDENT_REPORT);
+  }
+
+  /**
+   * Retrieves the form template to cancel the order from the knowledge graph.
+   */
+  @GetMapping("/contracts/service/cancel/form")
+  public ResponseEntity<?> getOrderCancellationForm() {
+    LOGGER.info("Received request to get form template to cancel the order...");
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_CANCELLATION);
+  }
+
+  /**
+   * Retrieves the form template to rescind the contract from the knowledge graph.
+   */
+  @GetMapping("/contracts/archive/rescind/form")
+  public ResponseEntity<?> getContractRescissionForm() {
+    LOGGER.info("Received request to get form template to rescind the contract...");
+    return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_RESCINDMENT);
+  }
+
+  /**
+   * Retrieves the form template to terminate the contract from the knowledge graph.
+   */
+  @GetMapping("/contracts/archive/terminate/form")
+  public ResponseEntity<?> getContractTerminationForm() {
+    LOGGER.info("Received request to get form template to terminate the contract...");
+    return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_TERMINATION);
+  }
+
+  /**
    * Validate if the request parameters are invalid or not. Returns true if
    * invalid.
    */

@@ -23,3 +23,71 @@ base:ServiceDispatchOccurrenceShape
     sh:minCount 0 ;
     sh:maxCount 1 ;
   ] .
+
+base:ServiceTerminationOccurrenceShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
+  sh:property [
+    sh:path fibo-fnd-rel-rel:exemplifies ;
+    sh:hasValue oservice:TerminatedServiceEvent ;
+  ] ; 
+  sh:property [
+    sh:name "remarks";
+    sh:description "Please provide the reason for cancellation. Include any relevant details or circumstances that led to this decision.";
+    sh:order 0;
+    sh:path rdfs:comment ;
+    sh:datatype xsd:string ;
+    sh:minCount 0 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:ServiceReportOccurrenceShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
+  sh:property [
+    sh:path fibo-fnd-rel-rel:exemplifies ;
+    sh:hasValue oservice:IncidentReportEvent ;
+  ] ; 
+  sh:property [
+    sh:name "remarks";
+    sh:description "Describe the incident in detail in this report.";
+    sh:order 0;
+    sh:path rdfs:comment ;
+    sh:datatype xsd:string ;
+    sh:minCount 0 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:ContractRescissionOccurrenceShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
+  sh:property [
+    sh:path fibo-fnd-rel-rel:exemplifies ;
+    sh:hasValue oservice:ContractRescission ;
+  ] ; 
+  sh:property [
+    sh:name "remarks";
+    sh:description "State the reasons for rescinding the contract.";
+    sh:order 0;
+    sh:path rdfs:comment ;
+    sh:datatype xsd:string ;
+    sh:minCount 0 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:ContractTerminationOccurrenceShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
+  sh:property [
+    sh:path fibo-fnd-rel-rel:exemplifies ;
+    sh:hasValue oservice:ContractTermination ;
+  ] ; 
+  sh:property [
+    sh:name "remarks";
+    sh:description "State the reasons for terminating the contract.";
+    sh:order 0;
+    sh:path rdfs:comment ;
+    sh:datatype xsd:string ;
+    sh:minCount 0 ;
+    sh:maxCount 1 ;
+  ] .

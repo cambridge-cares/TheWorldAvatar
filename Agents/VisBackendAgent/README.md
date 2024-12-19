@@ -525,6 +525,8 @@ Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/ser
 
 > Report unfulfilled service tasks
 
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/report/form` endpoint to retrieve the form template associated with the report event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceReportOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
+
 Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/report` endpoint to report an unfulfilled service of a specified contract. Note that this route does require the following `JSON` request parameters:
 
 ```json
@@ -539,6 +541,8 @@ Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/se
 A successful request will return `{"message": "Report for an unfulfilled service has been successfully lodged!", "iri" : "root iri that is instantiated"}`.
 
 > Cancel service tasks
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/cancel/form` endpoint to retrieve the form template associated with the cancellation event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceTerminationOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
 
 Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/cancel` endpoint to cancel an upcoming service of a specified contract. Note that this route does require the following `JSON` request parameters:
 
@@ -565,6 +569,8 @@ There is also an additional optional parameter `label` to retrieve archived cont
 
 > Rescind an ongoing contract
 
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive/rescind/form` endpoint to retrieve the form template associated with the contract rescission event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ContractRescissionOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
+
 Users must send a `POST` request to rescind an ongoing contract at the `<baseURL>/vis-backend-agent/contracts/archive/rescind` endpoint, with the following `JSON` request parameters:
 
 ```json
@@ -578,6 +584,8 @@ Users must send a `POST` request to rescind an ongoing contract at the `<baseURL
 A successful request will return `{"message": "Contract has been successfully rescinded!", "iri" : "root iri that is instantiated"}`.
 
 > Terminate an ongoing contract
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive/terminate/form` endpoint to retrieve the form template associated with the contract rescission event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ContractTerminationOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
 
 Users must send a `POST` request to terminate an ongoing contract at the `<baseURL>/vis-backend-agent/contracts/archive/terminate` endpoint, with the following `JSON` request parameters:
 
