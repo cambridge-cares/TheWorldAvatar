@@ -7,7 +7,8 @@ import geo
 from rdkit.Chem import GetPeriodicTable
 from rdkit.Chem.rdmolfiles import MolFromXYZFile
 
-# NOTE TODO this script is incomplete
+# NOTE TODO this script is incomplete as it only contains necessary classes and properties for the MOPs project
+# NOTE TODO a complete OGM representation for OntoSpecies is yet to be implemented
 # NOTE TODO it should also be moved to a place that accessible to all other ontologies
 class OntoSpecies(BaseOntology):
     base_url = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#'
