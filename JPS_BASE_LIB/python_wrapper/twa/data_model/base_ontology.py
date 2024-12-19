@@ -732,6 +732,12 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         # register the class to the ontology
         cls.rdfs_isDefinedBy._register_class(cls)
 
+    def __str__(self) -> str:
+        return self.instance_iri
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def model_post_init(self, __context: Any) -> None:
         """
         The post init process of the BaseClass.
