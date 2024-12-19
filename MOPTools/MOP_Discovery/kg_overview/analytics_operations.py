@@ -16,7 +16,7 @@ from kg_overview.analytics_output import preR2_json
 
 def mopsoverview():
     """Collects all MOP IRIs found in the OntoMOP KG"""
-    result  = querykg(SPARQL_ENDPOINTS['ontomops'], getMOPIRIs())
+    result  = querykg(SPARQL_ENDPOINTS.ontomops, getMOPIRIs())
     refinedlist = [] # Each IRI is saved in the list of refined IRIs
     for item in result:
         refined = item['mopIRI']
@@ -42,7 +42,7 @@ def assemblyModelGroups(listofMOPs):
     # When quering SPARQL we obtain two lines of information deriving from each GBU/CBU 
     # We do not know which CBU will be returned first, therefore this is being sorted. 
     for mopIRI in listofMOPs:
-        MOPandGBUs  = querykg(SPARQL_ENDPOINTS['ontomops'], mop_GBUs(mopIRI))
+        MOPandGBUs  = querykg(SPARQL_ENDPOINTS.ontomops, mop_GBUs(mopIRI))
         i = 0 
         assemblyModel = {} 
         for MOPandGBU in MOPandGBUs:
@@ -138,7 +138,7 @@ def order(cbuA, cbuB):
         gbu['CBU1_Modularity'] = cbuA['Modularity']
         gbu['CBU1_Planarity'] = cbuA['Planarity']
         gbu['CBU1_Type'] = cbuA['CBUType']
-        gbu['CBU1_SpeciesIRI'] = cbuA['speciesIRI']
+        gbu['CBU1_SpeciesIRI'] = cbuA['cbuIRI']
         gbu['CBU1_OuterCoordination'] = cbuA['OuterCoordination']
         gbu['CBU1_FunctionalGroup'] = cbuA['CBUFunctionalGroup']
         gbu['CBU1_Direction'] = cbuA['Direction']    
@@ -147,7 +147,7 @@ def order(cbuA, cbuB):
         gbu['CBU2_Modularity'] = cbuB['Modularity']
         gbu['CBU2_Planarity'] = cbuB['Planarity']
         gbu['CBU2_Type'] = cbuB['CBUType']
-        gbu['CBU2_SpeciesIRI'] = cbuB['speciesIRI']
+        gbu['CBU2_SpeciesIRI'] = cbuB['cbuIRI']
         gbu['CBU2_OuterCoordination'] = cbuB['OuterCoordination']
         gbu['CBU2_FunctionalGroup'] = cbuB['CBUFunctionalGroup']
         gbu['CBU2_Direction'] = cbuB['Direction']
@@ -157,7 +157,7 @@ def order(cbuA, cbuB):
         gbu['CBU1_Modularity'] = cbuB['Modularity']
         gbu['CBU1_Planarity'] = cbuB['Planarity']
         gbu['CBU1_Type'] = cbuB['CBUType']
-        gbu['CBU1_SpeciesIRI'] = cbuB['speciesIRI']
+        gbu['CBU1_SpeciesIRI'] = cbuB['cbuIRI']
         gbu['CBU1_OuterCoordination'] = cbuB['OuterCoordination']
         gbu['CBU1_FunctionalGroup'] = cbuB['CBUFunctionalGroup']
         gbu['CBU1_Direction'] = cbuB['Direction']    
@@ -166,7 +166,7 @@ def order(cbuA, cbuB):
         gbu['CBU2_Modularity'] = cbuA['Modularity']
         gbu['CBU2_Planarity'] = cbuA['Planarity']
         gbu['CBU2_Type'] = cbuA['CBUType']
-        gbu['CBU2_SpeciesIRI'] = cbuA['speciesIRI']
+        gbu['CBU2_SpeciesIRI'] = cbuA['cbuIRI']
         gbu['CBU2_OuterCoordination'] = cbuA['OuterCoordination']
         gbu['CBU2_FunctionalGroup'] = cbuA['CBUFunctionalGroup']
         gbu['CBU2_Direction'] = cbuA['Direction']

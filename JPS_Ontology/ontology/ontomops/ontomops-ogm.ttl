@@ -1,0 +1,329 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://www.theworldavatar.com/kg/ontomops/DirectBinding> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/BindingDirection> .
+
+<https://www.theworldavatar.com/kg/ontomops/SidewayBinding> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/BindingDirection> .
+
+<https://www.theworldavatar.com/kg/ontomops/Volume> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/alignsTo> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasAssemblyModel> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasBindingDirection> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/BindingDirection> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasBindingFragment> a owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/OrganicSite> <https://www.theworldavatar.com/kg/ontomops/MetalSite> <https://www.theworldavatar.com/kg/ontomops/BindingSite> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasBindingPoint> a owl:ObjectProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/OrganicSite> <https://www.theworldavatar.com/kg/ontomops/MetalSite> <https://www.theworldavatar.com/kg/ontomops/BindingSite> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/BindingPoint> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasBindingSite> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/BindingSite> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasCBUAssemblyCenter> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyCenter> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasCBUAssemblyTransformation> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasCBUFormula> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasCavity> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/Cavity> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasChemicalBuildingUnit> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasGBUConnectingPoint> a owl:ObjectProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GBUConnectingPoint> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasGBUCoordinateCenter> a owl:ObjectProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnit> <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasGBUType> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnit> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitType> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasGenericBuildingUnit> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnit> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasGenericBuildingUnitNumber> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitNumber> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasLargestInnerSphereDiameter> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/Cavity> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <http://www.ontology-of-units-of-measure.org/resource/om-2/Diameter> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasModularity> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitType> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:integer .
+
+<https://www.theworldavatar.com/kg/ontomops/hasOuterCoordinationNumber> a owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/OrganicSite> <https://www.theworldavatar.com/kg/ontomops/MetalSite> <https://www.theworldavatar.com/kg/ontomops/BindingSite> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:integer .
+
+<https://www.theworldavatar.com/kg/ontomops/hasOuterDiameter> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <http://www.ontology-of-units-of-measure.org/resource/om-2/Diameter> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasPlanarity> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitType> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasPolyhedralShape> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/PolyhedralShape> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasPoreDiameter> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/PoreSize> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <http://www.ontology-of-units-of-measure.org/resource/om-2/Diameter> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasPoreRing> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/PoreRing> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasPoreSize> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/PoreSize> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasProbingVector> a owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/PoreRing> <https://www.theworldavatar.com/kg/ontomops/PoreSize> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasProvenance> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/Provenance> .
+
+<https://www.theworldavatar.com/kg/ontomops/hasReferenceDOI> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/Provenance> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasSymbol> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/PolyhedralShape> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasSymmetryPointGroup> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/AssemblyModel> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/hasUnitNumberValue> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitNumber> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:integer .
+
+<https://www.theworldavatar.com/kg/ontomops/hasX> a owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/BindingPoint> <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyCenter> <https://www.theworldavatar.com/kg/ontomops/GBUConnectingPoint> <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:double .
+
+<https://www.theworldavatar.com/kg/ontomops/hasY> a owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/BindingPoint> <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyCenter> <https://www.theworldavatar.com/kg/ontomops/GBUConnectingPoint> <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:double .
+
+<https://www.theworldavatar.com/kg/ontomops/hasZ> a owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( <https://www.theworldavatar.com/kg/ontomops/BindingPoint> <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyCenter> <https://www.theworldavatar.com/kg/ontomops/GBUConnectingPoint> <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> ) ] ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:double .
+
+<https://www.theworldavatar.com/kg/ontomops/isFormedBy> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/PoreRing> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> .
+
+<https://www.theworldavatar.com/kg/ontomops/isFunctioningAs> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnit> .
+
+<https://www.theworldavatar.com/kg/ontomops/isNumberOf> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitNumber> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnit> .
+
+<https://www.theworldavatar.com/kg/ontomops/measuresRing> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/PoreSize> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/PoreRing> .
+
+<https://www.theworldavatar.com/kg/ontomops/quaternionToRotate> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/scaleFactorToAlignCoordinateCenter> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:double .
+
+<https://www.theworldavatar.com/kg/ontomops/transforms> a owl:ObjectProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> .
+
+<https://www.theworldavatar.com/kg/ontomops/translationVectorToAlignOrigin> a owl:DatatypeProperty ;
+    rdfs:domain <https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:range xsd:string .
+
+<https://www.theworldavatar.com/kg/ontomops/CoordinationCage> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/MolecularCage> .
+
+<https://www.theworldavatar.com/kg/ontomops/Cavity> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/MolecularCage> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/PolyhedralShape> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/Provenance> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/BindingDirection> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitNumber> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnitType> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/MetalSite> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/BindingSite> .
+
+<https://www.theworldavatar.com/kg/ontomops/OrganicSite> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/BindingSite> .
+
+<https://www.theworldavatar.com/kg/ontomops/BindingPoint> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> .
+
+<https://www.theworldavatar.com/kg/ontomops/CBUAssemblyCenter> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> .
+
+<https://www.theworldavatar.com/kg/ontomops/GBUConnectingPoint> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> .
+
+<https://www.theworldavatar.com/kg/ontomops/PoreRing> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/PoreSize> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/GenericBuildingUnit> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/BindingSite> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/CBUAssemblyTransformation> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/GBUCoordinateCenter> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/CoordinatePoint> .
+
+<https://www.theworldavatar.com/kg/ontomops/AssemblyModel> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> .
+
+<https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron> a owl:Class ;
+    rdfs:isDefinedBy <https://www.theworldavatar.com/kg/ontomops> ;
+    rdfs:subClassOf <https://www.theworldavatar.com/kg/ontomops/CoordinationCage>,
+        <https://www.theworldavatar.com/kg/ontomops/MolecularCage> .
+
+<https://www.theworldavatar.com/kg/ontomops> a owl:Ontology ;
+    dc:date "2024-12-07T19:03:28.517090" ;
+    rdfs:comment "An ontology developed for representing Metal-Organic Polyhedra (MOPs). This is object graph mapper (OGM) version." ;
+    owl:versionInfo "1.1-ogm" .
+
