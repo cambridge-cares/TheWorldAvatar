@@ -1,11 +1,15 @@
 from twa.kg_operations import PySparqlClient
+from twa.conf import config_generic, Config
 from rdflib import Graph, URIRef
 import ontomops
 import ontospecies
 import om
 import alg2
 
-endpoint = 'http://localhost:48082/blazegraph/namespace/ontomops151/sparql'
+class MOPsConfig(Config):
+    SPARQL_ENDPOINT: str
+
+endpoint = config_generic(MOPsConfig, env_file='./mops.env').SPARQL_ENDPOINT
 
 if __name__ == "__main__":
     sparql_client = PySparqlClient(endpoint, endpoint)
