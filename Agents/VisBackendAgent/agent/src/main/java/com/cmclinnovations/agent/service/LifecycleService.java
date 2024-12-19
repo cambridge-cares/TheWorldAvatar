@@ -30,6 +30,7 @@ public class LifecycleService {
   private final FileService fileService;
 
   private static final String ORDER_INITIALISE_MESSAGE = "Order received and is being processed.";
+  private static final String ORDER_DISPATCH_MESSAGE = "Order has been assigned and is awaiting execution.";
   private static final Logger LOGGER = LogManager.getLogger(LifecycleService.class);
 
   /**
@@ -84,7 +85,7 @@ public class LifecycleService {
         + UUID.randomUUID());
     params.put(LifecycleResource.STAGE_KEY, stage);
     params.put(LifecycleResource.EVENT_KEY, LifecycleResource.getEventClass(eventType));
-    // Only retrieve the current date if no date input is given
+    // Only update the date field if there is no pre-existing field
     params.putIfAbsent(LifecycleResource.DATE_KEY, date);
   }
 
@@ -208,7 +209,7 @@ public class LifecycleService {
     // Add parameter template
     Map<String, Object> params = new HashMap<>();
     params.put(LifecycleResource.CONTRACT_KEY, contract);
-    params.put(LifecycleResource.REMARKS_KEY, ORDER_INITIALISE_MESSAGE); // Empty remarks
+    params.put(LifecycleResource.REMARKS_KEY, ORDER_INITIALISE_MESSAGE);
     this.addOccurrenceParams(params, LifecycleEventType.SERVICE_ORDER_RECEIVED);
     String orderPrefix = StringResource.getPrefix(params.get(LifecycleResource.STAGE_KEY).toString()) + "/"
         + LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_RECEIVED) + "/";
@@ -230,6 +231,26 @@ public class LifecycleService {
       }
     }
     return hasError;
+  }
+
+  /**
+   * Generate an occurrence for the order dispatch event of a specified contract.
+   * 
+   * @param params Required parameters with configurable parameters to instantiate
+   *               the occurrence.
+   */
+  public ResponseEntity<ApiResponse> genDispatchOccurrence(Map<String, Object> params) {
+    params.put(LifecycleResource.REMARKS_KEY, ORDER_DISPATCH_MESSAGE);
+    this.addOccurrenceParams(params, LifecycleEventType.SERVICE_ORDER_DISPATCHED);
+    // Ensure that the event identifier mapped directly to the jsonLd file name
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED), params);
+    if (response.getStatusCode() != HttpStatus.CREATED) {
+      LOGGER.error(
+          "Error encountered while dispatching details for the order: {}! Read error message for more details: {}",
+          params.get(LifecycleResource.ORDER_KEY).toString(), response.getBody().getMessage());
+    }
+    return response;
   }
 
   /**

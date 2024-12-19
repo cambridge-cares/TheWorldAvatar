@@ -15,8 +15,8 @@ base:ServiceDispatchOccurrenceShape
     sh:hasValue ontoservice:ServiceDispatchEvent ;
   ] ; 
   sh:property [
-    sh:name "transport";
-    sh:description "Assign a transport truck to perform the service.";
+    sh:name "driver";
+    sh:description "Assign a driver to perform the service.";
     sh:order 0;
     sh:path fibo-fnd-rel-rel:designates ;
     sh:class ontoprofile:EmployedDriver ;

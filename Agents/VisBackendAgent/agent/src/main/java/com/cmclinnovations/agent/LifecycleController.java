@@ -134,6 +134,21 @@ public class LifecycleController {
   }
 
   /**
+   * Assign dispatch details for the specified event
+   */
+  @PostMapping("/contracts/service/dispatch")
+  public ResponseEntity<ApiResponse> assignDispatchDetails(@RequestBody Map<String, Object> params) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
+      return new ResponseEntity<>(
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
+    }
+    LOGGER.info("Received request to assign the dispatch details for a service order...");
+    return this.lifecycleService.genDispatchOccurrence(params);
+
+  }
+
+  /**
    * Reports any unfulfilled service delivery.
    */
   @PostMapping("/contracts/service/report")
@@ -419,7 +434,8 @@ public class LifecycleController {
   }
 
   /**
-   * Retrieves the form template to terminate the contract from the knowledge graph.
+   * Retrieves the form template to terminate the contract from the knowledge
+   * graph.
    */
   @GetMapping("/contracts/archive/terminate/form")
   public ResponseEntity<?> getContractTerminationForm() {

@@ -12,6 +12,7 @@ public class LifecycleResource {
 
   public static final String IRI_KEY = "iri";
   public static final String CONTRACT_KEY = "contract";
+  public static final String ORDER_KEY = "order";
   public static final String CURRENT_DATE_KEY = "current date";
   public static final String DATE_KEY = "date";
   public static final String EVENT_KEY = "event";

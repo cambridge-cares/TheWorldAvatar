@@ -519,9 +519,20 @@ There is also an additional optional parameter `label` to retrieve in progress c
 
 Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{timestamp}` endpoint to retrieve all tasks for the target date, where `timestamp` is the UNIX timestamp.
 
-> Form template for service dispatch
+> Service dispatch
 
 Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch/form` endpoint to retrieve the form template associated with the dispatch event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceDispatchOccurrenceShape` is defined in `./resources/shacl.ttl`, which can be extended for your specific requirements.
+
+Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch` endpoint to assign dispatch details for a target order. The details are configurable using the `ServiceDispatchOccurrenceShape` and an additional `dispatch.jsonld` file with the corresponding identifier as `dispatch` in the `application-service.json`. A sample file is defined in `./resources/dispatch.jsonld`, with line 1 - 32 being required. Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "order": "The target order IRI",
+  "date": "Scheduled date of the order delivery in the YYYY-MM-DD format"
+}
+```
 
 > Report unfulfilled service tasks
 
@@ -673,6 +684,9 @@ base:NestedConceptShape
   ] .
 ```
 
+> [!IMPORTANT]
+> For any lifecycle form, users will be required to configure the event occurrences using `SHACL` restrictions. Typically, `TerminatedServiceEvent`, `IncidentReportEvent`, `ContractRescission`, and `ContractTermination` can only accommodate a remarks property. For the `ServiceDispatchEvent`, users may assign additional dispatch details through defining more `SHACL` properties. A sample file has been created in `./resources/shacl.ttl`
+
 ### 3.2 Automated Data Retrieval
 
 This agent can dynamically query fields for different instances based on the `SHACL` restrictions in three steps:
@@ -741,6 +755,9 @@ It is expected that we should create a new ID and name for the person instance. 
 ```
 
 A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+> [!IMPORTANT]
+> For any service lifecycle, users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`, which can contain additional properties/details. A sample file has been created in `./resources/dispatch.jsonld`, and users must not modify line 1 - 32.
 
 ### 4.2 Geocoding
 
