@@ -3,5 +3,5 @@
 # to ">="
 import os
 alg2_fpath = os.path.join(os.path.dirname(__file__), "algs_sparql", "alg2.sparql")
-with open(".sparql", "r") as file:
+with open(alg2_fpath, "r") as file:
     alg2 = file.read()
