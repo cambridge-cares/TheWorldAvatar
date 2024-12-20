@@ -1,0 +1,2035 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A knowledge-graph-based digital twin of the world.">
+      
+      
+      
+      
+        <link rel="prev" href="../ogm/">
+      
+      
+      
+      <link rel="icon" href="../../media/twa-logo-blue.svg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>Derived Information Framework (DIF) - The World Avatar</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#develop-derivation-agent-server-side" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The World Avatar" class="md-header__button md-logo" aria-label="The World Avatar" data-md-component="logo">
+      
+  <img src="../../media/twa-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The World Avatar
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Derived Information Framework (DIF)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cambridge-cares/TheWorldAvatar
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/res_registry/" class="md-tabs__link">
+          
+  
+  API Documentation
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../python_java/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The World Avatar" class="md-nav__button md-logo" aria-label="The World Avatar" data-md-component="logo">
+      
+  <img src="../../media/twa-logo-white.svg" alt="logo">
+
+    </a>
+    The World Avatar
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cambridge-cares/TheWorldAvatar
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome to twa
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wishlist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bug reports/feature requests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Py4j-related
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Py4j-related
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/res_registry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resource Registry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/res_manager/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resource Manager
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/jps_gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    JPS Gateway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Data Model
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Data Model
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/base_ontology/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BaseOntology
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utilities/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    KG Operations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            KG Operations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gateway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/sparql_client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SparqlClient
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Derived Information Framework
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Derived Information Framework
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/derivation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derivation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/derivation_client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derivation Client
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/derivation_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derivation Agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Logging and Configuration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Logging and Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/conf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_java/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python-Java communications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../additional_java_lib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Use additional Java library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sparql/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Perform knowledge graph operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ogm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Object Graph Mapper (OGM)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Derived Information Framework (DIF)
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Derived Information Framework (DIF)
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#develop-derivation-agent-server-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      Develop derivation agent (server side)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Develop derivation agent (server side)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ogm-data-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      OGM data models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-sparql-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom SPARQL client
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry-point-for-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Entry point for docker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#env-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      .env file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker compose file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-up-email-notification-for-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set up email notification for exceptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-sync-derivations-client-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a-/sync derivations (client side)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create a-/sync derivations (client side)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instantiate-derivation-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instantiate derivation client
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#synchronous-derivations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Synchronous derivations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous-derivations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asynchronous derivations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-created-derivation-dags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validate created derivation DAGs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-derivation-update-client-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request derivation update (client side)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request derivation update (client side)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pure-synchronous-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pure synchronous response
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asynchronous operation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixed-type-async-derivations-depend-on-sync-derivations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mixed type - async derivations depend on sync derivations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-agent-system-combine-everything-above" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-agent system - combine everything above
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Derived Information Framework (DIF)</h1>
+
+<p>The derived information framework (DIF) packaged in <code>twa</code> is a Python equivalent of <code>uk.ac.cam.cares.jps.base.agent.DerivationAgent.java</code> but based on <a href="https://flask.palletsprojects.com/en/3.0.x/">Flask</a> application behind a <a href="https://gunicorn.org/">gunicorn</a> server. This is inspired by the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/examples/python_agent">Example: Python agent</a>.</p>
+<p>To read more about the Java-native implementation of <code>DerivationAgent</code> and derivation operations provided in <code>uk.ac.cam.cares.jps.base.derivation.DerivationClient.java</code>, please refer to below links:</p>
+<ul>
+<li><a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation"><code>DerivationClient</code></a> - derivation client Java classes that process the derivations</li>
+<li><a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/DerivationAgent.java"><code>DerivationAgent.java</code></a> - derivation agent Java class that uses methods provided in <code>DerivationClient</code></li>
+<li><a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample"><code>DerivationAsynExample</code></a> - example on directed acyclic graph (DAG) of derivations operated by derivation agents in Java</li>
+</ul>
+<p>To read the academic paper describing the DIF:</p>
+<ul>
+<li>Jiaru Bai, Kok Foong Lee, Markus Hofmeister, Sebastian Mosbach, Jethro Akroyd, and Markus Kraft. (2024). A derived information framework for a dynamic knowledge graph and its application to smart cities. Future Generation Computer Systems 152, 112–126. <a href="https://doi.org/10.1016/j.future.2023.10.008">doi:10.1016/j.future.2023.10.008</a></li>
+</ul>
+<p>To read the academic papers using the DIF:</p>
+<ul>
+<li>Jiaru Bai, Sebastian Mosbach, Connor J. Taylor, Dogancan Karan, Kok Foong Lee, Simon D. Rihm, Jethro Akroyd, Alexei A. Lapkin, and Markus Kraft. (2024). A dynamic knowledge graph approach to distributed self-driving laboratories. Nature Communications 15, 462. <a href="https://doi.org/10.1038/s41467-023-44599-9">doi:10.1038/s41467-023-44599-9</a></li>
+<li>Wanni Xie, Feroz Farazi, John Atherton, Jiaru Bai, Sebastian Mosbach, Jethro Akroyd, and Markus Kraft. (2024). Dynamic knowledge graph approach for modelling the decarbonisation of power systems. Energy and AI 17, 100359. <a href="https://doi.org/10.1016/j.egyai.2024.10035">doi:10.1016/j.egyai.2024.10035</a></li>
+<li>Markus Hofmeister, Jiaru Bai, George Brownbridge, Sebastian Mosbach, Kok Foong Lee, Feroz Farazi, Michael Hillman, Mehal Agarwal, Srishti Ganguly, Jethro Akroyd, and Markus Kraft. (2024). Semantic agent framework for automated flood assessment using dynamic knowledge graphs. Data-Centric Engineering 5, 14. <a href="https://doi.org/10.1017/dce.2024.11">doi:10.1017/dce.2024.11</a></li>
+<li>Markus Hofmeister, George Brownbridge, Michael Hillman, Sebastian Mosbach, Jethro Akroyd, Kok Foong Lee, and Markus Kraft. (2024). Cross-domain flood risk assessment for smart cities using dynamic knowledge graphs. Sustainable Cities and Society 101, 105113. <a href="https://doi.org/10.1016/j.scs.2023.105113">doi:10.1016/j.scs.2023.105113</a></li>
+<li>Markus Hofmeister, Kok Foong Lee, Yi-Kai Tsai, Magnus Müller, Karthik Nagarajan, Sebastian Mosbach, Jethro Akroyd, and Markus Kraft. (2024). Dynamic control of district heating networks with integrated emission modelling: A dynamic knowledge graph approach. Energy and AI 17, 100376. <a href="https://doi.org/10.1016/j.egyai.2024.100376">doi:10.1016/j.egyai.2024.100376</a></li>
+</ul>
+<p>A basic working example of using the DIF alone and in conjunction with the object graph mapper (OGM) is given below. Please refer to <a href="../ogm/">Object Graph Mapper (OGM)</a> for examples on OGM itself.</p>
+<h2 id="develop-derivation-agent-server-side">Develop derivation agent (server side)<a class="headerlink" href="#develop-derivation-agent-server-side" title="Permanent link">&para;</a></h2>
+<p>An example agent that can be deployed using docker is provided here, it's strongly advised to stick to the folder structure below:</p>
+<p><em>Recommended Python agent folder layout</em></p>
+<div class="language-text highlight"><pre><span></span><code>.
+├── ...                         # other project files (README, LICENSE, etc..)
+├── youragent                   # project source files for your agent
+│   ├── agent                   # module that contains the agent logic
+│   │   ├── your_agent.py       # your derivation agent
+│   │   └── __init__.py
+│   ├── conf                    # module that contains the agent config
+│   │   ├── your_conf.py        # specific configuration for your agent
+│   │   └── __init__.py
+│   ├── data_model              # module that contains the dataclasses for concepts
+│   │   ├── your_onto.py        # dataclasses (OGM) for your ontology concepts
+│   │   └── __init__.py
+│   ├── kg_operations           # module that handles knowledge graph operations
+│   │   ├── your_sparql.py      # sparql query and update strings for your agent
+│   │   └── __init__.py
+│   ├── other_modules           # other necessary modules for your agent
+│   │   ├── module1.py
+│   │   ├── module2.py
+│   │   └── __init__.py
+│   ├── entry_point.py          # agent entry point
+│   └── __init__.py
+├── youragent.env.example       # example environment variables for configuration
+├── docker-compose.yml          # docker compose file
+├── Dockerfile                  # Dockerfile
+└── tests                       # tests files
+</code></pre></div>
+<p>Core script examples are shown below. Kindly see the inline documentation for clarifications.</p>
+<h3 id="agent-class">Agent class<a class="headerlink" href="#agent-class" title="Permanent link">&para;</a></h3>
+<p><code>your_agent.py</code></p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">twa.agent</span> <span class="kn">import</span> <span class="n">DerivationAgent</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">twa.data_model.derivation</span> <span class="kn">import</span> <span class="n">DerivationInputs</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">twa.data_model.derivation</span> <span class="kn">import</span> <span class="n">DerivationOutputs</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">youragent.kg_operations</span> <span class="kn">import</span> <span class="n">YourSparqlClient</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span> <span class="nn">youragent.data_model</span> <span class="kn">import</span> <span class="n">YourConcept</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">from</span> <span class="nn">youragent.data_model</span> <span class="kn">import</span> <span class="n">AnotherConcept</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">from</span> <span class="nn">youragent.data_model</span> <span class="kn">import</span> <span class="n">OutputConcept</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># NOTE For any developer to extend the DerivationAgent class, four @abstractmethod MUST be implemented</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># - agent_input_concepts = []</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># - agent_output_concepts = []</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># - validate_inputs(self, http_request) -&gt; bool</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># - process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="k">class</span> <span class="nc">YourAgent</span><span class="p">(</span><span class="n">DerivationAgent</span><span class="p">):</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="c1">##########################################################</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="c1">## I. __init__ for custom configuration (if applicable) ##</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="c1">##########################################################</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">your_str_conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="n">your_int_conf</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="n">your_bool_conf</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="o">**</span><span class="n">kwargs</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    <span class="p">):</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="c1"># pass all other parameters to DerivationAgent.__init__, will throw error if unexpected input received</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        <span class="c1"># Below you may want to assign your custom configuration</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        <span class="c1"># How to provide them when instantiating agent will be detailed in your_conf.py, entry_point.py, and youragent.env.example</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">your_str_conf</span> <span class="o">=</span> <span class="n">your_str_conf</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">your_int_conf</span> <span class="o">=</span> <span class="n">your_int_conf</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">your_bool_conf</span> <span class="o">=</span> <span class="n">your_bool_conf</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    <span class="c1">###############################</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    <span class="c1">## II. Derivation agent part ##</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    <span class="c1">###############################</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>    <span class="c1"># Firstly, as the agent is designed to register itself in the knowledge graph when it is initialised</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>    <span class="c1"># One need to define the agent inputs/outputs by providing the concept IRIs as return values</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>    <span class="c1"># The registration is by default, which can be altered to False when instantiating agent</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>    <span class="c1"># One way of doing it is setting flag REGISTER_AGENT=false in the env file</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    <span class="c1"># The agent inputs need to be provided in a list (even only one concept it involved)</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    <span class="n">agent_input_concepts</span> <span class="o">=</span> <span class="p">[</span><span class="n">YourConcept</span><span class="p">,</span> <span class="n">AnotherConcept</span><span class="p">]</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>    <span class="c1"># The agent inputs need to be provided in a list (even only one concept it involved)</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>    <span class="n">agent_output_concepts</span> <span class="o">=</span> <span class="p">[</span><span class="n">OutputConcept</span><span class="p">]</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>    <span class="k">def</span> <span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">http_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>        <span class="c1"># You may want to add some specific validation after the generic checks</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>        <span class="k">if</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate_inputs</span><span class="p">(</span><span class="n">http_request</span><span class="p">):</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>            <span class="c1"># do some specific checking</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>            <span class="k">pass</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>    <span class="k">def</span> <span class="nf">process_request_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">derivation_inputs</span><span class="p">:</span> <span class="n">DerivationInputs</span><span class="p">,</span> <span class="n">derivation_outputs</span><span class="p">:</span> <span class="n">DerivationOutputs</span><span class="p">):</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>        <span class="c1"># Provide your agent logic that converts the agent inputs to triples of new created instances</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>        <span class="c1"># The derivation_inputs will be in the format of key-value pairs with the concept as key and instance iri as value</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>        <span class="c1"># For example:</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>        <span class="c1"># {</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>        <span class="c1">#     &quot;https://example/kg/onto/YourConcept&quot;: [&quot;https://example/kg/onto/YourConcept_1&quot;],</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>        <span class="c1">#     &quot;https://example/kg/onto/AnotherConcept&quot;: [&quot;https://example/kg/onto/AnotherConcept_1_1&quot;,</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>        <span class="c1">#         &quot;https://example/kg/onto/AnotherConcept_1_2&quot;],</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a>        <span class="c1"># }</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>
+<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>        <span class="c1"># It is recommended to retrieve the agent inputs as OGM objects</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a>        <span class="n">your_concept</span> <span class="o">=</span> <span class="n">derivation_inputs</span><span class="o">.</span><span class="n">get_inputs_ogm_assume_one</span><span class="p">(</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>            <span class="n">YourConcept</span><span class="p">,</span> <span class="c1"># the class you are interested in getting</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>            <span class="n">sparql_client</span><span class="p">,</span> <span class="c1"># sparql_client that is connected to the knowledge graph endpoint</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>            <span class="o">-</span><span class="mi">1</span> <span class="c1"># recursive_depth to control recursive queries</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>        <span class="p">)</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>
+<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>        <span class="c1"># The instance IRIs of the interested class (rdf:type) can be accessed via derivation_inputs.getIris(clz)</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>        <span class="c1"># e.g. assume we will take the first iri that has rdf:type YOUR_CONCEPT</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>        <span class="n">instance_iri</span> <span class="o">=</span> <span class="n">derivation_inputs</span><span class="o">.</span><span class="n">getIris</span><span class="p">(</span><span class="n">YourConcept</span><span class="o">.</span><span class="n">rdf_type</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a>
+<a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>        <span class="c1"># You may want to create instance of YourSparqlClient for specific queries/updates not covered by OGM</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>        <span class="c1"># YourSparqlClient should be defined in your_sparql.py that will be introduced later in this documentation page</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a>        <span class="c1"># This client can be initialised with the configuration you already initialised in YourAgent.__init__ method</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a>        <span class="c1"># A convenient method get_sparql_client is provided to get sparql_client if provided YourSparqlClient as arg</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a>        <span class="n">sparql_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sparql_client</span><span class="p">(</span><span class="n">YourSparqlClient</span><span class="p">)</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>
+<a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a>        <span class="c1"># Please note here we are using instance_iri of the YourConcept object within the provided derivation_inputs</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a>        <span class="n">response</span> <span class="o">=</span> <span class="n">sparql_client</span><span class="o">.</span><span class="n">your_sparql_query</span><span class="p">(</span><span class="n">your_concept</span><span class="o">.</span><span class="n">instance_iri</span><span class="p">)</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a>
+<a id="__codelineno-0-81" name="__codelineno-0-81" href="#__codelineno-0-81"></a>        <span class="c1"># You may want to log something during agent execution</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82" href="#__codelineno-0-82"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;YourAgent has done something.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83" href="#__codelineno-0-83"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;And here are some details...&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84" href="#__codelineno-0-84"></a>
+<a id="__codelineno-0-85" name="__codelineno-0-85" href="#__codelineno-0-85"></a>        <span class="c1"># The new output can be created using OGM</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86" href="#__codelineno-0-86"></a>        <span class="n">output_concept</span> <span class="o">=</span> <span class="n">OutputConcept</span><span class="p">(</span><span class="n">hasValue</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87" href="#__codelineno-0-87"></a>        <span class="c1"># Which is essentially triples below:</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88" href="#__codelineno-0-88"></a>        <span class="c1">#   &lt;https://example/kg/onto/OutputConcept_UUID&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example/kg/onto/OutputConcept&gt;.</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89" href="#__codelineno-0-89"></a>        <span class="c1">#   &lt;https://example/kg/onto/OutputConcept_UUID&gt; &lt;https://example/kg/onto/hasValue&gt; 5.</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90" href="#__codelineno-0-90"></a>
+<a id="__codelineno-0-91" name="__codelineno-0-91" href="#__codelineno-0-91"></a>        <span class="c1"># The new created instances should be added to the derivation_outputs</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92" href="#__codelineno-0-92"></a>        <span class="c1"># The easiest way to do it is by adding OGM objects</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93" href="#__codelineno-0-93"></a>        <span class="n">derivation_outputs</span><span class="o">.</span><span class="n">add_outputs_ogm</span><span class="p">(</span><span class="n">output_concept</span><span class="p">)</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94" href="#__codelineno-0-94"></a>
+<a id="__codelineno-0-95" name="__codelineno-0-95" href="#__codelineno-0-95"></a>    <span class="c1">################################################################</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96" href="#__codelineno-0-96"></a>    <span class="c1">## III. Any other periodical job the necessary for your agent ##</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97" href="#__codelineno-0-97"></a>    <span class="c1">################################################################</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98" href="#__codelineno-0-98"></a>    <span class="c1"># Additionally, if you would like to define your own periodical job to be executed, you may do it like blow:</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99" href="#__codelineno-0-99"></a>    <span class="k">def</span> <span class="nf">your_periodical_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-100" name="__codelineno-0-100" href="#__codelineno-0-100"></a>        <span class="c1"># Here provide the job logic to be executed periodically</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101" href="#__codelineno-0-101"></a>        <span class="k">pass</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102" href="#__codelineno-0-102"></a>
+<a id="__codelineno-0-103" name="__codelineno-0-103" href="#__codelineno-0-103"></a>    <span class="nd">@DerivationAgent</span><span class="o">.</span><span class="n">periodical_job</span> <span class="c1"># This decorator enables the _start_your_periodical_job() to be called when calling start_all_periodical_job()</span>
+<a id="__codelineno-0-104" name="__codelineno-0-104" href="#__codelineno-0-104"></a>    <span class="k">def</span> <span class="nf">_start_your_periodical_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105" href="#__codelineno-0-105"></a>        <span class="c1"># You also need to provide a function so that your periodical job can be started on its own</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106" href="#__codelineno-0-106"></a>        <span class="c1"># self.scheduler is an object of APScheduler class</span>
+<a id="__codelineno-0-107" name="__codelineno-0-107" href="#__codelineno-0-107"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add_job</span><span class="p">(</span>
+<a id="__codelineno-0-108" name="__codelineno-0-108" href="#__codelineno-0-108"></a>            <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;your_periodical_job&#39;</span><span class="p">,</span> <span class="c1"># the name for the periodical job</span>
+<a id="__codelineno-0-109" name="__codelineno-0-109" href="#__codelineno-0-109"></a>            <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">your_periodical_job</span><span class="p">,</span> <span class="c1"># the function for the periodical job</span>
+<a id="__codelineno-0-110" name="__codelineno-0-110" href="#__codelineno-0-110"></a>            <span class="n">trigger</span><span class="o">=</span><span class="s1">&#39;interval&#39;</span><span class="p">,</span> <span class="c1"># trigger type</span>
+<a id="__codelineno-0-111" name="__codelineno-0-111" href="#__codelineno-0-111"></a>            <span class="n">seconds</span><span class="o">=</span><span class="mi">10</span> <span class="c1"># specify this value to the time interval you prefer for the job execution</span>
+<a id="__codelineno-0-112" name="__codelineno-0-112" href="#__codelineno-0-112"></a>        <span class="p">)</span>
+<a id="__codelineno-0-113" name="__codelineno-0-113" href="#__codelineno-0-113"></a>    <span class="c1"># The start of your periodical job can be done in two ways once instantiated YourAgent (assume an object named &quot;your_agent&quot;):</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114" href="#__codelineno-0-114"></a>    <span class="c1"># Option 1:</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115" href="#__codelineno-0-115"></a>    <span class="c1"># your_agent._start_your_periodical_job() # start your periodical job independently</span>
+<a id="__codelineno-0-116" name="__codelineno-0-116" href="#__codelineno-0-116"></a>    <span class="c1"># Option 2:</span>
+<a id="__codelineno-0-117" name="__codelineno-0-117" href="#__codelineno-0-117"></a>    <span class="c1"># your_agent.start_all_periodical_job() # start your periodical job together with all other periodical jobs (e.g. _start_monitoring_derivations)</span>
+<a id="__codelineno-0-118" name="__codelineno-0-118" href="#__codelineno-0-118"></a>    <span class="c1"># An example is also provided in entry_point.py later in this documentation page</span>
+</code></pre></div>
+<h3 id="agent-configuration">Agent configuration<a class="headerlink" href="#agent-configuration" title="Permanent link">&para;</a></h3>
+<p><code>your_conf.py</code></p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">twa.conf</span> <span class="kn">import</span> <span class="n">AgentConfig</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">twa.conf</span> <span class="kn">import</span> <span class="n">config_generic</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Similar to AgentConfig, here you may provide the configurations specific to your agent</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">class</span> <span class="nc">YourConfig</span><span class="p">(</span><span class="n">AgentConfig</span><span class="p">):</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">YOUR_STR_CONF</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">YOUR_INT_CONF</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">YOUR_BOOL_CONF</span><span class="p">:</span> <span class="nb">bool</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">def</span> <span class="nf">config_your_agent</span><span class="p">(</span><span class="n">env_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YourConfig</span><span class="p">:</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return configurations from either environment variables or env_file.&quot;&quot;&quot;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="c1"># Remember to put YourConfig as the first input argument to config_generic</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="k">return</span> <span class="n">config_generic</span><span class="p">(</span><span class="n">YourConfig</span><span class="p">,</span> <span class="n">env_file</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="ogm-data-models">OGM data models<a class="headerlink" href="#ogm-data-models" title="Permanent link">&para;</a></h3>
+<p><code>your_onto.py</code></p>
+<p>Please refer to <a href="../ogm/">Object Graph Mapper (OGM)</a> for examples on OGM in more details.</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span> <span class="c1"># imported to enable pydantic postponed annotations</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># The update_forward_refs() required in pydantic (1.x.x) to enable forward reference is no longer required for pydantic (2.x.x)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Instead, `from __future__ import annotations` at the beginning of the script should already enable this</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># For more details, please see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="kn">from</span> <span class="nn">twa.data_model.base_ontology</span> <span class="kn">import</span> <span class="n">BaseOntology</span><span class="p">,</span> <span class="n">BaseClass</span><span class="p">,</span> <span class="n">ObjectProperty</span><span class="p">,</span> <span class="n">DatatypeProperty</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">class</span> <span class="nc">YourOntology</span><span class="p">(</span><span class="n">BaseOntology</span><span class="p">):</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">base_url</span> <span class="o">=</span> <span class="s1">&#39;https://example/kg/&#39;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">namespace</span> <span class="o">=</span> <span class="s1">&#39;onto&#39;</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">owl_versionInfo</span> <span class="o">=</span> <span class="s1">&#39;0.0.1&#39;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">rdfs_comment</span> <span class="o">=</span> <span class="s1">&#39;ontology&#39;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="n">HasValue</span> <span class="o">=</span> <span class="n">DatatypeProperty</span><span class="o">.</span><span class="n">create_from_base</span><span class="p">(</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="s1">&#39;HasValue&#39;</span><span class="p">,</span> <span class="n">YourOntology</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="p">)</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="k">class</span> <span class="nc">YourConcept</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="n">rdfs_isDefinedBy</span> <span class="o">=</span> <span class="n">YourOntology</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    <span class="n">hasValue</span><span class="p">:</span> <span class="n">HasValue</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="k">class</span> <span class="nc">AnotherConcept</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    <span class="n">rdfs_isDefinedBy</span> <span class="o">=</span> <span class="n">YourOntology</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>    <span class="n">hasValue</span><span class="p">:</span> <span class="n">HasValue</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="k">class</span> <span class="nc">OutputConcept</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>    <span class="n">rdfs_isDefinedBy</span> <span class="o">=</span> <span class="n">YourOntology</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>    <span class="n">hasValue</span><span class="p">:</span> <span class="n">HasValue</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="custom-sparql-client">Custom SPARQL client<a class="headerlink" href="#custom-sparql-client" title="Permanent link">&para;</a></h3>
+<p><code>your_sparql.py</code></p>
+<p>Please refer to <a href="../sparql/#create-custom-sparql-client">Create custom sparql client</a> for more details.</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">twa.kg_operations</span> <span class="kn">import</span> <span class="n">PySparqlClient</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">class</span> <span class="nc">YourSparqlClient</span><span class="p">(</span><span class="n">PySparqlClient</span><span class="p">):</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="c1"># PySparqlClient class provides a few utility functions that developer can call within their own functions:</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="c1">#  - checkInstanceClass(self, instance, instance_class)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="c1">#  - getAmountOfTriples(self)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="c1">#  - performQuery(self, query)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="c1">#  - performUpdate(self, update)</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="c1">#  - uploadOntology(self, filePath)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="c1">#  - uploadFile(self, local_file_path)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="c1">#  - downloadFile(self, remote_file_path, downloaded_file_path)</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="c1">#  more to come...</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="k">def</span> <span class="nf">your_sparql_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">your_instance_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="k">pass</span>
+</code></pre></div>
+<h3 id="entry-point-for-docker">Entry point for docker<a class="headerlink" href="#entry-point-for-docker" title="Permanent link">&para;</a></h3>
+<p><code>entry_point.py</code></p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">twa.conf</span> <span class="kn">import</span> <span class="n">config_derivation_agent</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span> <span class="nn">youragent.conf</span> <span class="kn">import</span> <span class="n">config_your_agent</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span> <span class="nn">youragent.agent</span> <span class="kn">import</span> <span class="n">YourAgent</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="c1"># If you would like to deploy your agent within a docker container</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="c1"># (using docker-compose.yml and youragent.env which will be introduced later in this documentation page)</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="c1"># then you may use:</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">agent_config</span> <span class="o">=</span> <span class="n">config_your_agent</span><span class="p">()</span> <span class="c1"># here we assume custom config are required, for normal config, you may use:</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="c1"># agent_config = config_derivation_agent()</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="c1"># Else, if you would like to create agent to run in your memory</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="c1"># then you may want to provide the path to youragent.env file as argument to function config_your_agent()</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="c1"># i.e.,</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    <span class="c1"># agent_config = config_your_agent(&quot;/path/to/youragent.env&quot;)</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    <span class="c1"># Again, for normal config, you may use:</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="c1"># agent_config = config_derivation_agent(&quot;/path/to/youragent.env&quot;)</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    <span class="c1"># Create agent instance</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    <span class="n">agent</span> <span class="o">=</span> <span class="n">YourAgent</span><span class="p">(</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>        <span class="n">your_str_conf</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">YOUR_STR_CONF</span><span class="p">,</span> <span class="c1"># remember to populate custom config if applicable</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>        <span class="n">your_int_conf</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">YOUR_INT_CONF</span><span class="p">,</span> <span class="c1"># remember to populate custom config if applicable</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>        <span class="n">your_bool_conf</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">YOUR_BOOL_CONF</span><span class="p">,</span> <span class="c1"># remember to populate custom config if applicable</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>        <span class="n">time_interval</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">DERIVATION_PERIODIC_TIMESCALE</span><span class="p">,</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>        <span class="n">kg_url</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">SPARQL_QUERY_ENDPOINT</span><span class="p">,</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>        <span class="n">kg_update_url</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">SPARQL_UPDATE_ENDPOINT</span><span class="p">,</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>        <span class="n">kg_user</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">KG_USERNAME</span><span class="p">,</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>        <span class="n">kg_password</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">KG_PASSWORD</span><span class="p">,</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>        <span class="n">fs_url</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">FILE_SERVER_ENDPOINT</span><span class="p">,</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>        <span class="n">fs_user</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">FILE_SERVER_USERNAME</span><span class="p">,</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>        <span class="n">fs_password</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">FILE_SERVER_PASSWORD</span><span class="p">,</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>        <span class="n">derivation_instance_base_url</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">DERIVATION_INSTANCE_BASE_URL</span><span class="p">,</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>        <span class="n">flask_config</span> <span class="o">=</span> <span class="n">FlaskConfig</span><span class="p">(),</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a>        <span class="n">agent_endpoint_base_url</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">ONTOAGENT_OPERATION_HTTP_BASE_URL</span><span class="p">,</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>        <span class="n">register_agent</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">REGISTER_AGENT</span><span class="p">,</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>        <span class="n">logger_for_dev</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>        <span class="c1"># note that you can set the maximum number of threads to monitor async derivations at the same time</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>        <span class="n">max_thread_monitor_async_derivations</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">MAX_THREAD_MONITOR_ASYNC_DERIVATIONS</span><span class="p">,</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>        <span class="c1"># note that you may choose NOT to supply below parameters if you DO NOT want email notifications</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>        <span class="n">email_recipient</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">EMAIL_RECIPIENT</span><span class="p">,</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>        <span class="n">email_subject_prefix</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">EMAIL_SUBJECT_PREFIX</span><span class="p">,</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>        <span class="n">email_username</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">EMAIL_USERNAME</span><span class="p">,</span>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>        <span class="n">email_auth_json_path</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">EMAIL_AUTH_JSON_PATH</span><span class="p">,</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a>        <span class="n">email_start_end_async_derivations</span> <span class="o">=</span> <span class="n">agent_config</span><span class="o">.</span><span class="n">EMAIL_START_END_ASYNC_DERIVATIONS</span><span class="p">,</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>    <span class="p">)</span>
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a>    <span class="c1"># Start listening sync/monitoring async derivations</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a>    <span class="c1"># There are two ways of doing this, the first way it to start the monitoring process independently by:</span>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>    <span class="c1"># Option 1:</span>
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a>    <span class="n">agent</span><span class="o">.</span><span class="n">_start_monitoring_derivations</span><span class="p">()</span>
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a>    <span class="c1"># Option 2:</span>
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a>    <span class="c1"># Or, you can execute below line, which will start all periodical jobs that decorated with @DerivationAgent.periodical_job</span>
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a>    <span class="c1"># where _start_monitoring_derivations() will be called as well</span>
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a>    <span class="c1"># agent.start_all_periodical_job() # particularly useful when custom periodical job is defined</span>
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a>
+<a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a>    <span class="c1"># Expose flask app of agent to be picked by gunicorn</span>
+<a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a>    <span class="n">app</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">app</span>
+<a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>
+<a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a>    <span class="k">return</span> <span class="n">app</span>
+</code></pre></div>
+<h3 id="env-file">.env file<a class="headerlink" href="#env-file" title="Permanent link">&para;</a></h3>
+<p><code>youragent.env.example</code></p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>DERIVATION_PERIODIC_TIMESCALE=60
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>DERIVATION_INSTANCE_BASE_URL=http://www.example.com/triplestore/repository/
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>SPARQL_QUERY_ENDPOINT=http://www.example.com/blazegraph/namespace/kb/sparql
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>SPARQL_UPDATE_ENDPOINT=http://www.example.com/blazegraph/namespace/kb/sparql
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>KG_USERNAME=
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>KG_PASSWORD=
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>FILE_SERVER_ENDPOINT=http://www.example.com/FileServer/
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>FILE_SERVER_USERNAME=
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>FILE_SERVER_PASSWORD=
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>ONTOAGENT_OPERATION_HTTP_BASE_URL=http://localhost:7000/YourAgent
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>REGISTER_AGENT=false
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>MAX_THREAD_MONITOR_ASYNC_DERIVATIONS=1
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>EMAIL_RECIPIENT=foo.1@bar.com;foo.2@bar.com
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>EMAIL_SUBJECT_PREFIX=YourAgent
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>EMAIL_USERNAME=your.gmail.address@gmail.com
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>EMAIL_START_END_ASYNC_DERIVATIONS=false
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>YOUR_STR_CONF=
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>YOUR_INT_CONF=
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>YOUR_BOOL_CONF=
+</code></pre></div>
+<p>You may want to commit this example file without credentials to git as a template for your agent configuration. At deployment, you can make a copy of this file, rename it to <code>youragent.env</code> and populate the credentials information. It is suggested to add <code>*.env</code> entry to your <code>.gitignore</code> of the agent folder, thus the renamed <code>youragent.env</code> (including credentials) will NOT be committed to git. For the usage of each default configuration, please refer to <code>twa.conf.AgentConfig</code> class.</p>
+<blockquote>
+<p>NOTE: you may want to provide <code>SPARQL_QUERY_ENDPOINT</code> and <code>SPARQL_UPDATE_ENDPOINT</code> as the internal port of the triple store (most likely blazegraph) docker container, e.g., <code>http://blazegraph:8080/blazegraph/namespace/kb/sparql</code>, if you would like to deploy your derivation agent and the triple store within the same docker stack (i.e. same docker-compose file, this is to be distinguished from the stack-client within The World Avatar, which is to be integrated into <code>twa</code> in the future iterations). In the endpoint, <code>blazegraph:8080</code> depends on your specification in the <code>docker-compose.yml</code> which will be introduced in <a href="#docker-compose-file">Docker compose file</a>.</p>
+<p>An alternative to this is to add <code>extra_hosts: - host.docker.internal:host-gateway</code> to the <code>your_agent</code> service in <code>docker-compose.yml</code> (as shown in <a href="#docker-compose-file">Docker compose file</a>) - then you can access the blazegraph via <code>http://host.docker.internal:27149/blazegraph/namespace/kb/sparql</code> (<code>host.docker.internal:27149</code> depends on your specification in the <code>docker-compose.yml</code>).</p>
+<p>Please also note that the host and port of <code>ONTOAGENT_OPERATION_HTTP_BASE_URL</code> (i.e., <code>localhost:7000</code> in <code>http://localhost:7000/YourAgent</code>) should match the value provided in the <code>docker-compose.yml</code> to ensure it is resolvable for handling synchronous derivations once registered in the knowledge graph.</p>
+<p>At deployment, configurations in this file will be picked up by <code>config_derivation_agent()</code> when instantiating the agent in <code>create_app()</code> of <code>entry_point.py</code> (see <a href="#entry-point-for-docker">Entry point for docker</a>).</p>
+</blockquote>
+<h3 id="docker-compose-file">Docker compose file<a class="headerlink" href="#docker-compose-file" title="Permanent link">&para;</a></h3>
+<p><code>docker-compose.yml</code></p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>version: &#39;3.8&#39;
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>services:
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  # Your derivation agent
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  your_agent:
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    image: your_agent:1.0.0
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    container_name: your_agent
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    environment:
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>      LOG4J_FORMAT_MSG_NO_LOOKUPS: &quot;true&quot;
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>      # Add email auth json path that to be read by the yagmail service
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    build:
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>      context: .
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>      dockerfile: ./Dockerfile
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    ports:
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>      - 7000:5000
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    # Note that &quot;host.docker.internal&quot; is only a placeholder string, you can replace it with anything, e.g. &quot;localhost&quot; (HOWEVER, NOTE THAT &quot;localhost&quot; IS NO LONGER WORKING AS OF py4jps 1.0.23 (predecessor of twa), WHEREAS ANY OTHER PLACEHOLDER STRING STILL WORKS, AS DETAILED IN ISSUE https://github.com/cambridge-cares/TheWorldAvatar/issues/347)
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>    # But please be aware that this can be unstable on some versions docker-desktop as noticed by other developers:
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>    # https://github.com/docker/for-win/issues/8861
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>    extra_hosts:
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>      - host.docker.internal:host-gateway
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>    env_file:
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>      - ./youragent.env
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>  # Blazegraph
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>  blazegraph:
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>    container_name: &quot;blazegraph_test&quot;
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a>    ports:
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a>      - 27149:8080
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a>    environment:
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a>      # Use BLAZEGRAPH_USER and BLAZEGRAPH_PASSWORD_FILE if you would like to add authentication
+<a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a>      # Otherwise, you may wish to comment them out
+<a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a>      BLAZEGRAPH_USER: bg_user
+<a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a>      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+<a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a>    # Add a secret to set the password for BASIC authentication
+<a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a>    secrets:
+<a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a>      - blazegraph_password
+<a id="__codelineno-6-39" name="__codelineno-6-39" href="#__codelineno-6-39"></a>
+<a id="__codelineno-6-40" name="__codelineno-6-40" href="#__codelineno-6-40"></a># Secrets used to set runtime passwords
+<a id="__codelineno-6-41" name="__codelineno-6-41" href="#__codelineno-6-41"></a>secrets:
+<a id="__codelineno-6-42" name="__codelineno-6-42" href="#__codelineno-6-42"></a>  blazegraph_password:
+<a id="__codelineno-6-43" name="__codelineno-6-43" href="#__codelineno-6-43"></a>    file: tests/dummy_services_secrets/blazegraph_passwd.txt
+<a id="__codelineno-6-44" name="__codelineno-6-44" href="#__codelineno-6-44"></a>  email_auth: # You may want to add below file name to your .gitignore
+<a id="__codelineno-6-45" name="__codelineno-6-45" href="#__codelineno-6-45"></a>    file: tests/dummy_services_secrets/email_auth.json
+</code></pre></div>
+<p>The design of derivation agent in <code>twa</code> is continually evolving, and as the project grows, we hope to make it more accessible to developers and users.</p>
+<h3 id="set-up-email-notification-for-exceptions">Set up email notification for exceptions<a class="headerlink" href="#set-up-email-notification-for-exceptions" title="Permanent link">&para;</a></h3>
+<p>The <code>DerivationAgent</code> class provides the feature to send email notifications to list of recipients specified by the developer. As the agent uses <a href="https://github.com/kootenpv/yagmail">yagmail</a> package, a gmail account is required. The feature relies on <a href="https://oauth.net/2/">OAuth2</a> for authorisation. A step-by-step instruction can be find <a href="https://github.com/kootenpv/yagmail/issues/143#issuecomment-1161223461">here</a>.</p>
+<h2 id="create-a-sync-derivations-client-side">Create a-/sync derivations (client side)<a class="headerlink" href="#create-a-sync-derivations-client-side" title="Permanent link">&para;</a></h2>
+<p>Methods are provided in the <code>PyDerivationClient</code> to create derivation instances that are responded by agents in different timescales: synchronous (quick calculations) and asynchronous (lengthy computations).</p>
+<h3 id="instantiate-derivation-client">Instantiate derivation client<a class="headerlink" href="#instantiate-derivation-client" title="Permanent link">&para;</a></h3>
+<p>The first step is to instantiate a derivation client:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span> <span class="nn">twa.data_model.iris</span> <span class="kn">import</span> <span class="n">TWA_BASE_URL</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span> <span class="nn">twa.kg_operations.derivation_client</span> <span class="kn">import</span> <span class="n">PyDerivationClient</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># assume the below SPARQL endpoint is available</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">sparql_endpoint</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:9999/blazegraph/namespace/kb/sparql&#39;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">derivation_client</span> <span class="o">=</span> <span class="n">PyDerivationClient</span><span class="p">(</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">derivation_instance_base_url</span><span class="o">=</span><span class="n">TWA_BASE_URL</span><span class="p">,</span> <span class="c1"># you may choose to provide your own base url</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">query_endpoint</span><span class="o">=</span><span class="n">sparql_endpoint</span><span class="p">,</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>    <span class="n">update_endpoint</span><span class="o">=</span><span class="n">sparql_endpoint</span><span class="p">,</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    <span class="c1"># you may also provide credentials if the above endpoint is password-protected</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="c1"># kg_user=&lt;username&gt;,</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="c1"># kg_password=&lt;password&gt;,</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="synchronous-derivations">Synchronous derivations<a class="headerlink" href="#synchronous-derivations" title="Permanent link">&para;</a></h3>
+<p>Given below IRIs, two types of derivations can be marked up for synchronous agent responses.</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://example/kg/output_1&#39;</span><span class="p">,</span> <span class="s1">&#39;https://example/kg/output_2&gt;&#39;</span><span class="p">]</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">agent_iri</span> <span class="o">=</span> <span class="s1">&#39;https://example/kg/MyAgent&#39;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://example/kg/input_1&#39;</span><span class="p">,</span> <span class="s1">&#39;https://example/kg/input_2&#39;</span><span class="p">]</span>
+</code></pre></div>
+<ol>
+<li>
+<p>Derivation without time series
+    <div class="language-python highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">derivation_iri</span> <span class="o">=</span> <span class="n">derivation_client</span><span class="o">.</span><span class="n">createDerivation</span><span class="p">(</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">entities</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">agent_iri</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="p">)</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Derivation with time series
+    <div class="language-python highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">derivation_iri</span> <span class="o">=</span> <span class="n">derivation_client</span><span class="o">.</span><span class="n">createDerivationWithTimeSeries</span><span class="p">(</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="n">entities</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">agent_iri</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="p">)</span>
+</code></pre></div></p>
+</li>
+</ol>
+<p>Derivations can also be created for generating new information, i.e. the outputs of this derivation are to be generated (either with or without time series). When the HTTP endpoint of the agent to handle the synchronous derivation is unknown to the calling entity, one can use the below method:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span> <span class="nn">twa.data_model.iris</span> <span class="kn">import</span> <span class="n">ONTODERIVATION_DERIVATION</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kn">from</span> <span class="nn">twa.data_model.iris</span> <span class="kn">import</span> <span class="n">ONTODERIVATION_DERIVATIONWITHTIMESERIES</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># create a derivation instance</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">derivation</span> <span class="o">=</span> <span class="n">derivation_client</span><span class="o">.</span><span class="n">createSyncDerivationForNewInfo</span><span class="p">(</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">agent_iri</span><span class="p">,</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>    <span class="n">inputsIRI</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="n">derivationType</span><span class="o">=</span><span class="n">ONTODERIVATION_DERIVATION</span><span class="p">,</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="c1"># below line can be used instead to create derivation with time series</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="c1"># derivationType=ONTODERIVATION_DERIVATIONWITHTIMESERIES</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="p">)</span>
+</code></pre></div>
+<p>When calling this method, the framework will query the agent HTTP endpoint and fire an HTTP request to request for computing new information with the provided inputs.</p>
+<blockquote>
+<p><em>NONE</em> of the <code>inputsIRI</code> should be derived information of asynchronous derivations.</p>
+</blockquote>
+<p>Should the developer already know the URL of the HTTP endpoint, one can provide such HTTP endpoint to the method by calling function <code>createSyncDerivationForNewInfoWithHttpUrl</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">derivation</span> <span class="o">=</span> <span class="n">derivation_client</span><span class="o">.</span><span class="n">createSyncDerivationForNewInfoWithHttpUrl</span><span class="p">(</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">agent_iri</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">agentURL</span><span class="o">=</span><span class="n">agent_http_endpoint</span><span class="p">,</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">inputsIRI</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">derivationType</span><span class="o">=</span><span class="n">ONTODERIVATION_DERIVATION</span><span class="p">,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="c1"># below line can be used instead to create derivation with time series</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="c1"># derivationType=ONTODERIVATION_DERIVATIONWITHTIMESERIES</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p><em>NOTE that developer MUST make sure the provided <code>agentIRI</code> and <code>agentURL</code> matches with each other.</em>
+If the developer has access to the agent object, then one can use: <code>agent.agentIRI</code> and <code>agent.syncDerivationEndpoint</code></p>
+</blockquote>
+<p>The returned type of the above methods is <code>twa.data_model.derivation.Derivation</code>, developer can get the IRI of the created derivation and list of IRIs of the generated outputs via:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># the generated derivation IRI</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">derivation_iri</span> <span class="o">=</span> <span class="n">derivation</span><span class="o">.</span><span class="n">getIri</span><span class="p">()</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># the IRIs of generated new information with a rdf:type of interest &#39;http://this_is_a_specific_rdfType&#39;</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="n">output_iris</span> <span class="o">=</span> <span class="n">derivation</span><span class="o">.</span><span class="n">getBelongsToIris</span><span class="p">(</span><span class="s1">&#39;http://this_is_a_specific_rdfType&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>This initialisation thus supports creating a graph of synchronous derivations on-the-fly without creating placeholder instances in the knowledge graph when only pure inputs exist:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># create a downstream derivation that takes the outputs of the derivation instance created just now as inputs</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">downstream_derivation</span> <span class="o">=</span> <span class="n">derivation_client</span><span class="o">.</span><span class="n">createSyncDerivationForNewInfo</span><span class="p">(</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">another_agent_iri</span><span class="p">,</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="n">inputsIRI</span><span class="o">=</span><span class="n">output_iris</span><span class="p">,</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="n">derivationType</span><span class="o">=</span><span class="n">ONTODERIVATION_DERIVATION</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="p">)</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c1"># again we retrieve its outputs with the interested rdf:type</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="c1"># &#39;http://specific_rdfType_of_downstream_derivation_outputs&#39;</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="n">outputs_of_downstream_derivation</span> <span class="o">=</span> <span class="n">downstream_derivation</span><span class="o">.</span><span class="n">getBelongsToIris</span><span class="p">(</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>    <span class="s1">&#39;http://specific_rdfType_of_downstream_derivation_outputs&#39;</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="p">)</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="c1"># we can then combine these inputs to form yet another downstream derivation</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="n">yet_another_downstream_derivation</span> <span class="o">=</span> <span class="n">derivation_client</span><span class="o">.</span><span class="n">createSyncDerivationForNewInfo</span><span class="p">(</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">yet_another_agent_iri</span><span class="p">,</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>    <span class="n">inputsIRI</span><span class="o">=</span><span class="n">output_iris</span> <span class="o">+</span> <span class="n">outputs_of_downstream_derivation</span><span class="p">,</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>    <span class="n">derivationType</span><span class="o">=</span><span class="n">ONTODERIVATION_DERIVATION</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="asynchronous-derivations">Asynchronous derivations<a class="headerlink" href="#asynchronous-derivations" title="Permanent link">&para;</a></h3>
+<p>Currently, asynchronous derivations only work with non time series data. To create an asynchronous derivation for new information:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># assume that we are creating a downstream derivation from a normal instance and an existing derivation</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">inputs_and_derivations</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://example/kg/input_1&#39;</span><span class="p">,</span> <span class="s1">&#39;https://example/kg/existing_derivation&#39;</span><span class="p">]</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">derivation_iri</span> <span class="o">=</span> <span class="n">createAsyncDerivationForNewInfo</span><span class="p">(</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">agentIRI</span><span class="o">=</span><span class="n">agent_iri</span><span class="p">,</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">inputsAndDerivations</span><span class="o">=</span><span class="n">inputs_and_derivations</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="p">)</span>
+</code></pre></div>
+<p>This initialisation supports creating new derivation that depends on upstream derivations which themselves can be created for generating new information, i.e. no outputs yet:</p>
+<div class="language-turtle highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nv">&lt;derivation_iri&gt;</span> <span class="nn">OntoDerivation</span><span class="p">:</span><span class="nt">isDerivedFrom</span> <span class="nv">&lt;https://example/kg/existing_derivation&gt;</span>
+</code></pre></div>
+<p>Once the upstream derivation finishes generating new information, e.g. generated <code>&lt;newEntity1&gt;</code> and <code>&lt;newEntity2&gt;</code>, the derivation framework will handle the reconnection of new information to the derivation structure in the knowledge graph:</p>
+<div class="language-turtle highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nv">&lt;newEntity1&gt;</span> <span class="nn">OntoDerivation</span><span class="p">:</span><span class="nt">belongsTo</span> <span class="nv">&lt;https://example/kg/existing_derivation&gt;</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nv">&lt;newEntity2&gt;</span> <span class="nn">OntoDerivation</span><span class="p">:</span><span class="nt">belongsTo</span> <span class="nv">&lt;https://example/kg/existing_derivation&gt;</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="nv">&lt;derivation_iri&gt;</span> <span class="nn">OntoDerivation</span><span class="p">:</span><span class="nt">isDerivedFrom</span> <span class="nv">&lt;newEntity1&gt;</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="nv">&lt;derivation_iri&gt;</span> <span class="nn">OntoDerivation</span><span class="p">:</span><span class="nt">isDerivedFrom</span> <span class="nv">&lt;newEntity2&gt;</span>
+</code></pre></div>
+<p>This feature allows users to create a directed acyclic graph (DAG) of the derivation to form a workflow that is to be executed.</p>
+<h3 id="validate-created-derivation-dags">Validate created derivation DAGs<a class="headerlink" href="#validate-created-derivation-dags" title="Permanent link">&para;</a></h3>
+<p>Once the derivation instances are initialised using the above methods, one could use the provided method to check that the connection is valid:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># returns a bool</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">validateDerivations</span><span class="p">()</span>
+</code></pre></div>
+<p>This method goes through all the inputs of the provided derivation, and all the subsequent inputs if the inputs are derivations. This makes sure that there are no circular dependencies, and each instance has a valid timestamp.</p>
+<h2 id="request-derivation-update-client-side">Request derivation update (client side)<a class="headerlink" href="#request-derivation-update-client-side" title="Permanent link">&para;</a></h2>
+<h3 id="pure-synchronous-response">Pure synchronous response<a class="headerlink" href="#pure-synchronous-response" title="Permanent link">&para;</a></h3>
+<p>Four methods exist to request update of the derivation instances if all the derivations you want to update are synchronous derivations, i.e. instances of <code>OntoDerivation:Derivation</code> or <code>OntoDerivation:DerivationWithTimeSeries</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># to update a single sync derivation</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">updatePureSyncDerivation</span><span class="p">(</span><span class="n">derivation_iri</span><span class="p">)</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># to update a list of sync derivations</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">updatePureSyncDerivations</span><span class="p">(</span><span class="n">list_of_derivation_iris</span><span class="p">)</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># to update a list of sync derivations in parallel</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">updatePureSyncDerivationsInParallel</span><span class="p">(</span><span class="n">list_of_derivation_iris</span><span class="p">)</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="c1"># to update all sync derivations in a knowledge graph</span>
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">updateAllSyncDerivations</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="asynchronous-operation">Asynchronous operation<a class="headerlink" href="#asynchronous-operation" title="Permanent link">&para;</a></h3>
+<p>To request update of the derivation instance if the derivation you want to update is an asynchronous derivation, i.e. instance of <code>OntoDerivation:DerivationAsyn</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">updateMixedAsyncDerivation</span><span class="p">(</span><span class="n">derivation_iri</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="mixed-type-async-derivations-depend-on-sync-derivations">Mixed type - async derivations depend on sync derivations<a class="headerlink" href="#mixed-type-async-derivations-depend-on-sync-derivations" title="Permanent link">&para;</a></h3>
+<p>To update a directed acyclic graph (DAG) that consists of async derivations depending on sync derivations:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">derivation_client</span><span class="o">.</span><span class="n">unifiedUpdateDerivation</span><span class="p">(</span><span class="n">derivation_iri</span><span class="p">)</span>
+</code></pre></div>
+<p>In this mode, it will mark the derivation and all its dependencies as update <code>OntoDerivation:Requested</code> if it is determined as outdated (including sync derivations). The agent is expected to monitor the derivation that <code>OntoDerivation:isDerivedUsing</code> itself periodically and check if any requested asynchronous derivations. For those requested, the agent checks the status of its upstream derivations and will wait if any of its immediate upstream asynchronous derivations are still outdated - the agent only acts when it determined all its immediate upstream asynchronous derivations are up-to-date. It will first request update of all its upstream sync derivations (if any), and then set up job for requested. For more insights, you may refer to below for a demo.</p>
+<h2 id="multi-agent-system-combine-everything-above">Multi-agent system - combine everything above<a class="headerlink" href="#multi-agent-system-combine-everything-above" title="Permanent link">&para;</a></h2>
+<p>A minimal working example of a multi-agent systems combining everything above is provided in the format of dockerised integration tests. following the same context as <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample"><code>DerivationAsynExample</code></a>. Interested developer may refer to the README of the Java example for more context, or <code>TheWorldAvatar/JPS_BASE_LIB/python_wrapper/tests</code> for more technical details.</p>
+<p>To check the example in more details, one may execute below commands for each set of dockerised integration test:</p>
+<ul>
+<li>
+<p>Agents instantiated and run in memory, operating on a blazegraph docker container with dynamic port decided on deployment</p>
+<p><code>(Linux)</code>
+<div class="language-sh highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nb">cd</span><span class="w"> </span>/&lt;absolute_path_to&gt;/TheWorldAvatar/JPS_BASE_LIB/python_wrapper
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>pytest<span class="w"> </span>-s<span class="w"> </span>tests/test_derivation_agent.py
+</code></pre></div></p>
+</li>
+<li>
+<p>All agents and blazegraph deployed within the same docker stack and they communicate via internal port address</p>
+<p><code>(Linux)</code>
+<div class="language-sh highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nb">cd</span><span class="w"> </span>/&lt;absolute_path_to&gt;/TheWorldAvatar/JPS_BASE_LIB/python_wrapper
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>pytest<span class="w"> </span>-s<span class="w"> </span>tests/test_docker_integration.py
+</code></pre></div></p>
+</li>
+</ul>
+<p>Ideally, we would like to provide this set of dockerised integration test to demo how one may develop integration test for their own derivation agents. Any ideas/discussions/issues/PRs on how to make this more standardised and accessible to developers are more than welcome.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+    
+  </body>
+</html>
