@@ -92,20 +92,31 @@ public class GetService {
   }
 
   /**
-   * Retrieve only the specific instance and its information.
+   * Retrieve only the specific instance and its information. This overloaded
+   * method will retrieve the replacement value required from the resource ID.
    * 
    * @param resourceID The target resource identifier for the instance class.
    * @param targetId   The target instance IRI.
    */
   public ResponseEntity<?> getInstance(String resourceID, String targetId) {
-    LOGGER.debug("Retrieving an instance of {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
     }
-    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
-        iriResponse.getBody());
+    return getInstance(resourceID, targetId, iriResponse.getBody());
+  }
+
+  /**
+   * Retrieve only the specific instance and its information.
+   * 
+   * @param resourceID  The target resource identifier for the instance class.
+   * @param targetId    The target instance IRI.
+   * @param replacement The replacement value required.
+   */
+  public ResponseEntity<?> getInstance(String resourceID, String targetId, String replacement) {
+    LOGGER.debug("Retrieving an instance of {} ...", resourceID);
+    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE, replacement);
     Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
     if (results.size() == 1) {
       return new ResponseEntity<>(

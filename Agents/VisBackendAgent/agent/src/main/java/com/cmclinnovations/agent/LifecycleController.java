@@ -145,7 +145,6 @@ public class LifecycleController {
     }
     LOGGER.info("Received request to assign the dispatch details for a service order...");
     return this.lifecycleService.genDispatchOccurrence(params);
-
   }
 
   /**
@@ -403,7 +402,16 @@ public class LifecycleController {
   @GetMapping("/contracts/service/dispatch/form")
   public ResponseEntity<?> getDispatchForm() {
     LOGGER.info("Received request to get form template for order dispatch...");
-    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_ORDER_DISPATCHED);
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_ORDER_DISPATCHED, null);
+  }
+
+  /**
+   * Retrieve dispatch details for the specified event
+   */
+  @GetMapping("/contracts/service/dispatch/{id}")
+  public ResponseEntity<?> getDispatchDetails(@PathVariable String id) {
+    LOGGER.info("Received request to get form template with order dispatch details...");
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_ORDER_DISPATCHED, id);
   }
 
   /**
@@ -412,7 +420,7 @@ public class LifecycleController {
   @GetMapping("/contracts/service/report/form")
   public ResponseEntity<?> getOrderReportForm() {
     LOGGER.info("Received request to get form template to report the order...");
-    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_INCIDENT_REPORT);
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_INCIDENT_REPORT, null);
   }
 
   /**
@@ -421,7 +429,7 @@ public class LifecycleController {
   @GetMapping("/contracts/service/cancel/form")
   public ResponseEntity<?> getOrderCancellationForm() {
     LOGGER.info("Received request to get form template to cancel the order...");
-    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_CANCELLATION);
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_CANCELLATION, null);
   }
 
   /**
@@ -430,7 +438,7 @@ public class LifecycleController {
   @GetMapping("/contracts/archive/rescind/form")
   public ResponseEntity<?> getContractRescissionForm() {
     LOGGER.info("Received request to get form template to rescind the contract...");
-    return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_RESCINDMENT);
+    return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_RESCINDMENT, null);
   }
 
   /**
@@ -440,7 +448,7 @@ public class LifecycleController {
   @GetMapping("/contracts/archive/terminate/form")
   public ResponseEntity<?> getContractTerminationForm() {
     LOGGER.info("Received request to get form template to terminate the contract...");
-    return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_TERMINATION);
+    return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_TERMINATION, null);
   }
 
   /**

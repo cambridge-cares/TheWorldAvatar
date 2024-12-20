@@ -15,9 +15,21 @@ base:ServiceDispatchOccurrenceShape
     sh:hasValue ontoservice:ServiceDispatchEvent ;
   ] ; 
   sh:property [
+    sh:name "id";
+    sh:description "The identifier for the dispatch occurrence.";
+    sh:order 0;
+    sh:path (
+        fibo-fnd-rel-rel:designates
+        [sh:inversePath fibo-fnd-rel-rel:designates]
+      ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ; 
+  sh:property [
     sh:name "driver";
     sh:description "Assign a driver to perform the service.";
-    sh:order 0;
+    sh:order 1;
     sh:path fibo-fnd-rel-rel:designates ;
     sh:class ontoprofile:EmployedDriver ;
     sh:minCount 0 ;

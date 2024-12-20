@@ -26,6 +26,7 @@ import com.cmclinnovations.agent.utils.StringResource;
 public class LifecycleService {
   private final AddService addService;
   private final DateTimeService dateTimeService;
+  private final GetService getService;
   private final KGService kgService;
   private final FileService fileService;
 
@@ -38,10 +39,11 @@ public class LifecycleService {
    * 
    * @param kgService KG service for performing the query.
    */
-  public LifecycleService(AddService addService, DateTimeService dateTimeService, KGService kgService,
-      FileService fileService) {
+  public LifecycleService(AddService addService, DateTimeService dateTimeService, GetService getService,
+      KGService kgService, FileService fileService) {
     this.addService = addService;
     this.dateTimeService = dateTimeService;
+    this.getService = getService;
     this.kgService = kgService;
     this.fileService = fileService;
   }
@@ -257,13 +259,24 @@ public class LifecycleService {
    * Retrieves the form template for the specified event type.
    * 
    * @param eventType The target event type.
+   * @param targetId  The target instance IRI.
    */
-  public ResponseEntity<?> getForm(LifecycleEventType eventType) {
+  public ResponseEntity<?> getForm(LifecycleEventType eventType, String targetId) {
     // Ensure that there is a specific event type target
     String replacementQueryLine = "<https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence>;"
         + "sh:property/sh:hasValue " + StringResource.parseIriForQuery(LifecycleResource.getEventClass(eventType));
+    Map<String, Object> currentEntity = new HashMap<>();
+    if (targetId != null) {
+      LOGGER.debug("Detected specific entity ID! Retrieving relevant entity information for occurrence of {} ...",
+          eventType);
+      ResponseEntity<?> currentEntityResponse = this.getService.getInstance("occurrence", targetId,
+          replacementQueryLine);
+      if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
+        currentEntity = (Map<String, Object>) currentEntityResponse.getBody();
+      }
+    }
     String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, replacementQueryLine);
-    Map<String, Object> results = this.kgService.queryForm(query, new HashMap<>());
+    Map<String, Object> results = this.kgService.queryForm(query, currentEntity);
     if (results.isEmpty()) {
       LOGGER.error(KGService.INVALID_SHACL_ERROR_MSG);
       return new ResponseEntity<>(
