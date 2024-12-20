@@ -781,6 +781,12 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                 data['rdfs_label'] = {data['rdfs_label']}
         super().__init__(**data)
 
+    def __str__(self) -> str:
+        return self.instance_iri
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def model_post_init(self, __context: Any) -> None:
         """
         The post init process of the BaseClass.
