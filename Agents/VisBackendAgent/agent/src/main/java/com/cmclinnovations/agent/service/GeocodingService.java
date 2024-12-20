@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent.service;
 
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,8 +98,13 @@ public class GeocodingService {
   public ResponseEntity<?> getCoordinates(String location) {
     LOGGER.debug("Querying for coordinates...");
     String query = this.genCoordinateQuery(location);
-    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    return this.parseCoordinates(results);
+    List<String> endpoints = this.kgService.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+    Queue<SparqlBinding> allResults = new ArrayDeque<>();
+    endpoints.forEach((endpoint) -> {
+      Queue<SparqlBinding> results = this.kgService.query(query, endpoint);
+      allResults.addAll(results);
+    });
+    return this.parseCoordinates(allResults);
   }
 
   /**
@@ -264,7 +270,7 @@ public class GeocodingService {
   private String genCoordinateQuery(String location) {
     String locationVar = ShaclResource.VARIABLE_MARK + LOCATION_VAR;
     return LifecycleResource.genPrefixes() +
-        "SELECT DISTINCT " + locationVar + " WHERE {" +
+        "SELECT DISTINCT " + locationVar + "{" +
         StringResource.parseIriForQuery(location) + " a fibo-fnd-plc-loc:PhysicalLocation;" +
         "geo:hasGeometry/geo:asWKT " + locationVar + "." +
         "}";
@@ -298,7 +304,7 @@ public class GeocodingService {
    */
   private double[] parseCoordinates(String geoPoint) {
     // REGEX for `POINT(Longitude Latitude)` format
-    Pattern pattern = Pattern.compile("POINT\\((\\d+\\.\\d+),? (\\d+\\.\\d+)\\)");
+    Pattern pattern = Pattern.compile("POINT\\((\\d+\\.\\d+), ?(\\d+\\.\\d+)\\)");
     Matcher matcher = pattern.matcher(geoPoint);
 
     if (matcher.matches()) {
