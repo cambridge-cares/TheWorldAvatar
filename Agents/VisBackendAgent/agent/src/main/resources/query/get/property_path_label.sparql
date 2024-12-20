@@ -4,9 +4,9 @@ PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTi
 SELECT DISTINCT ?clazz ?name ?nodename ?order ?subject ?isparent ?isoptional ?isclass
  ?multipath ?multipath_proppath ?name_multipath ?name_multipath_proppath
 WHERE {
-  BIND([target] as ?clazz)
   ?shape rdf:type sh:NodeShape ;
          sh:targetClass ?clazz ;
+         sh:targetClass [target] ;
          sh:property[shape] ?property .
   ?property sh:name ?name ;
             sh:path ?predicatepath ;
