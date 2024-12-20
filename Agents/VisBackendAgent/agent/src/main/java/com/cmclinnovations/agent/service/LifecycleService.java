@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent.service;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,10 +155,19 @@ public class LifecycleService {
     String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
     String activeServiceQuery = LifecycleResource.genServiceTasksQuery(targetDate);
     Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
+    Map<String, SparqlBinding> resultMapping = results.stream()
+        .collect(Collectors.toMap(
+            binding -> binding.getFieldValue(LifecycleResource.CONTRACT_KEY), // Key mapper
+            binding -> binding, // Value mapper
+            (existing, replacement) -> // Merge function to keep the higher order
+            Integer.parseInt(existing.getFieldValue(LifecycleResource.ORDER_KEY)) > Integer
+                .parseInt(replacement.getFieldValue(LifecycleResource.ORDER_KEY))
+                    ? existing
+                    : replacement));
     return new ResponseEntity<>(
-        results.stream()
+        resultMapping.values().stream()
             .map(SparqlBinding::get)
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 

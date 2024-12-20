@@ -266,16 +266,15 @@ public class LifecycleResource {
    * @param date Target date in YYYY-MM-DD format.
    */
   public static String genServiceTasksQuery(String date) {
-    StringBuilder stageFilters = new StringBuilder();
-    LifecycleResource.appendFilterExists(stageFilters, true, EVENT_APPROVAL);
-    LifecycleResource.appendArchivedFilterExists(stageFilters, false);
     return genPrefixes()
-        + "SELECT DISTINCT ?contract (SAMPLE(?event) AS ?iri) (\"" + date
-        + "\"^^xsd:date AS ?event_date) (MAX(?priority_val) AS ?priority) "
-        + "WHERE{?event ^<https://www.omg.org/spec/Commons/Collections/comprises>/^fibo-fnd-arr-lif:hasStage/^fibo-fnd-arr-lif:hasLifecycle ?contract;"
-        + "^<https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-rel-rel:exemplifies <"
+        + "SELECT DISTINCT ?contract ?iri (\"" + date
+        + "\"^^xsd:date AS ?event_date) ?order "
+        + "WHERE{?contract a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
+        + "?stage fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
-        + "fibo-fnd-rel-rel:exemplifies ?event_type;"
+        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?iri."
+        + "?iri fibo-fnd-rel-rel:exemplifies ?event_type;"
         + "fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date. "
         + "BIND("
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ",0,"
@@ -283,8 +282,8 @@ public class LifecycleResource {
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DELIVERY) + ",2,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_CANCELLATION) + ",3,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT) + ",4,"
-        + "5))))) AS ?priority_val)"
-        + "}GROUP BY ?contract";
+        + "5))))) AS ?order)"
+        + "}";
   }
 
   /**
