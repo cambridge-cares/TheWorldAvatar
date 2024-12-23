@@ -3,6 +3,10 @@ package com.cmclinnovations.stack.services;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.FileWriter;
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -36,6 +40,9 @@ public final class NginxService extends ContainerService implements ReverseProxy
     private static final String SERVER_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_server.conf";
     private static final String LOCATIONS_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_locations.conf";
     private static final String UPSTREAM_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_upstream.conf";
+    private static final String INDEX_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "index.html";
+
+    private String indexContent;
 
     private static final String NGINX_CONF_DIR = "/etc/nginx/conf.d/";
 
@@ -47,6 +54,22 @@ public final class NginxService extends ContainerService implements ReverseProxy
         super(stackName, config);
 
         updateExternalPort(config);
+
+        // read index template
+        try (InputStream inputStream = NginxService.class.getResourceAsStream(INDEX_TEMPLATE)) {
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            StringWriter writer = new StringWriter();
+            char[] buffer = new char[1024];
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+            indexContent = writer.toString();
+            indexContent = indexContent.replace("$STACK", stackName);
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading resource, ", e);
+        }
+
     }
 
     protected void doPreStartUpConfiguration() {
@@ -104,10 +127,41 @@ public final class NginxService extends ContainerService implements ReverseProxy
                     sender.addConfig(upstreamConfigOut, "upstreams/" + service.getName() + ".conf");
 
                     sender.sendConfigs();
+
                 } catch (ParseException | IOException ex) {
                     throw new InvalidTemplateException(TEMPLATE_TYPE, UPSTREAM_CONF_TEMPLATE, ex);
                 }
             }
+        }
+
+        // update nginx landing page
+
+        indexContent = indexContent.replace("</body>", "<p>" + service.getName() + "</p><ul></body>");
+
+        for (Entry<String, Connection> endpoint : service.getEndpoints().entrySet()) {
+            indexContent = indexContent.replace("</body>", "<li><a href=\""+
+                    endpoint.getValue().getExternalPath() + "\">" + 
+                    endpoint.getKey() + "</a></li></body>");
+        }
+
+        indexContent = indexContent.replace("</body>", "</ul></body>");
+
+        URL indexUrl = createTemporaryFile(indexContent);
+
+        sender.sendFile(indexUrl, "usr/share/nginx/html/", "index.html", true);
+
+    }
+
+    private static URL createTemporaryFile(String modifiedContent) {
+        try {
+            File tempFile = File.createTempFile("modified-html", ".html");
+            tempFile.deleteOnExit();
+            FileWriter writer = new FileWriter(tempFile);
+            writer.write(modifiedContent);
+            writer.close();
+            return tempFile.toURI().toURL();
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating temporary file", e);
         }
     }
 
@@ -185,6 +239,10 @@ public final class NginxService extends ContainerService implements ReverseProxy
             sendFiles(files, NGINX_CONF_DIR);
             executeCommand(CMD, "-s", "reload");
             files.clear();
+        }
+
+        public void sendFile(URL url, String folderPath, String filename, boolean overwrite) {
+            downloadFileAndSendItToContainer(url, folderPath, filename, overwrite);
         }
 
     }
