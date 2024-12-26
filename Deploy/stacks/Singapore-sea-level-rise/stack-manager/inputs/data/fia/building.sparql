@@ -7,6 +7,7 @@ PREFIX ontocompany: <https://www.theworldavatar.com/kg/ontocompany/>
 PREFIX icontact: <http://ontology.eil.utoronto.ca/icontact.owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
