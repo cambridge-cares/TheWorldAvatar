@@ -1,0 +1,46 @@
+services:
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    restart: always
+    ulimits:
+      memlock: -1
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "healthcheck" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - dragonfly-data:/data
+      
+  base:
+    image: ghcr.io/cambridge-cares/twa-vf:5.14
+    restart: "no"
+    environment:
+      KEYCLOAK: true ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: /map ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: twa-test:protected ## the role required for the above list
+      REACT_APP_USE_GEOSERVER_PROXY: true
+      REACT_APP_SERVER_URL: http://localhost:3000
+
+      REDIS_HOST: 172.17.0.1
+      REDIS_PORT: 6379
+    secrets:
+      - mapbox_username
+      - mapbox_api_key
+    volumes:
+      - ./vis-files/public:/twa/public/
+      - ./vis-files/keycloak.json:/twa/keycloak.json
+    ports:
+      - "3000:3000"
+      
+volumes:
+  dragonfly-data:
+
+secrets:
+  mapbox_username:
+    file: ./mapbox_username
+  mapbox_api_key:
+    file: ./mapbox_api_key
