@@ -162,6 +162,17 @@ def fetch_trajectory_data(trajectory_iri, endpoint_url=TRAJECTORY_ENDPOINT):
         return df
     else:
         raise Exception(f"SPARQL query failed with status code {response.status_code}: {response.text}")
+    
+def get_table_name_for_timeseries(connection, timeseriesIRI: str) -> str:
+    query = """
+    SELECT DISTINCT "tableName"
+    FROM "dbTable"
+    WHERE "timeseriesIRI" = %s;
+    """
+    results = execute_query(connection, query, (timeseriesIRI,))
+    if not results:
+        raise ValueError(f"No tableName found for timeseriesIRI: {timeseriesIRI}")
+    return results[0][0]
 
 def fetch_trajectory_data_from_db(trajectory_iri: str) -> pd.DataFrame:
     host = "174.138.27.240"
