@@ -17,6 +17,26 @@ config.read('CONFIG.PROPERTIES')
 TRAJECTORY_ENDPOINT = config.get('DEFAULT', 'TRAJECTORY_ENDPOINT')
 FEATURE_ENDPOINTS = config.items('FEATURE_ENDPOINTS')
 
+def connect_to_database(
+    host: str, port: int, user: str, password: str, database: str
+) -> psycopg2.extensions.connection:
+    try:
+        logging.info(f"Connecting to database {database} at {host}:{port}...")
+        connection = psycopg2.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database,
+            connect_timeout=10
+        )
+        logging.info("Database connection successful.")
+        return connection
+    except psycopg2.Error as e:
+        logging.error(f"Database connection failed: {e}")
+        raise e
+
+
 def fetch_food_hygiene_data(domain_iri, endpoint_url):
     sparql_query = f"""
     PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
