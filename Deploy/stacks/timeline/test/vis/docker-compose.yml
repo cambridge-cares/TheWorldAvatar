@@ -23,7 +23,7 @@ services:
       ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
       ROLE: twa-test:protected ## the role required for the above list
       REACT_APP_USE_GEOSERVER_PROXY: true
-      REACT_APP_SERVER_URL: http://localhost:3000
+      REACT_APP_SERVER_URL: <HOST_ADDRESS>
 
       REDIS_HOST: 172.17.0.1
       REDIS_PORT: 6379

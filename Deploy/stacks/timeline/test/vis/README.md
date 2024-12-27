@@ -7,7 +7,7 @@
    - mapbox_username
    - mapbox_api_key
 
-2. Replace <HOST_ADDRESS> in vis-files/public/config/data.json with the appropriate address (address to access the stack).
+2. Replace <HOST_ADDRESS> in vis-files/public/config/data.json with the appropriate address (address to access the stack). Also replace <HOST_ADDRESS> (value of REACT_APP_SERVER_URL) in docker-compose.yml.
 
 3. Replace <KEYCLOAK_URL> in vis-files/keycloak.json with the URL of the KeyCloak server, needs to be an address that can be accessed from client and the server.
    1. The configuration assumes a realm called `timeline` exists and a client called `dekstop-vis` is set up correctly with the correct redirect urls.
