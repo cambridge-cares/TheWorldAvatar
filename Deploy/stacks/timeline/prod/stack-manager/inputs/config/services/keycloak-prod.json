@@ -14,7 +14,7 @@
                     "KC_HOSTNAME_ADMIN=https://auth.theworldavatar.io/keycloak",
                     "KC_HOSTNAME_DEBUG=false",
                     "KC_HTTP_RELATIVE_PATH=keycloak",
-                    "KC_HTTP_ENABLED=false",
+                    "KC_HTTP_ENABLED=true",
                     "KC_HOSTNAME_STRICT=true",
                     "KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/conf/keycloak.pem",
                     "KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/conf/keycloak-key.pem"
