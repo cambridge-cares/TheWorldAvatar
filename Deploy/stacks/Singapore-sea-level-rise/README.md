@@ -154,9 +154,9 @@ SELECT ?s WHERE {?s a <http://www.opengis.net/citygml/building/2.0/Building> .}
 ```
 
 ### Update buildings layer
-Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer.
+Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer, note that this also creates another materialised view for buildings with CEA data.
 
-After updating the layer, the custom cea layer needs to be created manually as twa:cea in GeoServer, with the following SQL view
+After running the SQL script, the custom cea layer needs to be created manually as twa:cea in GeoServer, with the following SQL view
 ```
 SELECT * FROM buildings_with_cea
 ```
@@ -183,6 +183,9 @@ To trigger the agent, run
 curl -L -X POST "http://localhost:3838/traffic-incident-agent/start"
 ```
 Refer [TrafficIncidentAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TrafficIncidentAgent) for more details.
+
+### data.json
+Replace http://localhost:3838 to an appropriate URL depending on the deployment settings.
 
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
