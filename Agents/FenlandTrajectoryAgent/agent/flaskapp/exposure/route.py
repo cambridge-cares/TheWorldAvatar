@@ -5,7 +5,9 @@ import pandas as pd
 from shapely.geometry import Point, Polygon
 import math
 import requests
+import psycopg2
 import configparser
+import logging
 
 app = Flask(__name__)
 
