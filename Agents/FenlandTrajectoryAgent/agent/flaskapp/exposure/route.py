@@ -141,6 +141,32 @@ def fetch_trajectory_data(trajectory_iri, endpoint_url=TRAJECTORY_ENDPOINT):
     else:
         raise Exception(f"SPARQL query failed with status code {response.status_code}: {response.text}")
 
+def fetch_trajectory_data_from_db(trajectory_iri: str) -> pd.DataFrame:
+    host = "174.138.27.240"
+    port = 5432
+    user = "postgres"
+    password = "1111"
+    database = "postgres"
+    with connect_to_database(host, port, user, password, database) as conn:
+        table_name = get_table_name_for_timeseries(conn, trajectory_iri)
+        df = get_timeseries_data(conn, table_name)
+
+    df = df.rename(columns={
+        "column1": "SPEED",
+        "column2": "DISTANCE",
+        "column3": "HEIGHT",
+        "column4": "HEADING",
+        "column5": "LATITUDE",
+        "column6": "LONGITUDE",
+        "column7": "POINT"
+    })
+
+    if 'time' in df.columns:
+        df['time'] = pd.to_datetime(df['time'], errors='coerce')
+        df = df.sort_values('time')
+
+    return df
+
 @app.route('/fenland-trajectory-agent/exposure', methods=['POST'])
 def calculate_exposure():
     data = request.json
