@@ -7,9 +7,9 @@ slug: landing
 
 ---
 
-**This example visualisation has been put together to demonstrate the intended use of the centralised TWA Visualisation Framework (TWA-VF).**
+**Visualisation for TWA timeline data**
 
-This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new TWA visualisation. It is intended for developers to use this example visualisation to gain an understanding of the TWA-VF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point. Edit the markdown content in markdown syntax to suit your needs.
+This visualisation is designed to display trajectories recorded using the TWA timeline app. Click "Explore" to view data, please sign in using the same account on the timeline app.
 
 ## Navigation
 
