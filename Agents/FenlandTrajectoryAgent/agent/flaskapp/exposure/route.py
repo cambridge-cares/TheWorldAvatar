@@ -162,6 +162,15 @@ def fetch_trajectory_data(trajectory_iri, endpoint_url=TRAJECTORY_ENDPOINT):
         return df
     else:
         raise Exception(f"SPARQL query failed with status code {response.status_code}: {response.text}")
+
+def get_timeseries_data(connection, table_name: str) -> pd.DataFrame:
+    query = f"""
+    SELECT "time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"
+    FROM "{table_name}";
+    """
+    results = execute_query(connection, query)
+    df = pd.DataFrame(results, columns=["time","column1","column2","column3","column4","column5","column6","column7"])
+    return df
     
 def get_table_name_for_timeseries(connection, timeseriesIRI: str) -> str:
     query = """
