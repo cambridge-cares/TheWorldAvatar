@@ -8,6 +8,7 @@ import requests
 import psycopg2
 import configparser
 import logging
+from typing import Optional, Any
 
 app = Flask(__name__)
 
@@ -37,7 +38,18 @@ def connect_to_database(
     except psycopg2.Error as e:
         logging.error(f"Database connection failed: {e}")
         raise e
-
+    
+def execute_query(connection: psycopg2.extensions.connection, query: str, params: Optional[tuple] = None) -> Any:
+    try:
+        with connection.cursor() as cursor:
+            logging.debug(f"Executing query: {query}, params={params}")
+            cursor.execute(query, params)
+            results = cursor.fetchall()
+            logging.info(f"Query returned {len(results)} rows." if results else "No results.")
+            return results
+    except psycopg2.Error as e:
+        logging.error(f"Query execution error: {e}")
+        raise e
 
 def fetch_food_hygiene_data(domain_iri, endpoint_url):
     sparql_query = f"""
