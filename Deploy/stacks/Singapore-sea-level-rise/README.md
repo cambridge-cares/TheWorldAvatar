@@ -184,6 +184,21 @@ curl -L -X POST "http://localhost:3838/traffic-incident-agent/start"
 ```
 Refer [TrafficIncidentAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TrafficIncidentAgent) for more details.
 
+### Postcode
+Run [postcode_matching.http] to match buildings to a one of the postcode datasets.
+
+There are two sets of postcode data from running the stack data uploader with different ontop mappings:
+
+1) osm
+   - Less comprehensive, outdated
+   - Used by BuildingFloorAgent
+   - Linked to buildings by OSM agent
+
+2) sgpostcode
+   - More comprehensive and updated dataset
+   - Sourced from [https://github.com/isen-ng/singapore-postal-codes-1]
+   - Linked to buildings using building identification agent by running the HTTP request [postcode_matching.http]
+
 ### data.json
 Replace http://localhost:3838 to an appropriate URL depending on the deployment settings.
 
@@ -201,3 +216,4 @@ Kok Foong Lee (kokfoong.lee@cares.cam.ac.uk)
 [client.properties (weather)]: ./cares_weather_config/client.properties
 [cares_weather.http]: ./http_requests/cares_weather.http
 [nginx-2]: ./stack-manager/inputs/config/services/nginx-2.json
+[postcode_matching.http]: ./http_requests/postcode_matching.http
