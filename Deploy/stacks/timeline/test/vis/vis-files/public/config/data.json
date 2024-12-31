@@ -5,6 +5,7 @@
             "name": "Trajectory Data",
             "expanded": false,
             "stack": "<HOST_ADDRESS>",
+            "search": "person",
             "sources": [
                 {
                     "type": "vector",
