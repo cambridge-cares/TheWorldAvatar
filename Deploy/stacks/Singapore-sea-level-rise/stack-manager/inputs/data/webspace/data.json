@@ -8,6 +8,13 @@
             "tiles": [
                 "http://localhost:3838/geoserver/carparks/wms?service=WMS&version=1.1.0&request=GetMap&layers=carparks%3Acarparks&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
             ]
+        },
+        {
+            "type": "vector",
+            "tiles": [
+                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:cea&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ],
+            "id": "cea"
         }
     ],
     "layers": [
@@ -33,6 +40,35 @@
                     0.1
                 ],
                 "icon-anchor": "bottom"
+            }
+        },
+        {
+            "id": "cea-layer",
+            "name": "Buildings with CEA data",
+            "source": "cea",
+            "source-layer": "cea",
+            "type": "fill-extrusion",
+            "minzoom": 8,
+            "order": 23,
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "fill-extrusion-color": "#8D99AE",
+                "fill-extrusion-opacity": 0.9,
+                "fill-extrusion-base": 0,
+                "fill-extrusion-height": [
+                    "case",
+                    [
+                        "has",
+                        "building_height"
+                    ],
+                    [
+                        "get",
+                        "building_height"
+                    ],
+                    8
+                ]
             }
         }
     ],

@@ -13,8 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -110,11 +108,10 @@ public class TimeHandler {
      * relational database to get time series values.
      * 
      * @param classMatches configuration entries that contain class matches.
-     * @param response     HTTP response to write to.
      * 
      * @return JSONObject of query result.
      */
-    public JSONArray getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+    public JSONArray getData(List<ConfigEntry> classMatches) {
         // Pool for all measureables across all class matches
         List<Measurable> allMeasurables = new ArrayList<>();
 

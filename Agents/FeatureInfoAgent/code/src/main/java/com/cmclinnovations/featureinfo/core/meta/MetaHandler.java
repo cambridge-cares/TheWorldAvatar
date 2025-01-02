@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -75,11 +73,10 @@ public class MetaHandler {
      * the first linked SPARQL query before executing it and returning the result.
      * 
      * @param classMatches configuration entries that contain class matches.
-     * @param response HTTP response to write to.
      * 
      * @return JSONArray of query result.
      */
-    public JSONObject getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+    public JSONObject getData(List<ConfigEntry> classMatches) {
         List<JSONArray> rawResults = new ArrayList<>();
         
         // Iterate through each matching query
