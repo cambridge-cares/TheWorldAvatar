@@ -3,7 +3,7 @@
     "Name": "sensorloggermobileappagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:4.0.0-dev-add-session-id-SNAPSHOT",
+        "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:4.0.0",
         "Mounts": [
           {
             "Type": "bind",

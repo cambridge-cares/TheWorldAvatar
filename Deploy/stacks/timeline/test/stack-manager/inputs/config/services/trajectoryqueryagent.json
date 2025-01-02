@@ -3,7 +3,7 @@
     "Name": "trajectoryqueryagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.0.0-dev-add-session-id-SNAPSHOT",
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.1.0-dev-timeline-prod-SNAPSHOT",
         "Env": [
             "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
             "KEYCLOAK_REALM=timeline"
