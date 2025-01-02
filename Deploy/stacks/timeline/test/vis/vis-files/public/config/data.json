@@ -10,7 +10,7 @@
                 {
                     "type": "vector",
                     "tiles": [
-                        "http://172.17.0.1:58085/geoserver-jwt-proxy/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:trajectoryUserId&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://172.17.0.1:58085/geoserver-jwt-proxy/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:trajectoryUserIdLineSegments&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ],
                     "id": "trajectory"
                 }
@@ -20,7 +20,7 @@
                     "id": "trajectory",
                     "name": "Trajectory",
                     "source": "trajectory",
-                    "source-layer": "trajectoryUserId",
+                    "source-layer": "trajectoryUserIdLineSegments",
                     "type": "line",
                     "order": 2,
                     "layout": {
