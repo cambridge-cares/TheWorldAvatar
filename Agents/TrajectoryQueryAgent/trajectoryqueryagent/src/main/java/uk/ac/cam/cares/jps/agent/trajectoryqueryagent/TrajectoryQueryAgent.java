@@ -213,6 +213,29 @@ public class TrajectoryQueryAgent extends JPSAgent {
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName, "bufferedLineDeviceId", geoServerVectorSettings);
         }
+
+        String lineLayerUserIdLineSegments = null;
+        try (InputStream is = new ClassPathResource("line_layer_user_id_line_segments.sql").getInputStream()) {
+            lineLayerUserIdLineSegments = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read line_layer_user_id_line_segments.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        if (lineLayerUserIdLineSegments != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(lineLayerUserIdLineSegments);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("line_layer_user_id_segments_table");
+            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326");
+            virtualTable.addVirtualTableParameter("user_id", "null", ".*");
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdLineSegments",
+                    geoServerVectorSettings);
+        }
     }
 
     /**
