@@ -91,7 +91,7 @@ IMPORT FOREIGN SCHEMA public
     INTO public;
 ```
 
-## Visualisation setup
+## Visualisation setup for test stack
 
 1. Create these two files with the appropriate contents in ./test/vis
    - mapbox_username
@@ -101,6 +101,7 @@ IMPORT FOREIGN SCHEMA public
    1. The configuration assumes a realm called `timeline` exists and a client called `desktop-vis` is set up correctly with the correct redirect urls.
 4. Upload [./shacl/timeline.ttl](./shacl/timeline.ttl) to the kb namespace on Blazegraph
 5. Run `docker compose up -d` in [./test/vis/](./test/vis/).
+6. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
 
 [keycloak-test.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
 [keycloak-prod.json]: ./stack-manager/test/inputs/config/services/keycloak-prod.json
