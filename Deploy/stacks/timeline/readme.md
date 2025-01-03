@@ -17,6 +17,12 @@ Set value of KC_DB_PASSWORD to match value in postgis_password.
 
 Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
 
+You may need to change the permissions of the keycloak startup script, i.e.
+
+```bash
+chmod +x ./test/stack-manager/inputs/data/keycloak_start_test.sh
+```
+
 Use port 58085 for test stack when deploying the test stack
 
 ```bash
@@ -51,6 +57,12 @@ Prepare these secret files in [](./stack-manager/prod/inputs/secrets)
 fullchain.pem is the https certificate file for KeyCloak and privkey.pem is the https certificate key file for KeyCloak. To generate the files, please refer to <https://mindsers.blog/en/post/https-using-nginx-certbot-docker/>.
 
 Populate value of KC_DB_PASSWORD in [keycloak-prod.json].
+
+You may need to edit the permissions of keycloak_start.sh, i.e.
+
+```bash
+chmod +x ./prod/stack-manager/inputs/data/keycloak_start.sh
+```
 
 Then start the stack
 
