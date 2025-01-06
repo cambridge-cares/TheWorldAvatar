@@ -122,6 +122,9 @@ public final class NginxService extends ContainerService implements ReverseProxy
             NgxParam serverParam = upstreamBlock.findParam("server");
             serverParam.addValue(upstream.getValue());
             serverParam.addValue("resolve");
+            NgxParam zoneParam = upstreamBlock.findParam("zone");
+            zoneParam.addValue(upstream.getKey());
+            zoneParam.addValue("64K");
             upstreamConfigOut.addEntry(upstreamBlock);
         }
     }

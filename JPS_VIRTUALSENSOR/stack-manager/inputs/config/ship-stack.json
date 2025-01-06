@@ -12,7 +12,8 @@
 			"visualisation",
 			"feature-info-agent",
 			"ship-input-agent",
-			"ship-data-agent"
+			"ship-data-agent",
+			"dome-interactor"
 		]
 	},
 	"volumes": {

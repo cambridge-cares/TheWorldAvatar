@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -32,9 +33,11 @@ public class DataUploader {
     public enum ShipDataSource {
         JSON,
         RDB,
+        HTTP
     }
 
-    public static int uploadShips(List<Ship> ships, QueryClient queryClient, ShipDataSource source) throws IOException {
+    public static int uploadShips(List<Ship> ships, QueryClient queryClient, ShipDataSource source,
+            JSONArray tsData) throws IOException {
         if (!queryClient.initialised()) {
             PostGISClient postGISClient = PostGISClient.getInstance();
             Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -79,12 +82,17 @@ public class DataUploader {
                 if (EnvConfig.SKIP_UPDATE_RDB) {
                     // only update time series of new ships
                     // skip updating existing ships
-                    queryClient.bulkUpdateTimeSeriesData(newlyCreatedShips);
+                    queryClient.bulkUpdateTimeSeriesData(newlyCreatedShips, null);
                 } else {
                     // update all ships
-                    queryClient.bulkUpdateTimeSeriesData(ships);
+                    queryClient.bulkUpdateTimeSeriesData(ships, null);
                 }
                 break;
+            
+            case HTTP:
+            
+                LOGGER.info("Upload ship data from HTTP request.");
+                queryClient.bulkUpdateTimeSeriesData(newlyCreatedShips, tsData);
 
             default:
 
@@ -176,7 +184,7 @@ public class DataUploader {
         JSONArray shipData = new JSONArray(tokener);
         List<Ship> ships = parseShip(shipData, timeOffset);
 
-        uploadShips(ships, queryClient, ShipDataSource.JSON);
+        uploadShips(ships, queryClient, ShipDataSource.JSON, null);
 
         return ships;
     }
@@ -204,19 +212,36 @@ public class DataUploader {
         return ships;
     }
 
-    public static int loadDataFromRDB(QueryClient queryClient) throws IOException {
+    public static int loadDataFromRDB(QueryClient queryClient, String derivation) throws IOException {
+        String polygonQuery = "(SELECT \"geom\" FROM \"scopes\")";
+        if (derivation != null) {
+            try {
+                polygonQuery = "(SELECT \"geom\" FROM \"scopes\" WHERE \"iri\" = '"
+                        + queryClient.getScopeIRI(derivation) + "')";
+            } catch (Exception e) {
+                LOGGER.warn("Unable to find the scope of the specified derivation");
+            }
+        }
         String sqlQuery = "SELECT DISTINCT points.\"MMSI\", points.\"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", " + //
                 " 0.0 AS \"COURSE\", 0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" " + //
                 "FROM (SELECT \"MMSI\", \"VesselType\", \"geom\" FROM \"ship\") AS points, " + //
-                "(SELECT \"geom\" FROM \"scopes\") AS polygon WHERE " + //
+                polygonQuery + " AS polygon WHERE " + //
                 "ST_Contains(polygon.geom, points.geom)";
+        LOGGER.info(polygonQuery);
         JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
         LOGGER.info(String.format("Number of ships within scopes: %d", shipData.length()));
         List<Ship> ships = parseShip(shipData, 0);
 
         // initialise both triples and time series if ship is new
 
-        return uploadShips(ships, queryClient, ShipDataSource.RDB);
+        return uploadShips(ships, queryClient, ShipDataSource.RDB, null);
+    }
+
+    public static int parseData(QueryClient queryClient, JSONArray shipData, JSONArray tsData) throws IOException{
+
+        List<Ship> ships = parseShip(shipData, 0);
+
+        return uploadShips(ships, queryClient, ShipDataSource.HTTP, tsData);
     }
 
     private DataUploader() {
