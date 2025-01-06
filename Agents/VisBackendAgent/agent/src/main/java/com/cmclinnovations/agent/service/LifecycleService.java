@@ -27,6 +27,7 @@ import com.cmclinnovations.agent.utils.StringResource;
 public class LifecycleService {
   private final AddService addService;
   private final DateTimeService dateTimeService;
+  private final DeleteService deleteService;
   private final GetService getService;
   private final KGService kgService;
   private final FileService fileService;
@@ -40,10 +41,11 @@ public class LifecycleService {
    * 
    * @param kgService KG service for performing the query.
    */
-  public LifecycleService(AddService addService, DateTimeService dateTimeService, GetService getService,
-      KGService kgService, FileService fileService) {
+  public LifecycleService(AddService addService, DateTimeService dateTimeService, DeleteService deleteService,
+      GetService getService, KGService kgService, FileService fileService) {
     this.addService = addService;
     this.dateTimeService = dateTimeService;
+    this.deleteService = deleteService;
     this.getService = getService;
     this.kgService = kgService;
     this.fileService = fileService;
@@ -84,8 +86,9 @@ public class LifecycleService {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding occurrence parameters for {}...", contractId);
     String stage = this.getStageInstance(contractId, eventType);
-    params.put("id", StringResource.getPrefix(stage) + "/" + LifecycleResource.getEventIdentifier(eventType) + "/"
-        + UUID.randomUUID());
+    params.putIfAbsent("id",
+        StringResource.getPrefix(stage) + "/" + LifecycleResource.getEventIdentifier(eventType) + "/"
+            + UUID.randomUUID());
     params.put(LifecycleResource.STAGE_KEY, stage);
     params.put(LifecycleResource.EVENT_KEY, LifecycleResource.getEventClass(eventType));
     // Only update the date field if there is no pre-existing field
@@ -254,13 +257,19 @@ public class LifecycleService {
   public ResponseEntity<ApiResponse> genDispatchOccurrence(Map<String, Object> params) {
     params.put(LifecycleResource.REMARKS_KEY, ORDER_DISPATCH_MESSAGE);
     this.addOccurrenceParams(params, LifecycleEventType.SERVICE_ORDER_DISPATCHED);
-    // Ensure that the event identifier mapped directly to the jsonLd file name
-    ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED), params);
-    if (response.getStatusCode() != HttpStatus.CREATED) {
-      LOGGER.error(
-          "Error encountered while dispatching details for the order: {}! Read error message for more details: {}",
-          params.get(LifecycleResource.ORDER_KEY).toString(), response.getBody().getMessage());
+    // Attempt to delete any existing dispatch occurrence before any updates
+    ResponseEntity<ApiResponse> response = this.deleteService.delete(
+        LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED), params.get("id").toString());
+    // Request will return ok even if no related occurrence exists
+    if (response.getStatusCode().equals(HttpStatus.OK)) {
+      // Ensure that the event identifier mapped directly to the jsonLd file name
+      response = this.addService.instantiate(
+          LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED), params);
+      if (response.getStatusCode() != HttpStatus.CREATED) {
+        LOGGER.error(
+            "Error encountered while dispatching details for the order: {}! Read error message for more details: {}",
+            params.get(LifecycleResource.ORDER_KEY), response.getBody().getMessage());
+      }
     }
     return response;
   }

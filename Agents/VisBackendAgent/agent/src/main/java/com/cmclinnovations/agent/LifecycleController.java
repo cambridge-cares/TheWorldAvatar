@@ -136,7 +136,7 @@ public class LifecycleController {
   /**
    * Assign dispatch details for the specified event
    */
-  @PostMapping("/contracts/service/dispatch")
+  @PutMapping("/contracts/service/dispatch")
   public ResponseEntity<ApiResponse> assignDispatchDetails(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
