@@ -4,7 +4,10 @@
 @prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh:                 <http://www.w3.org/ns/shacl#> .
 @prefix xsd:                <http://www.w3.org/2001/XMLSchema#> .
+@prefix cmns-col:           <https://www.omg.org/spec/Commons/Collections/> .
+@prefix cmns-qtu:           <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
 @prefix fibo-fbc-pas-fpas:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
+@prefix fibo-fnd-dt-oc:     <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/> .
 @prefix fibo-fnd-rel-rel:   <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> .
 
 base:ServiceDispatchOccurrenceShape
@@ -36,12 +39,77 @@ base:ServiceDispatchOccurrenceShape
     sh:maxCount 1 ;
   ] .
 
+base:ServiceOrderCompletedOccurrenceShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
+  sh:property [
+    sh:path fibo-fnd-rel-rel:exemplifies ;
+    sh:hasValue ontoservice:ServiceDeliveryEvent ;
+  ] ; 
+  sh:property [
+    sh:name "id";
+    sh:description "The identifier for the delivery occurrence.";
+    sh:order 0;
+    sh:path (
+        cmns-col:comprises
+        [sh:inversePath cmns-col:comprises]
+      ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ; 
+  sh:property [
+    sh:name "weight log";
+    sh:description "Records the weight measured at the end of the service.";
+    sh:order 1;
+    sh:path (
+        [sh:inversePath cmns-col:comprises]
+        cmns-col:comprises
+      ) ;
+    sh:node base:WeightLogShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:WeightLogShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fnd-dt-oc:Calculation ;
+  sh:property [
+    sh:path fibo-fnd-rel-rel:exemplifies ;
+    sh:hasValue fibo-fnd-dt-oc:CalculationEvent ;
+  ] ; 
+  sh:property [
+    sh:name "id";
+    sh:description "The identifier for the calculation occurrence.";
+    sh:order 0;
+    sh:path (
+        cmns-qtu:hasExpression
+        [sh:inversePath cmns-qtu:hasExpression]
+      ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ; 
+  sh:property [
+    sh:name "gross weight";
+    sh:description "The weight of the delivered good.";
+    sh:order 1 ;
+    sh:path (
+        cmns-qtu:hasExpression
+        cmns-qtu:hasArgument
+        cmns-qtu:hasNumericValue
+      ) ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
 base:ServiceTerminationOccurrenceShape
   a sh:NodeShape ;
   sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
   sh:property [
     sh:path fibo-fnd-rel-rel:exemplifies ;
-    sh:hasValue oservice:TerminatedServiceEvent ;
+    sh:hasValue ontoservice:TerminatedServiceEvent ;
   ] ; 
   sh:property [
     sh:name "remarks";
@@ -58,7 +126,7 @@ base:ServiceReportOccurrenceShape
   sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
   sh:property [
     sh:path fibo-fnd-rel-rel:exemplifies ;
-    sh:hasValue oservice:IncidentReportEvent ;
+    sh:hasValue ontoservice:IncidentReportEvent ;
   ] ; 
   sh:property [
     sh:name "remarks";
@@ -75,7 +143,7 @@ base:ContractRescissionOccurrenceShape
   sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
   sh:property [
     sh:path fibo-fnd-rel-rel:exemplifies ;
-    sh:hasValue oservice:ContractRescission ;
+    sh:hasValue ontoservice:ContractRescission ;
   ] ; 
   sh:property [
     sh:name "remarks";
@@ -92,7 +160,7 @@ base:ContractTerminationOccurrenceShape
   sh:targetClass fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence ;
   sh:property [
     sh:path fibo-fnd-rel-rel:exemplifies ;
-    sh:hasValue oservice:ContractTermination ;
+    sh:hasValue ontoservice:ContractTermination ;
   ] ; 
   sh:property [
     sh:name "remarks";

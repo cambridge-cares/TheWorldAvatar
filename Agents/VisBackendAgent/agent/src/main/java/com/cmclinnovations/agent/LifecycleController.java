@@ -415,6 +415,15 @@ public class LifecycleController {
   }
 
   /**
+   * Retrieves the form template to complete an order from the knowledge graph.
+   */
+  @GetMapping("/contracts/service/complete/form")
+  public ResponseEntity<?> getOrderCompleteForm() {
+    LOGGER.info("Received request to get form template for order completion...");
+    return this.lifecycleService.getForm(LifecycleEventType.SERVICE_EXECUTION, null);
+  }
+
+  /**
    * Retrieves the form template to report the order from the knowledge graph.
    */
   @GetMapping("/contracts/service/report/form")
