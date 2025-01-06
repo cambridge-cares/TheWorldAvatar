@@ -7,7 +7,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "../../../companies_config/",
+                        "Source": "../../../building_identification_config/",
                         "Target": "/resources"
                     }
                 ],

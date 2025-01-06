@@ -122,3 +122,9 @@ CREATE INDEX geometry_index ON buildings_layer USING GIST (geom);
 CREATE INDEX classname_index ON buildings_layer (objectclass);
 CREATE INDEX infra_index ON buildings_layer (infrastructure_type);
 CREATE INDEX heat_index ON buildings_layer (heat_emissions);
+
+DROP MATERIALIZED VIEW IF EXISTS buildings_with_cea;
+CREATE MATERIALIZED VIEW buildings_with_cea AS (
+SELECT bg.iri, bg.building_height, bg.name, bg.geom, 'http://sea-level-blazegraph:8080/blazegraph/namespace/cea/sparql' as endpoint FROM buildings_layer AS bg
+JOIN cea.cea AS c ON c.iri = bg.iri);
+CREATE INDEX geometry_cea_index ON buildings_with_cea USING GIST (geom);

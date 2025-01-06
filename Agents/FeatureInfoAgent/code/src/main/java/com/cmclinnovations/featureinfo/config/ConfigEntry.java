@@ -74,6 +74,14 @@ public class ConfigEntry {
      */
     private String timeDatabase;
 
+    private String pointIriQueryFile;
+    private String pointIriQueryContent;
+    private String featureIriQueryFile;
+    private String featureIriQueryContent;
+    private String trajectoryMetaFile;
+    private String trajectoryMetaContent;
+    private String trajectoryDatabase;
+
     /**
      * Initialise a new ConfigEntry instance.
      * 
@@ -164,6 +172,22 @@ public class ConfigEntry {
         return this.timeDatabase;
     }
 
+    public String getPointIriQuery() {
+        return pointIriQueryContent;
+    }
+
+    public String getFeatureIriQuery() {
+        return featureIriQueryContent;
+    }
+
+    public String getTrajectoryMetaQuery() {
+        return trajectoryMetaContent;
+    }
+
+    public String getTrajectoryDatabase() {
+        return trajectoryDatabase;
+    }
+
     /**
      * Generates hash code for this instance.
      * 
@@ -180,6 +204,10 @@ public class ConfigEntry {
         hash = prime * hash + (this.timeLimitValue);
         hash = prime * hash + (this.timeLimitUnit != null ? this.timeLimitUnit.hashCode() : 0);
         hash = prime * hash + (this.timeDatabase != null ? this.timeDatabase.hashCode() : 0);
+        hash = prime * hash + (this.pointIriQueryFile != null ? this.pointIriQueryFile.hashCode() : 0);
+        hash = prime * hash + (this.featureIriQueryFile != null ? this.featureIriQueryFile.hashCode() : 0);
+        hash = prime * hash + (this.trajectoryMetaFile != null ? this.trajectoryMetaFile.hashCode() : 0);
+        hash = prime * hash + (this.trajectoryDatabase != null ? this.trajectoryDatabase.hashCode() : 0);
         return hash;
     }
 
@@ -212,6 +240,14 @@ public class ConfigEntry {
         if (!Objects.equal(this.timeLimitUnit, that.timeLimitUnit))
             return false;
         if (!Objects.equal(this.timeDatabase, that.timeDatabase))
+            return false;
+        if (!Objects.equal(this.pointIriQueryFile, that.pointIriQueryFile))
+            return false;
+        if (!Objects.equal(this.featureIriQueryFile, that.featureIriQueryFile))
+            return false;
+        if (!Objects.equal(this.trajectoryMetaFile, that.trajectoryMetaFile))
+            return false;
+        if (!Objects.equal(this.trajectoryDatabase, that.trajectoryDatabase))
             return false;
 
         return true;
@@ -367,6 +403,38 @@ public class ConfigEntry {
         }
 
         /**
+         * special case for trajectory query
+         * 
+         * @param id
+         * @param classIRI
+         * @param trajectoryQuery
+         * @param featureIriQuery
+         * @param metaQuery
+         * @return
+         * @throws IOException
+         */
+        public ConfigEntry build(
+                String id,
+                String classIRI,
+                String pointIriQuery,
+                String featureIriQuery,
+                String metaQuery,
+                String database) throws IOException {
+
+            // Create and return ConfigEntry instance.
+            ConfigEntry entry = new ConfigEntry(id);
+            entry.classIRI = classIRI;
+            entry.pointIriQueryFile = pointIriQuery;
+            entry.featureIriQueryFile = featureIriQuery;
+            entry.trajectoryMetaFile = metaQuery;
+            entry.trajectoryDatabase = database;
+
+            // Populate query contents
+            readQueryContent(entry);
+            return entry;
+        }
+
+        /**
          * Reads and caches the raw content of SPARQL query files.
          * 
          * @param entry
@@ -391,6 +459,20 @@ public class ConfigEntry {
                 LOGGER.debug(entry.timeQueryContent);
             } else {
                 LOGGER.info("No valid entry for time series query file in entry '{}', skipping.", entry.id);
+            }
+
+            // Parse trajectory query
+            if (entry.pointIriQueryFile != null && !entry.pointIriQueryFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.pointIriQueryFile));
+                entry.pointIriQueryContent = Files.readString(file);
+            }
+            if (entry.featureIriQueryFile != null && !entry.featureIriQueryFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.featureIriQueryFile));
+                entry.featureIriQueryContent = Files.readString(file);
+            }
+            if (entry.trajectoryMetaFile != null && !entry.trajectoryMetaFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.trajectoryMetaFile));
+                entry.trajectoryMetaContent = Files.readString(file);
             }
         }
     }

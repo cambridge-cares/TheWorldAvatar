@@ -262,13 +262,15 @@ class PySparqlClient:
         Returns:
             Dict[str, Dict[str, Set[Any]]]: The dictionary of the outgoing edges and attributes of the given nodes, where the key is the node IRI
         """
+        result = {}
         if isinstance(node_iris, str):
             node_iris = [node_iris]
         if isinstance(node_iris, list):
             node_iris = set(node_iris)
+        if not node_iris:
+            return result
         query = f"""SELECT ?s ?p ?o WHERE {{VALUES ?s {{ {' '.join([f'<{utils.trim_iri(iri)}>' for iri in node_iris])} }} ?s ?p ?o.}}"""
         response = self.perform_query(query)
-        result = {}
         for r in response:
             if r['s'] not in result:
                 result[r['s']] = {}
