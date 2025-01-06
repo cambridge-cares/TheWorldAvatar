@@ -3,7 +3,7 @@
         "Name": "dome-interactor",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dome-interactor:0.1-dev-DOME-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/dome-interactor:0.1",
                 "Env": [
                     "NB_PW=dome-showcase-1",
                     "DOME_URL=https://nextgen.dome40.io/",

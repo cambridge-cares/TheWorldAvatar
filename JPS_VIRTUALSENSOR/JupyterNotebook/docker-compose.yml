@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   dome-interactor:
-    image: ghcr.io/cambridge-cares/dome-interactor:0.1-dev-DOME-SNAPSHOT
+    image: ghcr.io/cambridge-cares/dome-interactor:0.1
     deploy:
       mode: replicated
       replicas: 1

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dispersion-interactor:
-    image: ghcr.io/cambridge-cares/dispersion-interactor:1.10-dev-DOME-SNAPSHOT
+    image: ghcr.io/cambridge-cares/dispersion-interactor:1.10
     deploy:
       mode: replicated
       replicas: 1
