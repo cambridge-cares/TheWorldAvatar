@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   python-service:
-    image: ghcr.io/cambridge-cares/python-service:1.5-dev-DOME-SNAPSHOT
+    image: ghcr.io/cambridge-cares/virtual-sensor-python-service:1.6
     deploy:
       mode: replicated
       replicas: 1

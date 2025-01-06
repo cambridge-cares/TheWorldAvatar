@@ -3,7 +3,7 @@
         "Name": "python-service",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/python-service:1.5-dev-DOME-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/virtual-sensor-python-service:1.6",
                 "Env": [
                     "FILE_SERVER=http://${STACK_NAME}-file-server:8080/FileServer/"
                 ],
