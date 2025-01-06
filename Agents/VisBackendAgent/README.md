@@ -388,7 +388,9 @@ where `{type}`is the requested identifier that must correspond to a target class
 
 ### 2.6 Service Lifecycle Route
 
-This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to manage the lifecycle of contracts and their associated services.
+This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to manage the lifecycle of contracts and their associated services. Note that the following scheduled tasks are available and will occur at 6am everyday if `TASKS_ENABLED` is true:
+
+- Discharge of expired active contracts
 
 #### 2.6.1 Status route
 

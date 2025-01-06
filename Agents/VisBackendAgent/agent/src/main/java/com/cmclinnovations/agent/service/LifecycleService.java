@@ -1,7 +1,6 @@
 package com.cmclinnovations.agent.service;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ public class LifecycleService {
 
   private static final String ORDER_INITIALISE_MESSAGE = "Order received and is being processed.";
   private static final String ORDER_DISPATCH_MESSAGE = "Order has been assigned and is awaiting execution.";
+  private static final String SERVICE_DISCHARGE_MESSAGE = "Service has been completed successfully.";
   private static final Logger LOGGER = LogManager.getLogger(LifecycleService.class);
 
   /**
@@ -246,6 +246,31 @@ public class LifecycleService {
       }
     }
     return hasError;
+  }
+
+  /**
+   * Discharges any active contracts that should have expired today.
+   */
+  public void dischargeExpiredContracts() {
+    LOGGER.info("Retrieving all active contracts that are expiring...");
+    String query = LifecycleResource.genExpiredActiveServiceQuery();
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    Map<String, Object> paramTemplate = new HashMap<>();
+    paramTemplate.put(LifecycleResource.REMARKS_KEY, SERVICE_DISCHARGE_MESSAGE);
+    LOGGER.debug("Instanting completed occurrences for these contracts...");
+    while (!results.isEmpty()) {
+      Map<String, Object> params = new HashMap<>(paramTemplate);
+      String currentContract = results.poll().getFieldValue(LifecycleResource.IRI_KEY);
+      params.put(LifecycleResource.CONTRACT_KEY, currentContract);
+      this.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_COMPLETION);
+      ResponseEntity<ApiResponse> response = this.addService.instantiate(
+          LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
+      // Error logs for any specified occurrence
+      if (response.getStatusCode() != HttpStatus.CREATED) {
+        LOGGER.error("Error encountered while discharging the contract for {}! Read error message for more details: {}",
+            currentContract, response.getBody().getMessage());
+      }
+    }
   }
 
   /**

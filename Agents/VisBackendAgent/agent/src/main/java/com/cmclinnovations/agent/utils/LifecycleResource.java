@@ -196,6 +196,26 @@ public class LifecycleResource {
   }
 
   /**
+   * Generates a SPARQL query to retrieve contracts that have passed the end date.
+   */
+  public static String genExpiredActiveServiceQuery() {
+    StringBuilder activeFilter = new StringBuilder();
+    LifecycleResource.appendFilterExists(activeFilter, true, LifecycleResource.EVENT_APPROVAL);
+    LifecycleResource.appendArchivedFilterExists(activeFilter, false);
+    return genPrefixes()
+        + "SELECT DISTINCT ?iri WHERE{"
+        + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
+        // Nested query for all days
+        + "?stage fibo-fnd-rel-rel:exemplifies <"
+        + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
+        + "<https://www.omg.org/spec/Commons/PartiesAndSituations/holdsDuring>/cmns-dt:hasEndDate/cmns-dt:hasDateValue ?end_date."
+        + activeFilter
+        + "FILTER(?end_date<xsd:date(NOW()))"
+        + "}";
+  }
+
+  /**
    * Generates a SPARQL query to get the schedule of the contract.
    * 
    * @param contractId the target contract id.

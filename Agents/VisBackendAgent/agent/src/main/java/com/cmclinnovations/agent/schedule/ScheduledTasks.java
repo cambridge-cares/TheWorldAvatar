@@ -20,7 +20,9 @@ public class ScheduledTasks {
   }
 
   @Scheduled(cron = "0 0 6 * * *")
-  public void generateTasksForToday() {
-    LOGGER.info("Performing the scheduled task.");
+  public void dischargeExpiredContracts() {
+    LOGGER.info("Discharging the active contracts that have expired today...");
+    this.lifecycleService.dischargeExpiredContracts();
+    LOGGER.info("Scheduled task for service discharge has been completed successfully!");
   }
 }
