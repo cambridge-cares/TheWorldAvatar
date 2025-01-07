@@ -54,7 +54,7 @@ Prepare these secret files in [](./stack-manager/prod/inputs/secrets)
 - privkey.pem
 - fullchain.pem
 
-fullchain.pem is the https certificate file for KeyCloak and privkey.pem is the https certificate key file for KeyCloak. To generate the files, please refer to <https://mindsers.blog/en/post/https-using-nginx-certbot-docker/>.
+fullchain.pem is the https certificate file for KeyCloak and privkey.pem is the https certificate key file for KeyCloak. To generate the files and set up https, please refer to [HTTPS setup](#https-setup).
 
 Populate value of KC_DB_PASSWORD in [keycloak-prod.json].
 
@@ -81,6 +81,9 @@ then restart stack manager again:
 ```bash
 ./stack.sh start timeline
 ```
+
+### HTTPS setup
+Files for HTTPS setup are provided in [prod/https/](prod/https/). Please follow this [guide](https://mindsers.blog/en/post/https-using-nginx-certbot-docker/) to generate the certificate and complete the setup. The certificate generated will expire every 3 months and require manual reneration with the current setup.
 
 ## Import data from Singapore stack
 
