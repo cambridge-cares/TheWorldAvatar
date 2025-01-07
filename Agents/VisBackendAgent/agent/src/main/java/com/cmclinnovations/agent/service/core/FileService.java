@@ -1,4 +1,4 @@
-package com.cmclinnovations.agent.service;
+package com.cmclinnovations.agent.service.core;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

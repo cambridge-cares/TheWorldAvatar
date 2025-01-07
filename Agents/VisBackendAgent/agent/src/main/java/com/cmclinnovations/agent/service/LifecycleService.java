@@ -19,7 +19,11 @@ import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
+import com.cmclinnovations.agent.service.core.DateTimeService;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.KGService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
 @Service

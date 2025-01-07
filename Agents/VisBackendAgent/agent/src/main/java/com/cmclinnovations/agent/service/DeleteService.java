@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.response.ApiResponse;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.KGService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.KGService;
 
 @Service
 public class GetService {

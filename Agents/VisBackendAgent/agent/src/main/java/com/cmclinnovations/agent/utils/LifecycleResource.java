@@ -3,7 +3,7 @@ package com.cmclinnovations.agent.utils;
 import java.time.LocalDate;
 
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
-import com.cmclinnovations.agent.service.FileService;
+import com.cmclinnovations.agent.service.core.FileService;
 
 public class LifecycleResource {
   public static final String LIFECYCLE_RESOURCE = "lifecycle";
