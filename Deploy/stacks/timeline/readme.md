@@ -83,6 +83,7 @@ then restart stack manager again:
 ```
 
 ### HTTPS setup
+
 Files for HTTPS setup are provided in [prod/https/](prod/https/). Please follow this [guide](https://mindsers.blog/en/post/https-using-nginx-certbot-docker/) to generate the certificate and complete the setup. The certificate generated will expire every 3 months and require manual reneration with the current setup.
 
 ## Import data from Singapore stack
@@ -115,8 +116,9 @@ IMPORT FOREIGN SCHEMA public
 3. Replace <KEYCLOAK_URL> in vis-files/keycloak.json with the URL of the KeyCloak server, needs to be an address that can be accessed from client and the server.
    1. The configuration assumes a realm called `timeline` exists and a client called `desktop-vis` is set up correctly with the correct redirect urls.
 4. Upload [./shacl/timeline.ttl](./shacl/timeline.ttl) to the kb namespace on Blazegraph
-5. Run `docker compose up -d` in [./test/vis/](./test/vis/).
-6. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
+5. Download contents of [https://github.com/TheWorldAvatar/viz/tree/main/code/public/images/defaults] into [./test/vis/vis-files/public/images/defaults](./test/vis/vis-files/public/images/defaults).
+6. Run `docker compose up -d` in [./test/vis/](./test/vis/).
+7. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
 
 [keycloak-test.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
 [keycloak-prod.json]: ./stack-manager/test/inputs/config/services/keycloak-prod.json
