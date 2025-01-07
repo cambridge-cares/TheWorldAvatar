@@ -1,6 +1,5 @@
 package com.cmclinnovations.agent.service;
 
-import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,10 +14,10 @@ import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.JsonLdService;
 import com.cmclinnovations.agent.service.core.KGService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
-import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,6 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class AddService {
   private final KGService kgService;
   private final FileService fileService;
+  private final JsonLdService jsonLdService;
   private final ObjectMapper objectMapper;
 
   private static final Logger LOGGER = LogManager.getLogger(AddService.class);
@@ -35,13 +35,16 @@ public class AddService {
   /**
    * Constructs a new service with the following dependencies.
    * 
-   * @param kgService    KG service for performing the query.
-   * @param fileService  File service for accessing file resources.
-   * @param objectMapper The JSON object mapper.
+   * @param kgService     KG service for performing the query.
+   * @param fileService   File service for accessing file resources.
+   * @param jsonLdService A service for interactions with JSON LD.
+   * @param objectMapper  The JSON object mapper.
    */
-  public AddService(KGService kgService, FileService fileService, ObjectMapper objectMapper) {
+  public AddService(KGService kgService, FileService fileService, JsonLdService jsonLdService,
+      ObjectMapper objectMapper) {
     this.kgService = kgService;
     this.fileService = fileService;
+    this.jsonLdService = jsonLdService;
     this.objectMapper = objectMapper;
   }
 
@@ -134,20 +137,20 @@ public class AddService {
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
-          ObjectNode literalNode = this.objectMapper.createObjectNode()
-              .put(ShaclResource.VAL_KEY, this.getReplacementValue(currentNode, replacements))
-              .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
+          ObjectNode literalNode = this.jsonLdService.genLiteral(
+              this.jsonLdService.getReplacementValue(currentNode, replacements),
+              currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
           parentNode.set(parentField, literalNode);
           // IRIs that are not assigned to @id or @type should belong within a nested @id
           // object
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
             && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
           ObjectNode newIriNode = this.objectMapper.createObjectNode();
-          newIriNode.put(ShaclResource.ID_KEY, this.getReplacementValue(currentNode, replacements));
+          newIriNode.put(ShaclResource.ID_KEY, this.jsonLdService.getReplacementValue(currentNode, replacements));
           parentNode.set(parentField, newIriNode);
         } else {
           // For IRIs and literal with no other pattern, simply replace the value
-          parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
+          parentNode.put(parentField, this.jsonLdService.getReplacementValue(currentNode, replacements));
         }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
@@ -171,44 +174,6 @@ public class AddService {
           }
         }
       }
-    }
-  }
-
-  /**
-   * Retrieve the required replacement value.
-   * 
-   * @param replacementNode Node containing metadata for replacement..
-   * @param replacements    Mappings of the replacement value with their
-   *                        corresponding node.
-   */
-  private String getReplacementValue(ObjectNode replacementNode, Map<String, Object> replacements) {
-    String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
-    // Iterate through the replacements and find the relevant key for replacement
-    String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
-    String targetKey = "";
-    for (String key : replacements.keySet()) {
-      if (key.contains(replacementId)) {
-        targetKey = key;
-        break;
-      }
-    }
-    // Return the replacement value with the target key for literal
-    if (replacementType.equals("literal")) {
-      return replacements.get(targetKey).toString();
-    } else if (replacementType.equals("iri")) {
-      JsonNode prefixNode = replacementNode.path("prefix");
-      // Return the replacement value with the target key for any iris without a
-      // prefix
-      if (prefixNode.isMissingNode()) {
-        return replacements.get(targetKey).toString();
-      } else {
-        // If a prefix is present, extract the identifer and append the prefix
-        return prefixNode.asText() + StringResource.getLocalName(replacements.get(targetKey).toString());
-      }
-    } else {
-      LOGGER.error("Invalid replacement type {} for {}!", replacementType, replacementId);
-      throw new IllegalArgumentException(
-          MessageFormat.format("Invalid replacement type {0} for {1}!", replacementType, replacementId));
     }
   }
 
