@@ -23,6 +23,12 @@
       "@type": "iri"
     }
   },
+  "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds": {
+    "@id": {
+      "@replace": "order",
+      "@type": "iri"
+    }
+  },
   "@reverse": {
     "https://www.omg.org/spec/Commons/Collections/comprises": {
       "@id": {
