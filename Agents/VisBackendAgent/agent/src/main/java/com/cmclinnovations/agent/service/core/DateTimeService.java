@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.service.core;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
@@ -34,6 +35,13 @@ public class DateTimeService {
   public String getCurrentDate() {
     // Define the date format
     return LocalDate.now().format(this.formatter);
+  }
+
+  /**
+   * Get current date time in YYYY-MM-DDTHH:MM:SS format.
+   */
+  public String getCurrentDateTime() {
+    return LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
   }
 
   /**

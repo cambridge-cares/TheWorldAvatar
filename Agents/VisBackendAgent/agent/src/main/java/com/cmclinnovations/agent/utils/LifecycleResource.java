@@ -2,6 +2,7 @@ package com.cmclinnovations.agent.utils;
 
 import java.time.LocalDate;
 
+import com.cmclinnovations.agent.model.type.CalculationType;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.core.FileService;
 
@@ -15,6 +16,7 @@ public class LifecycleResource {
   public static final String ORDER_KEY = "order";
   public static final String CURRENT_DATE_KEY = "current date";
   public static final String DATE_KEY = "date";
+  public static final String DATE_TIME_KEY = "dateTime";
   public static final String EVENT_KEY = "event";
   public static final String STAGE_KEY = "stage";
   public static final String STATUS_KEY = "status";
@@ -29,9 +31,14 @@ public class LifecycleResource {
   public static final String SCHEDULE_RECURRENCE_KEY = "recurrence";
   public static final String SCHEDULE_TYPE_KEY = "schedule type";
 
+  public static final String EXEMPLIFIES_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies";
+  public static final String HAS_ARGUMENT_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasArgument";
+  public static final String HAS_MINUEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasMinuend";
+  public static final String HAS_SUBTRAHEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasSubtrahend";
+
   public static final String LIFECYCLE_STAGE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>";
   public static final String LIFECYCLE_STAGE_EVENT_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Collections/comprises>";
-  public static final String LIFECYCLE_EVENT_TYPE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies>";
+  public static final String LIFECYCLE_EVENT_TYPE_PREDICATE_PATH = "<" + EXEMPLIFIES_RELATIONS + ">";
   public static final String LIFECYCLE_EVENT_PREDICATE_PATH = LIFECYCLE_STAGE_PREDICATE_PATH + "/"
       + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/" + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH;
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
@@ -150,6 +157,22 @@ public class LifecycleResource {
         return "terminated";
       default:
         throw new IllegalArgumentException("Invalid event type!");
+    }
+  }
+
+  /**
+   * Retrieve the expression class associated with the target calculation type.
+   * 
+   * @param calculationType The target calculation type.
+   */
+  public static String getExpressionClass(CalculationType calculationType) {
+    switch (calculationType) {
+      case CalculationType.DIFFERENCE:
+        return "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/Difference";
+      case CalculationType.TOTAL:
+        return "https://www.omg.org/spec/Commons/QuantitiesAndUnits/Total";
+      default:
+        throw new IllegalArgumentException("Invalid Calculation Type!");
     }
   }
 

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.response.ApiResponse;
+import com.cmclinnovations.agent.service.application.LifecycleReportService;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.JsonLdService;
 import com.cmclinnovations.agent.service.core.KGService;
@@ -28,6 +29,7 @@ public class AddService {
   private final KGService kgService;
   private final FileService fileService;
   private final JsonLdService jsonLdService;
+  private final LifecycleReportService lifecycleReportService;
   private final ObjectMapper objectMapper;
 
   private static final Logger LOGGER = LogManager.getLogger(AddService.class);
@@ -35,16 +37,19 @@ public class AddService {
   /**
    * Constructs a new service with the following dependencies.
    * 
-   * @param kgService     KG service for performing the query.
-   * @param fileService   File service for accessing file resources.
-   * @param jsonLdService A service for interactions with JSON LD.
-   * @param objectMapper  The JSON object mapper.
+   * @param kgService              KG service for performing the query.
+   * @param fileService            File service for accessing file resources.
+   * @param jsonLdService          A service for interactions with JSON LD.
+   * @param lifecycleReportService A service for reporting lifecycle matters such
+   *                               as calculation instances.
+   * @param objectMapper           The JSON object mapper.
    */
   public AddService(KGService kgService, FileService fileService, JsonLdService jsonLdService,
-      ObjectMapper objectMapper) {
+      LifecycleReportService lifecycleReportService, ObjectMapper objectMapper) {
     this.kgService = kgService;
     this.fileService = fileService;
     this.jsonLdService = jsonLdService;
+    this.lifecycleReportService = lifecycleReportService;
     this.objectMapper = objectMapper;
   }
 
@@ -134,6 +139,11 @@ public class AddService {
         // Add a different interaction for schedule types
         if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("schedule")) {
           this.replaceDayOfWeekSchedule(parentNode, parentField, replacements);
+          // Add a different interaction for calculations
+        } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("calculation")) {
+          ObjectNode calculationInstance = this.lifecycleReportService.genCalculationInstance(currentNode,
+              replacements);
+          parentNode.set(parentField, calculationInstance);
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {

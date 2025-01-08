@@ -1,0 +1,59 @@
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "@type": "iri",
+    "prefix": "https://www.example.com/kg/complete/"
+  },
+  "@type": "https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence",
+  "http://www.w3.org/2000/01/rdf-schema#comment": {
+    "@replace": "remarks",
+    "@type": "literal"
+  },
+  "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/hasEventDate": {
+    "@replace": "dateTime",
+    "@type": "literal",
+    "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+  },
+  "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies": {
+    "@id": {
+      "@replace": "event",
+      "@type": "iri"
+    }
+  },
+  "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds": {
+    "@id": {
+      "@replace": "dispatch",
+      "@type": "iri"
+    }
+  },
+  "@reverse": {
+    "https://www.omg.org/spec/Commons/Collections/comprises": {
+      "@id": {
+        "@replace": "stage",
+        "@type": "iri"
+      }
+    },
+    "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds": {
+      "@replace": "calculation",
+      "@type": "difference",
+      "variable": [
+        {
+          "@id": "gross weight",
+          "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"
+        },
+        {
+          "@id": "delivery weight",
+          "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"
+        }
+      ],
+      "output": {
+        "@id": "net weight",
+        "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue",
+        "unit": "https://www.theworldavatar.com/kg/ontoservice/tonne"
+      }
+    }
+  }
+}

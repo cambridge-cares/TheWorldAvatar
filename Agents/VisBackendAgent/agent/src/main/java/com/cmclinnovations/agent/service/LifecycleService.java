@@ -17,13 +17,13 @@ import org.springframework.stereotype.Service;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
+import com.cmclinnovations.agent.model.type.CalculationType;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.KGService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
-import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
@@ -37,6 +37,7 @@ public class LifecycleService {
 
   private static final String ORDER_INITIALISE_MESSAGE = "Order received and is being processed.";
   private static final String ORDER_DISPATCH_MESSAGE = "Order has been assigned and is awaiting execution.";
+  private static final String ORDER_COMPLETE_MESSAGE = "Order has been completed successfully.";
   private static final String SERVICE_DISCHARGE_MESSAGE = "Service has been completed successfully.";
   private static final Logger LOGGER = LogManager.getLogger(LifecycleService.class);
 
@@ -299,6 +300,28 @@ public class LifecycleService {
             "Error encountered while dispatching details for the order: {}! Read error message for more details: {}",
             params.get(LifecycleResource.ORDER_KEY), response.getBody().getMessage());
       }
+    }
+    return response;
+  }
+
+  /**
+   * Generate an occurrence for the order delivery event of a specified contract.
+   * 
+   * @param params Required parameters with configurable parameters to instantiate
+   *               the occurrence.
+   */
+  public ResponseEntity<ApiResponse> genDeliveryOccurrence(Map<String, Object> params) {
+    params.put(LifecycleResource.REMARKS_KEY, ORDER_COMPLETE_MESSAGE);
+    params.putIfAbsent(LifecycleResource.DATE_TIME_KEY, this.dateTimeService.getCurrentDateTime());
+    this.addOccurrenceParams(params, LifecycleEventType.SERVICE_EXECUTION);
+    // Ensure that the event identifier mapped directly to the jsonLd file name
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_EXECUTION), params);
+    if (response.getStatusCode() != HttpStatus.CREATED) {
+      LOGGER.error(
+          "Error encountered while completing the order on {} from the contract: {}! Read error message for more details: {}",
+          params.get(LifecycleResource.DATE_KEY), params.get(LifecycleResource.CONTRACT_KEY),
+          response.getBody().getMessage());
     }
     return response;
   }

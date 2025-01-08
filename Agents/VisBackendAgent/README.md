@@ -32,6 +32,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
+      - [4.1.1 Service lifecycle](#411-service-lifecycle)
     - [4.2 Geocoding](#42-geocoding)
 
 ## 1. Agent Deployment
@@ -74,7 +75,7 @@ In generating the form template, users must create and upload [`SHACL` restricti
 The agent will require at least two files in order to function as a `REST` endpoint to add, delete, insert, and retrieve instances within the registry in the ViP.
 
 1. `./resources/application-service.json`: A file mapping the resource identifier to the target file name in (2)
-2. At least one `JSON-LD` file at `./resources/jsonld/example.jsonld`: This file provides a structure for the instance that must be instantiated and will follow the schemas defined in [this section](#41-instantiation). Each file should correspond to one type of instance, and the resource ID defined in (1) must correspond to the respective file in order to function.
+2. At least one `JSON-LD` file at `./resources/jsonld/example.jsonld`: This file provides a structure for the instance that must be instantiated and will follow the schemas defined in [this section](#41-instantiation). Each file should correspond to one type of instance, and the resource ID defined in (1) must correspond to the respective file in order to function. For any lifecycle related functionalities, please also included the following `JSON-LD` files as stated in [this section](#411-service-lifecycle).
 
 **GEOCODING ENDPOINT**
 
@@ -762,8 +763,42 @@ It is expected that we should create a new ID and name for the person instance. 
 
 A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
 
+#### 4.1.1 Service lifecycle
+
 > [!IMPORTANT]
-> For any service lifecycle, users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`, which can contain additional properties/details. A sample file has been created in `./resources/dispatch.jsonld`, and users must not modify line 1 - 32.
+> Users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`. This event should assign dispatch details before the service executes. A sample file has been created in `./resources/dispatch.jsonld`, and users must not modify line 1 - 32. The relevant route(s) is found in the `Service dispatch` section [over here](#265-service-order-route).
+
+> [!IMPORTANT]
+> Users will be required to add a `JSON-LD` for the `ServiceDeliveryEvent`. This event should execute upon completion of the service order, and can contain additional properties/details following the user's input. A sample file has been created in `./resources/complete.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service completion` section [over here](#265-service-order-route). Users can also define a special replacement `JSON` object for performing any calculation based upon the completion logs as follows:
+
+```json
+{
+  "@replace": "calculation", # do not change this
+  "@type": "difference", # expected calculation type - difference, total
+  # an array of variable objects for the expression
+  "variable": [
+    {
+      "@id": "parameter 1", # parameter name
+      "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue", # the class of the scalar quantity; optional and defaults to the `https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue` concept
+      "unit": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/MeasurementUnit" # measurement unit; optional and defaults to the `https://www.omg.org/spec/Commons/QuantitiesAndUnits/MeasurementUnit` concept
+    },
+    {
+      "@id": "parameter 2" # parameter name
+    }
+  ],
+  # a variable object to represent the output
+  "output": {
+    "@id": "parameter 1",
+    "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue",
+    "unit": "https://www.theworldavatar.com/kg/ontoservice/tonne"
+  }
+}
+```
+
+The following calculation types are supported:
+
+1. Difference: The second and subsequent variable(s) will be deducted from the first parameter in the array at the `variable` field
+2. Total: Sum of all the variables in the array at the `variable` field
 
 ### 4.2 Geocoding
 

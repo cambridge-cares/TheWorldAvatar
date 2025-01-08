@@ -10,6 +10,9 @@ public class ShaclResource {
   public static final String VAL_KEY = "@value";
   public static final String REPLACE_KEY = "@replace";
   public static final String REVERSE_KEY = "@reverse";
+  public static final String UNIT_KEY = "unit";
+  public static final String VARIABLE_KEY = "variable";
+  public static final String OUTPUT_KEY = "output";
   // Namespaces
   public static final String BASE_PREFIX = "https://www.theworldavatar.com/kg/";
   public static final String RDFS_PREFIX = "http://www.w3.org/2000/01/rdf-schema#";

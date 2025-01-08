@@ -148,6 +148,20 @@ public class LifecycleController {
   }
 
   /**
+   * Completes a specific service order
+   */
+  @PostMapping("/contracts/service/complete")
+  public ResponseEntity<ApiResponse> completeServiceOrder(@RequestBody Map<String, Object> params) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
+      return new ResponseEntity<>(
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
+    }
+    LOGGER.info("Received request to complete a service order with completion details...");
+    return this.lifecycleService.genDeliveryOccurrence(params);
+  }
+
+  /**
    * Reports any unfulfilled service delivery.
    */
   @PostMapping("/contracts/service/report")
