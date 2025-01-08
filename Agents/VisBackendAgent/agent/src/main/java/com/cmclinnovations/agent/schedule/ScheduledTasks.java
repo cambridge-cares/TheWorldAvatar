@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.cmclinnovations.agent.service.LifecycleService;
+import com.cmclinnovations.agent.service.application.LifecycleService;
 
 @Component
 @ConditionalOnProperty(name = "tasks.enabled", havingValue = "true", matchIfMissing = false)

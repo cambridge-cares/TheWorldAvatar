@@ -1,4 +1,4 @@
-package com.cmclinnovations.agent.service;
+package com.cmclinnovations.agent.service.application;
 
 import java.text.MessageFormat;
 import java.util.ArrayDeque;

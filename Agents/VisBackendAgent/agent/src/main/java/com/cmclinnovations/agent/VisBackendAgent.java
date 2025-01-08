@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
-import com.cmclinnovations.agent.service.GeocodingService;
 import com.cmclinnovations.agent.service.GetService;
+import com.cmclinnovations.agent.service.application.GeocodingService;
 
 @RestController
 public class VisBackendAgent {

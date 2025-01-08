@@ -21,7 +21,7 @@ import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
-import com.cmclinnovations.agent.service.LifecycleService;
+import com.cmclinnovations.agent.service.application.LifecycleService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 
