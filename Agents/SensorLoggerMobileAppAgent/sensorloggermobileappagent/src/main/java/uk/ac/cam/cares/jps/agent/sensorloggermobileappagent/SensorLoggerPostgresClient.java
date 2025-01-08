@@ -10,6 +10,8 @@ import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.core.io.ClassPathResource;
 
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.SensorDataProcessor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -18,12 +20,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Set;
 
 /**
  * column names need to match with obda file in resources
  */
 public class SensorLoggerPostgresClient {
     static final String DEVICES_TABLE = "devices";
+    static final String TS_QUANTITIES_TABLE = "time_series_quantities";
     static final String DEVICE_COLUMN = "device_id";
     static final String SENSOR_COLUMN = "sensor_class";
 
@@ -31,8 +35,15 @@ public class SensorLoggerPostgresClient {
     private String dbuser;
     private String dbpassword;
     private static final Table<?> DSL_TABLE = DSL.table(DSL.name(DEVICES_TABLE));
+    private static final Table<?> DSL_TABLE_TS_QUANTITIES = DSL.table(DSL.name(TS_QUANTITIES_TABLE));
     private static final Field<String> DEVICE_COLUMN_FIELD = DSL.field(DEVICE_COLUMN, String.class);
     private static final Field<String> SENSOR_COLUMN_FIELD = DSL.field(SENSOR_COLUMN, String.class);
+
+    private static final Field<String> TS_IRI_FIELD = DSL.field("time_series_iri", String.class);
+    private static final Field<String> DATA_IRI_FIELD = DSL.field("data_iri", String.class);
+    private static final Field<String> COLUMN_NAME_FIELD = DSL.field("column_name", String.class);
+    private static final Field<String> TABLE_NAME_FIELD = DSL.field("table_name", String.class);
+
     private static final Logger LOGGER = LogManager.getLogger(SensorLoggerPostgresClient.class);
 
     SensorLoggerPostgresClient(String dburl, String dbuser, String dbpassword) {
@@ -60,7 +71,8 @@ public class SensorLoggerPostgresClient {
         try (Connection conn = getConnection(); Statement statement = conn.createStatement()) {
             String condition = String.format("table_name = '%s'", DEVICES_TABLE);
 
-            if (getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) != 1) {
+            if (getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
+                    int.class) != 1) {
                 // table does not exist
                 firstTime = true;
                 initFunctionsForGeoServer(conn);
@@ -99,6 +111,33 @@ public class SensorLoggerPostgresClient {
                 LOGGER.error("Error creating SQL functions");
                 LOGGER.error(e.getMessage());
             }
+        }
+    }
+
+    void linkDataIriWithTsIriInRdb(String tsIRI, Set<String> dataIRIs, SensorDataProcessor processor) {
+        try (Connection conn = getConnection(); Statement statement = conn.createStatement()) {
+            String tableName = getContext(conn).select(TABLE_NAME_FIELD)
+                    .from(DSL_TABLE_TS_QUANTITIES)
+                    .where(TS_IRI_FIELD.eq(tsIRI))
+                    .fetchOne(0, String.class);
+
+            if (tableName == null || tableName.isEmpty()) {
+                LOGGER.warn("No table name found for tsIRI: " + tsIRI);
+                return;
+            }
+
+            var insert = getContext(conn).insertInto(DSL_TABLE_TS_QUANTITIES,
+                    TS_IRI_FIELD, DATA_IRI_FIELD, COLUMN_NAME_FIELD, TABLE_NAME_FIELD);
+            for (String currentDataIRI : dataIRIs) {
+                insert.values(tsIRI,
+                        currentDataIRI,
+                        String.format("column%d", processor.getDataIRIs().indexOf(currentDataIRI)),
+                        tableName);
+            }
+            insert.onConflictDoNothing().execute();
+        } catch (SQLException e) {
+            LOGGER.error("Error linking dataIRI with tsIRI");
+            LOGGER.error(e.getMessage());
         }
     }
 }

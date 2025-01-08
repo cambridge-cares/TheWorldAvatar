@@ -16,8 +16,7 @@ public abstract class SensorDataProcessor {
     RemoteStoreClient storeClient;
     Node smartphoneIRINode;
     final List<OffsetDateTime> timeList = new ArrayList<>();
-    boolean isIriInstantiationNeeded = false;
-    boolean isRbdInstantiationNeeded = false;
+    boolean needToInstantiateDevice = false;
     List<SensorData<?>> sensorData;
 
     public SensorDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
@@ -42,10 +41,13 @@ public abstract class SensorDataProcessor {
 
         getIrisFromKg();
 
-        if (iris.stream().allMatch(Objects::isNull)) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
+        // device not instantiated, so all sensor data IRIs not instantiated with obda mapping
+        if (getDataIRIs().stream().allMatch(iri -> iri == null)) {
+            needToInstantiateDevice = true;
         }
+
+        // Have existing deviceIRI, but some sensor data are not linked with time series, which require check of the blazegraph.
+        // This is handled in the SmartphoneRecordingTask.
     };
 
     public List<SensorData<?>> getSensorData() {
@@ -71,20 +73,12 @@ public abstract class SensorDataProcessor {
 
     abstract void getIrisFromKg();
 
-    public boolean isIriInstantiationNeeded() {
-        return isIriInstantiationNeeded;
+    public boolean isNeedToInstantiateDevice() {
+        return needToInstantiateDevice;
     }
 
-    public void setIriInstantiationNeeded(boolean iriInstantiationNeeded) {
-        isIriInstantiationNeeded = iriInstantiationNeeded;
-    }
-
-    public boolean isRbdInstantiationNeeded() {
-        return isRbdInstantiationNeeded;
-    }
-
-    public void setRbdInstantiationNeeded(boolean rbdInstantiationNeeded) {
-        isRbdInstantiationNeeded = rbdInstantiationNeeded;
+    public void setNeedToInstantiateDevice(boolean needToInstantiateDevice) {
+        this.needToInstantiateDevice = needToInstantiateDevice;
     }
 
     public int getTimeSeriesLength() {

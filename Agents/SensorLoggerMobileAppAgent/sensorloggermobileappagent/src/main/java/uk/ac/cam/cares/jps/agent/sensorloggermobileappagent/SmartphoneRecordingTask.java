@@ -1,10 +1,16 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.sparql.core.Var;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
+
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
@@ -34,12 +40,13 @@ public class SmartphoneRecordingTask {
     MagnetometerDataProcessor magnetometerDataProcessor;
     RelativeBrightnessProcessor relativeBrightnessProcessor;
     ActivityProcessor activityProcessor;
-    List<SensorDataProcessor> sensorDataProcessorList;
+    List<SensorDataProcessor> sensorDataProcessors;
 
     private final Node smartphoneIRI;
     private final String deviceId;
 
     private final RemoteStoreClient ontopRemoteStoreClient;
+    private final RemoteStoreClient blazegraphStoreClient;
     private final TimeSeriesClient<Long> tsClient;
     private final AgentConfig config;
 
@@ -59,6 +66,7 @@ public class SmartphoneRecordingTask {
         tsRdbClient.setRdbUser(rdbStoreClient.getUser());
         tsRdbClient.setRdbPassword(rdbStoreClient.getPassword());
 
+        this.blazegraphStoreClient = storeClient;
         this.tsClient = new TimeSeriesClient<>(storeClient, tsRdbClient);
         this.config = config;
         lastActiveTime = System.currentTimeMillis();
@@ -76,7 +84,7 @@ public class SmartphoneRecordingTask {
 
     public synchronized void addData(Payload data) {
         logger.info("adding data...");
-        sensorDataProcessorList.forEach(p -> p.addData(data));
+        sensorDataProcessors.forEach(p -> p.addData(data));
         lastActiveTime = System.currentTimeMillis();
         logger.info("finish adding data and the last active time is updated to " + lastActiveTime);
     }
@@ -99,16 +107,23 @@ public class SmartphoneRecordingTask {
         isProcessing = true;
 
         logger.info("Processing and sending data");
-        if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isIriInstantiationNeeded)) {
-            logger.info("Need to init kg");
-            initKgUsingOntop();
+
+        List<SensorDataProcessor> processorsToInstantiate = sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInstantiateDevice).toList();
+        if (!processorsToInstantiate.isEmpty()) {
+            logger.info("Need to init device: " + processorsToInstantiate.stream()
+                    .map(SensorDataProcessor::getOntodeviceLabel).collect(Collectors.joining(",")));
+            initDeviceKgUsingOntop(processorsToInstantiate);
         }
 
-        if (sensorDataProcessorList.stream().anyMatch(SensorDataProcessor::isRbdInstantiationNeeded)) {
-            sensorDataProcessorList.forEach(s -> s.initIRIs());
+        if (!processorsToInstantiate.isEmpty()) {
+            sensorDataProcessors.forEach(s -> s.initIRIs());
             logger.info("Need to init rdb");
-            bulkInitRdb();
+            initDevicesInRDB();
         }
+
+        processorsToInstantiate.forEach(p -> p.setNeedToInstantiateDevice(false));
+        fixUninitializedSensorData();
 
         try {
             bulkAddTimeSeriesData();
@@ -142,7 +157,7 @@ public class SmartphoneRecordingTask {
                 smartphoneIRI);
         activityProcessor = new ActivityProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
 
-        sensorDataProcessorList = Arrays.asList(accelerometerProcessor,
+        sensorDataProcessors = Arrays.asList(accelerometerProcessor,
                 dbfsDataProcessor,
                 gravityDataProcessor,
                 illuminationProcessor,
@@ -152,10 +167,10 @@ public class SmartphoneRecordingTask {
                 activityProcessor);
     }
 
-    private void initKgUsingOntop() {
+    private void initDeviceKgUsingOntop(List<SensorDataProcessor> processors) {
         logger.info("Instantiating kg in ontop");
 
-        List<String> sensorClasses = sensorDataProcessorList.stream().map(s -> s.getOntodeviceLabel())
+        List<String> sensorClasses = processors.stream().map(SensorDataProcessor::getOntodeviceLabel)
                 .collect(Collectors.toList());
 
         boolean firstTime = sensorLoggerPostgresClient.populateTable(deviceId, sensorClasses);
@@ -171,7 +186,6 @@ public class SmartphoneRecordingTask {
             OntopClient.getInstance().updateOBDA(obdaFile);
         }
 
-        sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
         logger.info(
                 "finish instantiating kg, exception above is probably from updating the obda file and is harmless.");
         // wait 30 seconds for ontop to initialise before allow queries execution
@@ -183,9 +197,9 @@ public class SmartphoneRecordingTask {
         }
     }
 
-    private void bulkInitRdb() {
-        Iterator<SensorDataProcessor> iterator = sensorDataProcessorList.stream()
-                .filter(SensorDataProcessor::isRbdInstantiationNeeded).iterator();
+    private void initDevicesInRDB() {
+        Iterator<SensorDataProcessor> iterator = sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInstantiateDevice).iterator();
         List<List<String>> dataIris = new ArrayList<>();
         List<List<Class<?>>> dataClasses = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -198,13 +212,81 @@ public class SmartphoneRecordingTask {
         List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
 
-        sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded)
-                .forEach(p -> p.setRbdInstantiationNeeded(false));
         logger.info("finish init postgres dbTable and the corresponding table");
     }
 
+    /**
+     * Updates blazegraph and time_series_quantities table for new sensor data when
+     * device already exists.
+     * This handles the case where the device and some of its sensor data exists,
+     * but having new sensor data not yet linked with a time series in blazegraph
+     * and RDB tables.
+     * Only updates entries for sensor data that need to be initialized.
+     * 
+     * NOTICE: This function assumes all sensor data by a device has the same time
+     * series.
+     */
+    private void fixUninitializedSensorData() {
+        for (SensorDataProcessor sensorDataProcessor : sensorDataProcessors) {
+            JSONArray queryResult = getDataIriWithTsIri(sensorDataProcessor);
+            if (queryResult.length() == sensorDataProcessor.getDataIRIs().size()) {
+                logger.info("All dataIRI have the corresponding tsIRI, skip individual init");
+                return;
+            }
+
+            String tsIRIString = queryResult.getJSONObject(0).optString("tsIRI");
+            Set<String> dataIRIWithTs = new HashSet<>();
+            logger.info("Unlinked dataIRI: " + String.join(",", dataIRIWithTs) + " with tsIRI: " + tsIRIString);
+            for (int i = 0; i < queryResult.length(); i++) {
+                String dataIRIString = queryResult.getJSONObject(i).getString("dataIRI");
+                dataIRIWithTs.add(dataIRIString);
+            }
+
+            linkDataIriWithTsIriInKG(sensorDataProcessor, tsIRIString, dataIRIWithTs);
+
+            sensorLoggerPostgresClient.linkDataIriWithTsIriInRdb(tsIRIString,
+                    sensorDataProcessor.getDataIRIs().stream().filter(iri -> !dataIRIWithTs.contains(iri))
+                            .collect(Collectors.toSet()),
+                    sensorDataProcessor);
+        }
+    }
+
+    private void linkDataIriWithTsIriInKG(SensorDataProcessor sensorDataProcessor, String tsIRIString,
+            Set<String> dataIRIWithTs) {
+        WhereBuilder linkDataIRIToTsIRI = new WhereBuilder()
+                .addPrefix("ontots", OntoConstants.ONTOTS)
+                .addValueVar("?iri")
+                .addValueRow(sensorDataProcessor.getDataIRIs().stream().filter(iri -> !dataIRIWithTs.contains(iri))
+                        .collect(Collectors.toList()))
+                .addWhere("?iri", "ontots:hasTimeSeries", iri(tsIRIString));
+        UpdateBuilder ub = new UpdateBuilder()
+                .addWhere(linkDataIRIToTsIRI);
+        ontopRemoteStoreClient.executeUpdate(ub.toString());
+    }
+
+    private JSONArray getDataIriWithTsIri(SensorDataProcessor sensorDataProcessor) {
+        Var dataIRI = Var.alloc("dataIRI");
+        Var tsIRI = Var.alloc("tsIRI");
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontots", OntoConstants.ONTOTS)
+                .addValueVar("?input")
+                .addValueRow(sensorDataProcessor.getDataIRIs().stream().map(iri -> String.format("<%s>", iri))
+                        .collect(Collectors.toList()))
+                .addWhere("?input", "ontots:hasTimeSeries", tsIRI)
+                .addWhere(dataIRI, "ontots:hasTimeSeries", tsIRI);
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar(dataIRI)
+                .addVar(tsIRI)
+                .addWhere(wb)
+                .addGroupBy(dataIRI)
+                .addGroupBy(tsIRI);
+
+        return blazegraphStoreClient.executeQuery(sb.toString());
+    }
+
     private void bulkAddTimeSeriesData() throws RuntimeException {
-        List<TimeSeries<Long>> tsList = sensorDataProcessorList.stream()
+        List<TimeSeries<Long>> tsList = sensorDataProcessors.stream()
                 .filter(p -> p.getTimeSeriesLength() > 0)
                 .map(p -> {
                     try {
@@ -247,8 +329,9 @@ public class SmartphoneRecordingTask {
     }
 
     public void instantiate() {
-        initKgUsingOntop();
-        sensorDataProcessorList.forEach(SensorDataProcessor::initIRIs);
-        bulkInitRdb();
+        // todo: check whether the current design can break this!
+        initDeviceKgUsingOntop(sensorDataProcessors);
+        sensorDataProcessors.forEach(SensorDataProcessor::initIRIs);
+        initDevicesInRDB();
     }
 }
