@@ -1,0 +1,8 @@
+{
+    "realm": "timeline",
+    "auth-server-url": "<KEYCLOAK_URL>",
+    "ssl-required": "external",
+    "resource": "desktop-vis",
+    "public-client": true,
+    "confidential-port": 0
+}

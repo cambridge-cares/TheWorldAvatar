@@ -1,12 +1,15 @@
 {
   "ServiceSpec": {
-    "Name": "trajectoryqueryagent",
+    "Name": "sensorloggermobileappagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.0.0-dev-add-session-id-SNAPSHOT",
-        "Env": [
-            "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
-            "KEYCLOAK_REALM=timeline"
+        "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:4.0.0",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "sensor-logger-resources",
+            "Target": "/resources"
+          }
         ],
         "Configs": [
           {
@@ -19,7 +22,7 @@
             "ConfigName": "geoserver"
           },
           {
-            "ConfigName": "user-agent-rest"
+            "ConfigName": "ontop"
           }
         ],
         "Secrets": [
@@ -34,9 +37,9 @@
     }
   },
   "endpoints": {
-    "rest": {
-      "url": "http://localhost:8080/trajectoryqueryagent/",
-      "externalPath": "/trajectoryqueryagent/"
+    "isochroneagent": {
+      "url": "http://localhost:8080/SensorLoggerMobileAppAgent/",
+      "externalPath": "/sensorloggermobileappagent/"
     }
   }
 }
