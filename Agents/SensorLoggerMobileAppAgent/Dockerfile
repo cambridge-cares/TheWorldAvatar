@@ -25,7 +25,7 @@ WORKDIR /root/sensorloggermobileappagent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/sensorloggermobileappagent/output/SensorLoggerMobileAppAgent##2.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/sensorloggermobileappagent/output/SensorLoggerMobileAppAgent##5.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 # Port for Java debugging
