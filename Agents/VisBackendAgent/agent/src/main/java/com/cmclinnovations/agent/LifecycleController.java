@@ -406,7 +406,7 @@ public class LifecycleController {
   @GetMapping("/contracts/service/{timestamp}")
   public ResponseEntity<?> getAllInstances(
       @PathVariable(name = "timestamp") long timestamp) {
-    LOGGER.info("Received request to retrieve contracts in progress...");
+    LOGGER.info("Received request to retrieve services in progress...");
     return this.lifecycleService.getOccurrences(timestamp);
   }
 
