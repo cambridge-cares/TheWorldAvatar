@@ -310,22 +310,24 @@ public class LifecycleResource {
    */
   public static String genServiceTasksQuery(String date) {
     return genPrefixes()
-        + "SELECT DISTINCT ?contract ?iri (\"" + date
-        + "\"^^xsd:date AS ?event_date) ?order "
+        + "SELECT DISTINCT ?contract ?iri ?event_date ?order "
         + "WHERE{?contract a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
         + "?stage fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
-        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?iri."
+        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?order_event."
+        + "?order_event fibo-fnd-rel-rel:exemplifies " + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ";"
+        + "fibo-fnd-dt-oc:hasEventDate ?event_date."
         + "?iri fibo-fnd-rel-rel:exemplifies ?event_type;"
-        + "fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date. "
+        + "cmns-dt:succeeds* ?order_event."
+        + "FILTER (xsd:date(?event_date) = \"" + date + "\"^^xsd:date)"
         + "BIND("
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ",0,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DISPATCH) + ",1,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DELIVERY) + ",2,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_CANCELLATION) + ",3,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT) + ",4,"
-        + "5))))) AS ?order)"
+        + "-1))))) AS ?order)"
         + "}";
   }
 
