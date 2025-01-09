@@ -102,14 +102,25 @@ public class AddService {
           new ApiResponse("Invalid JSON-LD format for replacement! Please contact your technical team for assistance."),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    return this.instantiateJsonLd(addJsonSchema, resourceID + " has been successfully instantiated!");
+  }
+
+  /**
+   * Instantiate an instance based on a jsonLD object.
+   * 
+   * @param jsonLdSchema The target json LD object to instantiate.
+   * @param message      Successful message.
+   */
+  public ResponseEntity<ApiResponse> instantiateJsonLd(JsonNode jsonLdSchema, String message) {
     LOGGER.debug("Adding instance to endpoint...");
-    String instanceIri = addJsonSchema.path(ShaclResource.ID_KEY).asText();
-    String jsonString = addJsonSchema.toString();
+    String instanceIri = jsonLdSchema.path(ShaclResource.ID_KEY).asText();
+    String jsonString = jsonLdSchema.toString();
     ResponseEntity<String> response = this.kgService.add(jsonString);
     if (response.getStatusCode() == HttpStatus.OK) {
-      LOGGER.info("{} has been successfully instantiated!", resourceID);
+      LOGGER.info(message);
       return new ResponseEntity<>(
-          new ApiResponse(resourceID + " has been successfully instantiated!", instanceIri),
+          new ApiResponse(message, instanceIri),
           HttpStatus.CREATED);
     } else {
       return new ResponseEntity<>(
