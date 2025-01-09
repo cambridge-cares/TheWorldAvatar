@@ -35,6 +35,10 @@ public class LifecycleResource {
   public static final String HAS_ARGUMENT_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasArgument";
   public static final String HAS_MINUEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasMinuend";
   public static final String HAS_SUBTRAHEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasSubtrahend";
+  public static final String HAS_QTY_VAL_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasQuantityValue";
+  public static final String IS_ABOUT_RELATIONS = "https://www.omg.org/spec/Commons/Documents/isAbout";
+  public static final String RECORDS_RELATIONS = "https://www.omg.org/spec/Commons/Documents/records";
+  public static final String SUCCEEDS_RELATIONS = "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds";
 
   public static final String LIFECYCLE_STAGE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>";
   public static final String LIFECYCLE_STAGE_EVENT_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Collections/comprises>";
@@ -50,6 +54,7 @@ public class LifecycleResource {
   public static final String EVENT_CONTRACT_COMPLETION = "https://www.theworldavatar.com/kg/ontoservice/ContractDischarge";
   public static final String EVENT_CONTRACT_RESCISSION = "https://www.theworldavatar.com/kg/ontoservice/ContractRescission";
   public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination";
+  public static final String LIFECYCLE_RECORD = "https://www.omg.org/spec/Commons/Documents/Record";
 
   // Private constructor to prevent instantiation
   private LifecycleResource() {

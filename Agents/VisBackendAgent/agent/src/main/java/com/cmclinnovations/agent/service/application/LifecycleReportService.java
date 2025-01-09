@@ -30,6 +30,8 @@ public class LifecycleReportService {
   private final LoggingService loggingService;
   private final ObjectMapper objectMapper;
 
+  private static final String LIFECYCLE_RECORD_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/record/";
+
   private static final Logger LOGGER = LogManager.getLogger(LifecycleReportService.class);
 
   /**
@@ -54,12 +56,41 @@ public class LifecycleReportService {
   }
 
   /**
+   * Appends a calculation and record to the parent node, which should be a
+   * reverse node.
+   * 
+   * @param parentNode        Parent node holding the calculation object.
+   * @param calculationObject Target JSON configuration object.
+   * @param params            Mappings of the parameters and their values.
+   */
+  public void appendCalculationRecord(ObjectNode parentNode, ObjectNode calculationObject,
+      Map<String, Object> params) {
+    ObjectNode calculationInstance = this.genCalculationInstance(calculationObject,
+        params);
+    parentNode.set(LifecycleResource.SUCCEEDS_RELATIONS, calculationInstance);
+    // Generate record instance
+    ObjectNode recordInstance = this.genRecordInstance();
+    // Retrieve and associate output value in calculation
+    recordInstance.set(LifecycleResource.RECORDS_RELATIONS,
+        calculationInstance.get(LifecycleResource.HAS_QTY_VAL_RELATIONS));
+    // Parent node should be a reverse node
+    parentNode.set(LifecycleResource.IS_ABOUT_RELATIONS, recordInstance);
+  }
+
+  /**
+   * Generates a record instance.
+   */
+  private ObjectNode genRecordInstance() {
+    return this.jsonLdService.genInstance(LIFECYCLE_RECORD_PREFIX, LifecycleResource.LIFECYCLE_RECORD);
+  }
+
+  /**
    * Generates a calculation instance from the custom input configs.
    * 
    * @param calculationObject Target JSON configuration object.
    * @param params            Mappings of the parameters and their values.
    */
-  public ObjectNode genCalculationInstance(ObjectNode calculationObject, Map<String, Object> params) {
+  private ObjectNode genCalculationInstance(ObjectNode calculationObject, Map<String, Object> params) {
     String stage = params.get(LifecycleResource.STAGE_KEY).toString();
     String prefix = StringResource.getPrefix(stage) + "/record/";
     LOGGER.info("Validating the inputs...");
@@ -68,7 +99,7 @@ public class LifecycleReportService {
     double outputValue = this.calculationService.calculate(calculationObject, params);
     LOGGER.info("Generating template for calculation...");
     String calculationType = calculationObject.get(ShaclResource.TYPE_KEY).asText().toUpperCase();
-    ObjectNode occurrence = this.genCalculationInstance(prefix, params);
+    ObjectNode occurrence = this.genCalculationTemplate(prefix, params);
     this.appendCalculationExpression(occurrence, prefix, calculationObject.get(ShaclResource.VARIABLE_KEY).deepCopy(),
         params, CalculationType.valueOf(calculationType));
     this.appendCalculationOutput(occurrence, prefix, calculationObject.get(ShaclResource.OUTPUT_KEY).deepCopy(),
@@ -127,11 +158,11 @@ public class LifecycleReportService {
   }
 
   /**
-   * Generates an calculation instance in JSON-LD format.
+   * Generates an calculation instance template in JSON-LD format.
    * 
    * @param params Mappings containing values of interest.
    */
-  private ObjectNode genCalculationInstance(String prefix, Map<String, Object> params) {
+  private ObjectNode genCalculationTemplate(String prefix, Map<String, Object> params) {
     ObjectNode occurrence = this.objectMapper.createObjectNode();
     occurrence.put(ShaclResource.ID_KEY, prefix + UUID.randomUUID());
     occurrence.put(ShaclResource.TYPE_KEY,
@@ -213,7 +244,7 @@ public class LifecycleReportService {
   private ObjectNode appendCalculationOutput(ObjectNode occurrence, String prefix, ObjectNode outputQuantityConfig,
       double value) {
     ObjectNode outputQuantity = this.genScalarQuantityNode(prefix, outputQuantityConfig, value);
-    occurrence.set("https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasQuantityValue", outputQuantity);
+    occurrence.set(LifecycleResource.HAS_QTY_VAL_RELATIONS, outputQuantity);
     return occurrence;
   }
 

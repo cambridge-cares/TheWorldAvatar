@@ -2,6 +2,7 @@ package com.cmclinnovations.agent.service.core;
 
 import java.text.MessageFormat;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +66,18 @@ public class JsonLdService {
       throw new IllegalArgumentException(
           MessageFormat.format("Invalid replacement type {0} for {1}!", replacementType, replacementId));
     }
+  }
+
+  /**
+   * Generates a instance object node.
+   * 
+   * @param prefix  IRI prefix.
+   * @param concept The ontology concept class/type for the instance.
+   */
+  public ObjectNode genInstance(String prefix, String concept) {
+    return this.objectMapper.createObjectNode()
+        .put(ShaclResource.ID_KEY, prefix + UUID.randomUUID())
+        .put(ShaclResource.TYPE_KEY, concept);
   }
 
   /**

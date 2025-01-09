@@ -141,9 +141,7 @@ public class AddService {
           this.replaceDayOfWeekSchedule(parentNode, parentField, replacements);
           // Add a different interaction for calculations
         } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("calculation")) {
-          ObjectNode calculationInstance = this.lifecycleReportService.genCalculationInstance(currentNode,
-              replacements);
-          parentNode.set(parentField, calculationInstance);
+          this.lifecycleReportService.appendCalculationRecord(parentNode, currentNode, replacements);
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
