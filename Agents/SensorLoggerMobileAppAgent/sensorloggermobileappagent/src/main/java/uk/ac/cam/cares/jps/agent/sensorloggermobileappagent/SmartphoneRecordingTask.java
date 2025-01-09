@@ -128,11 +128,12 @@ public class SmartphoneRecordingTask {
         try {
             bulkAddTimeSeriesData();
         } catch (RuntimeException e) {
-            logger.error(e.getMessage());
-            logger.error(e.getCause());
-
             lastProcessedTime = System.currentTimeMillis();
             isProcessing = false;
+
+            logger.error(e.getMessage());
+            logger.error(e.getCause());
+            logger.error("Failed to process, release isProcessing and update the processed time to " + lastProcessedTime);
             return;
         }
 
@@ -231,7 +232,7 @@ public class SmartphoneRecordingTask {
             JSONArray queryResult = getDataIriWithTsIri(sensorDataProcessor);
             if (queryResult.length() == sensorDataProcessor.getDataIRIs().size()) {
                 logger.info("All dataIRI have the corresponding tsIRI, skip individual init");
-                return;
+                continue;
             }
 
             String tsIRIString = queryResult.getJSONObject(0).optString("tsIRI");
@@ -270,18 +271,19 @@ public class SmartphoneRecordingTask {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ontots", OntoConstants.ONTOTS)
                 .addValueVar("?input")
-                .addValueRow(sensorDataProcessor.getDataIRIs().stream().map(iri -> String.format("<%s>", iri))
-                        .collect(Collectors.toList()))
                 .addWhere("?input", "ontots:hasTimeSeries", tsIRI)
                 .addWhere(dataIRI, "ontots:hasTimeSeries", tsIRI);
 
         SelectBuilder sb = new SelectBuilder()
+                .setDistinct(true)
                 .addVar(dataIRI)
                 .addVar(tsIRI)
                 .addWhere(wb)
-                .addGroupBy(dataIRI)
-                .addGroupBy(tsIRI);
+                .addValueVar("?input");
+        sensorDataProcessor.getDataIRIs().stream().map(iri -> String.format("<%s>", iri))
+                .forEach(iri -> sb.addValueRow(iri));
 
+        logger.info("Get tsIRI for dataIRI in " + sensorDataProcessor.getSensorName());
         return blazegraphStoreClient.executeQuery(sb.toString());
     }
 
