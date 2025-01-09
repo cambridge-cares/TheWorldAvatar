@@ -19,7 +19,9 @@ public class RelativeBrightnessProcessor extends SensorDataDownsampledProcessor 
     private SensorData<Double> brightness;
 
     public RelativeBrightnessProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode, config.getRbDSResolution(), config.getRbDSType());
+        super("RelativeBrightness", config, storeClient, smartphoneIRINode,
+                config.getRbDSResolution(),
+                config.getRbDSType());
     }
 
     @Override

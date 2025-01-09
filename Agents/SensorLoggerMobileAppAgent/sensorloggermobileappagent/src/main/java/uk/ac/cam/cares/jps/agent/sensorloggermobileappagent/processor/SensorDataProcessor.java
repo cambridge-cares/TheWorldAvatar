@@ -18,8 +18,10 @@ public abstract class SensorDataProcessor {
     final List<OffsetDateTime> timeList = new ArrayList<>();
     boolean needToInstantiateDevice = false;
     List<SensorData<?>> sensorData;
+    String sensorName;
 
-    public SensorDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
+    public SensorDataProcessor(String sensorName, AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
+        this.sensorName = sensorName;
         this.config = config;
         this.storeClient = storeClient;
         this.smartphoneIRINode = smartphoneIRINode;
@@ -83,6 +85,10 @@ public abstract class SensorDataProcessor {
 
     public int getTimeSeriesLength() {
         return timeList.size();
+    }
+
+    public String getSensorName() {
+        return sensorName;
     }
 
     public abstract String getOntodeviceLabel();

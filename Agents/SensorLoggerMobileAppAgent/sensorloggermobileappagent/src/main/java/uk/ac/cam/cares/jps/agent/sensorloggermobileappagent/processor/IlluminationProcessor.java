@@ -10,6 +10,8 @@ import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+import java.util.List;
+
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class IlluminationProcessor extends SensorDataDownsampledProcessor {
@@ -17,7 +19,7 @@ public class IlluminationProcessor extends SensorDataDownsampledProcessor {
     private SensorData<Double> illumination;
 
     public IlluminationProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode, config.getLightValueDSResolution(), config.getLightValueDSType());
+        super("Camera", config, storeClient, smartphoneIRINode, config.getLightValueDSResolution(), config.getLightValueDSType());
     }
 
     @Override
@@ -29,7 +31,7 @@ public class IlluminationProcessor extends SensorDataDownsampledProcessor {
     @Override
     void initSensorData() {
         illumination = new SensorData<>(Double.class);
-        sensorData.add(illumination);
+        sensorData = List.of(illumination);
     }
 
     @Override

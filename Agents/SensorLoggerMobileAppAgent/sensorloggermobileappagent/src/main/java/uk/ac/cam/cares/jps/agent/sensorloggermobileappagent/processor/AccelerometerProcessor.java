@@ -16,13 +16,12 @@ import java.util.List;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class AccelerometerProcessor extends SensorDataDownsampledProcessor {
-
     SensorData<Double> x;
     SensorData<Double> y;
     SensorData<Double> z;
 
     public AccelerometerProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
-        super(config, storeClient, smartphoneNode,
+        super("Accelerometer", config, storeClient, smartphoneNode,
                 config.getAccelDSResolution(),
                 config.getAccelDSType()
                 );

@@ -17,7 +17,9 @@ import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants
 public class MagnetometerDataProcessor extends SensorDataDownsampledProcessor {
 
     public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode, config.getMagnetometerDSResolution(), config.getMagnetometerDSType());
+        super("Magnetometer", config, storeClient, smartphoneIRINode,
+                config.getMagnetometerDSResolution(),
+                config.getMagnetometerDSType());
     }
 
     @Override

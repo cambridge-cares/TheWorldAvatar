@@ -19,7 +19,7 @@ public class DBFSDataProcessor extends SensorDataDownsampledProcessor {
     private SensorData<Double> dBFS;
 
     public DBFSDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
-        super(config, storeClient, smartphoneNode, config.getDbfsDSResolution(), config.getDbfsDSType());
+        super("DBFS", config, storeClient, smartphoneNode, config.getDbfsDSResolution(), config.getDbfsDSType());
     }
 
     @Override

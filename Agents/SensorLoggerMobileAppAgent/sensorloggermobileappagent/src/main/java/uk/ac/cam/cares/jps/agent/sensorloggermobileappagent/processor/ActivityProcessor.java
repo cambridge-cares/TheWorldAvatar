@@ -23,7 +23,7 @@ public class ActivityProcessor extends SensorDataProcessor {
     private SensorData<String> activityType;
 
     public ActivityProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode);
+        super("Activity", config, storeClient, smartphoneIRINode);
     }
 
     @Override

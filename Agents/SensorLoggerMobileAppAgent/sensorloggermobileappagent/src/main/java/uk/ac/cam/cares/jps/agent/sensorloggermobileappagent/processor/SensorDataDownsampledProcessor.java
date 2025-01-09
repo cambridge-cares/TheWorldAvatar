@@ -20,10 +20,10 @@ public abstract class SensorDataDownsampledProcessor extends SensorDataProcessor
     private Long dsResolution;
     private Downsampling.Type dsType;
 
-    public SensorDataDownsampledProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode,
+    public SensorDataDownsampledProcessor(String sensorName, AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode,
                                           Long dsResolution,
                                           Downsampling.Type dsType) {
-        super(config, storeClient, smartphoneIRINode);
+        super(sensorName, config, storeClient, smartphoneIRINode);
         this.dsResolution = dsResolution;
         this.dsType = dsType;
     }

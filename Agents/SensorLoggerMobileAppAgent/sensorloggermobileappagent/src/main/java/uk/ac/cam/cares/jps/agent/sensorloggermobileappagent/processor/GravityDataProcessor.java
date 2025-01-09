@@ -17,7 +17,7 @@ import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants
 public class GravityDataProcessor extends SensorDataDownsampledProcessor {
 
     public GravityDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode,
+        super("GravitySensor", config, storeClient, smartphoneIRINode,
                 config.getGravityDSResolution(),
                 config.getGravityDSType());
     }

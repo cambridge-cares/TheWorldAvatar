@@ -26,7 +26,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
     private SensorData<String> session;
 
     public LocationDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode);
+        super("GPSDevice", config, storeClient, smartphoneIRINode);
     }
 
     @Override
