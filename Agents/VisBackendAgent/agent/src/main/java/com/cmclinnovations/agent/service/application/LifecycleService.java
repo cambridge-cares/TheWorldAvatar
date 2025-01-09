@@ -67,7 +67,8 @@ public class LifecycleService {
   public void addStageInstanceToParams(Map<String, Object> params, LifecycleEventType eventType) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding stage parameters for {}...", contractId);
-    String stage = this.getStageInstance(contractId, eventType);
+    String query = LifecycleResource.genStageQuery(contractId, eventType);
+    String stage = this.getService.getInstance(query);
     params.put(LifecycleResource.STAGE_KEY, stage);
   }
 
@@ -92,7 +93,8 @@ public class LifecycleService {
   public void addOccurrenceParams(Map<String, Object> params, LifecycleEventType eventType, String date) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding occurrence parameters for {}...", contractId);
-    String stage = this.getStageInstance(contractId, eventType);
+    String query = LifecycleResource.genStageQuery(contractId, eventType);
+    String stage = this.getService.getInstance(query);
     params.putIfAbsent("id",
         StringResource.getPrefix(stage) + "/" + LifecycleResource.getEventIdentifier(eventType) + "/"
             + UUID.randomUUID());
@@ -367,24 +369,5 @@ public class LifecycleService {
           results,
           HttpStatus.OK);
     }
-  }
-
-  /**
-   * Retrieve the stage occurrence instance associated with the target contract.
-   * 
-   * @param query     The query to execute.
-   * @param eventType The target event type to retrieve.
-   */
-  private String getStageInstance(String contractId, LifecycleEventType eventType) {
-    LOGGER.debug("Retrieving stage instance for {}...", contractId);
-    String query = "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>" +
-        "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>" +
-        "SELECT DISTINCT ?iri WHERE {" +
-        "<" + contractId + "> fibo-fnd-arr-lif:hasLifecycle ?lifecycle ." +
-        "?lifecycle fibo-fnd-arr-lif:hasStage ?iri ." +
-        "?iri fibo-fnd-rel-rel:exemplifies <" + LifecycleResource.getStageClass(eventType) + "> ." +
-        "}";
-    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
   }
 }

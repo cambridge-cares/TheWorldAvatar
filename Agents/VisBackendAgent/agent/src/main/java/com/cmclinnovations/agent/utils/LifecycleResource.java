@@ -339,9 +339,26 @@ public class LifecycleResource {
   }
 
   /**
-   * Generates a SPARQL query to retrieve a report associated with the target stage.
+   * Generates a SPARQL query to retrieve a stage associated with the target
+   * contract.
    * 
-   * @param stage     The target stage occurrence instance.
+   * @param contract  The target contract instance.
+   * @param eventType The target event type to retrieve.
+   */
+  public static String genStageQuery(String contract, LifecycleEventType eventType) {
+    return genPrefixes()
+        + "SELECT DISTINCT ?iri WHERE {" +
+        "<" + contract + "> fibo-fnd-arr-lif:hasLifecycle ?lifecycle ." +
+        "?lifecycle fibo-fnd-arr-lif:hasStage ?iri ." +
+        "?iri fibo-fnd-rel-rel:exemplifies <" + LifecycleResource.getStageClass(eventType) + "> ." +
+        "}";
+  }
+
+  /**
+   * Generates a SPARQL query to retrieve a report associated with the target
+   * stage.
+   * 
+   * @param stage The target stage occurrence instance.
    */
   public static String genReportQuery(String stage) {
     return genPrefixes()
