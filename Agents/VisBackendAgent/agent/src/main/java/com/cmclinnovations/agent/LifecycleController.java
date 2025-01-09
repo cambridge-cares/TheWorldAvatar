@@ -21,9 +21,11 @@ import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
+import com.cmclinnovations.agent.service.application.LifecycleReportService;
 import com.cmclinnovations.agent.service.application.LifecycleService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @RestController
 public class LifecycleController {
@@ -31,6 +33,7 @@ public class LifecycleController {
   private final DateTimeService dateTimeService;
   private final DeleteService deleteService;
   private final LifecycleService lifecycleService;
+  private final LifecycleReportService lifecycleReportService;
 
   private static final String MISSING_FIELD_MSG_TEMPLATE = "Missing `{0}` field in request parameters!";
   private static final String SOME_ORDER_GEN_FAIL_MSG = "Some orders have failed to be generated. Please read logs for more information.";
@@ -38,11 +41,12 @@ public class LifecycleController {
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
   public LifecycleController(AddService addService, DateTimeService dateTimeService, DeleteService deleteService,
-      LifecycleService lifecycleService) {
+      LifecycleService lifecycleService, LifecycleReportService lifecycleReportService) {
     this.addService = addService;
     this.dateTimeService = dateTimeService;
     this.deleteService = deleteService;
     this.lifecycleService = lifecycleService;
+    this.lifecycleReportService = lifecycleReportService;
   }
 
   /**
@@ -120,8 +124,14 @@ public class LifecycleController {
       return new ResponseEntity<>(SOME_ORDER_GEN_FAIL_MSG, HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
       LOGGER.info("All orders has been successfully received!");
+      JsonNode report = this.lifecycleReportService.genReportInstance(contractId);
+      ResponseEntity<ApiResponse> response = this.addService.instantiateJsonLd(report,
+          "Report has been successfully instantiated!");
+      if (response.getStatusCode() != HttpStatus.CREATED) {
+        return response;
+      }
       this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
-      ResponseEntity<ApiResponse> response = this.addService.instantiate(
+      response = this.addService.instantiate(
           LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
           params);
       if (response.getStatusCode() == HttpStatus.CREATED) {

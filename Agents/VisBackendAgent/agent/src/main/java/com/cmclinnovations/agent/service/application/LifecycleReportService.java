@@ -1,16 +1,13 @@
 package com.cmclinnovations.agent.service.application;
 
-import java.text.MessageFormat;
-import java.util.ArrayDeque;
 import java.util.Map;
-import java.util.Queue;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.type.CalculationType;
+import com.cmclinnovations.agent.service.GetService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.service.core.JsonLdService;
 import com.cmclinnovations.agent.service.core.LoggingService;
@@ -26,10 +23,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class LifecycleReportService {
   private final CalculationService calculationService;
   private final DateTimeService dateTimeService;
+  private final GetService getService;
   private final JsonLdService jsonLdService;
   private final LoggingService loggingService;
   private final ObjectMapper objectMapper;
 
+  private static final String LIFECYCLE_REPORT_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/report/";
   private static final String LIFECYCLE_RECORD_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/record/";
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleReportService.class);
@@ -40,6 +39,7 @@ public class LifecycleReportService {
    * 
    * @param calculationService A service to perform any calculations.
    * @param dateTimeService    A service to handle date and times.
+   * @param getService         A service to retrieve information from the KG.
    * @param jsonLdService      A service to handle all JSON-LD related
    *                           transformation.
    * @param loggingService     A service to handle all reusable logging
@@ -47,12 +47,25 @@ public class LifecycleReportService {
    * @param objectMapper       The JSON object mapper.
    */
   public LifecycleReportService(CalculationService calculationService, DateTimeService dateTimeService,
-      JsonLdService jsonLdService, LoggingService loggingService, ObjectMapper objectMapper) {
+      GetService getService, JsonLdService jsonLdService, LoggingService loggingService, ObjectMapper objectMapper) {
     this.calculationService = calculationService;
     this.dateTimeService = dateTimeService;
+    this.getService = getService;
     this.jsonLdService = jsonLdService;
     this.loggingService = loggingService;
     this.objectMapper = objectMapper;
+  }
+
+  /**
+   * Generates a report instance.
+   * 
+   * @param contract The subject contract instance of interest to report on.
+   */
+  public ObjectNode genReportInstance(String contract) {
+    ObjectNode report = this.jsonLdService.genInstance(LIFECYCLE_REPORT_PREFIX, LifecycleResource.LIFECYCLE_REPORT);
+    ObjectNode contractNode = this.objectMapper.createObjectNode().put(ShaclResource.ID_KEY, contract);
+    report.set(LifecycleResource.IS_ABOUT_RELATIONS, contractNode);
+    return report;
   }
 
   /**
@@ -73,6 +86,13 @@ public class LifecycleReportService {
     // Retrieve and associate output value in calculation
     recordInstance.set(LifecycleResource.RECORDS_RELATIONS,
         calculationInstance.get(LifecycleResource.HAS_QTY_VAL_RELATIONS));
+    // Retrieve report instance and attach record to report
+    String query = LifecycleResource.genReportQuery(params.get(LifecycleResource.STAGE_KEY).toString());
+    String report = this.getService.getInstance(query);
+    ObjectNode reportsOnNode = this.objectMapper.createObjectNode()
+        .set(LifecycleResource.REPORTS_ON_RELATIONS,
+            this.objectMapper.createObjectNode().put(ShaclResource.ID_KEY, report));
+    recordInstance.set(ShaclResource.REVERSE_KEY, reportsOnNode);
     // Parent node should be a reverse node
     parentNode.set(LifecycleResource.IS_ABOUT_RELATIONS, recordInstance);
   }

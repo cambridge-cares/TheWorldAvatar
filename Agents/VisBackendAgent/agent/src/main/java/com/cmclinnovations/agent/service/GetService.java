@@ -15,6 +15,7 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.KGService;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 
 @Service
 public class GetService {
@@ -133,6 +134,18 @@ public class GetService {
           "Invalid knowledge model! Detected multiple entities with this id.",
           HttpStatus.CONFLICT);
     }
+  }
+
+  /**
+   * Retrieve only the specific instance based on the query. The query must have
+   * iri as its variable.
+   * 
+   * @param query Query for execution.
+   */
+  public String getInstance(String query) {
+    LOGGER.debug("Retrieving an instance...");
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
   }
 
   /**

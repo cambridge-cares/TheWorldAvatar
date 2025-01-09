@@ -37,6 +37,7 @@ public class LifecycleResource {
   public static final String HAS_SUBTRAHEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasSubtrahend";
   public static final String HAS_QTY_VAL_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasQuantityValue";
   public static final String IS_ABOUT_RELATIONS = "https://www.omg.org/spec/Commons/Documents/isAbout";
+  public static final String REPORTS_ON_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/reportsOn";
   public static final String RECORDS_RELATIONS = "https://www.omg.org/spec/Commons/Documents/records";
   public static final String SUCCEEDS_RELATIONS = "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds";
 
@@ -55,6 +56,7 @@ public class LifecycleResource {
   public static final String EVENT_CONTRACT_RESCISSION = "https://www.theworldavatar.com/kg/ontoservice/ContractRescission";
   public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination";
   public static final String LIFECYCLE_RECORD = "https://www.omg.org/spec/Commons/Documents/Record";
+  public static final String LIFECYCLE_REPORT = "https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/Report";
 
   // Private constructor to prevent instantiation
   private LifecycleResource() {
@@ -333,6 +335,20 @@ public class LifecycleResource {
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_CANCELLATION) + ",3,"
         + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT) + ",4,"
         + "-1))))) AS ?order)"
+        + "}";
+  }
+
+  /**
+   * Generates a SPARQL query to retrieve a report associated with the target stage.
+   * 
+   * @param stage     The target stage occurrence instance.
+   */
+  public static String genReportQuery(String stage) {
+    return genPrefixes()
+        + "SELECT DISTINCT ?iri WHERE {"
+        + "?iri a " + StringResource.parseIriForQuery(LifecycleResource.LIFECYCLE_REPORT) + ";"
+        + StringResource.parseIriForQuery(LifecycleResource.IS_ABOUT_RELATIONS)
+        + "/fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage <" + stage + ">."
         + "}";
   }
 
