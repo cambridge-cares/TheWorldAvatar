@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
-import com.cmclinnovations.agent.model.type.CalculationType;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.AddService;
@@ -113,6 +112,7 @@ public class LifecycleService {
     String query = LifecycleResource.genServiceStatusQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     SparqlBinding result = this.kgService.getSingleInstance(results);
+    LOGGER.info("Successfuly retrieved contract status!");
     return new ResponseEntity<>(
         new ApiResponse(result.getFieldValue(LifecycleResource.STATUS_KEY),
             result.getFieldValue(LifecycleResource.IRI_KEY)),
@@ -129,6 +129,7 @@ public class LifecycleService {
     String query = LifecycleResource.genServiceScheduleQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     SparqlBinding result = this.kgService.getSingleInstance(results);
+    LOGGER.info("Successfuly retrieved schedule!");
     return new ResponseEntity<>(result.get(), HttpStatus.OK);
   }
 
@@ -152,7 +153,8 @@ public class LifecycleService {
 
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
     Queue<SparqlBinding> results = this.kgService.queryInstances(query, null, false, eventType);
-    return new ResponseEntity<>(results.stream().map(SparqlBinding::get).collect(Collectors.toList()), HttpStatus.OK);
+    LOGGER.info("Successfuly retrieved contracts!");
+    return new ResponseEntity<>(results.stream().map(SparqlBinding::get).toList(), HttpStatus.OK);
   }
 
   /**
@@ -175,6 +177,7 @@ public class LifecycleService {
                 .parseInt(replacement.getFieldValue(LifecycleResource.ORDER_KEY))
                     ? existing
                     : replacement));
+    LOGGER.info("Successfuly retrieved services in progress!");
     return new ResponseEntity<>(
         resultMapping.values().stream()
             .map(SparqlBinding::get)
@@ -304,6 +307,7 @@ public class LifecycleService {
             params.get(LifecycleResource.ORDER_KEY), response.getBody().getMessage());
       }
     }
+    LOGGER.info("Assigment of dispatch details is successful!");
     return response;
   }
 
@@ -326,6 +330,7 @@ public class LifecycleService {
           params.get(LifecycleResource.DATE_KEY), params.get(LifecycleResource.CONTRACT_KEY),
           response.getBody().getMessage());
     }
+    LOGGER.info("Service has been completed successfully!");
     return response;
   }
 
