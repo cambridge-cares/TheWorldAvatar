@@ -8,6 +8,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,10 @@ public abstract class SensorDataDownsampledProcessor extends SensorDataProcessor
 
     @Override
     public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
-        List<List<?>> valueList = getValues();
         List<String> iriList = getDataIRIs();
+        List<List<?>> valueList = getValues().stream()
+                .map(ArrayList::new)
+                .collect(Collectors.toList());
 
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, iriList, valueList);
         ts = Downsampling.downsampleTS(ts, dsResolution, dsType);

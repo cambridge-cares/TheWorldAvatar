@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
-import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.OM;
 
 public class ActivityProcessor extends SensorDataProcessor {
 
@@ -36,7 +35,10 @@ public class ActivityProcessor extends SensorDataProcessor {
     @Override
     public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<String> iriList = getDataIRIs();
-        List<List<?>> valueList = getValues();
+        List<List<?>> valueList = getValues().stream()
+                .map(ArrayList::new)
+                .collect(Collectors.toList());
+                
         List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
                 .collect(Collectors.toList());
 

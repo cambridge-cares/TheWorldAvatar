@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
@@ -43,7 +44,9 @@ public class LocationDataProcessor extends SensorDataProcessor {
     public TimeSeries<Long> getProcessedTimeSeries() {
         // todo: do processing of location data
         List<String> dataIRIList = getDataIRIs();
-        List<List<?>> valueList = getValues();
+        List<List<?>> valueList = getValues().stream()
+                .map(ArrayList::new)
+                .collect(Collectors.toList());
 
         List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli()).toList();
         TimeSeries<Long> ts = new TimeSeries<>(new ArrayList<>(epochlist), dataIRIList, valueList);
