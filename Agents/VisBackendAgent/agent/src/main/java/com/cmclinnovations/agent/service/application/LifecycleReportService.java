@@ -163,9 +163,7 @@ public class LifecycleReportService {
    * @param params Mappings containing values of interest.
    */
   private ObjectNode genCalculationTemplate(String prefix, Map<String, Object> params) {
-    ObjectNode occurrence = this.objectMapper.createObjectNode();
-    occurrence.put(ShaclResource.ID_KEY, prefix + UUID.randomUUID());
-    occurrence.put(ShaclResource.TYPE_KEY,
+    ObjectNode occurrence = this.jsonLdService.genInstance(prefix,
         "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/Calculation");
     // Set event date time
     occurrence.set("https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/hasEventDate",
@@ -202,10 +200,8 @@ public class LifecycleReportService {
    */
   private ObjectNode appendCalculationExpression(ObjectNode occurrence, String prefix,
       ArrayNode variableQuantityConfigs, Map<String, Object> params, CalculationType calculationType) {
-    ObjectNode expressionNode = objectMapper.createObjectNode();
-    expressionNode.put(ShaclResource.ID_KEY, prefix + "expression/" + UUID.randomUUID());
-    expressionNode.put(ShaclResource.TYPE_KEY, LifecycleResource.getExpressionClass(calculationType));
-
+    ObjectNode expressionNode = this.jsonLdService.genInstance(prefix + "expression/",
+        LifecycleResource.getExpressionClass(calculationType));
     for (JsonNode config : variableQuantityConfigs) {
       String paramName = config.get(ShaclResource.ID_KEY).asText();
       double value = Double.parseDouble(params.get(paramName).toString());
@@ -257,9 +253,8 @@ public class LifecycleReportService {
    * @param value                The value of the quantity.
    */
   private ObjectNode genScalarQuantityNode(String prefix, ObjectNode scalarQuantityConfig, double value) {
-    ObjectNode quantity = this.objectMapper.createObjectNode();
-    quantity.put(ShaclResource.ID_KEY, prefix + "quantity/" + UUID.randomUUID());
-    quantity.put(ShaclResource.TYPE_KEY, scalarQuantityConfig.get(ShaclResource.TYPE_KEY).asText());
+    ObjectNode quantity = this.jsonLdService.genInstance(prefix + "quantity/",
+        scalarQuantityConfig.get(ShaclResource.TYPE_KEY).asText());
     quantity.set("https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasMeasurementUnit",
         this.objectMapper.createObjectNode()
             .put(ShaclResource.ID_KEY, scalarQuantityConfig.get(ShaclResource.UNIT_KEY).asText()));
