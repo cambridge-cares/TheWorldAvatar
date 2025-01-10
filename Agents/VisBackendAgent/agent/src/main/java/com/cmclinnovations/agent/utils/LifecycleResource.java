@@ -168,6 +168,28 @@ public class LifecycleResource {
   }
 
   /**
+   * Retrieve the priority level of the specified event.
+   * 
+   * @param event Target event.
+   */
+  public static int getEventPriority(String event) {
+    switch (event) {
+      case EVENT_INCIDENT_REPORT:
+        return 4;
+      case EVENT_CANCELLATION:
+        return 3;
+      case EVENT_DELIVERY:
+        return 2;
+      case EVENT_DISPATCH:
+        return 1;
+      case EVENT_ORDER_RECEIVED:
+        return 0;
+      default:
+        return -1;
+    }
+  }
+
+  /**
    * Retrieve the expression class associated with the target calculation type.
    * 
    * @param calculationType The target calculation type.
@@ -317,7 +339,7 @@ public class LifecycleResource {
    */
   public static String genServiceTasksQuery(String date) {
     return genPrefixes()
-        + "SELECT DISTINCT ?contract ?iri ?event_date ?order "
+        + "SELECT DISTINCT ?contract ?iri ?event_date ?event "
         + "WHERE{?contract a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
         + "?stage fibo-fnd-rel-rel:exemplifies <"
@@ -325,16 +347,9 @@ public class LifecycleResource {
         + "<https://www.omg.org/spec/Commons/Collections/comprises> ?order_event."
         + "?order_event fibo-fnd-rel-rel:exemplifies " + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ";"
         + "fibo-fnd-dt-oc:hasEventDate ?event_date."
-        + "?iri fibo-fnd-rel-rel:exemplifies ?event_type;"
+        + "?iri fibo-fnd-rel-rel:exemplifies ?event;"
         + "cmns-dt:succeeds* ?order_event."
         + "FILTER (xsd:date(?event_date) = \"" + date + "\"^^xsd:date)"
-        + "BIND("
-        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ",0,"
-        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DISPATCH) + ",1,"
-        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_DELIVERY) + ",2,"
-        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_CANCELLATION) + ",3,"
-        + "IF(?event_type=" + StringResource.parseIriForQuery(EVENT_INCIDENT_REPORT) + ",4,"
-        + "-1))))) AS ?order)"
         + "}";
   }
 

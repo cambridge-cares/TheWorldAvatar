@@ -175,8 +175,8 @@ public class LifecycleService {
             binding -> binding.getFieldValue(LifecycleResource.CONTRACT_KEY), // Key mapper
             binding -> binding, // Value mapper
             (existing, replacement) -> // Merge function to keep the higher order
-            Integer.parseInt(existing.getFieldValue(LifecycleResource.ORDER_KEY)) > Integer
-                .parseInt(replacement.getFieldValue(LifecycleResource.ORDER_KEY))
+            LifecycleResource.getEventPriority(existing.getFieldValue(LifecycleResource.EVENT_KEY)) > LifecycleResource
+                .getEventPriority(replacement.getFieldValue(LifecycleResource.EVENT_KEY))
                     ? existing
                     : replacement));
     LOGGER.info("Successfuly retrieved services in progress!");
