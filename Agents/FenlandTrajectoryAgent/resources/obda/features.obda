@@ -4,11 +4,12 @@ gs:         https://www.theworldavatar.com/kg/ontogreenspace/
 rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
 owl:        http://www.w3.org/2002/07/owl#
 xsd:        http://www.w3.org/2001/XMLSchema#
+exposure:   http://www.theworldavatar.com/ontology/OntoEnvExpo/
 
 [MappingDeclaration] @collection [[
 mappingId       FoodHygieneDomain
-target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a fh:Domain ; fh:hasDomainName "Food Hygiene Rating"^^xsd:string ; fh:hasFeatureType "POINT"^^xsd:string .
-source      SELECT DISTINCT 'Food Hygiene Rating' AS "DomainName"
+target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a exposure:Domain ; exposure:hasDomainName "Food hygiene rating"^^xsd:string ; exposure:hasFeatureType "POINT"^^xsd:string .
+source      SELECT DISTINCT 'Food hygiene rating' AS "DomainName"
             FROM "fhr_cambridge"
 
 mappingId       BasicBusinessInfo
@@ -27,7 +28,7 @@ source      SELECT "FHRSID", "RatingValue", "RatingDate"
             FROM "fhr_cambridge";
 
 mappingId       GreenspaceDomain
-target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a gs:Domain ; gs:hasDomainName "Greenspace"^^xsd:string ; gs:hasFeatureType "AREA"^^xsd:string .
+target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a exposure:Domain ; exposure:hasDomainName "Greenspace"^^xsd:string ; exposure:hasFeatureType "AREA"^^xsd:string .
 source      SELECT DISTINCT 'Greenspace' AS "DomainName"
             FROM "GB_GreenspaceSite"
 
