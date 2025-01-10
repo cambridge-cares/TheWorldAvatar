@@ -8,6 +8,7 @@ setup(
     packages=find_packages(),  # Automatically find all packages 
     install_requires=[
         'Flask==2.2.2',
+        'flask-cors==3.0.10',
         'pytz==2024.1',
         'configobj==5.0.6',
         'APScheduler==3.9.1',
