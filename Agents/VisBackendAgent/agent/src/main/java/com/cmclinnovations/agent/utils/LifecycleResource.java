@@ -333,23 +333,32 @@ public class LifecycleResource {
 
   /**
    * Generates a SPARQL query for retrieving the service tasks for the specified
-   * date.
+   * date or contract.
    * 
-   * @param date Target date in YYYY-MM-DD format.
+   * @param dateOrContract Target date in YYYY-MM-DD format or contract
+   *                       identifier.
+   * @param isDateFilter   If true, filter by date. If false, filter by contract.
    */
-  public static String genServiceTasksQuery(String date) {
+  public static String genServiceTasksQuery(String dateOrContract, boolean isDateFilter) {
+    String contractVar = ShaclResource.VARIABLE_MARK + CONTRACT_KEY;
+    String eventDateVar = ShaclResource.VARIABLE_MARK + DATE_KEY;
+    String eventVar = ShaclResource.VARIABLE_MARK + EVENT_KEY;
+    // Targeted filter statement for either date or contract filter
+    String filterStatement = isDateFilter
+        ? "FILTER(xsd:date(" + eventDateVar + ") = \"" + dateOrContract + "\"^^xsd:date)"
+        : "FILTER STRENDS(STR(" + contractVar + "),\"" + dateOrContract + "\")";
     return genPrefixes()
-        + "SELECT DISTINCT ?contract ?iri ?event_date ?event "
-        + "WHERE{?contract a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "SELECT DISTINCT " + contractVar + " ?iri " + eventDateVar + " " + eventVar
+        + " WHERE{" + contractVar + " a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
         + "?stage fibo-fnd-rel-rel:exemplifies <"
         + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
         + "<https://www.omg.org/spec/Commons/Collections/comprises> ?order_event."
         + "?order_event fibo-fnd-rel-rel:exemplifies " + StringResource.parseIriForQuery(EVENT_ORDER_RECEIVED) + ";"
-        + "fibo-fnd-dt-oc:hasEventDate ?event_date."
-        + "?iri fibo-fnd-rel-rel:exemplifies ?event;"
+        + "fibo-fnd-dt-oc:hasEventDate " + eventDateVar + "."
+        + "?iri fibo-fnd-rel-rel:exemplifies " + eventVar + ";"
         + "cmns-dt:succeeds* ?order_event."
-        + "FILTER (xsd:date(?event_date) = \"" + date + "\"^^xsd:date)"
+        + filterStatement
         + "}";
   }
 

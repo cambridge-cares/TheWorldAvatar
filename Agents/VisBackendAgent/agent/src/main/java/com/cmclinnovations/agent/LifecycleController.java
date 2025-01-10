@@ -411,13 +411,21 @@ public class LifecycleController {
   }
 
   /**
-   * Retrieve all tasks for the specified date in UNIX timestamp.
+   * Retrieve all tasks for the specified contract or date in UNIX timestamp.
    */
-  @GetMapping("/contracts/service/{timestamp}")
-  public ResponseEntity<?> getAllInstances(
-      @PathVariable(name = "timestamp") long timestamp) {
-    LOGGER.info("Received request to retrieve services in progress...");
-    return this.lifecycleService.getOccurrences(timestamp);
+  @GetMapping("/contracts/service/{task}")
+  public ResponseEntity<?> getAllTasksOnTimestamp(
+      @PathVariable(name = "task") String input) {
+    // Attempt to parse the input into a long, indicating this is a timestamp
+    try {
+      long timestamp = Long.parseLong(input);
+      LOGGER.info("Received request to retrieve services in progress for a specified date...");
+      return this.lifecycleService.getOccurrences(timestamp);
+    } catch (NumberFormatException e) {
+      // Any parsing errors will indicate that this is an identifier for the contract
+      LOGGER.info("Received request to retrieve services in progress for a specified contract...");
+      return this.lifecycleService.getOccurrences(input);
+    }
   }
 
   /**

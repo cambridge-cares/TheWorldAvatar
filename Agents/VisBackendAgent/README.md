@@ -520,7 +520,9 @@ There is also an additional optional parameter `label` to retrieve in progress c
 
 > Records of service tasks
 
-Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{timestamp}` endpoint to retrieve all tasks for the target date, where `timestamp` is the UNIX timestamp.
+For tasks on a selected date, users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{timestamp}` endpoint to retrieve all tasks for the target date, where `timestamp` is the UNIX timestamp.
+
+For tasks associated with a contract, users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{contract}` endpoint to retrieve all tasks for the target contract, where `contract` is the contract's identifier.
 
 > Service dispatch
 

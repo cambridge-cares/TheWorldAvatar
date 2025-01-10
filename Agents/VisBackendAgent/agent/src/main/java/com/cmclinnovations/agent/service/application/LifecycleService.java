@@ -163,16 +163,37 @@ public class LifecycleService {
    * Retrieve all service related occurrences in the lifecycle for the specified
    * date.
    * 
+   * @param contract The contract identifier.
+   */
+  public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String contract) {
+    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(contract, false);
+    return this.executeOccurrenceQuery(activeServiceQuery, LifecycleResource.DATE_KEY);
+  }
+
+  /**
+   * Retrieve all service related occurrences in the lifecycle for the specified
+   * date.
+   * 
    * @param timestamp Timestamp in UNIX format.
    */
   public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(long timestamp) {
     // Get date from timestamp
     String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
-    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(targetDate);
-    Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
+    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(targetDate, true);
+    return this.executeOccurrenceQuery(activeServiceQuery, LifecycleResource.CONTRACT_KEY);
+  }
+
+  /**
+   * Executes the occurrence query and group them by the specified group variable.
+   * 
+   * @param timestamp Timestamp in UNIX format.
+   * @param groupVar  The variable name that should be grouped by.
+   */
+  private ResponseEntity<List<Map<String, SparqlResponseField>>> executeOccurrenceQuery(String query, String groupVar) {
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     Map<String, SparqlBinding> resultMapping = results.stream()
         .collect(Collectors.toMap(
-            binding -> binding.getFieldValue(LifecycleResource.CONTRACT_KEY), // Key mapper
+            binding -> binding.getFieldValue(groupVar), // Key mapper
             binding -> binding, // Value mapper
             (existing, replacement) -> // Merge function to keep the higher order
             LifecycleResource.getEventPriority(existing.getFieldValue(LifecycleResource.EVENT_KEY)) > LifecycleResource
