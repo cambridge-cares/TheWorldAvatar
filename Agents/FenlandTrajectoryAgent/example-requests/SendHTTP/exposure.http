@@ -8,6 +8,8 @@ Content-Type: application/json
   ],
   "exposure_radius": 100,
   "DataIRIs": [
-    "http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating"
+    "http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating",
+    "https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"
+
   ]
 }
