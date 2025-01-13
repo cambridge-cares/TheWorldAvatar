@@ -1,0 +1,13 @@
+PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
+
+SELECT ?iri ?domainName ?featureType
+WHERE {
+  VALUES ?iri {
+    <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating>
+    <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace>
+  }
+  ?iri exposure:hasDomainName ?domainName ;
+       exposure:hasFeatureType ?featureType .
+}
