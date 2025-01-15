@@ -4,9 +4,11 @@ import time
 from . import utils
 
 from .agents.sparql_client_for_test import RANDOM_STRING_WITH_SPACES
+from .agents.sparql_client_for_test import PySparqlClientForTest
 
 def test_integration_test(initialise_agent):
     sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent, diff_reverse_agent = initialise_agent
+    sparql_client: PySparqlClientForTest
 
     all_instances = utils.initialise_triples_assert_pure_inputs(
         sparql_client=sparql_client,

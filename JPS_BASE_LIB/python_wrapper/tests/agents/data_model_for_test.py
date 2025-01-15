@@ -1,6 +1,5 @@
 from __future__ import annotations
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
-from twa.data_model.base_ontology import as_range
 
 
 class RandomOntology(BaseOntology):
@@ -8,63 +7,57 @@ class RandomOntology(BaseOntology):
 
 
 class NumOfPoints(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
 class UpperLimit(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
 class LowerLimit(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
 class Point(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
-    specialValue: SpecialValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
+    specialValue: SpecialValue[float]
 
 
 class MaxValue(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
 class MinValue(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
 class Difference(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
 class DifferenceReverse(BaseClass):
-    is_defined_by_ontology = RandomOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = RandomOntology
+    hasValue: HasValue[int]
 
 
-class HasValue(DatatypeProperty):
-    is_defined_by_ontology = RandomOntology
-    range: as_range(int, 1, 1)
+HasValue = DatatypeProperty.create_from_base('HasValue', RandomOntology, 1, 1)
 
 
-class SpecialValue(DatatypeProperty):
-    is_defined_by_ontology = RandomOntology
-    range: as_range(float)
+SpecialValue = DatatypeProperty.create_from_base('SpecialValue', RandomOntology)
 
 
 if __name__ == '__main__':#
     print(NumOfPoints.model_fields.items())
-    print(HasValue.get_predicate_iri())
+    print(HasValue.predicate_iri)
     print(NumOfPoints.model_fields.items())
     print(NumOfPoints.model_rebuild())
     print(NumOfPoints.model_fields.items())
     print(NumOfPoints.model_rebuild())
     print(NumOfPoints.model_fields.items())
-    
-    

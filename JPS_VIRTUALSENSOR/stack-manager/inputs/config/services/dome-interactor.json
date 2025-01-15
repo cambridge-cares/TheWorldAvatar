@@ -1,0 +1,30 @@
+{
+    "ServiceSpec": {
+        "Name": "dome-interactor",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/dome-interactor:0.1",
+                "Env": [
+                    "NB_PW=dome-showcase-1",
+                    "DOME_URL=https://nextgen.dome40.io/",
+                    "API_KEY=",
+                    "CMCL_URL=https://theworldavatar.io/demos/ship-emission/",
+                    "SHIP_CONN_UUID=0a367029-0bf1-4c75-b5e2-182cd88bdf53"
+                ],
+                "Mounts": [
+					{
+                        "Type": "bind",
+                        "Source": "../../../JupyterNotebook/notebook",
+                        "Target": "/home/jovyan/work"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8866/demos/ship-emission/dome-interactor/",
+            "externalPath": "/demos/ship-emission/dome-interactor/"
+        }
+    }
+}

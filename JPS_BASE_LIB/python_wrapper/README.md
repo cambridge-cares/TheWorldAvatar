@@ -15,6 +15,10 @@ To get started, see the [Quick start](#quick-start) below or follow our [tutoria
 To install `twa`, use the following command:
 ```pip install twa```
 
+You also need to install a Java Runtime Environment version 11:
+- **[Recommended]** If you are using Linux (or Windows Subsystem for Linux): ```apt install openjdk-11-jdk-headless```
+- If you are using Windows machine: please follow the tutorial [here](https://learn.microsoft.com/en-us/java/openjdk/install)
+
 
 ## Quick start
 ```python
@@ -81,9 +85,9 @@ print(results)
 #########################
 # Create a new ontology #
 #########################
-from twa.data_model.base_ontology import BaseOntology, BaseClass, TransitiveProperty, ObjectProperty, DatatypeProperty, as_range
+from twa.data_model.base_ontology import BaseOntology, BaseClass, TransitiveProperty, ObjectProperty, DatatypeProperty
 from twa.data_model.iris import TWA_BASE_URL
-from typing import ClassVar
+from typing import ClassVar, Optional
 
 # Define a minimal agent ontology
 class MinimalAgentOntology(BaseOntology):
@@ -94,30 +98,32 @@ class MinimalAgentOntology(BaseOntology):
 
 # Define classes and properties for the ontology
 class Agent(BaseClass):
-    is_defined_by_ontology = MinimalAgentOntology
-    name: Name
-    actedOnBehalfOf: ActedOnBehalfOf
-    hasGoal: HasGoal
+    rdfs_isDefinedBy = MinimalAgentOntology
+    name: Name[str]
+    hasGoal: HasGoal[Goal]
+    # Like native Pydantic, you can define optional fields (properties)
+    actedOnBehalfOf: Optional[ActedOnBehalfOf[Agent]] = None
 
 class Goal(BaseClass):
-    is_defined_by_ontology = MinimalAgentOntology
-    priority: Priority
+    rdfs_isDefinedBy = MinimalAgentOntology
+    priority: Priority[str]
+
+Name = DatatypeProperty.create_from_base('Name', MinimalAgentOntology, 1, 1)
+"""
+This is equivalent to:
 
 class Name(DatatypeProperty):
-    is_defined_by_ontology = MinimalAgentOntology
-    range: as_range(str, 1, 1)
+    rdfs_isDefinedBy = MinimalAgentOntology
+    owl_minQualifiedCardinality = 1
+    owl_maxQualifiedCardinality = 1
+"""
+Priority = DatatypeProperty.create_from_base('Priority', MinimalAgentOntology, 1, 1)
 
+HasGoal = ObjectProperty.create_from_base('HasGoal', MinimalAgentOntology)
+
+# Another way of defining properties
 class ActedOnBehalfOf(TransitiveProperty):
-    is_defined_by_ontology = MinimalAgentOntology
-    range: as_range(Agent)
-
-class HasGoal(ObjectProperty):
-    is_defined_by_ontology = MinimalAgentOntology
-    range: as_range(Goal)
-
-class Priority(DatatypeProperty):
-    is_defined_by_ontology = MinimalAgentOntology
-    range: as_range(str, 1, 1)
+    rdfs_isDefinedBy = MinimalAgentOntology
 
 
 #######################################
@@ -133,7 +139,7 @@ MinimalAgentOntology.export_to_triple_store(sparql_client)
 # Create instances (ABox) of the ontology classes
 machine_goal = Goal(
     rdfs_comment='continued survival',
-    priority=Priority(range='High')
+    priority='High'
 )
 machine = Agent(
     name='machine',
@@ -162,7 +168,7 @@ agents = Agent.pull_all_instances_from_kg(sparql_client, -1)
 # Once the objects are pulled, the developer can access information in a Python-native format
 # Example: Print out the goals of each agent
 for agent in agents:
-    print(f'agent {agent.name.range} has goal: {agent.hasGoal.range}')
+    print(f'agent {agent.name} has goal: {agent.hasGoal}')
 # Expected output:
 # > agent {'smith'} has goal: {Goal(rdfs_comment='keep the system in order', ...)}
 # > agent {'machine'} has goal: {Goal(rdfs_comment='continued survival', ...)}

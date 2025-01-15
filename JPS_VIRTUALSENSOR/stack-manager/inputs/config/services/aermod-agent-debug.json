@@ -3,7 +3,7 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.7",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.9",
 				"Env": [
 					"PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON",
 					"AERMAP_EXE=/root/aermod/aermap",
@@ -28,6 +28,7 @@
 					"SHIPS_LAYER_NAME=ships",
 					"NUMBER_OF_LAYERS=20",
 					"IGNORE_BUILDINGS=false",
+					"RDB_SCHEMA=public",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"

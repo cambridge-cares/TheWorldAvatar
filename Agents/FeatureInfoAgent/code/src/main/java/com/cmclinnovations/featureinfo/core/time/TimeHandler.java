@@ -13,8 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +32,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClientFactory;
 
 /**
  * This class handles the Knowledge Graph to determine measurement IRIs, then
@@ -109,11 +108,10 @@ public class TimeHandler {
      * relational database to get time series values.
      * 
      * @param classMatches configuration entries that contain class matches.
-     * @param response     HTTP response to write to.
      * 
      * @return JSONObject of query result.
      */
-    public JSONArray getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+    public JSONArray getData(List<ConfigEntry> classMatches) {
         // Pool for all measureables across all class matches
         List<Measurable> allMeasurables = new ArrayList<>();
 
@@ -145,6 +143,9 @@ public class TimeHandler {
 
         // Pool of all constructed and populated timeseries objects
         Map<TimeSeries<Instant>, List<Measurable>> allTimeSeries = new LinkedHashMap<>();
+
+        // construct TimeSeriesClient using TimeSeriesClientFactory
+        tsClient = getTimeSeriesClientViaFactory(allMeasurables);
 
         // Iterate through unique database names
         for (Map.Entry<String, List<Measurable>> entryByDB : groupByDatabase.entrySet()) {
@@ -255,6 +256,29 @@ public class TimeHandler {
         // Fill in timeseries IRI if missing
         this.populateTimeSeriesIRIs(measurables);
         return measurables;
+    }
+
+    private TimeSeriesClient<Instant> getTimeSeriesClientViaFactory(List<Measurable> measurables) {
+        // Run query
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
+
+        try {
+            if (endpoints.size() == 1) {
+                LOGGER.debug("Generating time series client via non-federated query.");
+
+                kgClient.setQueryEndpoint(endpoints.get(0));
+
+                return (TimeSeriesClient<Instant>) TimeSeriesClientFactory.getInstance(kgClient,
+                        measurables.stream().map(m -> m.getEntityIRI()).collect(Collectors.toList()));
+            } else {
+                return (TimeSeriesClient<Instant>) TimeSeriesClientFactory.getInstance(endpoints,
+                        measurables.stream().map(m -> m.getEntityIRI()).collect(Collectors.toList()));
+            }
+        } catch (Exception e) {
+            // return default tsClient
+            LOGGER.warn(e.getMessage());
+            return tsClient;
+        }
     }
 
     /**

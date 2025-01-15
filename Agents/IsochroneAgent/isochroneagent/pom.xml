@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>isochroneagent</artifactId>
-    <version>1.0.0</version>
+    <version>1.5.0</version>
     <packaging>war</packaging>
 
     <properties>
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.39.1</jps.base.version>
+        <jps.base.version>1.44.2</jps.base.version>
     </properties>
 
 
@@ -22,7 +22,7 @@
     <parent>
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
-        <version>2.2.0</version>
+        <version>2.3.1</version>
     </parent>
 
     <!-- Profiles are used to switch between building for development and production
@@ -113,32 +113,6 @@
             <artifactId>spring-core</artifactId>
             <version>6.0.5</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-core</artifactId>
-            
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-driver-remote</artifactId>
-
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-driver-bundle</artifactId>
-            <version>4.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena</artifactId>
-            <version>4.6.1</version>
-            <type>pom</type>
-        </dependency>
         <!-- Java servlet API, version pulled from parent -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -186,11 +160,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-geosparql</artifactId>
-            <version>4.1.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.5.4</version>
@@ -199,7 +168,13 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.14.1</version>
+            <version>1.37.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
@@ -215,60 +190,17 @@
         </dependency>
     </dependencies>
     <dependencyManagement>
-
         <dependencies>
-
-            <dependency>
-                <groupId>org.apache.jena</groupId>
-                <artifactId>jena-arq</artifactId>
-                <version>4.6.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.jena</groupId>
-                <artifactId>jena-core</artifactId>
-                <version>4.6.1</version> <!-- update to the desired version -->
-            </dependency>
             <dependency>
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-catalina</artifactId>
                 <version>9.0.56</version> <!-- update to the desired version -->
             </dependency>
-
-            <dependency>
-                <groupId>org.apache.jena</groupId>
-                <artifactId>jena-jdbc-driver-remote</artifactId>
-                <version>4.5.0</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.apache.jena</groupId>
-                <artifactId>jena-jdbc-core</artifactId>
-                <version>4.5.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.jena</groupId>
-                <artifactId>jena-jdbc-driver-mem</artifactId>
-                <version>4.6.1</version>
-            </dependency>
-
-
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>2.10.3</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.apache.jena</groupId>
-                <artifactId>jena-shaded-guava</artifactId>
-                <version>3.1.1</version>
-            </dependency>
-
         </dependencies>
-
-
     </dependencyManagement>
 </project>

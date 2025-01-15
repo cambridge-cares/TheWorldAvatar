@@ -11,7 +11,7 @@
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
 <https://theworldavatar.io/kg/f370d42b-4729-4ea5-ab05-89c9a04ae66f>
-        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox> , <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing";
         <http://purl.org/dc/terms/issued>

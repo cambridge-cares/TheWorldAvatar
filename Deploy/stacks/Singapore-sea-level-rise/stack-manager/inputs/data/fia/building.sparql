@@ -2,6 +2,13 @@ PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+PREFIX obm: <https://www.theworldavatar.com/kg/ontobim/>
+PREFIX ontocompany: <https://www.theworldavatar.com/kg/ontocompany/>
+PREFIX icontact: <http://ontology.eil.utoronto.ca/icontact.owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
@@ -40,4 +47,271 @@ WHERE {
       }
     }
   }
+  UNION
+  # CEA
+  { 
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasSolarSuitableArea ?quantity .
+        ?quantity om:hasValue ?area .
+        ?area om:hasUnit om:squareMetre ;
+            om:hasNumericalValue ?Value .
+        
+        BIND("Roof solar suitable area" AS ?Property) .
+        BIND("m^2" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasSolarSuitableArea ?quantity .
+        ?quantity om:hasValue ?area .
+        ?area om:hasUnit om:squareMetre ;
+            om:hasNumericalValue ?Value .
+        
+        BIND("North wall solar suitable area" AS ?Property) .
+        BIND("m^2" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasSolarSuitableArea ?quantity .
+        ?quantity om:hasValue ?area .
+        ?area om:hasUnit om:squareMetre ;
+            om:hasNumericalValue ?Value .
+        
+        BIND("South wall solar suitable area" AS ?Property) .
+        BIND("m^2" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasSolarSuitableArea ?quantity .
+        ?quantity om:hasValue ?area .
+        ?area om:hasUnit om:squareMetre ;
+            om:hasNumericalValue ?Value .
+        
+        BIND("West wall solar suitable area" AS ?Property) .
+        BIND("m^2" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasSolarSuitableArea ?quantity .
+        ?quantity om:hasValue ?area .
+        ?area om:hasUnit om:squareMetre ;
+            om:hasNumericalValue ?Value .
+        
+        BIND("East wall solar suitable area" AS ?Property) .
+        BIND("m^2" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] ubem:consumesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualHeatingConsumption ;
+            om:hasValue ?consumption .
+        ?consumption om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("Annual building heating consumption" AS ?Property)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] ubem:consumesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualElectricityConsumption ;
+            om:hasValue ?consumption .
+        ?consumption om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("Annual building electricity consumption" AS ?Property)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualElectricitySupply ;
+            om:hasValue ?energy .
+        ?energy om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("Roof potential annual electricity generation from photovoltaic panels" AS ?Property) .
+        BIND("kWh" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualElectricitySupply ;
+            om:hasValue ?energy .
+        ?energy om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("North wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+        BIND("kWh" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualElectricitySupply ;
+            om:hasValue ?energy .
+        ?energy om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("South wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+        BIND("kWh" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualElectricitySupply ;
+            om:hasValue ?energy .
+        ?energy om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("East wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+        BIND("kWh" AS ?Unit) .
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:AnnualElectricitySupply ;
+            om:hasValue ?energy .
+        ?energy om:hasUnit om:kilowattHour ;
+            om:hasNumericalValue ?Value .
+
+        BIND("West wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+        BIND("kWh" AS ?Unit) .
+    }
+  }
+
+  UNION
+  # Company
+  {  
+    {
+      SERVICE [ONTOP] {    
+        SELECT ?facility ?type ?Value ?Unit WHERE {      
+          [IRI] obm:hasFacility ?facility .      
+          ?facility ?p ?target .      
+          ?target rdf:type ?type .      
+          ?target om:hasValue/om:hasNumericalValue ?Value .       
+          ?target om:hasValue/om:hasUnit ?unit_iri .        
+          ?unit_iri skos:notation ?Unit .       	
+        }
+      }
+      ?type rdfs:label ?Property .
+    }
+    UNION {
+      SERVICE [ONTOP] {    
+        SELECT ?facility ?type ?Value ?Unit WHERE {      
+          [IRI] obm:hasFacility ?facility .      
+          ?facility ontocompany:hasProduct ?product .
+          ?product rdfs:label ?Value .	
+        }
+      }
+      BIND("Product" AS ?Property) .
+    }
+    UNION {
+      SERVICE [ONTOP] {    
+        SELECT ?facility ?type ?Value ?Unit WHERE {      
+          [IRI] obm:hasFacility ?facility .
+          ?company ontocompany:isOwnerOf ?facility .
+          ?company ?p ?target .      
+          ?target rdf:type ?type .      
+          ?target om:hasValue/om:hasNumericalValue ?Value .       
+          ?target om:hasValue/om:hasUnit ?unit_iri .        
+          ?unit_iri skos:notation ?Unit .       	
+        }
+      }
+      ?type rdfs:label ?Property .
+    }
+    UNION {
+      SERVICE [ONTOP] {    
+        SELECT ?facility ?type ?Value ?Unit WHERE {      
+          [IRI] obm:hasFacility ?facility .      
+          ?facility ontocompany:hasProduct ?product .
+          ?product ?p ?target .
+          ?target rdf:type ?type .      
+          ?target om:hasValue/om:hasNumericalValue ?Value .       
+          ?target om:hasValue/om:hasUnit ?unit_iri .        
+          ?unit_iri skos:notation ?Unit .       	
+        }
+      }
+      ?type rdfs:label ?Property .
+    }
+    UNION {
+      SERVICE [ONTOP] {    
+        SELECT ?facility ?p ?Value WHERE {      
+          [IRI] obm:hasFacility ?facility .      
+          ?company ontocompany:isOwnerOf ?facility .
+          ?company ?p ?Value .
+        }
+      }
+      ?p rdfs:subPropertyOf ontocompany:hasCompanyProperty .
+      ?p rdfs:label ?Property .
+    }
+    UNION {
+      SERVICE [ONTOP] {
+        SELECT ?facility ?Property ?Value WHERE {
+          [IRI] obm:hasFacility ?facility .      
+          ?company_iri ontocompany:isOwnerOf ?facility .
+          BIND("Company Name" AS ?Property) .
+          ?company_iri rdfs:label ?Value .
+        }
+      }
+    }
+    UNION {
+      SERVICE [ONTOP] {
+        SELECT ?facility ?Property ?Value WHERE {
+          [IRI] obm:hasFacility ?facility .      
+          ?company_iri ontocompany:isOwnerOf ?facility .
+          BIND("Plant Name" AS ?Property) .
+          ?facility rdfs:label ?Value .
+        }
+      }
+    }
+    UNION {
+      SERVICE [ONTOP] {
+        SELECT ?facility ?Property ?Value WHERE {
+          [IRI] obm:hasFacility ?facility .
+          ?facility ontocompany:hasAddress/icontact:hasStreet ?Value .              
+          BIND("Address" AS ?Property) .        
+        }
+      }
+    }
+    UNION {
+      SERVICE [ONTOP] {
+        SELECT ?facility ?Property ?Value WHERE {
+          [IRI] obm:hasFacility ?facility;
+            ontobuiltenv:hasAddress ?address .
+          ?address ontocompany:hasLandLotDetails/ontocompany:hasLandLotNumber ?Value .              
+          BIND("Land Lot Number" AS ?Property) .        
+        }
+      }
+    }
+  }
 }
+ORDER BY ?facility ?Property

@@ -258,11 +258,11 @@ public class Aermod {
         GDALClient gdalClient = GDALClient.getInstance();
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.STATIC_SOURCE_TABLE,
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.RDB_SCHEMA, EnvConfig.STATIC_SOURCE_TABLE,
                 featureCollection.toString(), new Ogr2OgrOptions(), true);
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+                EnvConfig.RDB_SCHEMA, EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
 
         // keep layer at maintainable size
         PostGISClient postGISClient = PostGISClient.getInstance();
@@ -320,11 +320,11 @@ public class Aermod {
         GDALClient gdalClient = GDALClient.getInstance();
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SHIPS_LAYER_NAME,
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.RDB_SCHEMA, EnvConfig.SHIPS_LAYER_NAME,
                 featureCollection.toString(), new Ogr2OgrOptions(), true);
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
+                EnvConfig.RDB_SCHEMA, EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
 
         // keep layer at maintainable size
         PostGISClient postGISClient = PostGISClient.getInstance();
@@ -825,8 +825,8 @@ public class Aermod {
         }
 
         GDALClient gdalClient = GDALClient.getInstance();
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
-                geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.RDB_SCHEMA,
+                EnvConfig.DISPERSION_CONTOURS_TABLE, geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
 
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
@@ -839,7 +839,7 @@ public class Aermod {
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
+                EnvConfig.RDB_SCHEMA, EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
 
         // clean up table
         PostGISClient postGISClient = PostGISClient.getInstance();
@@ -868,8 +868,8 @@ public class Aermod {
         }
 
         GDALClient gdalClient = GDALClient.getInstance();
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.ELEVATION_CONTOURS_TABLE,
-                geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.RDB_SCHEMA,
+                EnvConfig.ELEVATION_CONTOURS_TABLE, geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
 
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
@@ -882,11 +882,11 @@ public class Aermod {
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.ELEVATION_CONTOURS_TABLE, geoServerVectorSettings);
+                EnvConfig.RDB_SCHEMA, EnvConfig.ELEVATION_CONTOURS_TABLE, geoServerVectorSettings);
     }
 
     boolean validAermodInput(WeatherData weatherData, List<PointSource> sourcesWithEmissions) {
-        if (weatherData.getWindDirectionInTensOfDegrees()==0 && weatherData.getWindSpeedInKnots()==0) {
+        if (weatherData.getWindDirectionInTensOfDegrees() == 0 && weatherData.getWindSpeedInKnots() == 0) {
             LOGGER.warn("AERMOD cannot simulate calm (no wind) condition.");
             return false;
         }

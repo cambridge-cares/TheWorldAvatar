@@ -74,9 +74,9 @@ class ExceptionThrowAgent(DerivationAgent):
         raise Exception(RANDOM_EXAMPLE_EXCEPTION_THROW_MSG)
 
 class DifferenceAgent(DerivationAgent):
-    agent_input_concepts = [MaxValue.get_rdf_type(), MinValue.get_rdf_type()]
+    agent_input_concepts = [MaxValue.rdf_type, MinValue.rdf_type]
 
-    agent_output_concepts = [Difference.get_rdf_type()]
+    agent_output_concepts = [Difference.rdf_type]
 
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
@@ -87,8 +87,8 @@ class DifferenceAgent(DerivationAgent):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get min and max value
-        max_iris = derivation_inputs.getIris(MaxValue.get_rdf_type())
-        min_iris = derivation_inputs.getIris(MinValue.get_rdf_type())
+        max_iris = derivation_inputs.getIris(MaxValue.rdf_type)
+        min_iris = derivation_inputs.getIris(MinValue.rdf_type)
         # If either max or min is empty, skip the rest of the function
         # This is to test that the agent can handle the case where no output is generated
         if not bool(max_iris) or not bool(min_iris):
@@ -98,14 +98,14 @@ class DifferenceAgent(DerivationAgent):
 
         # Compute difference, write to derivation_outputs
         diff = max_val - min_val
-        diff_instance = Difference(hasValue=diff)
+        diff_instance = Difference(hasValue=[diff])
         derivation_outputs.add_outputs_ogm(diff_instance)
 
 
 class DiffReverseAgent(DerivationAgent):
     agent_input_concepts = [MaxValue, MinValue]
 
-    agent_output_concepts = [DifferenceReverse.get_rdf_type()]
+    agent_output_concepts = [DifferenceReverse.rdf_type]
 
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
@@ -120,8 +120,8 @@ class DiffReverseAgent(DerivationAgent):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get min and max value
-        max_iris = derivation_inputs.getIris(MaxValue.get_rdf_type())
-        min_iris = derivation_inputs.getIris(MinValue.get_rdf_type())
+        max_iris = derivation_inputs.getIris(MaxValue.rdf_type)
+        min_iris = derivation_inputs.getIris(MinValue.rdf_type)
         # If either max or min is empty, skip the rest of the function
         # This is to test that the agent can handle the case where no output is generated
         if not bool(max_iris) or not bool(min_iris):
@@ -130,12 +130,12 @@ class DiffReverseAgent(DerivationAgent):
         min_val = sparql_client.getValue(min_iris[0])
 
         # Compute difference, write to derivation_outputs
-        diff_reverse_instance = DifferenceReverse(hasValue=min_val - max_val)
+        diff_reverse_instance = DifferenceReverse(hasValue=[min_val - max_val])
         derivation_outputs.add_outputs_ogm(diff_reverse_instance)
 
 
 class MaxValueAgent(DerivationAgent):
-    agent_input_concepts = [Point.get_rdf_type()]
+    agent_input_concepts = [Point.rdf_type]
 
     agent_output_concepts = [MaxValue]
 
@@ -149,7 +149,7 @@ class MaxValueAgent(DerivationAgent):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
-        list_points_iri = derivation_inputs.getIris(Point.get_rdf_type())
+        list_points_iri = derivation_inputs.getIris(Point.rdf_type)
         # If no points, skip the rest of the function
         # This is to test that the agent can handle the case where no output is generated
         if not bool(list_points_iri):
@@ -158,7 +158,7 @@ class MaxValueAgent(DerivationAgent):
         max_val = sparql_client.getExtremeValueInList(list_points_iri, True)
 
         # Compute max value, write to derivation_outputs
-        max_instance = MaxValue(hasValue=max_val)
+        max_instance = MaxValue(hasValue=[max_val])
         derivation_outputs.add_outputs_ogm(max_instance)
 
 
@@ -177,7 +177,7 @@ class MinValueAgent(DerivationAgent):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
-        list_points_iri = derivation_inputs.getIris(Point.get_rdf_type())
+        list_points_iri = derivation_inputs.getIris(Point.rdf_type)
         # If no points, skip the rest of the function
         # This is to test that the agent can handle the case where no output is generated
         if not bool(list_points_iri):
@@ -186,12 +186,12 @@ class MinValueAgent(DerivationAgent):
         min_val = sparql_client.getExtremeValueInList(list_points_iri, False)
 
         # Compute min value, write to derivation_outputs
-        min_instance = MinValue(hasValue=min_val)
+        min_instance = MinValue(hasValue=[min_val])
         derivation_outputs.add_outputs_ogm(min_instance)
 
 
 class RNGAgent(DerivationAgent):
-    agent_input_concepts = [NumOfPoints, UpperLimit.get_rdf_type(), LowerLimit]
+    agent_input_concepts = [NumOfPoints, UpperLimit.rdf_type, LowerLimit]
 
     agent_output_concepts = [Point]
 
@@ -210,7 +210,7 @@ class RNGAgent(DerivationAgent):
             sparql_client=sparql_client,
             recursive_depth=-1,
         )
-        numofpoints = numofpoints_instance.hasValue.get_range_assume_one()
+        numofpoints = list(numofpoints_instance.hasValue)[0]
 
         # Get the upper limit
         upperlimit_instance = derivation_inputs.get_inputs_ogm_assume_one(
@@ -218,7 +218,7 @@ class RNGAgent(DerivationAgent):
             sparql_client=sparql_client,
             recursive_depth=-1,
         )
-        upperlimit = upperlimit_instance.hasValue.get_range_assume_one()
+        upperlimit = list(upperlimit_instance.hasValue)[0]
 
         # Get the lower limit
         lowerlimit_instance = derivation_inputs.get_inputs_ogm_assume_one(
@@ -226,7 +226,7 @@ class RNGAgent(DerivationAgent):
             sparql_client=sparql_client,
             recursive_depth=-1,
         )
-        lowerlimit = lowerlimit_instance.hasValue.get_range_assume_one()
+        lowerlimit = list(lowerlimit_instance.hasValue)[0]
 
         # If the number of points is less than 1, skip the rest of the function
         # This is to test that the agent can handle the case where no output is generated
@@ -236,7 +236,7 @@ class RNGAgent(DerivationAgent):
         # Generate random points triples in a Graph and add to derivation_outputs
         for i in range(numofpoints):
             new_point = Point(
-                hasValue=random.randint(lowerlimit, upperlimit),
+                hasValue=[random.randint(lowerlimit, upperlimit)],
                 # this RANDOM_STRING_WITH_SPACES is to test that the agent can add a string with spaces as data property
                 rdfs_comment=RANDOM_STRING_WITH_SPACES,
                 # below special numbers are added to test the python side can be correctly parsed by the java side

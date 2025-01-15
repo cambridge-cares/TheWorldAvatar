@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
     <artifactId>AermodAgent</artifactId>
-    <version>1.7</version>
+    <version>1.8-dev-DOME-SNAPSHOT</version>
     <packaging>war</packaging>
 
 
@@ -94,7 +94,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.43.2</version>
+			<version>1.45.0</version>
 		</dependency>
 
 		<dependency>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.27.2</version>
+            <version>1.39.1</version>
         </dependency>
 
         <dependency>

@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
@@ -33,19 +36,26 @@ public final class OntopService extends ContainerService {
     private static final String ONTOP_DB_USER = "ONTOP_DB_USER";
     private static final String ONTOP_DB_PASSWORD_FILE = "ONTOP_DB_PASSWORD_FILE";
     private static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
+    private static final String ONTOP_ONTOLOGY_FILE = "ONTOP_ONTOLOGY_FILE";
+    private static final String ONTOP_SPARQL_RULES_FILE = "ONTOP_SPARQL_RULES_FILE";
 
     private static final String DEFAULT_PORT = "8080";
 
     private final String containerName;
     private final OntopEndpointConfig endpointConfig;
-    private final String configDir;
+    private final List<String> configFiles;
+    private final List<String> configDirs;
 
     public OntopService(String stackName, ServiceConfig config) {
         super(stackName, config);
 
         containerName = StackClient.removeStackName(getConfig().getName());
 
-        configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
+        configFiles = List.of(getEnvironmentVariable(ONTOP_MAPPING_FILE), getEnvironmentVariable(ONTOP_ONTOLOGY_FILE),
+                getEnvironmentVariable(ONTOP_SPARQL_RULES_FILE));
+
+        configDirs = configFiles.stream().map(s -> Path.of(s).getParent().toString()).distinct()
+                .collect(Collectors.toList());
 
         endpointConfig = new OntopEndpointConfig(containerName, getHostName(), DEFAULT_PORT);
 
@@ -75,7 +85,7 @@ public final class OntopService extends ContainerService {
             checkEnvironmentVariableNonNull(ONTOP_DB_PASSWORD_FILE);
         }
 
-        setEnvironmentVariableIfAbsent("ONTOP_LAZY_INIT", "false");
+        setEnvironmentVariableIfAbsent("ONTOP_LAZY_INIT", "true");
         setEnvironmentVariableIfAbsent("ONTOP_CORS_ALLOWED_ORIGINS", "*");
         setEnvironmentVariableIfAbsent("ONTOP_DEBUG", "false");
         checkEnvironmentVariableNonNull(OntopClient.ONTOP_MAPPING_FILE);
@@ -88,19 +98,39 @@ public final class OntopService extends ContainerService {
             mounts = new ArrayList<>();
             containerSpec.withMounts(mounts);
         }
-        mounts.add(new Mount()
-                .withSource(containerName)
-                .withTarget(configDir)
-                .withType(MountType.VOLUME)
-                .withReadOnly(false));
+        for (String dir : configDirs) {
+            mounts.add(new Mount()
+                    .withSource(containerName)
+                    .withTarget(dir)
+                    .withType(MountType.VOLUME)
+                    .withReadOnly(false));
+        }
     }
 
     @Override
     public void doPostStartUpConfiguration() {
         DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
-                "chown", "ontop:ontop", configDir)
+        String containerId = dockerClient.getContainerId(containerName);
+        dockerClient.createComplexCommand(containerId, "chown", "ontop:ontop", String.join(" ", configDirs))
                 .withUser("root");
+
+        OntopClient ontopClient = OntopClient.getInstance();
+        configFiles.forEach(f -> {
+            if (!fileExists(f)) {
+                String extension = FilenameUtils.getExtension(f);
+                switch (extension) {
+                    case "obda":
+                        ontopClient.updateOBDA(null);
+                        break;
+                    case "toml":
+                        ontopClient.uploadRules(List.of());
+                        break;
+                    default:
+                        dockerClient.createComplexCommand(containerId, "touch", f).withUser("root").exec();
+                        break;
+                }
+            }
+        });
     }
 
     @Override

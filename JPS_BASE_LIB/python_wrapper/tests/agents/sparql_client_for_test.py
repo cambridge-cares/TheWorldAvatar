@@ -10,15 +10,15 @@ from .data_model_for_test import (
 
 # Random number generation TBox
 RANDOM_EXAMPLE_TBOX = RandomOntology.base_url
-RANDOM_EXAMPLE_NUMOFPOINTS = NumOfPoints.get_rdf_type()
-RANDOM_EXAMPLE_UPPERLIMIT = UpperLimit.get_rdf_type()
-RANDOM_EXAMPLE_LOWERLIMIT = LowerLimit.get_rdf_type()
-RANDOM_EXAMPLE_POINT = Point.get_rdf_type()
-RANDOM_EXAMPLE_MINVALUE = MinValue.get_rdf_type()
-RANDOM_EXAMPLE_MAXVALUE = MaxValue.get_rdf_type()
-RANDOM_EXAMPLE_DIFFERENCE = Difference.get_rdf_type()
-RANDOM_EXAMPLE_DIFFERENCEREVERSE = DifferenceReverse.get_rdf_type()
-RANDOM_EXAMPLE_HASVALUE = HasValue.get_predicate_iri()
+RANDOM_EXAMPLE_NUMOFPOINTS = NumOfPoints.rdf_type
+RANDOM_EXAMPLE_UPPERLIMIT = UpperLimit.rdf_type
+RANDOM_EXAMPLE_LOWERLIMIT = LowerLimit.rdf_type
+RANDOM_EXAMPLE_POINT = Point.rdf_type
+RANDOM_EXAMPLE_MINVALUE = MinValue.rdf_type
+RANDOM_EXAMPLE_MAXVALUE = MaxValue.rdf_type
+RANDOM_EXAMPLE_DIFFERENCE = Difference.rdf_type
+RANDOM_EXAMPLE_DIFFERENCEREVERSE = DifferenceReverse.rdf_type
+RANDOM_EXAMPLE_HASVALUE = HasValue.predicate_iri
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
 RANDOM_STRING_WITH_SPACES = 'Random string with spaces'
 RANDOM_EXAMPLE_SPECIALVALUE = RANDOM_EXAMPLE_TBOX + 'specialValue'

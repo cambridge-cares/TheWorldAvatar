@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   ship-input-agent:
-    image: ghcr.io/cambridge-cares/ship-input-agent:1.7
+    image: ghcr.io/cambridge-cares/ship-input-agent:1.9
     deploy:
       mode: replicated
       replicas: 1

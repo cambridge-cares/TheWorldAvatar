@@ -106,6 +106,28 @@ class DCATUpdateQueryTest {
     }
 
     @Test
+    void testAddOntologyDataset() {
+        Assertions.assertAll(() -> {
+            Assertions.assertAll(Stream.of("A", "B", "C").map(name -> () -> {
+                Dataset dataset = new DatasetBuilder(name).build();
+                buildAndRunQuery(dataset);
+            }));
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1").withOntologyDataset(List.of("A", "B")).build();
+            buildAndRunQuery(dataset);
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
+                    .withDatasetDirectory("test2").withOntologyDataset(List.of("B", "C")).build();
+            buildAndRunQuery(dataset);
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
+                    .withDatasetDirectory("test3").withOntologyDataset(List.of("A", "B")).build();
+            buildAndRunQuery(dataset);
+        });
+    }
+
+    @Test
     void testAddBlazegraph() {
         writeBlazegraphConfig();
         Assertions.assertAll(() -> {
@@ -407,20 +429,20 @@ class DCATUpdateQueryTest {
     }
 
     private void writeBlazegraphConfig() {
-        BlazegraphClient.getInstance().writeEndpointConfig(
+        BlazegraphClient.writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph", "blazegraph",
                         "8080",
                         BlazegraphContainer.USERNAME, BlazegraphContainer.PASSWORD));
     }
 
     private void writePostGISConfig() {
-        PostGISClient.getInstance().writeEndpointConfig(
+        PostGISClient.writeEndpointConfig(
                 new PostGISEndpointConfig("postgis", "test-postgis", "1234",
                         "user", "passwordFile"));
     }
 
     private void writeOntopConfig(String name) {
-        OntopClient.getInstance().writeEndpointConfig(
+        OntopClient.writeEndpointConfig(
                 new OntopEndpointConfig(name, StackClient.prependStackName(name).replace('_', '-'), "5678"));
     }
 

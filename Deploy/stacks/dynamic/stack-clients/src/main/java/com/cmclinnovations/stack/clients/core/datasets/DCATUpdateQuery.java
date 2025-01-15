@@ -25,6 +25,8 @@ import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 final class DCATUpdateQuery {
 
+    private static final String EXISTING = "existing";
+
     private final ModifyQuery query = Queries.MODIFY();
 
     private final StringLiteral currentTime = Rdf.literalOfType(LocalDateTime.now().toString(), XSD.DATETIME);
@@ -55,7 +57,8 @@ final class DCATUpdateQuery {
 
         // Insert new or updated values
         Variable issuedVar = createVar(datasetVar, "issued");
-        query.insert(datasetVar.isA(dataset.getRdfType())
+        query.insert(datasetVar.isA(DCAT.CATALOG)
+                .andIsA(dataset.getRdfType())
                 .andHas(DCTERMS.TITLE, dataset.getName())
                 .andHas(DCTERMS.DESCRIPTION, dataset.getDescription())
                 // Insert new "issued" triple the first time and then just re-insert same triple
@@ -65,11 +68,12 @@ final class DCATUpdateQuery {
                 .andHas(DCTERMS.MODIFIED, currentTime));
 
         // Try to find the dataset but bind to a new IRI if not found
-        Variable existingDatasetVar = createVar(datasetVar, "existing");
-        Variable existingIssuedVar = createVar(issuedVar, "existing");
+        Variable existingDatasetVar = createVar(datasetVar, EXISTING);
+        Variable existingIssuedVar = createVar(issuedVar, EXISTING);
         query.where(GraphPatterns.and(
                 // "rdfType" and "name" define the dataset
-                existingDatasetVar.isA(dataset.getRdfType())
+                existingDatasetVar.isA(DCAT.CATALOG)
+                        .andIsA(dataset.getRdfType())
                         .andHas(DCTERMS.TITLE, dataset.getName())
                         .andHas(DCTERMS.DESCRIPTION, existingDescriptionVar)
                         .andHas(DCTERMS.ISSUED, existingIssuedVar)
@@ -87,34 +91,35 @@ final class DCATUpdateQuery {
         query.delete(datasetVar.has(existingPVar, existingOVar));
         query.where(GraphPatterns.and(
                 // "rdfType" and "name" define the dataset
-                datasetVar.isA(dataset.getRdfType())
+                datasetVar.isA(DCAT.CATALOG)
+                        .andIsA(dataset.getRdfType())
                         .andHas(DCTERMS.TITLE, dataset.getName())
                         .andHas(existingPVar, existingOVar)
                         .optional()));
     }
 
-    private int externalDatasetCount = 0;
+    private int referencedDatasetCount = 0;
 
-    private void addExternalDataset(String externalDatasetName) {
-        Variable externalDatasetVar = SparqlBuilder.var("externalDataset" + externalDatasetCount++);
+    private void addReferencedDataset(String referencedDatasetName) {
+        Variable referencedDatasetVar = SparqlBuilder.var("referencedDataset" + referencedDatasetCount++);
 
-        // Insert link to this external dataset
-        query.insert(datasetVar.has(DCAT.HAS_CATALOG, externalDatasetVar));
+        // Insert link to this referenced dataset
+        query.insert(datasetVar.has(DCTERMS.REFERENCES, referencedDatasetVar));
 
-        // Find external dataset, this should already exist as external datasets are
+        // Find referenced dataset, this should already exist as referenced datasets are
         // loaded first
-        query.where(externalDatasetVar.isA(DCAT.CATALOG).andHas(DCTERMS.TITLE, externalDatasetName));
+        query.where(referencedDatasetVar.isA(DCAT.CATALOG).andHas(DCTERMS.TITLE, referencedDatasetName));
 
     }
 
-    private void removeExistingExternalDatasetLinks() {
-        Variable oldExternalDatasetVar = SparqlBuilder.var("externalDataset_old");
+    private void removeExistingReferencedDatasetLinks() {
+        Variable oldReferencedDatasetVar = SparqlBuilder.var("referencedDataset_old");
 
-        // Remove all existing links to external datasets
-        query.delete(datasetVar.has(DCAT.HAS_CATALOG, oldExternalDatasetVar));
+        // Remove all existing links to referenced datasets
+        query.delete(datasetVar.has(DCTERMS.REFERENCES, oldReferencedDatasetVar));
 
-        // Find existing links to external datasets
-        query.where(datasetVar.has(DCAT.HAS_CATALOG, oldExternalDatasetVar).optional());
+        // Find existing links to referenced datasets
+        query.where(datasetVar.has(DCTERMS.REFERENCES, oldReferencedDatasetVar).optional());
     }
 
     private int dataSubsetCount = 0;
@@ -125,7 +130,7 @@ final class DCATUpdateQuery {
             Variable issuedVar = createVar(dataSubsetVar, "issued");
 
             // If there is already a description then remove it
-            Variable existingDescriptionVar = createVar(dataSubsetVar, "descripton_existing");
+            Variable existingDescriptionVar = createVar(dataSubsetVar, "description_existing");
             query.delete(dataSubsetVar.has(DCTERMS.DESCRIPTION, existingDescriptionVar));
 
             // Insert new or updated values
@@ -139,8 +144,8 @@ final class DCATUpdateQuery {
                     .andHas(DCTERMS.MODIFIED, currentTime));
 
             // Try to find the DataSubset but bind a new IRI if not found
-            Variable existingDataSubsetVar = createVar(dataSubsetVar, "existing");
-            Variable existingIssuedVar = createVar(issuedVar, "existing");
+            Variable existingDataSubsetVar = createVar(dataSubsetVar, EXISTING);
+            Variable existingIssuedVar = createVar(issuedVar, EXISTING);
             query.where(GraphPatterns.and(
                     // "type" and "name" define the dataset
                     existingDataSubsetVar.isA(DCAT.DATASET)
@@ -156,7 +161,7 @@ final class DCATUpdateQuery {
             query.where(Expressions.bind(Expressions.coalesce(existingDataSubsetVar, createIRI()), dataSubsetVar));
         } else {
             // If skipped just re-add the link from the dataset.
-            Variable existingDataSubsetVar = createVar(dataSubsetVar, "existing");
+            Variable existingDataSubsetVar = createVar(dataSubsetVar, EXISTING);
             query.insert(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar));
             // Try to find the DataSubset but bind a new IRI if not found
             query.where( // "type" and "name" define the dataset
@@ -192,7 +197,7 @@ final class DCATUpdateQuery {
     private void addBlazegraphServer(Dataset dataset) {
         boolean used = dataset.usesBlazegraph();
         String namespace = dataset.getNamespace();
-        String url = used ? BlazegraphClient.getInstance().getEndpointConfig().getUrl(namespace) : null;
+        String url = used ? BlazegraphClient.getInstance().readEndpointConfig().getUrl(namespace) : null;
 
         addService(blazegraphServiceVar, namespace, SparqlConstants.BLAZEGRAPH_SERVICE, url, null, used);
     }
@@ -200,7 +205,7 @@ final class DCATUpdateQuery {
     private void addPostGISServer(Dataset dataset) {
         boolean used = dataset.usesPostGIS();
         String database = dataset.getDatabase();
-        String url = used ? PostGISClient.getInstance().getEndpointConfig().getJdbcURL(database) : null;
+        String url = used ? PostGISClient.getInstance().readEndpointConfig().getJdbcURL(database) : null;
 
         addService(postgisServiceVar, database, SparqlConstants.POSTGIS_SERVICE, url, null, used);
     }
@@ -214,7 +219,7 @@ final class DCATUpdateQuery {
     private void addOntopServer(Dataset dataset) {
         boolean used = dataset.usesOntop();
         String ontopName = dataset.getOntopName();
-        String url = used ? OntopClient.getInstance(ontopName).getEndpointConfig().getUrl() : null;
+        String url = used ? OntopClient.getInstance(ontopName).readEndpointConfig().getUrl() : null;
         addService(ontopServiceVar, StackClient.prependStackName(ontopName),
                 SparqlConstants.ONTOP_SERVICE, url, DCTERMS.REQUIRES, used);
     }
@@ -226,7 +231,7 @@ final class DCATUpdateQuery {
             Variable serviceLiteral = createVar(serviceVar, "literal");
 
             // Remove all existing triples that have this service as the subject
-            Variable existingServiceVar = createVar(serviceVar, "existing");
+            Variable existingServiceVar = createVar(serviceVar, EXISTING);
             Variable existingPVar = createVar(existingServiceVar, "p");
             Variable existingOVar = createVar(existingServiceVar, "o");
             query.delete(existingServiceVar.has(existingPVar, existingOVar));
@@ -262,7 +267,7 @@ final class DCATUpdateQuery {
             // Create literal from IRI for "identifier"
             query.where(Expressions.bind(Expressions.str(serviceVar), serviceLiteral));
         } else {
-            Variable existingServiceVar = createVar(serviceVar, "existing");
+            Variable existingServiceVar = createVar(serviceVar, EXISTING);
             // Insert link from the dataset
             query.insert(datasetVar.has(DCAT.HAS_SERVICE, existingServiceVar));
             query.insert(existingServiceVar.has(DCAT.SERVES_DATASET, datasetVar));
@@ -310,8 +315,8 @@ final class DCATUpdateQuery {
 
         addDataset(dataset);
 
-        removeExistingExternalDatasetLinks();
-        dataset.getExternalDatasetNames().forEach(this::addExternalDataset);
+        removeExistingReferencedDatasetLinks();
+        dataset.getReferencedDatasetNames().forEach(this::addReferencedDataset);
 
         removeExistingDataSubsetLinks();
         dataset.getDataSubsets().stream()
@@ -336,7 +341,7 @@ final class DCATUpdateQuery {
 
         removeDataset(dataset);
 
-        removeExistingExternalDatasetLinks();
+        removeExistingReferencedDatasetLinks();
 
         removeExistingDataSubsets();
 

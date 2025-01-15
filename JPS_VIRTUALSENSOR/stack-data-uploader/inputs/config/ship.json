@@ -2,7 +2,7 @@
     "database": "postgres",
     "workspace": "dispersion",
     "datasetDirectory": "ship",
-    "skip": true,
+    "skip": false,
     "dataSubsets": [
         {
             "type": "vector",
@@ -36,5 +36,8 @@
                 "defaultStyle": "point"
             }
         }
+    ],
+    "mappings": [
+        "ship.obda"
     ]
 }

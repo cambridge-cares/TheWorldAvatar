@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontobuiltenv="https://www.theworldavatar.com/kg/ontobuiltenv/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date>20 May 2024</dc:date>
+        <dc:date>30 December 2024</dc:date>
         <rdfs:comment>The Ontology for the Built Environment (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -137,6 +137,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
         <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/ConventionalStreetAddress"/>
         <rdfs:comment>A relationship between a property and its address.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has address</rdfs:label>
@@ -876,6 +877,13 @@
     
 
 
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/ConventionalStreetAddress -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/ConventionalStreetAddress"/>
+    
+
+
     <!-- https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#IfcBuilding -->
 
 
@@ -1309,6 +1317,13 @@
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/ConventionalStreetAddress"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>

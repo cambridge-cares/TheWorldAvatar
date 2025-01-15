@@ -3,7 +3,7 @@
         "Name": "osmagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/osmagent:1.9.0",
+                "Image": "ghcr.io/cambridge-cares/osmagent:1.9.1",
                 "Mounts": [
                     {
                         "Type": "bind",

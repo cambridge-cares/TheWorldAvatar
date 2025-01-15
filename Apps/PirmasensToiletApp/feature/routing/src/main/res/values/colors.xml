@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="start_marker_color">#FFAC0000</color>
+    <color name="end_marker_color">#FF0070CA</color>
+</resources>

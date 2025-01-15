@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,14 +36,13 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.postgis.Point;
 
 /**
  * sends sparql queries
@@ -359,6 +359,31 @@ public class QueryClient {
         }
     }
 
+    String getScopeIRI(String derivationIRI) throws Exception {
+        SelectQuery query = Queries.SELECT();
+
+        Variable derivation = query.var();
+        Variable scope = query.var();
+        Prefix prefixDerivation = SparqlBuilder.prefix("derivation",
+                iri("https://www.theworldavatar.com/kg/ontoderivation/"));
+        Iri isDerivedFrom = prefixDerivation.iri("isDerivedFrom");
+
+        ValuesPattern<Iri> derivationValues = new ValuesPattern<>(derivation,
+                Collections.singletonList(iri(derivationIRI)), Iri.class);
+
+        GraphPattern gp = GraphPatterns.and(derivation.has(isDerivedFrom, scope), scope.isA(P_DISP.iri("Scope")));
+
+        query.prefix(P_DISP, prefixDerivation).where(gp, derivationValues).select(scope);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        if (queryResult.length() == 1) {
+            return queryResult.getJSONObject(0).getString(scope.getQueryString().substring(1));
+        } else {
+            throw new Exception("Error looking up the scope for a derivation.");
+        }
+
+    }
+
     void setMeasureIri(List<Ship> ships) {
         SelectQuery query = Queries.SELECT();
 
@@ -452,7 +477,7 @@ public class QueryClient {
         derivationClient.updateTimestamps(ships.stream().map(Ship::getIri).collect(Collectors.toList()));
     }
 
-    void bulkUpdateTimeSeriesData(List<Ship> ships) {
+    void bulkUpdateTimeSeriesData(List<Ship> ships, JSONArray tmpTsData) {
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             for (Ship ship : ships) {
                 List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(),
@@ -460,10 +485,14 @@ public class QueryClient {
                 List<List<?>> values = new ArrayList<>();
                 // query relational database for data
                 String sqlQuery = String.format(
-                        "SELECT to_char(\"BaseDateTime\" at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS') AS \"DATE\", " +
+                        "SELECT to_char(\"BaseDateTime\" at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS') AS \"DATE\", "
+                                +
                                 "\"LAT\", \"LON\", \"SOG\", \"COG\" FROM \"ship\" WHERE \"MMSI\" = %s",
                         ship.getMmsi());
-                JSONArray tsData = remoteRDBStoreClient.executeQuery(sqlQuery);
+                if (tmpTsData == null) {
+                    tmpTsData = remoteRDBStoreClient.executeQuery(sqlQuery);
+                }
+                final JSONArray tsData = tmpTsData;
                 List<Instant> time = IntStream
                         .range(0, tsData.length()).mapToObj(i -> LocalDateTime
                                 .parse(tsData.getJSONObject(i).getString("DATE")).toInstant(ZoneOffset.UTC))
@@ -678,10 +707,10 @@ public class QueryClient {
             shipToMeasuresMap.entrySet().forEach(entry -> {
                 String ship = entry.getKey();
                 List<String> measures = entry.getValue();
-                Instant latestTime = tsClient.getLatestData(measures.get(0), conn).getTimes().get(0);
+                TimeSeries<Instant> tsLatest = tsClient.getLatestData(measures.get(0), conn);
                 Instant earliestTimeTokeep = Instant.now().minus(daysBefore, ChronoUnit.DAYS);
 
-                if (latestTime == null || latestTime.isBefore(earliestTimeTokeep)) {
+                if (tsLatest.getTimes().isEmpty() || tsLatest.getTimes().get(0).isBefore(earliestTimeTokeep)) {
                     shipsToDeleteCompletely.add(entry.getKey());
                     tsClient.deleteTimeSeries(shipToTsMap.get(ship), conn);
                 } else {

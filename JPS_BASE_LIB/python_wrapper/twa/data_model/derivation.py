@@ -1,8 +1,13 @@
 import ast
-from typing import Type, Union, List, Dict
+from typing import TypeVar, Type, Union, List, Dict
 from rdflib import Graph, RDF, Literal
 
 from twa.data_model.base_ontology import BaseClass, KnowledgeGraph
+
+
+_T = TypeVar('_T', bound=BaseClass)
+""" TypeVar for BaseClass subclasses so that the type hinting works correctly. """
+
 
 class Derivation():
     """
@@ -131,38 +136,38 @@ class DerivationInputs():
 
     def get_inputs_ogm(
         self,
-        clz: Type[BaseClass],
+        clz: Type[_T],
         sparql_client,
         recursive_depth: int = 0
-    ) -> List[BaseClass]:
+    ) -> List[_T]:
         """
         Returns the inputs as objects of the specified class.
 
         Args:
-            clz (Type[BaseClass]): The class of the objects to return
+            clz (Type[_T]): The class of the objects to return
             sparql_client: The SPARQL client to query the knowledge graph
             recursive_depth (int): The depth of recursive queries (default is 0)
 
         Returns:
-            List[BaseClass]: List of objects of the specified class
+            List[_T]: List of objects of the specified class
         """
         return clz.pull_from_kg(
-            iris=self.getIris(clz.get_rdf_type()),
+            iris=self.getIris(clz.rdf_type),
             sparql_client=sparql_client,
             recursive_depth=recursive_depth
         )
 
     def get_inputs_ogm_assume_one(
         self,
-        clz: Type[BaseClass],
+        clz: Type[_T],
         sparql_client,
         recursive_depth: int = 0
-    ) -> BaseClass:
+    ) -> _T:
         """
         Returns a single input object of the specified class.
 
         Args:
-            clz (Type[BaseClass]): The class of the object to return
+            clz (Type[_T]): The class of the object to return
             sparql_client: The SPARQL client to query the knowledge graph
             recursive_depth (int): The depth of recursive queries (default is 0)
 
@@ -170,11 +175,11 @@ class DerivationInputs():
             Exception: If the number of objects found is not exactly one
 
         Returns:
-            BaseClass: The single object of the specified class
+            _T: The single object of the specified class
         """
         objects = self.get_inputs_ogm(clz=clz, sparql_client=sparql_client, recursive_depth=recursive_depth)
         if len(objects) != 1:
-            raise Exception(f"""Input type {clz.get_rdf_type()} assumed one for derivation {self.getDerivationIRI()},
+            raise Exception(f"""Input type {clz.rdf_type} assumed one for derivation {self.getDerivationIRI()},
                 encounterred {len(objects)}: {' '.join([o.triples() for o in objects])}""")
         return next(iter(objects))
 

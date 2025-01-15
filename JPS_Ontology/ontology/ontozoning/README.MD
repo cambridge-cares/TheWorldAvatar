@@ -14,8 +14,8 @@ The namespace for this ontology is:
     "ontoplot:Plot" ||--o{ "geo:Feature" : "rdfs:subClassOf"
     "ontoplot:Plot" ||--o{ "LandUseType" : hasLandUseType
     "LandUseType" {
-        rdfs:label name
-        rdfs:comment description
+        rdfs_label name
+        rdfs_comment description
     }
     "opr:LandUseRegulation" ||--o{ "LandUseType" : "opr:appliesTo"
     "opr:LandUseRegulation" ||--o{ "LandUse" : "opr:allowsUse"
