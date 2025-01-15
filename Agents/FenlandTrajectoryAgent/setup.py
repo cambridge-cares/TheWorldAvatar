@@ -19,7 +19,7 @@ setup(
         'datetime==4.7',
         'openpyxl==3.0.10',
         'geomet==1.0.0',
-        'geopandas==0.12.2',
+        'geopandas==1.0.1',
         'shapely==2.0.0',
         'netCDF4==1.6.2',
         'matplotlib==3.6.2',
