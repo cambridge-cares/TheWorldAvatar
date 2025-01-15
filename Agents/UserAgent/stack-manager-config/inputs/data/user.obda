@@ -7,10 +7,10 @@ sla:    https://www.theworldavatar.com/kg/sensorloggerapp/
 [MappingDeclaration] @collection [[
 mappingId   User
 target      mon:person_{id} a mon:Person;
-                mon:personalMailbox {email}^^xsd:string;
-                mon:firstName {first_name}^^xsd:string;
-                mon:lastName {last_name}^^xsd:string;
-                sla:userName {username}^^xsd:string.
+                mon:personalMailbox {email};
+                mon:firstName {first_name};
+                mon:lastName {last_name};
+                sla:userName {username}.
 source      SELECT id, email, first_name, last_name, username
             FROM "keycloak"."user_entity"
 
