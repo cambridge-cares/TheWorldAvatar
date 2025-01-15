@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='equipmentbookingagent',
-    version='0.0.1',
+    version='1.0.0',
     author='Simon Rihm',
     author_email='sdr39@cam.ac.uk',
     license='MIT',
@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.4.3', 'pandas==1.3.5', 'pydantic==1.9.0'],
+    install_requires=['pyderivationagent>=1.4.3', 'pandas>=1.3.5', 'pydantic>=1.9.0'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",

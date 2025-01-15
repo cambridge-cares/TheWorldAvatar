@@ -251,6 +251,25 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         self.performUpdate(update)
         logger.info(f"Booking {booking_iri} was removed.")
         
+    def create_lab_user(self, new_user_name: str, existing_user_iri: str):
+        g=Graph()
+        namespace_iri = getNameSpace(existing_user_iri)
+        new_user_iri = initialiseInstanceIRI(namespace_iri, FIBO_PERSON)
+        new_name_iri = initialiseInstanceIRI(namespace_iri, FIBO_PERSONNAME)
+        g.add((URIRef(new_user_iri), RDF.type, URIRef(FIBO_PERSON)))
+        update = f"""{PREFIX_RDFS} {PREFIX_RDF} INSERT {{
+            <{new_user_iri}> rdf:type <{FIBO_PERSON}> ;
+                <{OMG_HASNAME}> <{new_name_iri}> ;
+                <{OMG_PLAYSROLE}> ?role .
+            <{new_name_iri}> rdfs:label "{new_user_name}" .
+        }}
+        WHERE {{
+            ?role rdf:type <{OMG_FUNCTIONALROLE}> ;
+                rdfs:label "Lab User" .
+        }}"""
+        self.performUpdate(update)
+        logger.info(f"Created user {new_user_iri}.")
+        return new_user_iri
 
     def modify_booking_in_system (self, booking_iri: str, booker_iri: str, booker_person_iri: str, booking_start: datetime, booking_end: datetime):
         booking_iri = trimIRI(booking_iri)

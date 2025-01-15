@@ -1,0 +1,77 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>TWA Equipment Booking</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .button {
+                display: inline-block;
+                padding: 20px 40px;
+                font-size: 18px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                margin: 20px;
+                text-decoration: none;
+            }
+            .button:hover {
+                background-color: #45a049;
+            }
+            .header-container {
+                padding: 20px;
+                background-color: #f2f2f2;
+                margin-bottom: 20px;
+                display: grid;
+                grid-template-columns: 1fr min-content
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header-container">
+            <h1>TWA User Administration</h1>
+            <a href="/" class="button" >Back</a>
+        </div>
+        
+        <span>{{request_response}}</span><br>
+        <h2>Existing Users</h2>
+        <table>
+            <tbody>
+                {% for lab_user in lab_users %}
+                <tr>
+                    <td>{{ lab_user.display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br><br>
+        <h2>Add New User</h2>
+
+        <form action="add_user" method="post">
+
+            <fieldset class="user-def">
+                <legend>New user</legend>
+                <span class="user-def">Please specify the name of new lab user:</span><br><br>
+                <input type="text" id="user_name" name="user_name">
+                
+            </fieldset><br><br>
+            <input type="hidden" name="first_lab_user" value="{{ lab_users[0].iri }}">
+            <br><br>
+            
+            <div>
+                <span>At the moment, lab users can only be added and not edited or deleted.
+                    <br>Please contact developers of TheWorldAvatar if more features needed.</span>
+            </div>
+
+            <br><br>
+
+            <!-- submit button -->
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

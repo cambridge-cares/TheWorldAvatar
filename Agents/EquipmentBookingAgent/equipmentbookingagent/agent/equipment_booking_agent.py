@@ -99,6 +99,9 @@ class EquipmentBookingAgent(ABC):
         # add the route for the equipment booking
         self.app.add_url_rule('/booking', 'equipment_booking', self.booking_page, methods=['GET'])
 
+        # add the route for user administration
+        self.app.add_url_rule('/add_user', 'add_lab_user', self.user_admin_page, methods=['GET','POST'])
+
         # add the route for the booking confirmation
         self.app.add_url_rule('/booking_confirmation', 'booking_confirmation', self.confirmation_page, methods=['POST'])
 
@@ -195,7 +198,7 @@ class EquipmentBookingAgent(ABC):
     def confirmation_page(self):
         if request.method == 'POST':
             parameters = request.form
-            self.logger.info(f"Received a goal request with parameters: {parameters}")
+            self.logger.info(f"Received a booking request with parameters: {parameters}")
 
             errors_list = list()
             if "user_def" in parameters:
@@ -254,6 +257,23 @@ class EquipmentBookingAgent(ABC):
             bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.hasBookingSystem.label, 'id': eq.hasItemInventoryIdentifier,
                               'supplier': eq.isSuppliedBy, 'manufacturer': eq.isManufacturedBy, 'location': eq.isLocatedIn, 
                               'assignee': eq.assignedTo, 'type': eq.clz} for eq in self.sparql_client.get_all_bookable_equipment()],
+        )
+    
+    def user_admin_page(self):
+        if request.method == 'POST':
+            parameters = request.form
+            self.logger.info(f"Received a user creation request with parameters: {parameters}")
+            if parameters['user_name'] != "":
+                new_user = self.sparql_client.create_lab_user(parameters['user_name'],parameters['first_lab_user'])
+                msg = "New user added with IRI " + new_user
+            else:
+                msg = "No new user added. Name cannot be empty!"
+        else:
+            msg = ""
+        return render_template(
+            'equipment_booking_add_user.html',
+            lab_users=[{'iri': usr.instance_iri, 'display': usr.name} for usr in self.sparql_client.get_all_lab_users()],
+            request_response = msg
         )
 
 

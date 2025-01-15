@@ -38,12 +38,18 @@ TIME_TIMEPOSITION = W3C_TIME + 'TimePosition'
 TIME_HASBEGINNING = W3C_TIME + 'hasBeginning'
 TIME_HASEND = W3C_TIME + 'hasEnd'
 
-###--- Some other IRIs ---#
-DBPEDIA_UNIX = 'http://dbpedia.org/resource/Unix_time'
+###--- Some IRIs from FIBO ---###
 FIBO_PERSON = FIBO_P + 'Person'
+FIBO_PERSONNAME = FIBO_P + 'PersonName'
+FIBO_ORGANIZATION = FIBO_O + 'FormalOrganization'
+
+###--- Some IRIs from OMG ---###
 OMG_HASNAME = OMG_D + 'hasName'
 OMG_PLAYSROLE = OMG_R + 'playsRole'
-FIBO_ORGANIZATION = FIBO_O + 'FormalOrganization'
+OMG_FUNCTIONALROLE = OMG_R + 'FunctionalRole'
+
+###--- Some other IRIs ---#
+DBPEDIA_UNIX = 'http://dbpedia.org/resource/Unix_time'
 BOT_CONTAINSELEMENT = BOT + 'containsElement'
 ONTOCAPE_TECHNICALSYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem'
 ONTOBIM_ROOM = ONTOBIM + 'Room'
