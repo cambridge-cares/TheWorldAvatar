@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.agent.useragent;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -17,7 +17,7 @@ import javax.ws.rs.BadRequestException;
 import java.nio.file.Path;
 
 
-@WebServlet(urlPatterns = {"/registerPhone", "/getPhoneIds", "/status"})
+@WebServlet(urlPatterns = {"/registerPhone", "/getPhoneIds", "/registerOuraRing", "/status"})
 public class UserAgent extends JPSAgent {
     private TimelineRDBStoreHelper timelineRdbStoreHelper;
     private KGQueryClient kgQueryClient;
@@ -64,38 +64,75 @@ public class UserAgent extends JPSAgent {
         else if (request.getRequestURI().contains("registerPhone")) {
             validateInputRegisterPhone(requestParams);
 
-            String userId = requestParams.getString("userId");
-            String phoneId = requestParams.getString("phoneId");
-
-            JSONArray jsonArray = timelineRdbStoreHelper.getExistingPhoneIdRecord(phoneId);
-            if (!jsonArray.isEmpty()) {
-                if (jsonArray.getJSONObject(0).getString("user_id").equals(userId)) {
-                    LOGGER.info("Phone has already been registered");
-                    JSONObject result = new JSONObject();
-                    result.put("Comment", "Phone has already been registered");
-                    return result;
-                } else {
-                    LOGGER.error("Phone is already registered with another userId: " + jsonArray.getJSONObject(0).getString("user_id"));
-                    throw new JPSRuntimeException("Phone is already registered with another userId");
-                }
-            }
-
-            timelineRdbStoreHelper.registerPhone(requestParams.getString("phoneId"), requestParams.getString("userId"));
-            JSONObject result = new JSONObject();
-            result.put("Comment", "Phone is registered successfully.");
-            LOGGER.info(phoneId + " is registered to " + userId);
-            return result;
+            return registerPhone(requestParams);
 
         } else if (request.getRequestURI().contains("getPhoneIds")) {
             validateInputGetPhoneIds(requestParams);
-            JSONArray phoneIds = kgQueryClient.getPhoneIds(requestParams.getString("userId"));
-            JSONObject result = new JSONObject();
-            result.put("PhoneIds", phoneIds);
-            result.put("Comment", "Phone ids are retrieved.");
+            JSONObject result = getPhoneIds(requestParams);
             return result;
+        } else if (request.getRequestURI().contains("registerOuraRing")) {
+            validateInputRegisterOuraRing(requestParams);
+            return registerOuraRing(requestParams);
         }
 
         return processRequestParameters(requestParams);
+    }
+
+
+    private JSONObject getPhoneIds(JSONObject requestParams) {
+        JSONArray phoneIds = kgQueryClient.getPhoneIds(requestParams.getString("userId"));
+        JSONObject result = new JSONObject();
+        result.put("PhoneIds", phoneIds);
+        result.put("Comment", "Phone ids are retrieved.");
+        return result;
+    }
+
+
+    private JSONObject registerPhone(JSONObject requestParams) {
+        String userId = requestParams.getString("userId");
+        String phoneId = requestParams.getString("phoneId");
+
+        JSONArray jsonArray = timelineRdbStoreHelper.getExistingPhoneIdRecord(phoneId);
+        if (!jsonArray.isEmpty()) {
+            if (jsonArray.getJSONObject(0).getString("user_id").equals(userId)) {
+                LOGGER.info("Phone has already been registered");
+                JSONObject result = new JSONObject();
+                result.put("Comment", "Phone has already been registered");
+                return result;
+            } else {
+                LOGGER.error("Phone is already registered with another userId: " + jsonArray.getJSONObject(0).getString("user_id"));
+                throw new JPSRuntimeException("Phone is already registered with another userId");
+            }
+        }
+
+        timelineRdbStoreHelper.registerPhone(requestParams.getString("phoneId"), requestParams.getString("userId"));
+        JSONObject result = new JSONObject();
+        result.put("Comment", "Phone is registered successfully.");
+        LOGGER.info(phoneId + " is registered to " + userId);
+        return result;
+    }
+
+    private JSONObject registerOuraRing(JSONObject requestParams) {
+        String userId = requestParams.getString("userId");
+        String ouraRingApi = requestParams.getString("ouraRingApiKey");
+        JSONArray jsonArray = timelineRdbStoreHelper.getExistingOuraRingRecord(ouraRingApi);
+        if (!jsonArray.isEmpty()) {
+            if (jsonArray.getJSONObject(0).getString("user_id").equals(userId)) {
+                LOGGER.info("Oura ring has already been registered");
+                JSONObject result = new JSONObject();
+                result.put("Comment", "Oura ring has already been registered");
+                return result;
+            } else {
+                LOGGER.error("Oura ring is already registered with another userId: " + jsonArray.getJSONObject(0).getString("user_id"));
+                throw new JPSRuntimeException("Oura ring is already registered with another userId");
+            }
+        }
+
+        timelineRdbStoreHelper.registerOuraRing(ouraRingApi, userId);
+        JSONObject result = new JSONObject();
+        result.put("Comment", "Oura ring is registered successfully.");
+        LOGGER.info(ouraRingApi + " is registered to " + userId);
+        return result;
     }
 
     private void validateInputRegisterPhone(JSONObject requestParams) throws BadRequestException {
@@ -105,6 +142,17 @@ public class UserAgent extends JPSAgent {
         }
         if (!requestParams.has("phoneId")) {
             throw new BadRequestException("No phone id provided");
+        }
+        
+    }
+
+    private void validateInputRegisterOuraRing(JSONObject requestParams) throws BadRequestException {
+        LOGGER.debug("Request received: " + requestParams.toString());
+        if (!requestParams.has("userId")) {
+            throw new BadRequestException("No user id provided");
+        }
+        if (!requestParams.has("ouraRingApiKey")) {
+            throw new BadRequestException("No oura ring api key provided");
         }
     }
 
