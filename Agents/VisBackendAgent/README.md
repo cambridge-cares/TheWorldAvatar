@@ -634,19 +634,28 @@ base:NameOfConceptShape
   a sh:NodeShape ;
   sh:targetClass base:Concept ;
   sh:property [
-    sh:name "dropdown" ;
+    sh:name "subclass dropdown" ;
     sh:order 1 ;
-    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections" ;
-    sh:path base:hasDropdownOptions ;
-    sh:in base:DropdownOption ;
+    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from the target class and its subclasses" ;
+    sh:path ontoexample:hasDropdownOptions ;
+    sh:in ontoexample:DropdownOption ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "instance dropdown" ;
+    sh:order 2 ;
+    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from instances associated with the target class" ;
+    sh:path ontoexample:hasDropdownForInstances ;
+    sh:class ontoexample:ExampleClass ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
   ] ;
   sh:property [
     sh:name "text input";
     sh:description "A sample property showing the structure for creating a new text input field" ;
-    sh:order 2 ;
-    sh:path base:hasInput ;
+    sh:order 3 ;
+    sh:path ontoexample:hasInput ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -654,8 +663,8 @@ base:NameOfConceptShape
   sh:property [
     sh:name "number input";
     sh:description "A sample property showing the structure for creating a new numerical input field" ;
-    sh:order 3 ;
-    sh:path base:hasInput ;
+    sh:order 4 ;
+    sh:path ontoexample:hasInput ;
     sh:datatype xsd:decimal ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -663,8 +672,8 @@ base:NameOfConceptShape
   sh:property [
     sh:name "date input";
     sh:description "A sample property showing the structure for creating a new date input field" ;
-    sh:order 4 ;
-    sh:path base:hasInput ;
+    sh:order 5 ;
+    sh:path ontoexample:hasInput ;
     sh:datatype xsd:date ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -672,8 +681,8 @@ base:NameOfConceptShape
   sh:property [
     sh:name "group" ;
     sh:description "A sample property showing the structure for creating a new property group" ;
-    sh:order 5 ;
-    sh:path base:hasGroup ;
+    sh:order 6 ;
+    sh:path ontoexample:hasGroup ;
     sh:node base:NestedConceptShape ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -681,16 +690,41 @@ base:NameOfConceptShape
 
 base:NestedConceptShape
   a sh:NodeShape ;
-  sh:targetClass base:NestedConcept ;
+  sh:targetClass ontoexample:NestedConcept ;
   sh:property [
     sh:name "nested input" ;
     sh:order 1 ;
     sh:description "A sample property showing the structure for creating a nested property input as part of a group" ;
-    sh:path base:hasNestedProperty ;
+    sh:path ontoexample:hasNestedProperty ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
   ] .
+
+base:ExampleClassShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:ExampleClass ;
+  sh:property [
+    sh:name "id";
+    sh:description "Identifier for the example class instance.";
+    sh:order 1;
+    sh:path (
+      rdfs:label
+      [sh:inversePath rdfs:label]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "name";
+    sh:description "Name of the example class instance.";
+    sh:order 2;
+    sh:path rdfs:label ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
 ```
 
 > [!IMPORTANT]
