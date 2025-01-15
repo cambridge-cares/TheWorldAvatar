@@ -306,7 +306,7 @@ public class GeocodingService {
    */
   private double[] parseCoordinates(String geoPoint) {
     // REGEX for `POINT(Longitude Latitude)` format
-    Pattern pattern = Pattern.compile("POINT\\((\\d+\\.\\d+), ?(\\d+\\.\\d+)\\)");
+    Pattern pattern = Pattern.compile("POINT\\((\\d+\\.\\d+),? ?(\\d+\\.\\d+)\\)");
     Matcher matcher = pattern.matcher(geoPoint);
 
     if (matcher.matches()) {
