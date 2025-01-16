@@ -385,7 +385,6 @@ flowchart TD
     DeliveryOccurrence -. cmns-dt:succeeds .-> DispatchOccurrence
     DeliveryOccurrence -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
     DeliveryOccurrence -. fibo-fnd-rel-rel:exchanges .-> Bin[[ontowm:Bin]]
-    DeliveryOccurrence -. ontoservice:hasTotalPrice .-> TotalPrice[[ontoservice:TotalPrice]]
     DeliveryEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DeliveryOccurrence
 
     StageOccurrence  -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[["<h4>fibo-fnd-dt-fd:RegularSchedule</h4><p style='font-size:0.75rem;'>fibo-fnd-dt-fd:hasCount &quot;xsd:integer&quot;</p>"]]:::literal
