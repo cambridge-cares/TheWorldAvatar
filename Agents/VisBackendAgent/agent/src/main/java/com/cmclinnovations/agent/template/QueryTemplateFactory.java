@@ -36,6 +36,7 @@ public class QueryTemplateFactory {
   private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
+  private static final String INSTANCE_CLASS_VAR = "instance_clazz";
   private static final String ORDER_VAR = "order";
   private static final String IS_OPTIONAL_VAR = "isoptional";
   private static final String IS_PARENT_VAR = "isparent";
@@ -306,13 +307,13 @@ public class QueryTemplateFactory {
     // Parse the isclass variable if it exists, or else defaults to false
     String isClassVal = binding.getFieldValue(IS_CLASS_VAR);
     boolean isClassVar = isClassVal != null ? Boolean.parseBoolean(isClassVal) : false;
-
+    String instanceClass = binding.getFieldValue(INSTANCE_CLASS_VAR);
     // For existing mappings,
     if (queryLineMappings.containsKey(propertyName)) {
       SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
       // Update the mapping with the extended predicates
       queryLineMappings.put(propertyName,
-          new SparqlQueryLine(propertyName,
+          new SparqlQueryLine(propertyName, instanceClass,
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
               currentQueryLine.subjectFilter(), currentQueryLine.isOptional(), isClassVar));
@@ -342,8 +343,8 @@ public class QueryTemplateFactory {
         multiPartPredicate = parsePredicate(parentLine.predicate(), multiPartPredicate);
       }
       queryLineMappings.put(propertyName,
-          new SparqlQueryLine(propertyName, multiPartPredicate, multiPartLabelPredicate, subjectVar, isOptional,
-              isClassVar));
+          new SparqlQueryLine(propertyName, instanceClass, multiPartPredicate, multiPartLabelPredicate, subjectVar,
+              isOptional, isClassVar));
     }
     return parentNode;
   }
@@ -388,6 +389,12 @@ public class QueryTemplateFactory {
         StringResource.appendTriple(currentLine, "?iri", jointPredicate,
             // Note to add a _ to the property
             ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()));
+      }
+      // If this is an instance, add a statement targeting the exact class
+      if (queryLine.instanceClass() != null) {
+        StringResource.appendTriple(currentLine,
+            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()), "rdf:type",
+            StringResource.parseIriForQuery(queryLine.instanceClass()));
       }
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {

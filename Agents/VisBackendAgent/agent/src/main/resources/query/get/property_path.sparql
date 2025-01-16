@@ -1,7 +1,7 @@
 PREFIX sh:             <http://www.w3.org/ns/shacl#>
 PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
 
-SELECT DISTINCT ?clazz ?name ?nodename ?subject ?isparent ?isoptional ?isnumber ?multipath ?multipath_proppath
+SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodename ?subject ?isparent ?isoptional ?isnumber ?multipath ?multipath_proppath
 WHERE{
   ?shape rdf:type sh:NodeShape ;
          sh:targetClass ?clazz ;
@@ -45,8 +45,8 @@ WHERE{
   BIND(BOUND(?datatype) && (?datatype = xsd:integer || ?datatype =xsd:decimal) AS ?isnumber)
   
   # Retrieve results for non-regular schedules
-  OPTIONAL{?property sh:class ?class}
-  FILTER(!BOUND(?class) || ?class != fibo-fnd-dt-fd:RegularSchedule)
+  OPTIONAL{?property sh:class ?instance_clazz}
+  FILTER(!BOUND(?instance_clazz) || ?instance_clazz != fibo-fnd-dt-fd:RegularSchedule)
 
   # Only retrieve results if there is either a multipath
   FILTER(BOUND(?multipath))
