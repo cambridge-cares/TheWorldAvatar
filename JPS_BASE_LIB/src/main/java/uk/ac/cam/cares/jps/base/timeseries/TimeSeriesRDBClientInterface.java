@@ -384,6 +384,15 @@ interface TimeSeriesRDBClientInterface<T> {
      */
     String checkAnyDataHasTimeSeries(List<String> dataIRIs, Connection conn);
 
+    /**
+     * Add columns to an existing time series
+     * 
+     * @param dataIRIs    list of data IRI
+     * @param dataClasses corresponding class of data
+     * @param tsIri       IRI of time series
+     * @param srid        srid for geometry types
+     * @param conn        SQL connection to RDB
+     */
     void addColumnsToExistingTimeSeries(List<String> dataIRIs, List<Class<?>> dataClasses, String tsIri, Integer srid,
             Connection conn);
 
