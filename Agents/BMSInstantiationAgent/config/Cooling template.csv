@@ -1,0 +1,12 @@
+CoolingEnergy_IRI,https://www.theworldavatar.com/kg/ontobms/V_BTU_FCU6_kWh
+CoolingEnergy_IRI_label,FCU-06 BTU kWh
+CoolingDuty_IRI,https://www.theworldavatar.com/kg/ontobms/V_BTU_FCU6_kW
+CoolingDuty_IRI_label,FCU-06 BTU kW
+,
+[ADD ALL INSTANTIATED DEVICES REQUIRING HAS INPUT PROPERTY],
+"Input,https://www.theworldavatar.com/kg/ontobms/St-",
+"Input,https://www.theworldavatar.com/kg/ontobms/CHW-",
+,
+[ADD ALL INSTANTIATED DEVICES REQUIRING HAS OUTPUT PROPERTY],
+"Output,https://www.theworldavatar.com/kg/ontobms/St-",
+"Output,https://www.theworldavatar.com/kg/ontobms/CHW-",

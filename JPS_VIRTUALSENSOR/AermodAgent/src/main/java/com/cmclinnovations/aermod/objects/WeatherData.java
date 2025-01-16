@@ -1,5 +1,7 @@
 package com.cmclinnovations.aermod.objects;
 
+import org.glassfish.hk2.api.Self;
+
 public class WeatherData {
     // comments on the right indicates unit stored in KG
     private double temperature; // celcius
@@ -46,7 +48,12 @@ public class WeatherData {
     }
 
     public long getWindDirectionInTensOfDegrees() {
-        return Math.round(windDirection / 10);
+        long wd = Math.round(windDirection / 10);
+        if (wd == 0 && getWindSpeedInKnots() > 0) {
+            // wind direction can only be zero if it is calm (wind speed = 0)
+                wd = 36;
+            }
+        return wd;
     }
 
     /**

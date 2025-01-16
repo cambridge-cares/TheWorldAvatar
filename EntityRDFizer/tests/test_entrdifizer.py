@@ -114,7 +114,8 @@ def compareOwlFiles(targetOWLFile, refOWLFile):
 ('ontocropenergy','ontocropenergy_abox.csv', False),
 ('ontokgrouter','ontokgrouter_abox.csv', False),
 ('ontolanduse','ontolanduse_abox.csv', False),
-('ontocompchem','ontocompchem_abox.csv', False)
+('ontocompchem','ontocompchem_abox.csv', False),
+('ontozeolite','ontozeolite_abox.csv', False)
 ]
 )
 def test_csv2abox(testDir, testFile, regenerateResult, regenerateAllResults=False):

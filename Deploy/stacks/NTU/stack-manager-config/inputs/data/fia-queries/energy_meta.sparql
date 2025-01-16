@@ -1,0 +1,132 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontocape: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+prefix powsys: <http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#>
+prefix powsysReal: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+prefix math: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        BIND ("Building Name" AS ?Property)
+        [IRI] rdfs:label ?Value .
+    } UNION {
+        BIND ("PV Panel Area" AS ?Property)
+        [IRI] ontocape:contains ?pv .
+        ?pv powsysReal:hasPanelArea ?area .
+        ?area ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Individual Panel Length" AS ?Property)
+        [IRI] ontocape:contains ?pv .
+        ?pv powsysReal:hasPanelLength ?length .
+        ?length ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Individual PV Panel Width" AS ?Property)
+        [IRI] ontocape:contains ?pv .
+        ?pv powsysReal:hasPanelWidth ?width .
+        ?width ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Individual PV Panel Efficiency" AS ?Property)
+        [IRI] ontocape:contains ?pv .
+        ?pv powsysReal:hasRatedEfficiency ?efficiency .
+        ?efficiency ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("PV Panel Temerature Coefficient" AS ?Property)
+        [IRI] ontocape:contains ?pv .
+        ?pv powsysReal:hasTemperatureCoeffOfPower ?coefficient .
+        ?coefficient ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("PV Panel Tilt Angle" AS ?Property)
+        [IRI] ontocape:contains ?pv .
+        ?pv powsysReal:hasTiltAngle ?angle .
+        ?angle ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Bus Number" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "BusNumber"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Bs" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "Bs"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Area" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "Area"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Vm Min" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "VmMin"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Vm Max" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "VmMax"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Zone" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "Zone"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Vm" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "Vm"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Va" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "Va"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Base KV" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "baseKV"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Gs" AS ?Property)
+        [IRI] powsys:hasBusNode ?bs .
+        ?bs ontocape:isModeledBy ?model .
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "Gs"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    }
+
+}

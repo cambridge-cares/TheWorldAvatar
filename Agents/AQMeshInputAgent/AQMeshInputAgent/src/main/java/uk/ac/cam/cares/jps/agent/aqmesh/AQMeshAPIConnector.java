@@ -205,7 +205,8 @@ public class AQMeshAPIConnector {
     /**
      * Retrieves and sets the location of the AQMesh
      */
-    private void setLocation() throws IOException, JSONException {
+    public JSONObject setLocation() throws IOException, JSONException {
+        JSONArray responseBody;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet assetRequest = new HttpGet(api_url + ASSETS_PATH);
             setTokenAuthorization(assetRequest);
@@ -213,7 +214,7 @@ public class AQMeshAPIConnector {
             try (CloseableHttpResponse response = httpclient.execute(assetRequest)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
-                        JSONArray responseBody = new JSONArray(EntityUtils.toString(response.getEntity()));
+                        responseBody = new JSONArray(EntityUtils.toString(response.getEntity()));
                         if (responseBody.isEmpty()) {
                             throw new JSONException("No assets available in returned JSON Array.");
                         }
@@ -225,6 +226,7 @@ public class AQMeshAPIConnector {
                 else {
                     throw new HttpResponseException(status, "Could not retrieve location number.");
                 }
+                return responseBody.getJSONObject(podIndex);
             }
         }
     }

@@ -1,0 +1,20 @@
+Provide a catalog of compounds exhibiting {PropertyName} exceeding {value}.
+Enumerate the molecules in which the {PropertyName} surpasses {value}.
+List the species possessing a {PropertyName} value greater than {value}.
+Share a compilation of substances with {PropertyName} levels above {value}
+Outline the molecules that demonstrate {PropertyName} values higher than {value}.
+Detail the compounds with {PropertyName} exceeding the threshold of {value}.
+Present a roster of species with {PropertyName} that is greater than {value}.
+Specify the substances exhibiting {PropertyName} values surpassing {value}
+Illustrate the molecular entities that possess {PropertyName} levels higher than {value}.
+Catalog the compounds in which {PropertyName} exceeds {value}.
+Identify the molecules with {PropertyName} values higher than {value}.
+Outline the species showcasing {PropertyName} levels above {value}.
+Enumerate the compounds demonstrating {PropertyName} surpassing {value}
+List the molecular entities that have {PropertyName} greater than {value}.
+Share a compilation of substances with {PropertyName} levels exceeding {value}
+Provide a roster of species in which {PropertyName} is higher than {value}.
+Specify the substances that exhibit {PropertyName} values surpassing {value}.
+Illustrate the molecular compounds that possess {PropertyName} levels higher than {value}.
+Catalog the entities with {PropertyName} exceeding {value}.
+Identify the species with {PropertyName} values higher than {value}.

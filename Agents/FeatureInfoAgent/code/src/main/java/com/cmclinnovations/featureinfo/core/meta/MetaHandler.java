@@ -2,8 +2,7 @@ package com.cmclinnovations.featureinfo.core.meta;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +34,7 @@ public class MetaHandler {
     /**
      * Optional enforced Blazegraph URL.
      */
-    private final String enforcedEndpoint;
+    private final Optional<String> enforcedEndpoint;
     
     /**
      * Configuration store.
@@ -54,7 +53,7 @@ public class MetaHandler {
      * @param enforcedEndpoint optional enforced Blazegraph URL.
      * @param configStore Store of class mappings and stack endpoints.
      */
-    public MetaHandler(String iri, String enforcedEndpoint, ConfigStore configStore) {
+    public MetaHandler(String iri, Optional<String> enforcedEndpoint, ConfigStore configStore) {
         this.iri = iri;
         this.enforcedEndpoint = enforcedEndpoint;
         this.configStore = configStore;
@@ -74,11 +73,10 @@ public class MetaHandler {
      * the first linked SPARQL query before executing it and returning the result.
      * 
      * @param classMatches configuration entries that contain class matches.
-     * @param response HTTP response to write to.
      * 
      * @return JSONArray of query result.
      */
-    public JSONObject getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+    public JSONObject getData(List<ConfigEntry> classMatches) {
         List<JSONArray> rawResults = new ArrayList<>();
         
         // Iterate through each matching query

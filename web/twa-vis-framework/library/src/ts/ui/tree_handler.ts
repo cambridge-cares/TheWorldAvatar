@@ -4,12 +4,27 @@
 class TreeHandler {
     
     /**
+     * Optional callbacks that fire with two lists of layerIDs (visible, hidden)
+     * when any change in the tree's selection state takes place.
+     */
+    private treeSelectionCallbacks = [];
+
+    /**
+     * Adds a callback that will fire fire with two lists of layerIDs (visible, hidden)
+     * when any change in the tree's selection state takes place.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+    public addTreeSelectionCallback(treeSelectionCallback) {
+        this.treeSelectionCallbacks.push(treeSelectionCallback);
+    }
+
+    /**
      * Triggers when any selection states in the tree change.
      */
     private registerEvents(dataStore: DataStore) {
-
         // Triggers when check events complete
-        // @ts-ignore
+        let self  = this;
         $("#treeview").on("CheckUncheckDone", function() {
 
             // Get all checked nodes
@@ -47,7 +62,11 @@ class TreeHandler {
                     hidden.forEach(layer => CesiumUtils.toggleLayer(layer, false));
                 break;
             }
-          
+
+            // Fire state change callbacks
+            self.treeSelectionCallbacks.forEach(callback => {
+                callback(visible, hidden);
+            });
         });
     }
 

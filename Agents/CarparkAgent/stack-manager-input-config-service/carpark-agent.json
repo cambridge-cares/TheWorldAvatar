@@ -1,0 +1,55 @@
+{
+  "ServiceSpec": {
+    "Name": "carpark-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/carpark-agent:1.0.0",
+        "Env": [
+					"CARPARK_AGENTPROPERTIES=/usr/local/tomcat/config/agent.properties",
+          "CARPARK_APIPROPERTIES=/usr/local/tomcat/config/api.properties",
+          "CARPARK_CLIENTPROPERTIES=/usr/local/tomcat/config/client.properties",
+          "CARPARK_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings",
+          "LAYERNAME=carparks",
+          "DATABASE=postgres",
+          "GEOSERVER_WORKSPACE=carparks"
+
+				],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/CarparkAgent/config",
+            "Target": "/usr/local/tomcat/config"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+              "ConfigName": "postgis"
+          },
+          {
+              "ConfigName": "geoserver"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "blazegraph_password"
+          },
+          {
+              "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/carpark-agent/",
+      "externalPath": "/carpark-agent/"
+    }
+  }
+}

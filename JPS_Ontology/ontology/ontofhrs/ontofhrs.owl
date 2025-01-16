@@ -1,0 +1,1088 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/OntoFHRS/"
+     xml:base="http://www.theworldavatar.com/ontology/OntoFHRS/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:OntoFHRS="http://www.theworldavatar.com/ontology/OntoFHRS/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/">
+        <dc:date>12 November 2024</dc:date>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment>OntoFHRS is an ontology developed for representing food hygiene ratings of business establishments.</rdfs:comment>
+        <owl:versionInfo>1</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#wktLiteral -->
+
+
+    <rdfs:Datatype rdf:about="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#inPeriod -->
+
+
+    <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#inPeriod">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingEnd"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingStart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://ies.data.gov.uk/ontology/ies4#ParticularPeriod"/>
+        <rdfs:comment>An object property relating the start or end of an entity or event to a specific period.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>in period</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#isEndOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#isEndOf">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingEnd"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>An object property representing the end date of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>is end of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#isStartOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#isStartOf">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingStart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>An object property representing the start date of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>is start of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasAddress -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasAddress">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:comment>An object property referring to the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has address</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasCity -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasCity">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:range rdf:resource="https://dbpedia.org/ontology/City"/>
+        <rdfs:comment>An object property referring to the city provided in the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has city</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasConfidenceInManagementScore -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasConfidenceInManagementScore">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/ConfidenceInManagementScore"/>
+        <rdfs:comment>An object property referring to the confidence in management score of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has confidence in management score</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasCountry -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasCountry">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:range rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:comment>An object property referring to the country provided in the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has country</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasDistrictCouncil -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasDistrictCouncil">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/DistrictCouncil"/>
+        <rdfs:comment>An object property referring to the district council a business establishment is located.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has district council</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasHygieneScore -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasHygieneScore">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/HygieneScore"/>
+        <rdfs:comment>An object property referring to the hygiene score of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has hygiene score</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasLocalAuthority -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasLocalAuthority">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority"/>
+        <rdfs:comment>An object property referring to the local authority of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has local authority</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasRating -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasRating">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Rating"/>
+        <rdfs:comment>An object property referring to the rating of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has rating</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasRatingScheme -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasRatingScheme">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Rating"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/RatingScheme"/>
+        <rdfs:comment>An object property referring to the rating scheme used to calculate the rating of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has rating scheme</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasRegion -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasRegion">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:range rdf:resource="https://dbpedia.org/ontology/Region"/>
+        <rdfs:comment>An object property referring to the region provided in the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has region</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasStructuralScore -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasStructuralScore">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/StructuralScore"/>
+        <rdfs:comment>An object property referring to the structural score of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has structural score</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation -->
+
+
+    <owl:DatatypeProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#ParticularPeriod"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>iso 8601 period representation</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ontology.eil.utoronto.ca/icontact.owl#hasStreet -->
+
+
+    <owl:DatatypeProperty rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#hasStreet">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the name of the street in the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has street</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#asWKT -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.opengis.net/ont/geosparql"/>
+        <rdfs:label>as WKT</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasEmailAddress -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasEmailAddress">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that denotes the official email address of a local authority, facilitating electronic communication and inquiries.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has email address</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasFHRSID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasFHRSID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the FHRS identifier of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has fhrs id</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasKey -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasKey">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Rating"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the key of the rating of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has key</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasLocalAuthorityBusinessID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasLocalAuthorityBusinessID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the business identifier assigned by a local authority to a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has local authority business id</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasLocalAuthorityCode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasLocalAuthorityCode">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the unique identifier code assigned to a local authority.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has local authority code</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasName">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/DistrictCouncil"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the human-readable identifier or name of an entity, such as a business establishment, local authority, and district council.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasPostcode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasPostcode">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the postcode in the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has postcode</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasStreetNumber -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasStreetNumber">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#Address"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that denotes the street number component in the address of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has street number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasValue">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Rating"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Score"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the value of the rating or hygiene score of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/hasWebsite -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/hasWebsite">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:comment>A datatype property that denotes the official web address (URL) of a local authority, providing access to its online resources and services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>has website</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/indicatesQuality -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/indicatesQuality">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Rating"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A datatype property that represents the quality of the rating of a business establishment. The quality can be very good, good, generally satisfactory, improvement necessary, major improvement necessary or urgent improvement necessary.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>indicates quality</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/isNewRatingPending -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/isNewRatingPending">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>A datatype property that indicates whether a business establishment is awaiting the assignment of a new rating.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>is new rating pending</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#Address -->
+
+
+    <owl:Class rdf:about="http://ies.data.gov.uk/ontology/ies4#Address">
+        <rdfs:comment>A collection of information required to identify the exact place or location of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>Address</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#BoundingState -->
+
+
+    <owl:Class rdf:about="http://ies.data.gov.uk/ontology/ies4#BoundingState">
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>Bounding State</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#ParticularPeriod -->
+
+
+    <owl:Class rdf:about="http://ies.data.gov.uk/ontology/ies4#ParticularPeriod">
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>Particular Period</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Bar -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Bar">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that serves alcoholic drinks.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Bar</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/BedandBreakfast -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BedandBreakfast">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A small-scale lodging establishment, typically in a private home, that provides overnight stay and breakfast to travellers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Bed and Breakfast</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment">
+        <rdfs:comment>An establishment dedicated to commercial activities, goods production, processing, storage, or offering services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Business Establishment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd">
+        <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isEndOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The date of decommissioning or closure of a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Business Establishment End</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart">
+        <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isStartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Tthe official date when the business began operations or was inaugurated.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Business Establishment Start</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Cafe -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Cafe">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment where people can drink coffee, tea, and other beverages and eat light meals and snacks.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Cafe</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Canteen -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Canteen">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that serves food and drinks in educational institutions, workplaces, or other organisations.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Canteen</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/CaringPremiseFoodFacility -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/CaringPremiseFoodFacility">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A food facility within a caring premise that provides meals and snacks tailored to the dietary needs of residents.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Caring Premise Food Facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/CateringPremise -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/CateringPremise">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A food establishment that generally serves food to be consumed on its premises.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Catering Premise</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/ChildcarePremiseFoodFacility -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/ChildcarePremiseFoodFacility">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A food facility within a childcare centre serving meals and snacks to children.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Childcare Premise Food Facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/CollegeCanteen -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/CollegeCanteen">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Canteen"/>
+        <rdfs:comment>A canteen that offers food and drinks to students, faculty and staff on a college campus.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>College Canteen</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/ConfidenceInManagementScore -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/ConfidenceInManagementScore">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Score"/>
+        <rdfs:comment>A score indicating the adequacy of implementing food safety management procedures, staff training, and awareness of potential hazards in a business establishment that serves or sells food and drinks. The score can be 0, 5, 10, 20 or 30. The lower the score, the better. The following document provides a detailed description of the confidence in management score: https://www.ncass.org.uk/wp-content/uploads/2023/01/Food-Hygiene-Rating-Scheme-Guide.pdf.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Confidence In Management Score</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/DistrictCouncil -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/DistrictCouncil">
+        <rdfs:comment>An administrative unit with responsibilities for providing rubbish collection, recreational, environmental, and other services within the associated geographical boundary.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>District council</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/FarmerFoodFacility -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/FarmerFoodFacility">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment where farmers process, package and sell locally produced food or drink.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Farmer Food Facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/FoodDistributor -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/FoodDistributor">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that distributes food products from manufacturers and producers to retailers, restaurants and other outlets.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Food Distributor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/FoodManufacturer -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/FoodManufacturer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that processes raw ingredients into consumable food products.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Food Manufacturer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/FoodPacker -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/FoodPacker">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that packages food products for shipment, distribution, delivery and consumption.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Food Packer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/FoodRetailer -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/FoodRetailer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that sells food products directly to the public, end users or consumers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Food Retailer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/FoodTransporter -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/FoodTransporter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that transports food products from manufacturers and producers to retailers, restaurants and other outlets.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Food Transporter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/GrowerFoodFacility -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/GrowerFoodFacility">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment where growers sell locally produced food products or drink.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Grower Food Facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/GuestHouse -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/GuestHouse">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A lodging establishment in a private house, usually smaller than a hotel, that offers travellers overnight stays and occasionally meals.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Guest House</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/HospitalPremiseFoodFacility -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/HospitalPremiseFoodFacility">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment within a hospital that serves food and beverages to patients, staff, and visitors.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Hospital Premise Food Facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Hotel -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Hotel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that provides travellers lodging, meals and other services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Hotel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/HygieneScore -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/HygieneScore">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Score"/>
+        <rdfs:comment>A score indicating the food safety and hygiene of a business establishment that serves or sells food and drinks. The score can be 0, 5, 10, 15, 20 or 25. The lower the score, the better. The following document provides a detailed description of the hygiene score: https://www.ncass.org.uk/wp-content/uploads/2023/01/Food-Hygiene-Rating-Scheme-Guide.pdf.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Hygiene Score</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Hypermarket -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Hypermarket">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A large-scale supermarket often located on the outskirts of a city, offering a vast array of goods including groceries, clothes, furniture, and household items.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Hypermarket</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/LocalAuthority">
+        <rdfs:comment>An organisation that is officially responsible for overseeing all public services and amenities within a specific region, guided by the local government.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Local Authority</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/MobileCaterer -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/MobileCaterer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that serves food and drinks from a vehicle that can move from one location to another.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Mobile Caterer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/NightClub -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/NightClub">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that remains open until late at night, offering food and drink alongside entertainment such as live music, dance performances, and dancing opportunities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Night Club</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Pub -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Pub">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that serves alcoholic drinks, especially beer, as well as other beverages, and often offers light meals.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Pub</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Rating -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Rating">
+        <rdfs:comment>The level of standard maintained by a business establishment for food safety and preparation,  on a scale from 5, indicating very good, to 0 indicating urgent improvement required. The following document provides a detailed description of the Food Hygiene Rating Scheme: https://www.ncass.org.uk/wp-content/uploads/2023/01/Food-Hygiene-Rating-Scheme-Guide.pdf.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Rating</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/RatingEnd -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingEnd">
+        <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isEndOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The date on which a rating of a business establishment expired.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Rating End</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/RatingScheme -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingScheme">
+        <rdfs:comment>A scheme to assess hygiene practices, food handling, structural conditions, and management procedures of business establishments serving or selling food and drinks.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Rating Scheme</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/RatingStart -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingStart">
+        <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isStartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The initial date when a rating became effective for a business establishment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Rating Start</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Restaurant -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Restaurant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment where people can consume food and drinks.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Restaurant</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/SandwichShop -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/SandwichShop">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A food establishment that generally sells a variety of sandwiches, often prepared on the premises.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Sandwich Shop</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/SchoolCanteen -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/SchoolCanteen">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Canteen"/>
+        <rdfs:comment>A canteen that offers food and drinks to students and staff in a school.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>School Canteen</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Score -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Score">
+        <rdfs:comment>A quantitative measure indicating the overall quality, including food safety and hygiene, structural adequacy, and food safety management procedure of a business establishment that serves or sells food and drinks.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Score</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/StructuralScore -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/StructuralScore">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Score"/>
+        <rdfs:comment>A score indicating the level of structural adequacy required to operate safely and the design layout that prevents cross-contamination in a business establishment that serves or sells food and drinks. The score can be 0, 5, 10, 15, 20 or 25. The lower the score, the better. The following document provides a detailed description of the structural score: https://www.ncass.org.uk/wp-content/uploads/2023/01/Food-Hygiene-Rating-Scheme-Guide.pdf.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Structural Score</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Supermarket -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Supermarket">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A business establishment that sells groceries, food, dairy products and household items.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Supermarket</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/Takeaway -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/Takeaway">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+        <rdfs:comment>A food establishment that sells cooked food to be eaten elsewhere, away from its premises.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>Takeaway</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoFHRS/UniversityCanteen -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/UniversityCanteen">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/Canteen"/>
+        <rdfs:comment>A canteen located on a university campus that offers food and beverages to students, faculty, staff, and sometimes visitors.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:label>University Canteen</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://dbpedia.org/ontology/City -->
+
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/City">
+        <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
+        <rdfs:label>City</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://dbpedia.org/ontology/Country -->
+
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/Country">
+        <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
+        <rdfs:label>Country</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://dbpedia.org/ontology/Region -->
+
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/Region">
+        <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
+        <rdfs:label>Region</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

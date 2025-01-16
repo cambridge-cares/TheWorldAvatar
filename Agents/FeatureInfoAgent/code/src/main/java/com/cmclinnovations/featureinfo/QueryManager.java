@@ -3,7 +3,6 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
@@ -19,6 +18,8 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.core.ClassHandler;
 import com.cmclinnovations.featureinfo.core.meta.MetaHandler;
 import com.cmclinnovations.featureinfo.core.time.TimeHandler;
+import com.cmclinnovations.featureinfo.core.trajectory.TrajectoryHandler;
+import com.cmclinnovations.featureinfo.objects.Request;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -28,7 +29,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * the agent's /get route.
  */
 public class QueryManager {
-    
+
     /**
      * Logger for reporting info/errors.
      */
@@ -48,11 +49,6 @@ public class QueryManager {
      * Internal time series handling.
      */
     private TimeSeriesClient<Instant> tsClient;
-    
-    /**
-     * Optional enforced URL endpoint for all KG queries.
-     */
-    private String enforcedEndpoint;
 
     /**
      * Initialise a new QueryManager instance.
@@ -69,8 +65,8 @@ public class QueryManager {
      * @param kgClient Connection to the KG(s).
      */
     public void setClients(
-        RemoteStoreClient kgClient,
-        TimeSeriesClient<Instant> tsClient) {
+            RemoteStoreClient kgClient,
+            TimeSeriesClient<Instant> tsClient) {
 
         this.kgClient = kgClient;
         this.tsClient = tsClient;
@@ -101,78 +97,74 @@ public class QueryManager {
      * - Get time series data from the relational database.
      * - Format and return as JSON.
      * 
-     * @param requestParams HTTP request parameters.
+     * @param request  Request object containing parameters.
      * @param response HTTP response to write back to.
      * 
      * @return resulting JSON of discovered meta and time series data.
      * 
      * @throws IOException if response cannot be written to.
      */
-    public JSONObject processRequest(JSONObject requestParams, HttpServletResponse response) throws IOException {
+    public JSONObject processRequest(Request request, HttpServletResponse response) throws IOException {
 
-        // Get the feature IRI
-        String iri = (requestParams.has("iri")) ? requestParams.getString("iri") : requestParams.getString("IRI");
-        LOGGER.info("Incoming IRI is: {}", iri);
+        LOGGER.info("Incoming IRI is: {}", request.getIri());
+        request.getEndpoint().ifPresentOrElse(
+                endpoint -> LOGGER.info("Incoming enforced endpoint is: {}", endpoint),
+                () -> LOGGER.info("No incoming enforced endpoint, will attempt federation."));
 
-        // Get the enforced endpoint (if set)
-        if(requestParams.has("endpoint") || requestParams.has("ENDPOINT")) {
-            this.enforcedEndpoint = (requestParams.has("endpoint")) ?
-                requestParams.getString("endpoint") :
-                requestParams.getString("ENDPOINT");
-
-            LOGGER.info("Incoming enforced endpoint is: {}", this.enforcedEndpoint);
-        } else {
-            LOGGER.info("No incoming enforced endpoint, will attempt federation.");
-        }
-
-     
         // Determine class matches
         List<ConfigEntry> classMatches = null;
         try {
-            classMatches = this.determineClasses(iri, response);
-        } catch(IOException exception) {
+            classMatches = this.determineClasses(request, response);
+        } catch (IOException exception) {
             return null;
         }
 
         // Get meta data
-        JSONObject metadata = getMeta(iri, classMatches, response);
+        JSONObject metadata = getMeta(request, classMatches);
 
         // Get time data
-        JSONArray timedata = getTime(iri, classMatches, response);
+        JSONArray timedata = getTime(request, classMatches);
+
+        // Get trajectory data
+        JSONObject trajectoryData = getTrajectory(request, classMatches);
 
         // Combine into a single JSON structure
         JSONObject result = new JSONObject();
 
-        if(metadata != null && !metadata.isEmpty()) {
+        if (metadata != null && !metadata.isEmpty()) {
             result.put("meta", metadata);
         }
-         if(timedata != null && !timedata.isEmpty()) {
+        if (timedata != null && !timedata.isEmpty()) {
             result.put("time", timedata);
         }
+        if (trajectoryData != null && !trajectoryData.isEmpty()) {
+            result.put("meta", trajectoryData);
+        }
+
         return result;
-    }    
+    }
 
     /**
-     * Runs a ClassHandler instance to determine the class IRIs of the instance IRI and which
+     * Runs a ClassHandler instance to determine the class IRIs of the instance IRI
+     * and which
      * configuration entries match said classes.
      * 
-     * @param iri feature IRI.
-     * @param response HTTP response to write to.
+     * @param iri      feature IRI.
      * 
      * @return Set of matching configuration entries.
      * 
      * @throws IOException if response cannot be written to.
      */
-    private List<ConfigEntry> determineClasses(String iri, HttpServletResponse response) throws IOException {
+    private List<ConfigEntry> determineClasses(Request request, HttpServletResponse response) throws IOException {
         ClassHandler classHandler = new ClassHandler(this.configStore, this.kgClient);
-        
+
         try {
-            return classHandler.determineClassMatches(iri, this.enforcedEndpoint);
-        } catch(IllegalStateException exception) {
+            return classHandler.determineClassMatches(request);
+        } catch (IllegalStateException exception) {
             response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
 
-        } catch(InternalServerErrorException exception) {
+        } catch (InternalServerErrorException exception) {
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
         }
@@ -181,36 +173,42 @@ public class QueryManager {
     }
 
     /**
-     * Runs a MetaHandler instance to loop through the input class matches, query the KG for
+     * Runs a MetaHandler instance to loop through the input class matches, query
+     * the KG for
      * meta data, the formats the result before returning.
      * 
-     * @param iri feature IRI.
+     * @param iri          feature IRI.
      * @param classMatches discovered configuration entries will class matches.
-     * @param response HTTP response to write to.
      * 
      * @return formatted meta data.
      */
-    private JSONObject getMeta(String iri, List<ConfigEntry> classMatches, HttpServletResponse response) {
-        MetaHandler metaHandler = new MetaHandler(iri, this.enforcedEndpoint, this.configStore);
+    private JSONObject getMeta(Request request, List<ConfigEntry> classMatches) {
+        MetaHandler metaHandler = new MetaHandler(request.getIri(), request.getEndpoint(), this.configStore);
         metaHandler.setClient(this.kgClient);
-        return metaHandler.getData(classMatches, response);
+        return metaHandler.getData(classMatches);
     }
 
     /**
-     * Runs a TimeHandler instance to loop through the input class matches, query the KG for
+     * Runs a TimeHandler instance to loop through the input class matches, query
+     * the KG for
      * measurement IRIs, then contact the RDB to get time series values.
      * 
-     * @param iri feature IRI.
+     * @param iri          feature IRI.
      * @param classMatches discovered configuration entries will class matches.
-     * @param response HTTP response to write to.
      * 
      * @return formatted time series data.
      */
-    private JSONArray getTime(String iri, List<ConfigEntry> classMatches, HttpServletResponse response) {
-        TimeHandler timeHandler = new TimeHandler(iri, this.enforcedEndpoint, this.configStore);
+    private JSONArray getTime(Request request, List<ConfigEntry> classMatches) {
+        TimeHandler timeHandler = new TimeHandler(request.getIri(), request.getEndpoint(), this.configStore);
         timeHandler.setClients(this.kgClient, this.tsClient, null);
-        return timeHandler.getData(classMatches, response);
+        return timeHandler.getData(classMatches);
     }
 
+    private JSONObject getTrajectory(Request request, List<ConfigEntry> classMatches) {
+        TrajectoryHandler trajectoryHandler = new TrajectoryHandler(request.getIri(), request.getEndpoint(),
+                this.configStore, request.getLowerBound(), request.getUpperBound());
+        trajectoryHandler.setClients(kgClient);
+        return trajectoryHandler.getData(classMatches);
+    }
 }
 // End of class.

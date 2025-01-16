@@ -1,0 +1,135 @@
+{
+  "name": "NTU_PowerArrows",
+  "database": "postgres",
+  "workspace": "the_world_avatar",
+  "datasetDirectory": "NTU_PowerArrows",
+  "skip": false,
+  "dataSubsets": [
+    {
+      "type": "vector",
+      "name": "arrows1",
+      "skip": false,
+      "subdirectory": "arrows1",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows1style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows2",
+      "skip": false,
+      "subdirectory": "arrows2",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows2style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows3",
+      "skip": false,
+      "subdirectory": "arrows3",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows3style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows4",
+      "skip": false,
+      "subdirectory": "arrows4",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows4style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows5",
+      "skip": false,
+      "subdirectory": "arrows5",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows5style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows6",
+      "skip": false,
+      "subdirectory": "arrows6",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows6style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows7",
+      "skip": false,
+      "subdirectory": "arrows7",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows7style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows8",
+      "skip": false,
+      "subdirectory": "arrows8",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows8style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows9",
+      "skip": false,
+      "subdirectory": "arrows9",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows9style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows10",
+      "skip": false,
+      "subdirectory": "arrows10",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows10style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows11",
+      "skip": false,
+      "subdirectory": "arrows11",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows11style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows12",
+      "skip": false,
+      "subdirectory": "arrows12",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows12style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows13",
+      "skip": false,
+      "subdirectory": "arrows13",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows13style"
+      }
+    },
+    {
+      "type": "vector",
+      "name": "arrows14",
+      "skip": false,
+      "subdirectory": "arrows14",
+      "geoServerSettings": {
+        "defaultStyle": "the_world_avatar:arrows14style"
+      }
+    }
+  ]
+}

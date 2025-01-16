@@ -1,10 +1,14 @@
 # Historical NTUEnergy Agent
 
 The Historical NTU Energy Agent is designed to instantiate data and corresponding instances in the knowledge graph (KG) of a power system. Its primary purpose is to
-retrieve timeseries power readings from Excel files and upload them into the associated database. Additionally, the agent is responsible for initializing KG instances and connections when invoked for the first time.
+retrieve timeseries power readings from Excel files and upload them into the associated database. The agent is responsible for initializing KG instances and connections when invoked for the first time.
+
+Additionally, the agent will instantiate class schedule and venue information.
 
 # 1. Agent Setup
-###  1.1 Power System Configuration Files
+
+## 1.1 Power System Configuration Files
+
 The agent requires several Excel files as input, each containing configurations for a major power system component, including Bus Nodes, Branches, Generators, and Photovoltaic Generators. 
 These files should be placed in the `config` folder. The required configuration files include:
 -  `Bus_node_specs.xlsx`
@@ -16,8 +20,7 @@ These files should be placed in the `config` folder. The required configuration 
 - `PV_specs.xlsx`
   ![Shows part of the excel file as an example.](docs/img/example_pv_configs.jpg "Energy readings general")
 
-
-### 1.2  Energy Reading File
+## 1.2  Energy Reading File
 The agent requires an energy reading file as input, named `NTU_Energy_Consumption.xlsx`. 
 This file should adhere to the following guidelines to ensure compatibility with the agent:
 
@@ -26,7 +29,7 @@ There are few things to take note for the energy reading file to be compatible w
 2. The keys for each column in the Excel file must correspond with the keys found in the `energy.properties` file, which can be found in the `mapping` folder under the `config` folder.
 3. The timestamps in the Excel files must be in UTC timezone. The agent will then convert the timestamps to a local date time with offset.
 
-#### Example readings
+### Example readings
 Readings are retrieved from the Excel file as a JSON array, with one JSON object per timestamp. 
 The following shows a single JSON object example for Energy readings:
 ![Shows part of the response body of a successful energy readings request.](docs/img/example_energy_readings.jpg "Energy readings general")
@@ -65,7 +68,14 @@ The following shows a single JSON object example for Energy readings:
 ```
 These readings represent the values of active and reactive power for different locations in the NTU energy system. Active power (P) is measured in kilowatts (KW) and represents the power that is actually used by the electrical equipment to perform useful work, 
 while reactive power (Q) is measured in kilovolt-ampere reactive (KVAR) and represents the power that is used to establish and maintain the electric and magnetic fields in the equipment.
-###  1.3 Agent Property Files
+
+## 1.3 Class schedule and venue information
+
+These files should be placed in the `config` folder. The required configuration files include:
+-	`venue_info.xlsx`
+-	`minimised_class_schedule.xlsx`
+
+##  1.4 Agent Property Files
 Before running the agent, several configuration files need to be set up:
 -  `energy.properties`: This file contains the mapping between the keys in the Energy Reading file and the IRI of the KG instances.
 - `agent.properties`: This file points to the mapping configuration.
@@ -89,7 +99,7 @@ following form:
 where the `[prefix]` is hardcoded into the `HistoricalNTUEnergyAgent` class in a public, static field called `generatedIRIPrefix` which is based on the time-series client namespace, `[key]` is the JSON key the URI is generated for, and `[UUID]` is a
 randomly generated UUID.
 
-### agent.properties
+#### agent.properties
 The `agent.properties` file only needs to contain a single line:
 ```
 ntuenergy.mappingfolder=HISTORICALNTUENERGY_AGENT_MAPPINGS
@@ -97,7 +107,7 @@ ntuenergy.mappingfolder=HISTORICALNTUENERGY_AGENT_MAPPINGS
 where `HISTORICALNTUENERGY_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings.
 An example property file can be found in the `config` folder under `agent.properties`.
 
-### client.properties
+#### client.properties
 Note: this file is not required when the agent runs within the stack.
 
 The `client.properties` file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
@@ -107,7 +117,7 @@ The `client.properties` file needs to contain all credentials and endpoints to a
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
 
-### xlsxconnector.properties
+#### xlsxconnector.properties
 The `xlsxconnector.properties` file contain the number of columns/keys for each of the Excel files. It should contain the following key:
 - `numOfEnergyKeys` the number of columns/keys in the Energy Reading file.
 

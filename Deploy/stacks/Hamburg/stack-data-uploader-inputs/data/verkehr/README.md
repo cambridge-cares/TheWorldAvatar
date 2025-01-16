@@ -1,0 +1,9 @@
+Put the following files here:
+`de_hh_up_bab_vkl_EPSG_4326.json`
+`de_hh_up_verkehr_motorradparkpl_EPSG_4326.json`
+`de_hh_up_verkehr_behindertenparkpl_EPSG_4326.json`
+`de_hh_up_verkehr_parkhaeuser_EPSG_4326.json`
+`de_hh_up_verkehr_kameras_EPSG_4326.json`
+`de_hh_up_verkehr_reisebusparkpl_EPSG_4326.json`
+`de_hh_up_verkehr_kameras_internet_EPSG_4326.json`
+`de_hh_up_vkl_hinweis_EPSG_4326.json`

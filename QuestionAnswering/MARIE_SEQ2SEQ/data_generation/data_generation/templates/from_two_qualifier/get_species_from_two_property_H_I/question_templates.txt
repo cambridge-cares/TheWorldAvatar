@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} higer than {value1} and {PropertyName2} between {minvalue2} and {maxvalue2}
+Provide a roster of chemical species with {PropertyName1} greater than {value1} and {PropertyName2} within the range of {minvalue2} to {maxvalue2}.
+Enumerate molecules featuring {PropertyName1} exceeding {value1} and {PropertyName2} falling between {minvalue2} and {maxvalue2}.
+Compile a catalog of compounds exhibiting {PropertyName1} above {value1} and {PropertyName2} ranging from {minvalue2} to {maxvalue2}.
+List species in which {PropertyName1} is higher than {value1} and {PropertyName2} ranges from {minvalue2} to {maxvalue2}.
+Catalog chemical entities showcasing {PropertyName1} surpassing {value1} and {PropertyName2} in the interval of {minvalue2} to {maxvalue2}.
+Present a rundown of chemical species with {PropertyName1} surpassing {value1} and {PropertyName2} spanning {minvalue2} through {maxvalue2}.
+Outline molecules that exhibit {PropertyName1} above {value1} and {PropertyName2} between {minvalue2} and {maxvalue2}.
+Offer a list of compounds demonstrating {PropertyName1} exceeding {value1} and {PropertyName2} that lies within {minvalue2} to {maxvalue2}.
+Enumerate species in which {PropertyName1} is higher than {value1} and {PropertyName2} falls in the range of {minvalue2} to {maxvalue2}.
+Compile a roster of chemical entities with {PropertyName1} greater than {value1} and {PropertyName2} situated between {minvalue2} and {maxvalue2}.
+List molecules showcasing {PropertyName1} surpassing {value1} and {PropertyName2} within the scope of {minvalue2} to {maxvalue2}.
+Present a catalog of compounds with {PropertyName1} above {value1} and {PropertyName2} ranging from {minvalue2} to {maxvalue2}.
+Provide a rundown of species where {PropertyName1} exceeds {value1} and {PropertyName2} falls within {minvalue2} to {maxvalue2}.
+Compile a list of chemical species demonstrating {PropertyName1} surpassing {value1} and {PropertyName2} within the bracket of {minvalue2} to {maxvalue2}.
+Outline molecules having {PropertyName1} higher than {value1} and {PropertyName2} that is in the range of {minvalue2} through {maxvalue2}.
+Offer a roster of compounds with {PropertyName1} exceeding {value1} and {PropertyName2} between {minvalue2} and {maxvalue2}.
+Enumerate species displaying {PropertyName1} above {value1} and {PropertyName2} falling within {minvalue2} to {maxvalue2}.
+List chemical entities with {PropertyName1} surpassing {value1} and {PropertyName2} covering {minvalue2} up to {maxvalue2}.
+Present a collection of molecules showcasing {PropertyName1} greater than {value1} and {PropertyName2} in the range from {minvalue2} to {maxvalue2}.
+Provide a summary of compounds where {PropertyName1} is higher than {value1} and {PropertyName2} is confined between {minvalue2} and {maxvalue2}.

@@ -1,0 +1,18 @@
+services:
+  triton:
+    build:
+      context: triton
+    entrypoint: tritonserver
+    command: --model-repository=/models --model-control-mode=explicit --load-model=seq2seq_kingslynn --load-model=seq2seq_singapore
+    shm_size: 256m
+    # ports:
+    #   - 8000:8000
+  fastapi:
+    build:
+      context: fastapi_app
+    env_file:
+      - fastapi-variables.env
+    environment:
+      - QA_SUPERDOMAIN=cities
+    ports:
+      - 5000:8000

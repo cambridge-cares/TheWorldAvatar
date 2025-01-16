@@ -1,0 +1,28 @@
+{
+  "ServiceSpec": {
+    "Name": "pips-timeseries-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "pips-timeseries-agent:1.0.0",
+        "Env": [
+          "CLIENT_ID=",
+          "KEYCLOAK_REALM_PATH=",
+          "POSTGRESQL_PROP=/root/config/postgresql_connector.properties"
+				],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "./TheWorldAvatar-main/Agents/PIPSTimeSeriesAgent/config",
+            "Target": "/root/config"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/pips-timeseries-agent/",
+      "externalPath": "/pips-timeseries-agent/"
+    }
+  }
+}

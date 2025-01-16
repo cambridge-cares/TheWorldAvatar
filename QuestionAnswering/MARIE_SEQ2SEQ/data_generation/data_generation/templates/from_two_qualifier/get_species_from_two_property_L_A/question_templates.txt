@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {value1} and {PropertyName2} around {value2}
+Provide a catalog of chemical species exhibiting {PropertyName1} below {value1} and {PropertyName2} approximately {value2}.
+List molecules featuring {PropertyName1} less than {value1} and {PropertyName2} approximately {value2}.
+Enumerate compounds where {PropertyName1} is under {value1} and {PropertyName2} hovers around {value2}.
+Furnish a compilation of chemical entities with {PropertyName1} beneath {value1} and {PropertyName2} at approximately {value2}.
+Offer a roster of species having {PropertyName1} lower than {value1} and {PropertyName2} roughly near {value2}.
+Enlist molecules demonstrating {PropertyName1} less than {value1} and {PropertyName2} in the vicinity of {value2}.
+Compile a list of compounds showing {PropertyName1} below {value1} and {PropertyName2} around {value2}.
+Present a rundown of chemical species manifesting {PropertyName1} under {value1} and {PropertyName2} at roughly {value2}.
+Outline molecules with {PropertyName1} lower than {value1} and {PropertyName2} approximately {value2}.
+Provide an inventory of compounds with {PropertyName1} less than {value1} and {PropertyName2} around {value2}.
+List chemical entities featuring {PropertyName1} below {value1} and {PropertyName2} hovering around {value2}.
+Enumerate species where {PropertyName1} is beneath {value1} and {PropertyName2} roughly {value2}.
+Furnish a catalog of molecules showcasing {PropertyName1} lower than {value1} and {PropertyName2} at about {value2}.
+Offer a compilation of compounds having {PropertyName1} less than {value1} and {PropertyName2} in the vicinity of {value2}.
+Provide a roster of chemical species with {PropertyName1} under {value1} and {PropertyName2} approximately {value2}.
+Enlist molecules demonstrating {PropertyName1} lower than {value1} and {PropertyName2} roughly {value2}.
+Compile a list of compounds manifesting {PropertyName1} below {value1} and {PropertyName2} around {value2}.
+Present a rundown of species showing {PropertyName1} less than {value1} and {PropertyName2} at approximately {value2}.
+Outline chemical entities featuring {PropertyName1} lower than {value1} and {PropertyName2} about {value2}.
+Provide an inventory of molecules with {PropertyName1} beneath {value1} and {PropertyName2} around {value2}.

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="login">Login</string>
+    <string name="connection_error">Connection failed, please check your network connection</string>
+    <string name="login_failure_due_to_check_system_clock">We could not log you in because your clock settings appear to be incorrect. Please check your clock and try again.</string>
+    <string name="fail_to_login_title">Login Failed</string>
+    <string name="fail_to_login">Fail to login, please try again.</string>
+    <string name="login_canceled">Login canceled</string>
+    <string name="account_setting">Account Setting</string>
+    <string name="health_report">Health Report</string>
+    <string name="privacy_setting">Privacy Setting</string>
+    <string name="location_history">Location History</string>
+    <string name="sensors_setting_amp_data_upload"><![CDATA[Sensors Setting & Data Upload]]></string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="update_password">Update Password</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="location_permission_explanation">Location data is used for trajectory recording.</string>
+    <string name="audio_permission_explanation">Microphone is used for sound level analysis.</string>
+    <string name="notification_permission_explanation">Notification is used to indicate the app is currently reading your sensor data.</string>
+    <string name="sensor_name_accelerometer">Accelerometer</string>
+    <string name="sensor_name_gyroscope">Gyroscope</string>
+    <string name="sensor_name_magnetometer">Magnetometer</string>
+    <string name="sensor_name_light">Light</string>
+    <string name="sensor_name_humidity">Humidity</string>
+    <string name="sensor_name_pressure">Pressure</string>
+    <string name="sensor_name_gravity">Gravity</string>
+    <string name="sensor_name_location">Location</string>
+    <string name="sensor_name_microphone">Microphone</string>
+    <string name="sensor_description_accelerometer">Measures acceleration.</string>
+    <string name="sensor_description_gyroscope">Tracks rotation rate.</string>
+    <string name="sensor_description_magnetometer">Detects magnetic fields.</string>
+    <string name="sensor_description_light">Senses light levels.</string>
+    <string name="sensor_description_humidity">Monitors air moisture.</string>
+    <string name="sensor_description_pressure">Gauges atmospheric pressure.</string>
+    <string name="sensor_description_gravity">Detects gravity vector.</string>
+    <string name="sensor_description_location">Tracks GPS position.</string>
+    <string name="sensor_description_microphone">Captures sound levels.</string>
+    <string name="sensor_description_activity">Detects user activity.</string>
+    <string name="sensor_description">Sensor Description</string>
+    <string name="toggle_all">Toggle All</string>
+    <string name="toggle_off">Toggle Off</string>
+</resources>

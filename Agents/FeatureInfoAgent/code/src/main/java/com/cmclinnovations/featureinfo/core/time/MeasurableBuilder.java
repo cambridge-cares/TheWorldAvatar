@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.jena.util.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -102,7 +103,7 @@ public class MeasurableBuilder {
     public static void populateTimeSeriesIRIs(
         Measurable measurable, 
         ConfigStore configStore, 
-        String enforcedEndpoint,
+        Optional<String> enforcedEndpoint,
         RemoteStoreClient kgClient) throws Exception {
 
         // Bug out if already set

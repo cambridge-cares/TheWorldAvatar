@@ -68,7 +68,7 @@ WHERE {
     {
         [IRI] ubem:consumesEnergy ?quantity .
         ?quantity rdf:type ubem:AnnualHeatingConsumption ;
-            ubem:hasValue ?consumption .
+            om:hasValue ?consumption .
         ?consumption om:hasUnit om:kilowattHour ;
             om:hasNumericalValue ?Value .
 
@@ -79,7 +79,7 @@ WHERE {
     {
         [IRI] ubem:consumesEnergy ?quantity .
         ?quantity rdf:type ubem:AnnualCoolingConsumption ;
-            ubem:hasValue ?consumption .
+            om:hasValue ?consumption .
         ?consumption om:hasUnit om:kilowattHour ;
             om:hasNumericalValue ?Value .
 
@@ -90,7 +90,7 @@ WHERE {
     {
         [IRI] ubem:consumesEnergy ?quantity .
         ?quantity rdf:type ubem:AnnualElectricityConsumption ;
-            ubem:hasValue ?consumption .
+            om:hasValue ?consumption .
         ?consumption om:hasUnit om:kilowattHour ;
             om:hasNumericalValue ?Value .
 
@@ -101,7 +101,7 @@ WHERE {
     {
         [IRI] ubem:consumesEnergy ?quantity .
         ?quantity rdf:type ubem:AnnualGridConsumption ;
-            ubem:hasValue ?consumption .
+            om:hasValue ?consumption .
         ?consumption om:hasUnit om:kilowattHour ;
             om:hasNumericalValue ?Value .
 

@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 class CityTilerColours {
 
@@ -24,7 +24,7 @@ class CityTilerColours {
         if (null != fileName && fileName.startsWith("@")) {
             String filePath = fileName.substring(1);
             try {
-                this.config = new ObjectMapper().readTree(Files.readString(Path.of(filePath)));
+                this.config = JsonHelper.getMapper().readTree(Files.readString(Path.of(filePath)));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to read in CityTiler colour config file from '" + fileName + "'.");
             }

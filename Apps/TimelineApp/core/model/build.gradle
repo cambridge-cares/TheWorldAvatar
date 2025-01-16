@@ -1,0 +1,10 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.model'
+}
+
+dependencies {
+    implementation 'com.mapbox.maps:android:10.16.0'
+}

@@ -85,13 +85,37 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for any Voltage Magnitude IRI!") from ex
 
-    def query_busnode_iris(query_endpoint: str, update_endpoint: str):
+    def query_busnode_iris(query_endpoint: str, update_endpoint: str, bus_number: float):
+        try:
+            kg_client = KGClient(query_endpoint, update_endpoint)
+            			
+            query = create_sparql_prefix('powreal') + \
+                    create_sparql_prefix('rdf') + \
+					create_sparql_prefix('xsd') + \
+					create_sparql_prefix('ontocape') + \
+                    '''SELECT ?busNode WHERE { ?busNode rdf:type powreal:BusNode .
+												?busNode <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isModeledBy> ?busModel.
+												?busModel <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable>  ?var.
+												?var rdf:type <http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber>	 .
+												?var ontocape:hasValue ?varValue .
+												?varValue ontocape:numericalValue ?val .                  
+                                                FILTER (!contains(str(?busNode), "GENERATOR")).
+												FILTER(strdt(?val, xsd:float) = ''' + str(bus_number) + ''')}'''
+            response = kg_client.performQuery(query)
+            if len(response) == 0:
+                raise KGException("Unable to query for any bus node IRI!")
+            
+            return response
+
+        except Exception as ex:
+            raise KGException("Unable to query for bus node IRI!") from ex
+
+    def query_all_busnode_iris(query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             query = create_sparql_prefix('powreal') + \
                     create_sparql_prefix('rdf') + \
-                    '''SELECT ?busNode WHERE { ?busNode rdf:type powreal:BusNode .
-                                                FILTER (!contains(str(?busNode), "GENERATOR"))}'''
+                    '''SELECT ?busNode WHERE { ?busNode rdf:type powreal:BusNode .}'''
             response = kg_client.performQuery(query)
             if len(response) == 0:
                 raise KGException("Unable to query for any bus node IRI!")
@@ -102,4 +126,3 @@ class QueryData:
 
         except Exception as ex:
             raise KGException("Unable to query for bus node IRI!") from ex
-

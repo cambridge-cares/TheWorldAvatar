@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.TWA.ToolBar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.TWA.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
+    </style>
+</resources>

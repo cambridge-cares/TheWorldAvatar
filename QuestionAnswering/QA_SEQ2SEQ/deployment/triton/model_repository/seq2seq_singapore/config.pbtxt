@@ -1,0 +1,2 @@
+name: "seq2seq_singapore"
+backend: "python_seq2seq_backend"

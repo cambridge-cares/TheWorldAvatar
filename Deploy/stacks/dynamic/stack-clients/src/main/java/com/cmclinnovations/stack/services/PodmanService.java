@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,16 +46,21 @@ import com.github.dockerjava.api.model.MountType;
 import com.github.dockerjava.api.model.NetworkAttachmentConfig;
 import com.github.dockerjava.api.model.PortConfig;
 import com.github.dockerjava.api.model.PortConfigProtocol;
+import com.github.dockerjava.api.model.ServiceRestartCondition;
+import com.github.dockerjava.api.model.ServiceRestartPolicy;
 import com.github.dockerjava.api.model.ServiceSpec;
 
 public class PodmanService extends DockerService {
 
     public static final String TYPE = "podman";
 
+    public static final Map<ServiceRestartCondition, String> restartPolicyMap = Map.of(
+            ServiceRestartCondition.ANY, "always",
+            ServiceRestartCondition.NONE, "no",
+            ServiceRestartCondition.ON_FAILURE, "on-failure");
+
     public PodmanService(String stackName, ServiceConfig config) {
         super(stackName, config);
-
-        addStackSecrets();
     }
 
     @Override
@@ -68,11 +74,9 @@ public class PodmanService extends DockerService {
     }
 
     @Override
-    protected void initialise(String stackName) {
+    public void initialise() {
 
-        // addStackConfigs();
-
-        createNetwork(stackName);
+        addStackSecrets();
     }
 
     @Override
@@ -148,14 +152,14 @@ public class PodmanService extends DockerService {
     @Override
     protected Optional<Container> configureContainerWrapper(ContainerService service) {
         Optional<Container> container;
-        removePod(service);
+        removeService(service);
 
         container = startPod(service);
         return container;
     }
 
-    private Optional<ListPodsReport> getPod(ContainerService service) {
-        String podName = getPodName(service.getContainerName());
+    private Optional<ListPodsReport> getPod(String containerName) {
+        String podName = getPodName(containerName);
         try {
             return new PodsApi(getClient().getPodmanClient()).podListLibpod(
                     URLEncoder.encode("{\"name\":[\"" + podName + "\"]}", StandardCharsets.UTF_8))
@@ -165,8 +169,9 @@ public class PodmanService extends DockerService {
         }
     }
 
-    private void removePod(ContainerService service) {
-        Optional<ListPodsReport> pod = getPod(service);
+    @Override
+    void removeService(String serviceName) {
+        Optional<ListPodsReport> pod = getPod(serviceName);
 
         if (pod.isPresent()) {
             try {
@@ -290,6 +295,10 @@ public class PodmanService extends DockerService {
                         .collect(Collectors.toList()));
             }
             containerSpecGenerator.setLabels(containerSpec.getLabels());
+
+            ServiceRestartPolicy restartPolicy = serviceSpec.getTaskTemplate().getRestartPolicy();
+            containerSpecGenerator.setRestartPolicy(restartPolicyMap.get(restartPolicy.getCondition()));
+            containerSpecGenerator.setRestartTries((Integer) restartPolicy.getMaxAttempts().intValue());
 
             try {
                 ContainersApi containersApi = new ContainersApi(getClient().getPodmanClient());

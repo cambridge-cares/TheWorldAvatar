@@ -17,7 +17,7 @@
             "timeFile": ""
         },
         {
-            "class": "https://theworldavatar.io/mock-domain/ClassThree",
+            "class": "https://theworldavatar.io/mock-domain/ClassFour",
             "metaFile": "",
             "timeFile": "classFourTime.sparql",
             "timeLimit": 48,

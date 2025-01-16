@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:maxHeight="72dp"
+    android:layout_margin="@dimen/component_margin_small"
+    android:background="@drawable/ripple_effect"
+    android:clickable="true"
+    >
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/outline_handyman_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/leading_icon"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Maintenance Update"
+        app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintStart_toEndOf="@id/leading_icon"
+        app:layout_constraintBottom_toTopOf="@id/content_tv"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:id="@+id/title_tv"
+        android:layout_marginStart="@dimen/component_margin_small"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="?attr/colorPrimary"
+        android:text="3 Aug"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/time_tv"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="There is an update in the maintenance information of your asset."
+        android:maxLines="2"
+        android:id="@+id/content_tv"
+        app:layout_constraintStart_toEndOf="@id/leading_icon"
+        app:layout_constraintTop_toBottomOf="@id/title_tv"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/component_margin_small"
+        android:textAppearance="?attr/textAppearanceBody2"/>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

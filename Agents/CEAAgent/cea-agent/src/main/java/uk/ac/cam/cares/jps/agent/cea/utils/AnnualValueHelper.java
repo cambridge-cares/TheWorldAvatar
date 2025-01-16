@@ -5,16 +5,13 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 
 import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 
 import org.json.JSONArray;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,14 +29,18 @@ public class AnnualValueHelper {
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("owl", OntologyURIHelper.getOntologyUri(OntologyURIHelper.owl));
 
-        WhereBuilder wb1 = new WhereBuilder()
-                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
         WhereBuilder wb2 = new WhereBuilder()
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         int i = 0;
 
+        List<WhereBuilder> deletes = new ArrayList<>();
+        deletes.add(new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
+
         for (String ts: CEAConstants.TIME_SERIES) {
+            if ((i+1) % 10 == 0) {
+                deletes.add(new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
+            }
             List<Double> value = (List<Double>) values.get(i);
             Double annualValue = 0.0;
             for (Double v : value) {
@@ -53,7 +54,7 @@ public class AnnualValueHelper {
 
             if (!measureIRI.isEmpty()) {
                 // if annual value already instantiated, update value
-                updateAnnual(wb1, wb2, measureIRI, annualValue);
+                updateAnnual(deletes.get(deletes.size()-1), wb2, measureIRI, annualValue, i);
             }
             else {
                 // if no previously instantiated annual value, insert update
@@ -74,13 +75,10 @@ public class AnnualValueHelper {
 
         boolean flag = m.find();
 
-        UpdateBuilder ub1 = new UpdateBuilder()
-                .addDelete(wb1)
-                .addWhere(wb1);
         UpdateBuilder ub2 = new UpdateBuilder()
                 .addInsert(wb2);
 
-        Matcher m1 =  pattern.matcher(wb1.buildString());
+        Matcher m1 =  pattern.matcher(deletes.get(0).buildString());
 
         m1.matches();
 
@@ -99,7 +97,18 @@ public class AnnualValueHelper {
 
         // if there are previously existing annual values
         if (!flag1 && !flag2) {
-            AccessAgentCaller.updateStore(route, ub1.buildRequest().toString());
+            for (WhereBuilder wb1 : deletes) {
+                Matcher md =  pattern.matcher(wb1.buildString());
+
+                md.matches();
+
+                if (!md.find()) {
+                    UpdateBuilder ub1 = new UpdateBuilder()
+                            .addDelete(wb1)
+                            .addWhere(wb1);
+                    AccessAgentCaller.updateStore(route, ub1.buildRequest().toString());
+                }
+            }
             AccessAgentCaller.updateStore(route, ub2.buildRequest().toString());
         }
     }
@@ -111,8 +120,8 @@ public class AnnualValueHelper {
      * @param iri annual value IRI
      * @param value annual value
      */
-    public static void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value) {
-        deleteWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", "?o");
+    public static void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value, Integer counter) {
+        deleteWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", "?o" + counter);
 
         updateWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", value);
     }

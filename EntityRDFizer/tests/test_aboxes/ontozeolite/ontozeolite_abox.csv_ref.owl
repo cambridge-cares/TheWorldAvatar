@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/kg/ontocrystal/"
+   xmlns:ns2="http://www.w3.org/2002/07/owl#"
+   xmlns:ns3="http://www.theworldavatar.com/kg/ontozeolite/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/Zeolite_ABW_31b0aa28-3045-469e-afbe-ea1e79efaecd">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/ZeoliteFramework"/>
+    <ns3:hasZeoliteCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ABW</ns3:hasZeoliteCode>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zeolite_ABW_31b0aa28-3045-469e-afbe-ea1e79efaecd</rdfs:label>
+    <ns1:hasCrystalInformation rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/ZeoliteCIF_ABW_27c96dc4-7785-457e-b8b8-03df466caea0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/UnitCell_ABW_1f477d67-78ab-4676-bf2e-7ee53864faae">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitCell_ABW_1f477d67-78ab-4676-bf2e-7ee53864faae</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/UnitCell"/>
+    <ns1:hasUnitCellLengths rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5a334beb3f6c487d9508f58f66105cfd">
+    <ns2:imports rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_error_866d40fc-abfc-410c-a250-08b06cabe2a5">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontocrystal/Vector"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitCellLengths_ABW_error_866d40fc-abfc-410c-a250-08b06cabe2a5</rdfs:label>
+    <ns1:hasVectorComponent rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/UnitCellLengths"/>
+    <ns1:hasUncertaintyVector rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_error_866d40fc-abfc-410c-a250-08b06cabe2a5"/>
+    <ns1:hasVectorComponent rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb</rdfs:label>
+    <ns1:hasVectorComponent rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc">
+    <ns1:hasLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">b</ns1:hasLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/VectorComponent"/>
+    <ns1:hasComponentValue rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal">5.254</ns1:hasComponentValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/ZeoliteCIF_ABW_27c96dc4-7785-457e-b8b8-03df466caea0">
+    <ns1:hasUnitCell rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/UnitCell_ABW_1f477d67-78ab-4676-bf2e-7ee53864faae"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ZeoliteCIF_ABW_27c96dc4-7785-457e-b8b8-03df466caea0</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/CrystalInformation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/VectorComponent"/>
+    <ns1:hasComponentValue rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal">0</ns1:hasComponentValue>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50</rdfs:label>
+    <ns1:hasLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a</ns1:hasLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontozeolite/UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl/VectorComponent"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974</rdfs:label>
+    <ns1:hasComponentValue rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal">9.873</ns1:hasComponentValue>
+    <ns1:hasLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a</ns1:hasLabel>
+  </rdf:Description>
+</rdf:RDF>

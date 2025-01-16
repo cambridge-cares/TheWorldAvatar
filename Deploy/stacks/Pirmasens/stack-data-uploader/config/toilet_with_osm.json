@@ -1,0 +1,33 @@
+{
+    "name": "toilet_with_osm",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "toilet_with_osm",
+    "externalDatasets": [
+        "15MSC_pirmasens"
+    ],
+    "dataSubsets": [
+      {
+        "type": "vector",
+        "skip": false,
+        "name": "toilet",
+        "sql": "@/inputs/data/toilet_with_osm/sql/poi.sql",
+        "geoServerSettings": {
+            "virtualTable": {
+                "name": "toilet",
+                "sql": "@/inputs/data/toilet_with_osm/sql/toilet.sql",
+                "escapeSql": true,
+                "geometry": {
+                    "name": "geometryProperty",
+                    "type": "Point"
+                }
+            },
+            "defaultStyle": "generic"
+        }
+      }
+    ],
+    "mappings": [
+        "toilet.obda"
+    ]
+}
+

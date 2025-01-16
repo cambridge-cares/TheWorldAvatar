@@ -1,0 +1,15 @@
+{
+    "services": {
+        "includes": [
+            "sensorloggermobileappagent",
+            "user-agent",
+            "trajectoryqueryagent",
+            "keycloak-prod",
+            "geoserver-jwt-proxy"
+        ],
+        "excludes": [
+            "citydbimpexp",
+            "citytiler"
+        ]
+    }
+}

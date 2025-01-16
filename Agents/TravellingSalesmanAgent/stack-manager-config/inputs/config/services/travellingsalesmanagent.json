@@ -3,7 +3,7 @@
         "Name": "travellingsalesmanagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/travellingsalesmanagent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/travellingsalesmanagent:1.3.0",
                 "Mounts": [
                     {
                         "Type": "bind",

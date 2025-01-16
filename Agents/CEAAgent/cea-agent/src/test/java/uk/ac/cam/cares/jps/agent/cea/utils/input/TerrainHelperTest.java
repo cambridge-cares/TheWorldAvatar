@@ -9,6 +9,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.mockito.MockedConstruction;
 
 import org.mockito.MockedStatic;
+
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -18,8 +20,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -63,10 +64,18 @@ public class TerrainHelperTest {
         Polygon polygon = geometryFactory.createPolygon(coordinates);
         Polygon polygon1 = geometryFactory.createPolygon(coordinates1);
 
-        CEAGeometryData testBuilding = new CEAGeometryData(Arrays.asList(polygon), testCRS, "10.0");
-        CEAGeometryData testBuilding1 = new CEAGeometryData(Arrays.asList(polygon1), testCRS, "10.0");
+        CEAGeometryData testGeometry = new CEAGeometryData(Arrays.asList(polygon), testCRS, "10.0");
+        CEAGeometryData testGeometry1 = new CEAGeometryData(Arrays.asList(polygon1), testCRS, "10.0");
 
-        List<CEAGeometryData> testSurroundings = Arrays.asList(testBuilding, testBuilding1);
+        Map<String, Double> testUsage = new HashMap<>();
+        testUsage.put("MULTI_RES", 1.0);
+
+        CEABuildingData testBuilding = new CEABuildingData(testGeometry, testUsage);
+
+        ArrayList<CEABuildingData> testBuildings = new ArrayList<>();
+        testBuildings.add(testBuilding);
+
+        List<CEAGeometryData> testSurroundings = Arrays.asList(testGeometry, testGeometry1);
 
         String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
                 "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
@@ -81,7 +90,7 @@ public class TerrainHelperTest {
                         doReturn(mockConnection).when(mock).getConnection();
                     })) {
 
-                byte[] result = terrainHelper.getTerrain("", "", testSurroundings, "");
+                byte[] result = terrainHelper.getTerrain(testBuildings, testSurroundings, "");
 
                 assertEquals(testBytes.length, result.length);
 

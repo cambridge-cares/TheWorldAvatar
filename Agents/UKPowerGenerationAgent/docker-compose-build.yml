@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  ukpowergeneration_agent:
+    build:
+      context: .
+      target: prod

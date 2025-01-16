@@ -1,0 +1,42 @@
+What are the properties of {species}?
+What characteristics does {species} possess?
+Can you list the attributes of {species}?
+What are the distinguishing features of {species}?
+Please describe the traits of {species}.
+What are the unique qualities of {species}?
+Could you outline the properties of {species}?
+What can you tell me about {species}'s properties?
+What makes up the nature of {species}?
+What are the specific traits that define {species}?
+Could you provide an overview of {species}'s properties?
+What are {species}'s essential characteristics?
+What are the key elements describing {species}?
+How would you define the attributes of {species}?
+What set of features characterizes {species}?
+What are the inherent traits of {species}?
+What do we know about {species}'s properties?
+What are {species}'s fundamental properties?
+What attributes can be linked to {species}?
+What is known about the properties of {species}?
+How would you detail {species}'s properties?
+{species}
+Give me a summary of {species}
+Provide an overview of the {species}.
+Can you give me a brief description of the {species}?
+What are the key characteristics of the {species}?
+Give me a summary of the physical traits of the {species}.
+Give me a quick rundown of {species}.
+I need a concise description of {species}.
+What are the key points about {species}?
+Give me an abridged summary of {species}.
+I'm looking for a compact summary of {species}.
+What are the main characteristics of {species}?
+Give me a brief outline of {species}.
+Can you summarize the important aspects of {species}?
+I need a summarized version of {species}.
+What are the key features of {species}?
+Give me a condensed overview of {species}.
+Can you provide a summary highlighting the main points about {species}?
+What are the essential details about {species}?
+Give me a summarized explanation of {species}.
+Can you briefly describe {species}?

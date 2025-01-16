@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} higher than {value1} and {PropertyName2} lower than {minvalue2} and higher than {maxvalue2}
+Provide a catalog of chemical species exhibiting {PropertyName1} values surpassing {value1}, while displaying {PropertyName2} values below {minvalue2} and above {maxvalue2}.
+Enumerate molecules that possess {PropertyName1} levels greater than {value1}, with {PropertyName2} values falling below {minvalue2} yet exceeding {maxvalue2}.
+List compounds showcasing {PropertyName1} values above {value1}, and {PropertyName2} values beneath {minvalue2} as well as exceeding {maxvalue2}.
+Enumerate species with {PropertyName1} values surpassing {value1}, while manifesting {PropertyName2} values lower than {minvalue2} but higher than {maxvalue2}.
+Provide a list of chemical species featuring {PropertyName1} values higher than {value1} and {PropertyName2} values lower than {minvalue2} but higher than {maxvalue2}.
+Catalog compounds that exhibit {PropertyName1} values exceeding {value1}, alongside {PropertyName2} values that are both below {minvalue2} and above {maxvalue2}.
+List molecules having {PropertyName1} values greater than {value1} and {PropertyName2} values lower than {minvalue2}, yet higher than {maxvalue2}.
+Enumerate species demonstrating {PropertyName1} values surpassing {value1}, while possessing {PropertyName2} values lower than {minvalue2} and higher than {maxvalue2}.
+Provide a catalog of chemical species with {PropertyName1} values above {value1}, coupled with {PropertyName2} values lower than {minvalue2} and higher than {maxvalue2}.
+List compounds with {PropertyName1} values higher than {value1}, and {PropertyName2} values that remain under {minvalue2} while surpassing {maxvalue2}.
+Enumerate molecules showcasing {PropertyName1} values greater than {value1}, and {PropertyName2} values falling below {minvalue2} and exceeding {maxvalue2}.
+Provide a list of species displaying {PropertyName1} values surpassing {value1}, while manifesting {PropertyName2} values below {minvalue2} yet above {maxvalue2}.
+Catalog chemical species exhibiting {PropertyName1} values above {value1} and {PropertyName2} values lower than {minvalue2}, but higher than {maxvalue2}.
+List compounds with {PropertyName1} values exceeding {value1}, along with {PropertyName2} values below {minvalue2} and above {maxvalue2}.
+Enumerate molecules possessing {PropertyName1} values greater than {value1} and {PropertyName2} values lower than {minvalue2}, while exceeding {maxvalue2}.
+Provide a list of species with {PropertyName1} values surpassing {value1}, alongside {PropertyName2} values falling below {minvalue2} and surpassing {maxvalue2}.
+Catalog chemical species that demonstrate {PropertyName1} values higher than {value1} and {PropertyName2} values lower than {minvalue2}, yet higher than {maxvalue2}.
+List compounds exhibiting {PropertyName1} values above {value1}, with {PropertyName2} values lower than {minvalue2} but higher than {maxvalue2}.
+Enumerate molecules showing {PropertyName1} values exceeding {value1}, as well as {PropertyName2} values lower than {minvalue2} while exceeding {maxvalue2}.
+Provide a catalog of species featuring {PropertyName1} values higher than {value1}, and {PropertyName2} values falling below {minvalue2} while surpassing {maxvalue2}.

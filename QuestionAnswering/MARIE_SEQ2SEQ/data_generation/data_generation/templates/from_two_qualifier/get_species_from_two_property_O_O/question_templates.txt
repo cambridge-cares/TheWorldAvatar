@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {minvalue1} and higher than {maxvalue1} and {PropertyName2} lower than {minvalue2} and higher than {maxvalue2} 
+Provide a catalog of chemical species having {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} below {minvalue2} and above {maxvalue2}.
+List molecules exhibiting {PropertyName1} lesser than {minvalue1} and greater than {maxvalue1}, and {PropertyName2} lesser than {minvalue2} and greater than {maxvalue2}.
+Enumerate compounds with {PropertyName1} less than {minvalue1} and greater than {maxvalue1}, and {PropertyName2} less than {minvalue2} and greater than {maxvalue2}.
+Compile a record of chemical entities showing {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} below {minvalue2} and above {maxvalue2}.
+Generate a list of species where {PropertyName1} is lower than {minvalue1} and higher than {maxvalue1}, and {PropertyName2} is lower than {minvalue2} and higher than {maxvalue2}.
+Prepare an inventory of molecules featuring {PropertyName1} beneath {minvalue1} and above {maxvalue1}, and {PropertyName2} beneath {minvalue2} and above {maxvalue2}.
+Construct a roster of compounds having {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, and {PropertyName2} lower than {minvalue2} and higher than {maxvalue2}.
+Present a list of chemical species manifesting {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} below {minvalue2} and above {maxvalue2}.
+Draft a list of molecules displaying {PropertyName1} under {minvalue1} and over {maxvalue1}, and {PropertyName2} under {minvalue2} and over {maxvalue2}.
+Enumerate compounds demonstrating {PropertyName1} less than {minvalue1} and exceeding {maxvalue1}, and {PropertyName2} less than {minvalue2} and exceeding {maxvalue2}.
+Provide a compilation of chemical species with {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} below {minvalue2} and above {maxvalue2}.
+List molecules with {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, and {PropertyName2} lower than {minvalue2} and higher than {maxvalue2}.
+Display compounds having {PropertyName1} lesser than {minvalue1} and greater than {maxvalue1}, and {PropertyName2} lesser than {minvalue2} and greater than {maxvalue2}.
+Share a catalog of chemical entities exhibiting {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} below {minvalue2} and above {maxvalue2}.
+Provide a list of species wherein {PropertyName1} is less than {minvalue1} and more than {maxvalue1}, and {PropertyName2} is less than {minvalue2} and more than {maxvalue2}.
+Give an overview of molecules indicating {PropertyName1} beneath {minvalue1} and surpassing {maxvalue1}, and {PropertyName2} beneath {minvalue2} and surpassing {maxvalue2}.
+Generate a list of compounds displaying {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} below {minvalue2} and above {maxvalue2}.
+Prepare a compilation of chemical species featuring {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, and {PropertyName2} lower than {minvalue2} and higher than {maxvalue2}.
+Create a roster of molecules manifesting {PropertyName1} under {minvalue1} and over {maxvalue1}, and {PropertyName2} under {minvalue2} and over {maxvalue2}.
+Generate a record of compounds with {PropertyName1} less than {minvalue1} and greater than {maxvalue1}, and {PropertyName2} less than {minvalue2} and greater than {maxvalue2}.

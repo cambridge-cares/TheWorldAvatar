@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 @WebServlet(urlPatterns = { "/GetDataJson" })
 public class GetDataJson extends HttpServlet {
@@ -48,10 +49,10 @@ public class GetDataJson extends HttpServlet {
 
         JSONObject dataJson = null;
         try (Connection conn = dispersionPostGISClient.getConnection()) {
-            List<Boolean> layers = queryClient.getLayers(Instant.parse(timestep).getEpochSecond(), derivationIri, conn);
+            List<Boolean> layers = queryClient.getLayers(Long.parseLong(timestep), derivationIri, conn);
 
             dataJson = createDataJson(pollutantLabel, scopeLabel, weatherStation, layers, conn, pollutant,
-                    derivationIri, Instant.parse(timestep).getEpochSecond(), z, pirmasensVis);
+                    derivationIri, Long.parseLong(timestep), z, pirmasensVis);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -75,9 +76,10 @@ public class GetDataJson extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
-                Instant.class);
+                new TimeSeriesRDBClientWithReducedTables<>(Instant.class));
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
         dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
                 endpointConfig.getDbpassword());
@@ -155,12 +157,11 @@ public class GetDataJson extends HttpServlet {
 
         // optional layers
         if (Boolean.TRUE.equals(hasLayers.get(0))) {
-            long timeBuffer = 1800; // 30 minutes
             String shipWms = Config.STACK_URL + "/geoserver/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
                     + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.SHIPS_LAYER_NAME)
-                    + String.format("&CQL_FILTER=time<%d AND time>%d", timestep + timeBuffer, timestep - timeBuffer);
+                    + String.format("&CQL_FILTER=derivation='%s' AND time=%d", derivationIri, timestep);
             JSONObject shipSource = new JSONObject();
             shipSource.put("id", "ship-source");
             shipSource.put("type", "vector");
@@ -187,7 +188,7 @@ public class GetDataJson extends HttpServlet {
             // extract buildings group from pirmasensData.json template
             try (InputStream is = getClass().getClassLoader().getResourceAsStream("pirmasensData.json")) {
                 String templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-                templateContent = templateContent.replace("http://localhost:3838", Config.STACK_URL);
+                templateContent = templateContent.replace("http://localhost:4242", Config.STACK_URL);
 
                 JSONObject buildingjson = new JSONObject(templateContent);
                 JSONArray buildingGroups = buildingjson.getJSONArray("groups");
@@ -198,7 +199,9 @@ public class GetDataJson extends HttpServlet {
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
-        } else if (Boolean.TRUE.equals(hasLayers.get(1))) {
+        }
+
+        if (Boolean.TRUE.equals(hasLayers.get(1))) {
             String buildingWms = Config.STACK_URL + "/geoserver/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                     +
@@ -219,7 +222,11 @@ public class GetDataJson extends HttpServlet {
             buildingLayer.put("source", "building-source");
             buildingLayer.put("source-layer", "building-pirmasens_gsl");
             buildingLayer.put("minzoom", 4);
-            buildingLayer.put("layout", visibility);
+            if (pirmasensVis) {
+                buildingLayer.put("layout", hideVisility);
+            } else {
+                buildingLayer.put("layout", visibility);
+            }
 
             JSONObject buildingLayerPaint = new JSONObject();
             buildingLayerPaint.put("fill-extrusion-base", 0);

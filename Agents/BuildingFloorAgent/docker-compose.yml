@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  buildingflooragent:
+    image: ghcr.io/cambridge-cares/buildingflooragent:2.1.0
+    build:
+      context: .
+      target: agent

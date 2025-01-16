@@ -1,0 +1,1 @@
+Convenience files for executing http requests for dispersion simulations. humao.rest-client extension in VS code required.

@@ -2,11 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='entityrdfizer', # Required
-    version='1.0.6', # Required
+    version='1.0.7', # Required
     # This should be your name or the name of the organization which owns the
     # project.
     author='Feroz Farazi', # Optional
     license='MIT',
+    description='Converts instances from a CSV file into RDF.',
     long_description=open('README.md').read(), # Optional
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),

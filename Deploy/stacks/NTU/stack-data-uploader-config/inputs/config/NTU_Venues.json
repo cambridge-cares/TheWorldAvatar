@@ -1,0 +1,15 @@
+{
+  "name": "NTU_Venues",
+  "database": "postgres",
+  "workspace": "the_world_avatar",
+  "datasetDirectory": "NTU_Venues",
+  "skip": false,
+  "dataSubsets": [
+    {
+      "type": "vector",
+      "name": "NTU_Venues",
+      "skip": false,
+      "schema": "public"
+    }
+  ]
+}

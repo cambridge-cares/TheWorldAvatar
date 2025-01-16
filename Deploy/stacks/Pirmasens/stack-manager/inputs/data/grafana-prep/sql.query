@@ -1,0 +1,38 @@
+# SQL query to retrieve time series tables for relevant dataIRIs
+# Place holders to be replaces with corresponding IRIs from SPARQL result
+
+(SELECT 'demand_hist' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<demand_hist>')
+UNION
+(SELECT 'demand_fc' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<demand_fc>')
+UNION
+(SELECT 'heat_sourcing' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<heat_sourcing>')
+UNION
+(SELECT 'heat_generation_HeatBoiler4' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<heat_generation_HeatBoiler4>')
+UNION
+(SELECT 'heat_generation_HeatBoiler5' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<heat_generation_HeatBoiler5>')
+UNION
+(SELECT 'heat_generation_HeatBoiler6' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<heat_generation_HeatBoiler6>')
+UNION
+(SELECT 'heat_generation_GasTurbine' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<heat_generation_GasTurbine>')
+UNION
+(SELECT 'elec_cogen' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<elec_cogen>')
+UNION
+(SELECT 'gas_consumption_HeatBoiler4' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<gas_consumption_HeatBoiler4>')
+UNION
+(SELECT 'gas_consumption_HeatBoiler5' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<gas_consumption_HeatBoiler5>')
+UNION
+(SELECT 'gas_consumption_HeatBoiler6' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<gas_consumption_HeatBoiler6>')
+UNION
+(SELECT 'gas_consumption_GasTurbine' AS label, "tableName" FROM "dbTable"
+WHERE "dataIRI" = '<gas_consumption_GasTurbine>')

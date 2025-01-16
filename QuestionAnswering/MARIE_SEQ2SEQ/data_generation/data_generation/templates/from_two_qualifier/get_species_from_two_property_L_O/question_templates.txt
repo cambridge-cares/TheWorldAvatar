@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {value1} and {PropertyName2} lower than {minvalue2} and higher than {maxvalue2}
+Provide a catalog of chemical species having {PropertyName1} below {value1} and {PropertyName2} beneath {minvalue2} while surpassing {maxvalue2}.
+List molecules exhibiting {PropertyName1} lesser than {value1} and {PropertyName2} below {minvalue2} but above {maxvalue2}.
+Enumerate compounds with {PropertyName1} less than {value1} and {PropertyName2} exceeding the range of {maxvalue2} to {minvalue2}.
+Display a compilation of chemical entities showing {PropertyName1} beneath {value1} and {PropertyName2} lower than {minvalue2} yet higher than {maxvalue2}.
+Show a roster of species wherein {PropertyName1} is under {value1} and {PropertyName2} falls beneath {minvalue2} but above {maxvalue2}.
+Generate a list of chemical compounds having {PropertyName1} lesser than {value1} and {PropertyName2} within the range of {maxvalue2} to {minvalue2}.
+Provide an inventory of molecules exhibiting {PropertyName1} below {value1} and {PropertyName2} less than {minvalue2} while exceeding {maxvalue2}.
+Present a catalogue of compounds with {PropertyName1} not surpassing {value1} and {PropertyName2} beneath the minimum threshold of {minvalue2} but exceeding {maxvalue2}.
+Offer a rundown of chemical species demonstrating {PropertyName1} under {value1} and {PropertyName2} that is both below {minvalue2} and above {maxvalue2}.
+Compile a list of molecules where {PropertyName1} is lower than {value1} and {PropertyName2} falls below {minvalue2} but goes beyond {maxvalue2}.
+List compounds exhibiting {PropertyName1} below {value1} and {PropertyName2} less than the minimum of {minvalue2} but higher than {maxvalue2}.
+Show a collection of chemical entities with {PropertyName1} beneath {value1} and {PropertyName2} lower than the minimum value of {minvalue2} but surpassing {maxvalue2}.
+Provide a summary of species demonstrating {PropertyName1} below {value1} and {PropertyName2} falling lower than {minvalue2} but exceeding {maxvalue2}.
+Display a list comprising chemical species having {PropertyName1} lesser than {value1} and {PropertyName2} below the minimum limit of {minvalue2} yet exceeding {maxvalue2}.
+Generate a roster of molecules with {PropertyName1} under {value1} and {PropertyName2} less than {minvalue2} but going above {maxvalue2}.
+Show a list of compounds exhibiting {PropertyName1} below {value1} and {PropertyName2} beneath the threshold of {minvalue2} while being higher than {maxvalue2}.
+Provide an inventory of chemical species wherein {PropertyName1} is less than {value1} and {PropertyName2} falls lower than {minvalue2} but rises above {maxvalue2}.
+Present a compilation of molecules demonstrating {PropertyName1} below {value1} and {PropertyName2} lower than {minvalue2} yet exceeding {maxvalue2}.
+Offer a collection of compounds with {PropertyName1} lower than {value1} and {PropertyName2} below {minvalue2} but surpassing {maxvalue2}.
+Give a rundown of chemical entities displaying {PropertyName1} beneath {value1} and {PropertyName2} lower than the minimum threshold of {minvalue2}, while being higher than {maxvalue2}.

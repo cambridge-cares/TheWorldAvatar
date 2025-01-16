@@ -1,0 +1,8 @@
+CH_label,CH-7-2-CAV-E7-02
+CAV_label,CAV_E7_02
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/V_CAV_E7_02_DamperActuator
+DamperState_IRI_label,CH-7-2-CAV-E7-02 damper state
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_CAV_E7_02_FlowSensor
+AirFlow_IRI_label,CH-7-2-CAV-E7-02 airflow rate
+Setpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_CAV_E7_02_AirflowSetPoint
+Setpoint_IRI_label,CH-7-2-CAV-E7-02 airflow setpoint

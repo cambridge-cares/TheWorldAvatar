@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#C00000;}
+	.st2{fill:#E68C00;}
+	.st3{fill:#F9D500;}
+	.st4{fill:none;stroke:#F9D500;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st5{fill:none;stroke:#F9D500;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st6{fill:#F9D500;stroke:#F9D500;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st7{fill:none;stroke:#F9D500;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st8{fill:#FFFFFF;stroke:#F9D500;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st9{fill:none;stroke:#F9D500;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+<g id="backgrounds_00000050635016940955528750000005288104449254675126_">
+	<g id="error_00000085232855287931538250000004543001296110095013_">
+		<g id="error">
+			
+				<ellipse transform="matrix(0.3827 -0.9239 0.9239 0.3827 -39.7157 196.4284)" class="st0" cx="127.1" cy="127.9" rx="114.8" ry="114.8"/>
+			<path class="st1" d="M127.1,22.2c58.4,0,105.8,47.4,105.8,105.8s-47.4,105.8-105.8,105.8S21.4,186.4,21.4,127.9
+				S68.7,22.2,127.1,22.2 M127.1,4.2C94.1,4.2,63,17,39.6,40.4C16.2,63.8,3.4,94.9,3.4,127.9s12.9,64.1,36.3,87.5
+				s54.5,36.3,87.5,36.3s64.1-12.9,87.5-36.3c23.4-23.4,36.3-54.5,36.3-87.5S238,63.8,214.7,40.4C191.3,17,160.2,4.2,127.1,4.2
+				L127.1,4.2z"/>
+		</g>
+	</g>
+	<g id="warning_00000160166795320490117340000005694815891279426495_">
+		<g id="warning">
+			
+				<ellipse transform="matrix(0.3827 -0.9239 0.9239 0.3827 -39.7157 196.4284)" class="st0" cx="127.1" cy="127.9" rx="114.8" ry="114.8"/>
+			<path class="st2" d="M127.1,22.2c58.4,0,105.8,47.4,105.8,105.8s-47.4,105.8-105.8,105.8S21.4,186.4,21.4,127.9
+				S68.7,22.2,127.1,22.2 M127.1,4.2C94.1,4.2,63,17,39.6,40.4C16.2,63.8,3.4,94.9,3.4,127.9s12.9,64.1,36.3,87.5
+				s54.5,36.3,87.5,36.3s64.1-12.9,87.5-36.3c23.4-23.4,36.3-54.5,36.3-87.5S238,63.8,214.7,40.4C191.3,17,160.2,4.2,127.1,4.2
+				L127.1,4.2z"/>
+		</g>
+	</g>
+	<g id="regular_00000089560977082720357980000016107208459251636387_">
+		<g id="regular">
+			
+				<ellipse transform="matrix(0.3827 -0.9239 0.9239 0.3827 -39.7157 196.4284)" class="st0" cx="127.1" cy="127.9" rx="111.8" ry="111.8"/>
+			<path class="st3" d="M127.1,22.2c58.4,0,105.8,47.4,105.8,105.8s-47.4,105.8-105.8,105.8S21.4,186.4,21.4,127.9
+				S68.7,22.2,127.1,22.2 M127.1,10.2c-31.5,0-61,12.3-83.3,34.5S9.4,96.5,9.4,127.9s12.3,61,34.5,83.3s51.8,34.5,83.3,34.5
+				s61-12.3,83.3-34.5s34.5-51.8,34.5-83.3s-12.3-61-34.5-83.3S158.6,10.2,127.1,10.2L127.1,10.2z"/>
+		</g>
+	</g>
+</g>
+<g id="icons_00000017513366342061761720000016213451399299398553_">
+	<g id="power-plant">
+		<g>
+			<polyline class="st4" points="107.5,188.7 197.8,188.7 197.8,131.3 113.6,131.3 			"/>
+		</g>
+		<g>
+			<g>
+				<rect x="134.3" y="52.4" class="st4" width="22.5" height="78.9"/>
+				<line class="st5" x1="134.3" y1="64.2" x2="156.8" y2="64.2"/>
+			</g>
+			<g>
+				<rect x="157.1" y="91.8" class="st4" width="22.5" height="39.5"/>
+				<line class="st5" x1="157.1" y1="103.6" x2="179.7" y2="103.6"/>
+			</g>
+		</g>
+		<g>
+			<path class="st4" d="M113.1,69.2c0,0,0,49.6,0,62.3c0,12.7,13.6,57.2,13.6,57.2H58.2c0,0,13.6-44,13.6-57.2s0-62.3,0-62.3H113.1z
+				"/>
+			<line class="st5" x1="71.8" y1="81" x2="113.1" y2="81"/>
+		</g>
+		<g>
+			<rect x="134.4" y="150.4" class="st5" width="45.4" height="39.2"/>
+			<line class="st5" x1="137" y1="160" x2="179.7" y2="160"/>
+			<line class="st5" x1="137" y1="169.1" x2="179.7" y2="169.1"/>
+			<line class="st5" x1="135.2" y1="178.2" x2="179.7" y2="178.2"/>
+			<line class="st5" x1="136.1" y1="178.2" x2="179.7" y2="178.2"/>
+		</g>
+		<g id="power-generic">
+			<polygon id="generic" class="st6" points="102.2,131.4 95.2,131.4 97.3,110.9 82.7,134.9 89.6,134.9 87.5,155.4 			"/>
+		</g>
+	</g>
+	<g id="generic_00000026157004212611320080000001865208546745445029_">
+		<polygon id="generic_00000130615920458543908010000011187172773089090980_" class="st7" points="166.3,121 139,121 147.2,40.8 
+			89.7,135 117,135 108.8,215.2 		"/>
+	</g>
+	<g id="generator">
+		<path class="st7" d="M201.3,83.6v71.3c0,8.1-6.6,14.7-14.7,14.7H69.4c-8.1,0-14.7-6.6-14.7-14.7V83.6"/>
+		<line class="st7" x1="79.5" y1="169.6" x2="79.5" y2="188"/>
+		<g>
+			<circle class="st8" cx="176" cy="172.5" r="18.5"/>
+			<circle class="st3" cx="176" cy="172.5" r="5.3"/>
+		</g>
+		<g>
+			<path class="st4" d="M74.7,89.8l0.9-8.2c0-3,4.1-5.5,6.9-5.5h91.1c2.8,0,6.9,2.5,6.9,5.5l0.9,8.2"/>
+			<path class="st4" d="M114.8,76.1c1.5-6.3,6.9-11,13.2-11h0c6.4,0,11.7,4.8,13.2,11.2"/>
+		</g>
+		<line class="st4" x1="54.7" y1="89.8" x2="201.3" y2="89.8"/>
+		<line class="st4" x1="54.7" y1="137.6" x2="201.3" y2="137.6"/>
+		<path class="st4" d="M150.2,137.6V149c0,3.2-4.1,5.8-9.2,5.8H83.9c-5,0-9.2-2.6-9.2-5.8v-11.4"/>
+		<g>
+			<line class="st9" x1="133.6" y1="102.7" x2="175.7" y2="102.7"/>
+			<line class="st9" x1="133.6" y1="124.2" x2="175.7" y2="124.2"/>
+			<line class="st9" x1="133.6" y1="113.4" x2="175.7" y2="113.4"/>
+		</g>
+		<g id="power-generic_00000044175190004227050530000014181106748118698935_">
+			<polygon id="generic_00000158736646587339613950000008370959097681000351_" class="st6" points="104.8,112.9 99.8,112.9 
+				101.3,98.4 90.9,115.4 95.9,115.4 94.4,129.9 			"/>
+		</g>
+	</g>
+</g>
+</svg>

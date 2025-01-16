@@ -124,9 +124,10 @@ public class PGRoutingClient extends PostGISClient {
 
     private String[] constructOSM2PGRoutingCommand(String osmFile, String configFile, String database,
             String tablePrefix, Options options, boolean append) {
+        PostGISEndpointConfig endpointConfig = readEndpointConfig();
         List<String> command = new ArrayList<>(Arrays.asList("osm2pgrouting", "--f", osmFile, "--conf",
-                configFile, "--dbname", database, "--username", postgreSQLEndpoint.getUsername(),
-                "--password", postgreSQLEndpoint.getPassword(), "--prefix", tablePrefix));
+                configFile, "--dbname", database, "--username", endpointConfig.getUsername(),
+                "--password", endpointConfig.getPassword(), "--prefix", tablePrefix));
         if (!append) {
             command.add("--clean");
         }
@@ -138,7 +139,7 @@ public class PGRoutingClient extends PostGISClient {
     private void ensurePostGISRoutingSupportEnabled(String database, String postGISContainerId) {
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         String execId = createComplexCommand(postGISContainerId,
-                "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
+                "psql", "-U", readEndpointConfig().getUsername(), "-d", database, "-w")
                 .withHereDocument(
                         "CREATE EXTENSION IF NOT EXISTS pgrouting CASCADE; CREATE EXTENSION IF NOT EXISTS hstore;")
                 .withErrorStream(errorStream)

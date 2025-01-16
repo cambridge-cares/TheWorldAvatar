@@ -18,7 +18,8 @@ icon = "flood_area.png"
 icon_path = os.path.join(Path(__file__).parent, icon)
 # Specify filepath to store legend
 f = 'flood_warning_types.png'
-fp = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', f)
+fp = os.path.join(Path(__file__).parent.parent.parent, 'StackDeployment', 'inputs', 
+                  'stack-manager', 'inputs', 'data', 'visualisation', 'data', 'icons', f)
 
 # Set image size and font size
 size = 150

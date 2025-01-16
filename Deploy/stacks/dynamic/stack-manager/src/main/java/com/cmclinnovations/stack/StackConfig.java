@@ -1,6 +1,5 @@
 package com.cmclinnovations.stack;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -18,11 +17,18 @@ public class StackConfig {
         EXCLUDES;
     }
 
+    @JsonProperty
+    private final String hostPath = null;
+
     @JsonProperty("services")
     private final EnumMap<Selector, List<String>> serviceSelectors = new EnumMap<>(Selector.class);
 
     @JsonProperty
     private final Map<String, String> volumes = new HashMap<>();
+
+    public String getHostPath() {
+        return hostPath;
+    }
 
     List<String> getIncludedServices() {
         return serviceSelectors.getOrDefault(Selector.INCLUDES, Collections.emptyList());

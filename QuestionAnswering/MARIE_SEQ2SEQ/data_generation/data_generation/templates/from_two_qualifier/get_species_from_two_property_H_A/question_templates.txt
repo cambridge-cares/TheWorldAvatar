@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} higher than {value1} and {PropertyName2} around {value2}
+Provide a catalog of chemical species exhibiting {PropertyName1} levels surpassing {value1}, while also possessing {PropertyName2} values approximately near {value2}.
+Enumerate molecules showcasing {PropertyName1} values exceeding {value1}, with {PropertyName2} readings approximately at {value2}.
+List compounds where {PropertyName1} is greater than {value1} and {PropertyName2} is in the vicinity of {value2}.
+Catalog chemical species with {PropertyName1} exceeding {value1} and {PropertyName2} approximately at {value2}.
+Enumerate molecules that display {PropertyName1} higher than {value1} and {PropertyName2} around {value2}.
+Provide a list of compounds exhibiting {PropertyName1} levels surpassing {value1}, while also having {PropertyName2} values approximately near {value2}.
+List chemical species showcasing {PropertyName1} values surpassing {value1}, with {PropertyName2} readings roughly around {value2}.
+Catalog molecules where {PropertyName1} is greater than {value1} and {PropertyName2} is approximately {value2}.
+Enumerate compounds with {PropertyName1} exceeding {value1} and {PropertyName2} around {value2}.
+Provide a list of species with {PropertyName1} higher than {value1} and {PropertyName2} approximately at {value2}.
+List chemical entities exhibiting {PropertyName1} levels surpassing {value1}, while also possessing {PropertyName2} values around {value2}.
+Enumerate molecules showcasing {PropertyName1} values exceeding {value1}, with {PropertyName2} readings roughly {value2}.
+Catalog compounds where {PropertyName1} is greater than {value1} and {PropertyName2} is in the region of {value2}.
+List chemical species with {PropertyName1} surpassing {value1} and {PropertyName2} approximately {value2}.
+Provide a catalog of molecules displaying {PropertyName1} higher than {value1} and {PropertyName2} around {value2}.
+Enumerate compounds exhibiting {PropertyName1} levels above {value1}, while also having {PropertyName2} values approximately at {value2}.
+List chemical entities showcasing {PropertyName1} values surpassing {value1} and {PropertyName2} readings approximately around {value2}.
+Catalog molecules where {PropertyName1} exceeds {value1} and {PropertyName2} is roughly {value2}.
+Provide a list of compounds with {PropertyName1} higher than {value1} and {PropertyName2} approximately around {value2}.
+List chemical species exhibiting {PropertyName1} levels surpassing {value1}, while also having {PropertyName2} values around {value2}.

@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 @WebServlet(urlPatterns = { "/GetColourBar" })
 public class GetColourBar extends HttpServlet {
@@ -29,11 +30,11 @@ public class GetColourBar extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String pollutant = req.getParameter("pollutant");
-        String timestep = req.getParameter("timestep");
+        long timestep = Long.parseLong(req.getParameter("timestep"));
         String derivationIri = req.getParameter("derivationIri");
         String zIri = req.getParameter("zIri");
 
-        String colourBarUrl = queryClient.getColourBarURL(pollutant, Instant.parse(timestep).getEpochSecond(),
+        String colourBarUrl = queryClient.getColourBarURL(pollutant, timestep,
                 derivationIri, zIri);
 
         HttpGet httpGet = new HttpGet(colourBarUrl);
@@ -57,9 +58,10 @@ public class GetColourBar extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
-                Instant.class);
+                new TimeSeriesRDBClientWithReducedTables<>(Instant.class));
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
         queryClient.setOntopUrl(endpointConfig.getOntopUrl());
     }

@@ -3,15 +3,21 @@ package com.cmclinnovations.stack.services;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
+import com.cmclinnovations.stack.clients.docker.DockerConfigHandler;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -27,6 +33,8 @@ public class ContainerService extends AbstractService {
     private String containerId;
 
     private DockerClient dockerClient;
+
+    List<EndpointConfig> endpointConfigs = new ArrayList<>();
 
     public ContainerService(String stackName, ServiceConfig config) {
         super(config);
@@ -73,18 +81,16 @@ public class ContainerService extends AbstractService {
         this.dockerClient = dockerClient;
     }
 
-    public final void doPreStartUpConfiguration() {
-        doPreStartUpConfigurationImpl();
-        createEndpoints();
-    }
-    
-
-    protected void doPreStartUpConfigurationImpl() {
+    protected void doPreStartUpConfiguration() {
         // Do nothing by default, override if container needs pre-startup configuration
     }
 
-    protected void createEndpoints() {
-        // Do nothing by default, override if container produces one or more endpoints
+    protected final void addEndpointConfig(EndpointConfig endpointConfig) {
+        endpointConfigs.add(endpointConfig);
+    }
+
+    public final void writeEndpointConfigs() {
+        endpointConfigs.forEach(this::writeEndpointConfig);
     }
 
     public void doPostStartUpConfiguration() {
@@ -120,6 +126,10 @@ public class ContainerService extends AbstractService {
         dockerClient.sendFilesContent(containerId, files, remoteDirPath);
     }
 
+    public boolean fileExists(String filePath) {
+        return dockerClient.fileExists(containerId, filePath);
+    }
+
     public final void executeCommand(String... cmd) {
         dockerClient.executeSimpleCommand(containerId, cmd);
     }
@@ -144,12 +154,16 @@ public class ContainerService extends AbstractService {
         }
     }
 
-    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
-        dockerClient.writeEndpointConfig(endpointConfig);
+    public boolean endpointConfigExists(String configName) {
+        return dockerClient.configExists(configName);
+    }
+
+    private <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+        DockerConfigHandler.writeEndpointConfig(endpointConfig);
     }
 
     public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
-        return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
+        return DockerConfigHandler.readEndpointConfig(endpointName, endpointConfigClass);
     }
 
     /**
@@ -159,8 +173,13 @@ public class ContainerService extends AbstractService {
      * @param secretName
      */
     protected boolean ensureOptionalSecret(String secretName) {
+        // Check whether the secret exists in Docker/Podman
         boolean secretExists = dockerClient.secretExists(secretName);
-        if (!secretExists) {
+        if (secretExists) {
+            // Check to see if the secret also exists in this container
+            secretExists = Files.exists(Path.of("/run/secrets", secretName));
+        } else {
+            // Add a dummy secret to Docker/Podman
             dockerClient.addSecret(secretName, "UNUSED");
         }
         return secretExists;
@@ -180,6 +199,10 @@ public class ContainerService extends AbstractService {
             Map<String, String> upstreams, Entry<String, Connection> endpoint) {
         // Do nothing by default, override if container needs to add an NGINX location
         // configuration block
+    }
+
+    public String getDNSIPAddress(){
+        return dockerClient.getDNSIPAddress();
     }
 
 }

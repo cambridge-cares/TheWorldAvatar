@@ -1,0 +1,76 @@
+[
+  {
+    "heading": "Chemical Species Properties",
+    "questions": [
+      "What is the charge of benzene?",
+      "How many hydrogen bonds can an ethylene glycol molecule accept and donate?",
+      "What chemical classifications does caffeine fall under?",
+      "Find all uses of 3-amino-2-propanol",
+      "Show me all species with molecular formula C6H8O6",
+      "What are some compounds with molecular weight around 150 g/mol?",
+      "What are some applications of alkanes?",
+      "Find me all aliphatic amines",
+      "What are solubilities in water of various amino acids?",
+      "List all alcohol solvents with a boiling point between 100°C and 120°C",
+      "Show me the 3D structure of reduced coenzyme M"
+    ]
+  },
+  {
+    "heading": "Gas-Phase Reaction Mechanisms",
+    "questions": [
+      "List all mechanisms available",
+      "Find mechanisms that include the reactions H + OH + M = H2O + M and HO2 + H = O + H2O",
+      "List all mechanisms that involve O2 and Ar",
+      "List all reactions involved in the mechanism linked to www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
+      "List all the reactions that consume H2O2 in the mechanism https://doi.org/10.1002/kin.20026",
+      "What are the reactions in which H2 reacts to form OH radical?",
+      "Please compare the rate constant parameters of the reaction H2 + OH = H2O + H across all mechanisms it appears in.",
+      "What is the kinetic model of the chemical reaction H2O2 + OH = HO2 + H2O described in www.osti.gov/servlets/purl/90098-26Ev73/webviewable/?",
+      "Show all transport models described in https://doi.org/10.1016/j.combustflame.2007.10.024",
+      "Compare thermodynamic models of O2 across all the mechanisms in which it appears",
+      "Compare thermodynamic models of species classified as organic radical across all the mechanisms in which it appears"
+    ]
+  },
+  {
+    "heading": "Quantum Chemistry Computations",
+    "questions": [
+      "Compare zero-point energy of Ar calculated using CC-pVTZ vs CC-pVQZ basis set",
+      "What are the LUMO and HOMO energies of H calculated at UB3LYP level of theory? Please also specify the basis set in the results.",
+      "What are the rotational constants for H2O calculated at the RB3LYP level and CC-pVDZ basis set?"      
+    ]
+  },
+  {
+    "heading": "Zeolites",
+    "questions": [
+      "List all zeolitic materials recorded for framework code AEN",
+      "What is the reference zeolite for SFN?",
+      "What is the zeolite framework of |(Quin)|[Si34O68]?",
+      "Retrieve unit cell information of zeolitic material |Na20|[Al20Si76O192]",
+      "Show the tile information of zeolite UOZ",
+      "What is the occupiable area per cell of zeolite AFY?",
+      "Find zeolitic materials with triclinic lattice system",
+      "Show me all zeolites with accessible area per cell greater than 500 Å² and occupiable volume per cell less than 200 Å³.",
+      "Give me a list of all guest species that have been recorded for zeolite framework FAU",
+      "What are zeolitic materials that take H2S as guest species?",
+      "Show me zeolite frameworks incorporating tetraethylammonium",
+      "Find zeolitic materials built by Ta and N",
+      "Find zeolite frameworks made up of zinc and phosphorus only",
+      "Show me the species incorporated by zeolites made of Al and P elements",
+      "Find me the provenance of zeolitic material |(EDA)2(H)4|[Mg4P4O16]"
+    ]
+  },
+  {
+    "heading": "Metal-Organic Polyhedra",
+    "questions": [
+      "What are all the MOPs with the CBU formula [Mg4C56H76O12S4]?",
+      "Give me all MOPs with a geometric structure of (5-pyramidal)x12(3-planar)x20.",
+      "Return all assembly models based on the CBU [(C6H3)O(CH2)13CH3(CO2)2].",
+      "What assembly models are representative of Ih symmetry?",
+      "What assembly models are representative of icosahedral geometry?",
+      "Find the modularity of CBU [(C3N3)(C6H4)3(CO2)3]",
+      "What is the provenance of the information about MOP [V3O2(OH)2(HCO2)3]4[(C6H4)(C3H2N2)2]6?",
+      "What MOPs are associated with DOI 10.1016/j.chempr.2017.02.002?",
+      "Which chemical building units are used as 2-linear generic building units?"
+    ]
+  }
+]

@@ -77,6 +77,15 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
             throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
         }
     }
+    // Retreives the water reading from csv file
+    public JSONArray getWaterReadings() {
+        try {
+            return retrieveWaterReadings(energyReadingsFilePath);
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
     public JSONArray getGeneratorSpecs() {
         try {
             return retrieveSpecs(generatorSpecFilePath);
@@ -166,6 +175,43 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
             }
             pkg.close();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return readings;
+    }
+
+    // This function reads a csv file to retrieve water readings
+    public JSONArray retrieveWaterReadings(String filePath) throws IOException, JSONException {
+        JSONArray readings = new JSONArray();
+        String line;
+        String cvsSplitBy = ","; // CSV files typically use a comma as the delimiter.
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String[] headers = br.readLine().split(cvsSplitBy); // Assuming the first line contains headers.
+
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(cvsSplitBy);
+                JSONObject readingsPerHour = new JSONObject();
+
+                // Assuming the "Date Time" and "Timezone" are in the same format for all stations and occur every third column.
+                readingsPerHour.put("Date Time", values[0]); // Use the first instance of "Date Time"
+                readingsPerHour.put("Timezone", values[1]); // Use the first instance of "Timezone"
+
+                // Skip the repeated "Date Time" and "Timezone" values, start at index 2, and jump every third value.
+                for (int i = 2; i < values.length; i += 3) {
+                    String ntuKey = headers[i].trim(); // Get the station header
+                    Double ntuValue = null;
+                    try {
+                        ntuValue = Double.parseDouble(values[i]);
+                    } catch (NumberFormatException e) {
+                        // Log or handle the parse error if necessary.
+                    }
+                    readingsPerHour.put(ntuKey, ntuValue);
+                }
+
+                readings.put(readingsPerHour);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return readings;

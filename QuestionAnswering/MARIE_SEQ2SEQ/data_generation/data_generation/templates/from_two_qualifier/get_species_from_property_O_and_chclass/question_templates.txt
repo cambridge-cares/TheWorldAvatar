@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} lower than {minvalue} and higher than {maxvalue} and are classified as {ChemClass}
+Provide a catalog of chemical species with {PropertyName} ranging below {minvalue} and above {maxvalue}, falling under the category of {ChemClass}.
+List molecules characterized by {PropertyName} levels below {minvalue} and above {maxvalue} and grouped as {ChemClass}.
+Enumerate compounds exhibiting {PropertyName} values less than {minvalue} and greater than {maxvalue}, and belonging to the {ChemClass} classification.
+Compile a record of species wherein {PropertyName} is below {minvalue} and above {maxvalue}, and these entities are categorized as {ChemClass}.
+Tabulate chemical entities showing {PropertyName} beneath {minvalue} and above {maxvalue}, while being classified under {ChemClass}.
+Offer a roster of chemical species having {PropertyName} lower than {minvalue} and higher than {maxvalue}, and falling into the {ChemClass} category.
+Present a list of molecules exhibiting {PropertyName} values below {minvalue} and above {maxvalue}, with a classification of {ChemClass}.
+Display a compilation of compounds with {PropertyName} less than {minvalue} and greater than {maxvalue}, while being categorized as {ChemClass}.
+Outline a collection of species showing {PropertyName} levels lower than {minvalue} and higher than {maxvalue}, and belonging to the {ChemClass} grouping.
+Provide an inventory of chemical entities characterized by {PropertyName} values beneath {minvalue} and above {maxvalue}, falling under the {ChemClass} classification.
+Share a list of chemical species that exhibit {PropertyName} below {minvalue} and above {maxvalue}, and are classified within the {ChemClass} category.
+Create a roster of molecules having {PropertyName} lower than {minvalue} and higher than {maxvalue}, while being categorized as {ChemClass}.
+List compounds with {PropertyName} levels below {minvalue} and above {maxvalue}, and are grouped under the {ChemClass} classification.
+Provide a compilation of species exhibiting {PropertyName} values less than {minvalue} and greater than {maxvalue}, and falling into the {ChemClass} category.
+Offer a catalog of chemical entities with {PropertyName} beneath {minvalue} and above {maxvalue}, and classified as {ChemClass}.
+Present a record of molecules showing {PropertyName} below {minvalue} and above {maxvalue}, categorized under {ChemClass}.
+Enumerate compounds with {PropertyName} lower than {minvalue} and higher than {maxvalue}, and falling into the {ChemClass} category.
+Compile a list of species that have {PropertyName} values below {minvalue} and above {maxvalue}, and are classified as {ChemClass}.
+Share a collection of chemical entities with {PropertyName} beneath {minvalue} and above {maxvalue}, falling under the {ChemClass} classification.
+Provide a comprehensive list of molecules exhibiting {PropertyName} lower than {minvalue} and higher than {maxvalue}, and being part of the {ChemClass} group.

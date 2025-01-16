@@ -263,7 +263,7 @@ class GdalClient(StackClient):
     def __init__(self):
         # Initialise GdalClient with default upload/conversion settings
         try:
-            self.client = self.stackClients_view.GDALClient()
+            self.client = self.stackClients_view.GDALClient.getInstance()
             self.orgoptions = self.stackClients_view.Ogr2OgrOptions()
             # PostGIS "requires" geometry type for newly created layer/column 
             # --> when new table gets created using 'uploadVectorStringToPostGIS'
@@ -298,7 +298,7 @@ class GeoserverClient(StackClient):
 
         # Initialise Geoserver with default settings
         try:
-            self.client = self.stackClients_view.GeoServerClient()
+            self.client = self.stackClients_view.GeoServerClient.getInstance()
             self.vectorsettings = self.stackClients_view.GeoServerVectorSettings()
         except Exception as ex:
             logger.error("Unable to initialise GeoServerClient.")

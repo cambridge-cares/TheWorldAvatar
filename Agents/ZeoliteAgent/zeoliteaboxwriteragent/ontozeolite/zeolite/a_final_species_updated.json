@@ -1,0 +1,45 @@
+{
+    "1369": {
+        "source": [
+            "jpcrd392010033102.pdf"
+        ],
+        "name": [
+            "Goosecreekite"
+        ],
+        "frame": "GOO",
+        "bib_path": "citations-20230530T090958",
+        "safe_name": "Goosecreekite",
+        "is_ref": false,
+        "formula": "|Ca(H2O)5|[Al2Si6O16]",
+        "formatted_formula": "Al2 Ca H10 O21 Si6",
+        "doi": "10.1180/minmag.1986.050.356.16",
+        "guest": "",
+        "guest-list": [
+            {
+                "non_framework_component": "H2O",
+                "count": 5.0,
+                "species_iri": "http://www.theworldavatar.com/kb/ontospecies/Species_9a49de29-8090-482e-b802-edda16dc68bf"
+            },
+            {
+                "non_framework_component": "Ca",
+                "count": 1.0,
+                "species_iri": "http://www.theworldavatar.com/kb/ontospecies/Species_bc3068c1-d5f3-44b1-a392-a0fa363a172d"
+            }
+        ],
+        "framework_components": [
+            {
+                "component": "Al",
+                "component_count": 2.0
+            },
+            {
+                "component": "Si",
+                "component_count": 6.0
+            },
+            {
+                "component": "O",
+                "component_count": 16.0
+            }
+        ],
+        "cif_path": "ontozeolite\\crystal\\data\\cifdir\\1530654.cif"
+    }
+}

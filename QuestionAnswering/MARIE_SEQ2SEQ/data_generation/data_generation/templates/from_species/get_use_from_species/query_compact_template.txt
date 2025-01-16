@@ -1,0 +1,6 @@
+SELECT DISTINCT ?UseValue 
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasUse ?UseValue .
+}}

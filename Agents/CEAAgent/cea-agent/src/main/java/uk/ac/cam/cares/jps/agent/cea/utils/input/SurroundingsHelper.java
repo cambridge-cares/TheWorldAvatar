@@ -49,10 +49,6 @@ public class SurroundingsHelper {
 
             Polygon boundingBoxGeometry = (Polygon) GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs, buffer);
 
-            // CRS84 and EPSG:4326 has coordinate swapped
-            if (GeometryQueryHelper.checkCRS84(endpoint) && crs.equals("4326")) {
-                boundingBoxGeometry = GeometryHandler.swapCoordinates(boundingBoxGeometry);
-            }
 
             String boundingBox = boundingBoxGeometry.toText();
 

@@ -1,0 +1,28 @@
+SELECT DISTINCT ?label ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .
+    ?IUPACNameIRI os:value ?IUPACNameValue .
+
+    ?SpeciesIRI os:hasChemicalClass* ?x .
+	?x ?y ?z .
+	?z rdfs:subClassOf* ?ChemicalClassIRI .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
+
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+
+    ?SpeciesIRI os:has{PropertyName1} ?{PropertyName1}IRI .
+    ?{PropertyName1}IRI os:value ?{PropertyName1}Value ; os:unit ?{PropertyName1}UnitIRI ; os:hasProvenance ?{PropertyName1}ProvenanceIRI . 
+    ?{PropertyName1}UnitIRI rdfs:label ?{PropertyName1}UnitValue .
+    OPTIONAL{{?{PropertyName1}IRI os:hasReferenceState ?{PropertyName1}ReferenceStateIRI .
+    ?{PropertyName1}ReferenceStateIRI os:value ?{PropertyName1}ReferenceStateValue ; os:unit ?{PropertyName1}ReferenceStateUnitIRI .
+    ?{PropertyName1}ReferenceStateUnitIRI rdfs:label ?{PropertyName1}ReferenceStateUnitValue .}}
+
+    ?SpeciesIRI os:has{PropertyName2} ?{PropertyName2}IRI .
+    ?{PropertyName2}IRI os:value ?{PropertyName2}Value ; os:unit ?{PropertyName2}UnitIRI ; os:hasProvenance ?{PropertyName2}ProvenanceIRI . 
+    ?{PropertyName2}UnitIRI rdfs:label ?{PropertyName2}UnitValue .
+    OPTIONAL{{?{PropertyName2}IRI os:hasReferenceState ?{PropertyName2}ReferenceStateIRI .
+    ?{PropertyName2}ReferenceStateIRI os:value ?{PropertyName2}ReferenceStateValue ; os:unit ?{PropertyName2}ReferenceStateUnitIRI .
+    ?{PropertyName2}ReferenceStateUnitIRI rdfs:label ?{PropertyName2}ReferenceStateUnitValue .}}
+}}

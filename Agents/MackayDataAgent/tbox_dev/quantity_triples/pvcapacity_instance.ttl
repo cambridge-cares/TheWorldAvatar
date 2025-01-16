@@ -1,0 +1,6 @@
+@prefix semanco: <http://semanco02.hs-albsig.de/repository/ontology-releases/eu/semanco/ontology/SEMANCO/SEMANCO.owl#>.
+@prefix : <https://www.theworldavatar.com/test/> .
+
+:PVSystem_uuid1 rdf:type semanco:PVSystem;
+    semanco:hasPVSystem_Peak_Power :Number_uuid2.
+:Number_uuid2 rdf:type semanco:PVSystem_Peak_Power.

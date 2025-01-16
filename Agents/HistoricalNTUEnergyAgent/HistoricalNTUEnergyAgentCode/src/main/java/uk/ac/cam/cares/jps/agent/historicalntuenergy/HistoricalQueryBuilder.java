@@ -30,6 +30,7 @@ public class HistoricalQueryBuilder {
      * Prefixes
      */
     public static final String PowsysPrefix = "https://www.theworldavatar.com/kg/ontopowsys/";
+    public static final String builtEnvPrefix = "https://www.theworldavatar.com/kg/ontobuiltenv/";
     public static final String OmPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String OntoCapeUnitPrefix = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#";
     public static final String generatedIRIPrefix = OmPrefix + "measure";
@@ -63,11 +64,13 @@ public class HistoricalQueryBuilder {
     public static final String RatedPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower";
     public static final String TemperatureCoefficientOfPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#TemperatureCoefficientOfPower";
     public static final String Tilt = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Tilt";
+    public static final String University = "https://www.theworldavatar.com/kg/ontobuiltenv/University";
+
+
 
     // undeveloped NTU ontologies
     public static final String venue = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Venue";
     public static final String classSchedule = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ClassSchedule";
-
 
     /**
      * Model variables
@@ -79,7 +82,7 @@ public class HistoricalQueryBuilder {
 
 
     /**
-     * Relationships
+     * Predicates
      */
     private static final String OMHasValue = OmPrefix + "hasValue";
     private static final String OntoCapeHasValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue";
@@ -113,6 +116,8 @@ public class HistoricalQueryBuilder {
     private static final String hasTiltAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasTiltAngle";
     private static final String hasOntoCityGML = "https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation";
 
+
+
     // Undeveloped venue-related ontologies
     private static final String hasVenueName = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasVenueName";
     private static final String hasVenueCapacity = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasVenueCapacity";
@@ -130,7 +135,7 @@ public class HistoricalQueryBuilder {
     private static final String hasCode = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasCode";
     private static final String hasName = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasName";
     private static final String hasStudentProfiles = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasStudentProfiles";
-
+    private static final String hasPropertyUsage = "https://www.theworldavatar.com/kg/ontobuiltenv/hasPropertyUsage";
 
     /**
      * Individuals
@@ -198,7 +203,7 @@ public class HistoricalQueryBuilder {
 
     private List<JSONKeyToIRIMapper> mappings;
 
-    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient, JSONArray busNodeSpecs, JSONArray branchSpecs, JSONArray generatorSpecs, JSONArray pvSpecs, JSONArray venueInfo, JSONArray classSchedule) throws IOException
+    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient, JSONArray busNodeSpecs, JSONArray branchSpecs, JSONArray generatorSpecs, JSONArray pvSpecs, JSONArray venueInfo) throws IOException
     {
         agentProperties = agentProp;
         loadproperties(agentProperties);
@@ -330,28 +335,6 @@ public class HistoricalQueryBuilder {
             }
         }
 
-        /*
-        for (int i = 0; i < classSchedule.length(); i++) {
-            JSONObject jsonObject = classSchedule.getJSONObject(i);
-            for (String key : jsonObject.keySet()) {
-                String value = jsonObject.getString(key);
-                NTUClassSchedule.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-            }
-        }
-        */
-
-        // pop up class schedule in the hashmap
-        for (int i = 0; i < classSchedule.length(); i++) {
-            LOGGER.info("poping up class schedule: " + i);
-            JSONObject jsonObject = classSchedule.getJSONObject(i);
-            for (String key : jsonObject.keySet()) {
-                String value = jsonObject.getString(key);
-                if (!NTUClassSchedule.containsKey(key)) {
-                    NTUClassSchedule.put(key, new ArrayList<>());
-                }
-                NTUClassSchedule.get(key).add(value);
-            }
-        }
     }
 
     public void loadproperties(String propfile) throws IOException
@@ -467,36 +450,6 @@ public class HistoricalQueryBuilder {
             kbClient.executeUpdate(venueInsertion.getQueryString());
         }
 
-        /**
-         * Instantiate Class Schedule-related triples
-         */
-        //There should be another loop through all the class schedules
-        for (int entry=0; entry < NTUClassSchedule.get("TYPE").size(); entry++){
-            String classScheduleIRI = PowsysPrefix + "NTU_ClassSchedule_" + String.valueOf(entry);
-
-            String classScheduleType = NTUClassSchedule.get("TYPE").get(entry);
-            String classScheduleDay = NTUClassSchedule.get("DAY").get(entry);
-            String classScheduleTime = NTUClassSchedule.get("TIME").get(entry);
-            String classVenue = NTUClassSchedule.get("VENUE").get(entry);
-            String classRemark = NTUClassSchedule.get("REMARK").get(entry);
-            String classCode = NTUClassSchedule.get("ClassCode").get(entry);
-            String className = NTUClassSchedule.get("ClassName").get(entry);
-            String studentProfiles = NTUClassSchedule.get("StudentProfiles").get(entry);
-            LOGGER.info("Instantiating Class Schedule name: " + className);
-
-            TriplePattern classIsType = iri(classScheduleIRI).isA(iri(classSchedule));
-            TriplePattern classHasType = iri(classScheduleIRI).has(iri(hasType), classScheduleType);
-            TriplePattern classHasDay = iri(classScheduleIRI).has(iri(hasDay), classScheduleDay);
-            TriplePattern classHasTime = iri(classScheduleIRI).has(iri(hasTime), classScheduleTime);
-            TriplePattern classHasVenue = iri(classScheduleIRI).has(iri(hasVenue), classVenue);
-            TriplePattern classHasRemark = iri(classScheduleIRI).has(iri(hasRemark), classRemark);
-            TriplePattern classHasCode = iri(classScheduleIRI).has(iri(hasCode), classCode);
-            TriplePattern classHasName = iri(classScheduleIRI).has(iri(hasName), className);
-            TriplePattern classHasStudentProfiles = iri(classScheduleIRI).has(iri(hasStudentProfiles), studentProfiles);
-
-            InsertDataQuery classInsertion = Queries.INSERT_DATA(classIsType, classHasType, classHasDay, classHasTime, classHasVenue, classHasRemark, classHasCode, classHasName, classHasStudentProfiles);
-            kbClient.executeUpdate(classInsertion.getQueryString());
-        }
 
 
         /**
@@ -739,8 +692,9 @@ public class HistoricalQueryBuilder {
         for (int entry=1; entry < 16; entry++) {
             String buildingName = getBuildingNameFromBusNum(entry);
             String buildingIRI = PowsysPrefix + "NTU_Building_" + buildingName;
-            String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + buildingName + '_' +String.valueOf(entry);
+            String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + buildingName + "_" +String.valueOf(entry);
             TriplePattern BuildingHasBusNode = iri(buildingIRI).has(iri(hasBusNode), iri(busNodeIRI));
+            TriplePattern BuildingHasPropertyUsage = iri(buildingIRI).has(iri(hasPropertyUsage), iri(University));
             TriplePattern BuildingisType = iri(buildingIRI).isA(iri(building));
             String buildingFullName = BuildingAbbrevToName.get(buildingName);
             TriplePattern BuildingLabel = iri(buildingIRI).has(iri(rdfsLabel), buildingFullName);

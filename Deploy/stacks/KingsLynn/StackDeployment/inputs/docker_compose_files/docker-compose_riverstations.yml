@@ -15,10 +15,10 @@ services:
       INSTANTIATE_CONNECTIONS: "true"
       CONNECTIONS_FILE: "/river_stations.csv"
       DATABASE: "postgres"
-      LAYERNAME: "riverstations"
+      LAYERNAME: "river_stations"
       GEOSERVER_WORKSPACE: "stations"
       ONTOP_FILE: "/app/classes/ontop.obda"
-      BLAZEGRAPH_NAMESPACE: "riverstations"
+      BLAZEGRAPH_NAMESPACE: "river_stations"
     volumes:
       - ./datum.json:/datum.json
       - ./river_stations.csv:/river_stations.csv

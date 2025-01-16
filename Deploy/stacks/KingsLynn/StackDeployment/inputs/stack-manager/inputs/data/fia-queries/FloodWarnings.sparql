@@ -1,0 +1,67 @@
+prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix flood: <https://www.theworldavatar.com/kg/ontoflood/>
+prefix rt:    <http://environment.data.gov.uk/flood-monitoring/def/core/>
+prefix om:    <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix xsd:   <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  [IRI] ^flood:hasArealExtent/^flood:hasLocation ?area . 
+  ?area rt:currentWarning ?warning . 
+  ?warning flood:warnsAbout ?flood .
+
+  # Flood Alert or Warning properties
+  { BIND ("Label" AS ?Property )
+    ?warning rdf:label ?Value
+  } UNION {
+    BIND ("Message" AS ?Property )
+    ?warning rt:message ?Value
+  } UNION {
+    BIND ("Initially raised" AS ?Property )
+    ?warning rt:timeRaised ?Value
+  } UNION {
+    BIND ("Message last changed" AS ?Property )
+    ?warning rt:timeMessageChanged ?Value
+  } UNION {
+    BIND ("Severity last changed" AS ?Property )
+    ?warning rt:timeSeverityChanged ?Value
+  } UNION {
+    BIND ("Severity" AS ?Property )
+    ?warning flood:hasSeverity/rdfs:label ?Value
+  }
+  
+  # Flood Area properties
+  UNION { 
+    BIND ("Flood area" AS ?Property )
+    ?area rdfs:label ?Value .
+  } UNION { 
+    BIND ("Attached water body" AS ?Property )
+    ?area flood:attachedWaterBody/rdfs:label ?Value .
+  }
+
+  # Flood Event properties
+  UNION { 
+    BIND ("Affected population" AS ?Property )
+    ?flood flood:affects ?population . 
+    ?population rdf:type flood:Population ;
+                flood:hasTotalCount ?Value . 
+    BIND ("people" as ?Unit)
+  } UNION { 
+    BIND ("Affected buildings" AS ?Property )
+    ?flood flood:affects ?buildings . 
+    ?buildings rdf:type flood:Building ;
+               flood:hasTotalCount ?Value . 
+    BIND ("number" as ?Unit)
+  } UNION { 
+    BIND ("Property value at risk" AS ?Property )
+    ?flood flood:affects ?buildings . 
+    ?buildings rdf:type flood:Building ;
+               flood:hasTotalMonetaryValue/om:hasValue ?measure . 
+    ?measure om:hasNumericalValue ?Value_init ; 
+             om:hasUnit/om:symbol ?Unit_init .
+    BIND (xsd:decimal(?Value_init) as ?Value_interim)
+    BIND (round(?Value_interim/10000)/100 as ?Value)
+    BIND (concat(replace(str(?Unit_init), 'Â', ''), 'm') as ?Unit)
+  } 
+}

@@ -1,0 +1,32 @@
+[PrefixDeclaration]
+ontobuiltenv:      https://www.theworldavatar.com/kg/ontobuiltenv/
+OntoONS:           https://www.ordnancesurvey.co.uk/linked-data/ontology/
+GeoSparql:         http://www.opengis.net/ont/geosparql#
+owl:               http://www.w3.org/2002/07/owl#
+rdf:               http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:               http://www.w3.org/2001/XMLSchema#
+ontobuiltenergy:   https://www.theworldavatar.com/kg/ontobuiltenergy/
+OM:                http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+
+mappingId   LSOA-Household-Attributes
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OntoBuiltEnergy:hasHousehold <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> .
+source          SELECT "LSOA11CD" AS lsoa_code
+                FROM "fuel_poverty_lsoa"
+
+mappingId   Household-NumberOfHouseholds
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasHouseholdCount {Number_of_households}^^xsd:integer .
+source          SELECT "LSOA11CD" AS lsoa_code, "Number_of_households" AS Number_of_households
+                FROM "fuel_poverty_lsoa"
+
+mappingId   Household-FuelPovertyRate
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasFuelPovertyRate <https://www.theworldavatar.com/kg/ontobuiltenergy/FuelPovertyRate/{lsoa_code}> .
+source          SELECT "LSOA11CD" AS lsoa_code
+                FROM "fuel_poverty_lsoa"
+
+mappingId   FuelPovertyRate-Attributes
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/FuelPovertyRate/{lsoa_code}> a OntoBuiltEnergy:FuelPovertyRate ; OM:hasValue {Proportion_of_households_fuel_poor}^^xsd:decimal ; OM:hasTimestamp "2024"^^xsd:gYear .
+source          SELECT "LSOA11CD" AS lsoa_code, "Proportion_of_households_fuel_poor" AS Proportion_of_households_fuel_poor
+                FROM "fuel_poverty_lsoa"
+]]

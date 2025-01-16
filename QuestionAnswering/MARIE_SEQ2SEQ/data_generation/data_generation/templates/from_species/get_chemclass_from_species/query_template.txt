@@ -1,0 +1,15 @@
+SELECT DISTINCT ?label ?ChemicalClassValue 
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI ?hasIdentifier ?IdentifierIRI .
+    ?IdentifierIRI  rdf:type ?Identifier ; os:value ?species .
+    ?Identifier rdfs:subClassOf os:Identifier .
+
+    FILTER( ?species = "{species}")
+
+	?SpeciesIRI os:hasChemicalClass* ?x .
+	?x ?y ?z .
+	?z rdfs:subClassOf* ?ChemicalClassIRI .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
+}}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.cmclinnovations.featureinfo.TestUtils;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
@@ -73,7 +75,7 @@ public class MetaHandlerTest {
         // Initialise a metahandler
         MetaHandler metaHandler = new MetaHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );       
 
@@ -82,8 +84,7 @@ public class MetaHandlerTest {
 
         // Attempt to get metadata
         JSONObject result = metaHandler.getData(
-            configStore.getConfigEntries().subList(0, 1),
-            TestUtils.mockResponse()
+            configStore.getConfigEntries().subList(0, 1)
         );
 
         // Expected response
@@ -95,8 +96,7 @@ public class MetaHandlerTest {
             }
             """
         );
-
-        Assertions.assertTrue(expected.similar(result), "Returned JSONObject did not match expected one!");
+        JSONAssert.assertEquals(expected, result, false);
     }
 
     /**
@@ -115,7 +115,7 @@ public class MetaHandlerTest {
         // Initialise a metahandler
         MetaHandler metaHandler = new MetaHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );       
 
@@ -124,8 +124,7 @@ public class MetaHandlerTest {
 
         // Attempt to get metadata
         JSONObject result = metaHandler.getData(
-            configStore.getConfigEntries().subList(0, 2),
-            TestUtils.mockResponse()
+            configStore.getConfigEntries().subList(0, 2)
         );
 
         // Expected response
@@ -138,8 +137,7 @@ public class MetaHandlerTest {
             }
             """
         );
-
-        Assertions.assertTrue(expected.similar(result), "Returned JSONObject did not match expected one!");
+        JSONAssert.assertEquals(expected, result, false);
     }
 
     /**

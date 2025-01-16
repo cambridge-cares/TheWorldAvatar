@@ -108,7 +108,7 @@ public class GeometryQueryHelper {
                 crs = crs.split(">")[0];
             }
             else if (crs.contains("CRS84")){
-                crs = "CRS84";
+                crs = "4326";
             }
 
             List<Geometry> geometry = new ArrayList<>();
@@ -117,19 +117,10 @@ public class GeometryQueryHelper {
                 geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
             }
             else{
-                boolean flag84 = false;
-                if (crs.equals("CRS84")) {
-                    crs = "4326";
-                    flag84 = true;
-                }
                 for (int i = 0; i < queryResultArray.length(); i++) {
                     String wkt = queryResultArray.getJSONObject(i).getString("wkt");
 
                     Polygon temp = (Polygon) GeometryHandler.toGeometry(wkt);
-
-                    if (flag84) {
-                        temp = GeometryHandler.swapCoordinates(temp);
-                    }
 
                     temp = (Polygon) GeometryHandler.transformGeometry(temp, "EPSG:"+crs, GeometryHandler.EPSG_4326);
                     geometry.add(GeometryHandler.extractExterior(temp));

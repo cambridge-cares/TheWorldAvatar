@@ -41,13 +41,44 @@ To prepare OSM data in `.gml` format
 2) Convert the `.pbf` file into `.osm` format using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
+If the `.gml` files generated in the above step 3 have all the information tags (such as building) grouped under the `other_tags` column, please run `./osmagent/src/main/resources/clean_and_to_gml.py` to parse out the information tags that are grouped under `other_tags`.
+To run the script, specify the input path to `points.gml` or `polygons.gml` as `input_file`in `clean_and_to_gml.py`, output GML file path as `output_file`,  and the types of geometries that the input file contains (point for `points.gml`,polyogn for `polygons.gml`).
+Please run `clean_and_to_gml.py` for both the `points.gml` and `polygons.gml` generated in step 3 above. This will parse the needed OSM tags into their own columns instead of having them grouped under the `other_tags` column.
+
+Once the OSM data is uploaded, it will appear in PostgreSQL tables. The agent assumes the following keys to be in the OSM data, please ensure that the required columns stated below are in the final `points.gml` and `polygons.gml`.
+
+|      OSM tag      | Corresponding column in PostgreSQL |  For points or polygons  |
+|:-----------------:|:----------------------------------:|:------------------------:|
+|     geometry      |          geometryProperty          |           both           |
+|       name        |                name                |           both           |
+|     building      |              building              |           both           |
+|      amenity      |              amenity               |           both           |
+|      leisure      |              leisure               |           both           |
+|      tourism      |              tourism               |           both           |
+|      office       |               office               |           both           |
+|       shop        |                shop                |           both           |
+|      landuse      |              landuse               |         polygons         |
+|     addr:city     |             addr_city              |           both           |
+|   addr:country    |            addr_country            |           both           |
+| addr:housenumber  |          addr_housenumber          |           both           |
+|   addr:postcode   |           addr_postcode            |           both           |
+|    addr:street    |            addr_street             |           both           |
+|  building:levels  |          building_levels           |         polygons         |
+| building:material |         building_material          |         polygons         |
+|   roof:material   |           roof_material            |         polygons         |
+
 #### 2.4.2. Digitales Landschaftsmodell (DLM) Land Use Data
 DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
 
+#### 2.4.3. Other Land Use Data
+If other land use data, that are not the DLM files, are uploaded, please create a CSV file under the [resources folder](osmagent/src/main/resources/). The CSV file is to contain a mapping between the uploaded land use data's land use tags and the OntoBuiltEnv concepts.
+Please see [dlm_landuse.csv](osmagent/src/main/resources/dlm_landuse.csv) for format. In the CSV file, the `Key` column should contain the column name for land use, `Value` should be the land use value, and `OntoBuiltEnv` should be the corresponding OntoBuiltEnv concept that `Value` is mapped to; `Comment` column is optional.
+Please also update `landuse.csv` in [config.properties](osmagent/src/main/resources/config.properties) to use the correct CSV file with the appropriate mapping for the land use data uploaded. 
+
 #### Important note
-The following datasets must exists in the same PostgreSQL database, they are allowed to have different schemas.  
+The following datasets must exist in the same PostgreSQL database, they are allowed to have different schemas.  
 1)  DLM land use data
 2)  3D buildings 
 3)  OSM data
@@ -77,16 +108,24 @@ The OSMAgent should be pulled automatically with the stack-manager, if not you c
 ### 4.2 Starting with the stack-manager
 The agent has been implemented to work in the stack. To do so, place [osmagent.json](stack-manager-config/inputs/config/services/osmagent.json) in the [stack-manager config directory]. 
 
-The agent container makes use of bind mounts to read in configuration details. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount in [osmagent.json](stack-manager-config/inputs/config/services/osmagent.json) with the absolute path to OSMAgent's [resources folder](osmagent/src/main/resources) on your local machine.
-
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
 ### 4.3 Running the Agent
-The agent is reachable at the `/update` endpoint. No request parameters is needed.
+The agent is reachable at the `/update` endpoint. Two optional request parameters can be specified to run OSM agent for a selected area:
+- ```bound_wkt```: (optional) WKT string of the area for which the OSM agent is to be run for.
+- ```bound_srid```: (optional) EPSG SRID of ```bound_wkt``` specified as an integer, must be specified if ```bound_wkt``` is specified.
 
-To run the agent, run the following cURL command:
+To run the agent for the whole of the database and not just geometries in the selected area, send the request without specifying any parameters.
+
+To run the agent for the whole of the database, run the following cURL command:
 ```
 curl -X POST localhost:3838/osmagent/update
+```
+
+
+As an example, to run the agent for a selected area, run the following cURL command:
+```
+ curl -X POST -d "bound_wkt=Polygon ((7.59874554 49.20197125, 7.60999879 49.20420408, 7.61422963 49.19662298, 7.603001 49.19423612, 7.603001 49.19423612, 7.59874554 49.20197125))" -d "bound_srid=4326" localhost:3838/osmagent/update
 ```
 
 ## 5. Debugging
@@ -99,7 +138,6 @@ To debug the agent, replace [`osmagent-debug.json`](stack-manager-config/inputs/
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
 
-
 ## 6. TWA-VF Visualization
 The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. 
 
@@ -109,10 +147,6 @@ The result of OSMAgent - Building Usages is designed to be compatible with TWA-V
 
 #### Setting up TWA-VF
 1) Place [`data.json`](stack-manager-config/data/webspace/data.json) inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation) in the stack-manager.
-
-
-#### To-Do in the future
-Current approach of SPARQL query in [`building_usage.sparql`](stack-manager-config/data/fia-queries/queries/building_usage.sparql) involves processing an IRI string for visualisation purposes. This is done here as a work-around for performance reason as querying the same information semantically from the KG is dramatically slower. Note that extracting information from IRI strings is generally unacceptable and should not be copied or imitated. When performance issue is resolved, the semantically correct SPARQL query can be found [here](stack-manager-config/data/fia-queries/queries/native/).
 
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader

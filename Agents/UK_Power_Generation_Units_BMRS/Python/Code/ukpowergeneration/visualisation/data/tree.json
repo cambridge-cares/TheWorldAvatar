@@ -1,0 +1,17 @@
+[
+    {
+        "groupName": "UK Power System",
+        "layers": [               
+            {
+                "layerName": "Power Plants",
+                "defaultState": "visible",
+                "layerIDs": ["powerplants"]
+            },
+            {
+                "layerName": "Generators",
+                "defaultState": "visible",
+                "layerIDs": ["generators"]
+            }
+        ]
+    }
+]

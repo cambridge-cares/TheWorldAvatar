@@ -1,0 +1,19 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+twa:    https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	Building Usage
+target		twa:Building/{building_iri} :hasPropertyUsage twa:{propertyusage_iri} .
+            twa:{propertyusage_iri} a :{ontobuilt} ;
+                :hasUsageShare {usageshare}^^xsd:float ;
+                :hasUsageLabel {name}^^xsd:string .
+source      SELECT DISTINCT u.name,
+            u.building_iri,
+            u.ontobuilt,
+            u.propertyusage_iri,
+            u.usageshare
+            FROM usage.buildingusage_osm AS u
+]]

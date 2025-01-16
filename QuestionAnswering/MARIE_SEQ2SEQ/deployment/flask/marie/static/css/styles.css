@@ -1,0 +1,37 @@
+.mybutton {
+    background-image: url(/static/img/search.svg);
+    background-position: center;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.spinner {
+    background-image: url(/static/img/spinner.gif);
+    cursor: not-allowed
+}
+
+.sample-question:hover {
+    border-color: #FFA500;
+    cursor: pointer;
+}
+
+#input-field {
+    width: calc(100% - 50px);
+}
+
+#special-chars-container {
+    position: absolute;
+    top: calc(50% - 60px);
+    left: calc(50% - min(450px, 37.5%));
+    padding: 5px 10px;
+    background: white;
+    color: #338cea;
+}
+
+.special-char {
+    cursor: pointer;
+}
+
+#sparql-query {
+    white-space: pre-wrap;
+}

@@ -23,16 +23,30 @@ public class UpdateVirtualSensors extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(UpdateVirtualSensors.class);
     private DerivationClient devClient;
     private QueryClient queryClient;
+    private Thread thread;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOGGER.info("Received POST request to update virtual sensor derivations ");
 
-        // IRI of the dispersion derivation to update
-        String derivation = req.getParameter("derivation");
-        List<String> derivationList = queryClient.getVirtualSensorDerivations(derivation);
+        try {
+            if (thread != null && thread.isAlive()) {
+                LOGGER.info("Previous thread is still alive, waiting for it to finish");
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Error from previous thread");
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
 
-        derivationList.parallelStream().forEach(vsDerivation -> devClient.updatePureSyncDerivation(vsDerivation));
+        thread = new Thread(() -> {
+            // IRI of the dispersion derivation to update
+            String derivation = req.getParameter("derivation");
+            List<String> derivationList = queryClient.getVirtualSensorDerivations(derivation);
+            derivationList.parallelStream().forEach(vsDerivation -> devClient.updatePureSyncDerivation(vsDerivation));
+        });
+        thread.start();
     }
 
     @Override

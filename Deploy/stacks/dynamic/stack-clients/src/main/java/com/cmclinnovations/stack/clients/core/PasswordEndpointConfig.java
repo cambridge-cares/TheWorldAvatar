@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class PasswordEndpointConfig extends AbstractEndpointConfig {
+public class PasswordEndpointConfig extends AbstractEndpointConfig {
 
     private final String passwordFile;
 

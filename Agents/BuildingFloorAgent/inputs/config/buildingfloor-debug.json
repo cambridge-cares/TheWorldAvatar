@@ -1,0 +1,63 @@
+{
+    "ServiceSpec": {
+        "Name": "buildingflooragent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/buildingflooragent:2.1.0",
+                "Env": [
+                    "STACK_NAME=${STACK_NAME}",
+                    "DATABASE=postgres",
+                    "floors_csv=/resources/HDBPropertyInformation.csv",
+                    "JPDA_ADDRESS=0.0.0.0:5005",
+                    "JPDA_TRANSPORT=dt_socket",
+                    "DEBUG=ON"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../buildingfloordata",
+                        "Target": "/resources"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "5005",
+                    "PublishedPort": "5005"
+                }
+            ]
+        }
+    },
+    "endpoints": {
+        "gfaagent": {
+            "url": "http://localhost:8080/BuildingFloorAgent/",
+            "externalPath": "/buildingflooragent/"
+        }
+    }
+}

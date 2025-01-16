@@ -1,0 +1,1034 @@
+human metabolite
+Cleaning agent
+Lubricants and lubricant additives
+pH regulating agent
+Intermediates
+Inside the Home
+Intermediate
+Not Known or Reasonably Ascertainable
+Auto Products
+Commercial / Institutional
+Escherichia coli metabolite
+Solvent
+non-polar solvent
+hepatotoxic agent
+mutagen
+Laboratory chemicals
+Adhesives and sealant chemicals
+Anti-adhesive agents
+Pigments
+epitope
+sensitiser
+allergen
+Adhesion/cohesion promoter
+Anti-freeze agent
+Binder
+Bleaching agents
+Catalyst
+Chain transfer agent
+Corrosion inhibitors and anti-scaling agents
+Demulsifier
+Dust suppressant
+Freeze-thaw additive
+Fuel
+Odor agents
+Other
+Fuel agents
+Fuels and fuel additives
+Other (specify)
+Process regulators
+Processing aids not otherwise specified
+Processing aids, not otherwise listed
+Paint additives and coating additives not described by other categories
+Solvents (which become part of product formulation or mixture)
+Surface modifier
+Surfactant (surface active agent)
+Processing aids, specific to petroleum production
+Reducing agent
+Solubility enhancer
+Solvents (for cleaning or degreasing)
+Hobby/Craft
+Home Maintenance
+Viscosity adjustors
+Diluent
+Functional fluids (open systems)
+UV stabilizer
+Landscaping/Yard
+Personal Care
+Pesticides
+amphiprotic solvent
+Mycoplasma genitalium metabolite
+mouse metabolite
+fuel
+human xenobiotic metabolite
+plant metabolite
+metabolite
+xenobiotic metabolite
+Saccharomyces cerevisiae metabolite
+fundamental metabolite
+bacterial xenobiotic metabolite
+human urinary metabolite
+EC 1.14.11.2 (procollagen-proline dioxygenase) inhibitor
+EC 1.1.1.25 (shikimate dehydrogenase) inhibitor
+antineoplastic agent
+algal metabolite
+androgen
+antifungal agent
+signalling molecule
+neurotransmitter
+antidote to cyanide poisoning
+bacterial metabolite
+Agricultural chemicals (non-pesticidal)
+Preservative
+Daphnia magna metabolite
+phosphoantigen
+Flavoring and nutrient
+EC 1.14.17.1 (dopamine beta-monooxygenase) inhibitor
+fungal metabolite
+coenzyme
+Plating agents and surface treating agents
+Fragrance
+Chemical reaction regulator
+Etching agent
+Photosensitive chemicals
+cofactor
+Surface active agents
+non-narcotic analgesic
+antidote
+MRI contrast agent
+geroprotector
+polar aprotic solvent
+radical scavenger
+alkylating agent
+cardiotonic drug
+beta-adrenergic agonist
+dopaminergic agent
+sympathomimetic agent
+estrogen
+Absorbent
+Corrosion inhibitor
+Dye
+Semiconductor and photovoltaic agent
+Dehydrating agent (desiccant)
+Fillers
+Lubricating agent
+Pigment
+Viscosity modifiers
+Dispersing agent
+Fire extinguishing agent
+Pet Care
+Hardener
+Home Office
+disinfectant
+teratogenic agent
+NMDA receptor antagonist
+protein kinase C agonist
+central nervous system depressant
+neurotoxin
+antiseptic drug
+polar solvent
+Chelating agent
+Deodorizer
+Embalming agent
+Energy Releasers (explosives, motive propellant)
+Monomers
+Plasticizer
+Sealant (barrier)
+Soil amendments (fertilizers)
+EC 3.5.1.4 (amidase) inhibitor
+carcinogenic agent
+environmental contaminant
+solvent
+Plasticizers
+Fixing agent (mordant)
+Propellants and blowing agents
+Functional fluids (closed systems)
+Adsorbents and absorbents
+refrigerant
+antagonist
+vasodilator agent
+anaesthetic
+food packaging gas
+food propellant
+greenhouse gas
+P450 inhibitor
+ligand
+biomarker
+probe
+EC 1.9.3.1 (cytochrome c oxidase) inhibitor
+antibacterial agent
+protic solvent
+nootropic agent
+EC 4.2.1.22 (cystathionine beta-synthase) inhibitor
+EC 2.6.1.19 (4-aminobutyrate--2-oxoglutarate transaminase) inhibitor
+anticonvulsant
+mitochondrial respiratory-chain inhibitor
+Propellants, non-motive (blowing agents)
+Sizing agent
+Tanning agents not otherwise specified
+astringent
+Dyes
+genotoxin
+allelochemical
+fossil fuel
+insecticide
+persistent organic pollutant
+herbicide
+Aerating and deaerating agents
+Defoamer
+Filler
+Flocculating agent
+Opacifer
+Oxidizing/reducing agents
+Softener and conditioner
+food acidity regulator
+chelator
+antimicrobial agent
+Flux agent
+Solids separation agents
+Stabilizing agent
+Bleaching agent
+fluorescent dye
+fragrance
+Ion exchange agents
+Oxidizing agent
+Plating agent
+insect repellent
+volatile oil component
+flavouring agent
+EC 1.11.1.11 (L-ascorbate peroxidase) inhibitor
+antiinfective agent
+keratolytic drug
+plant hormone
+xenobiotic
+EC 1.13.11.33 (arachidonate 15-lipoxygenase) inhibitor
+cyclooxygenase 2 inhibitor
+antioxidant
+toxin
+neuroprotective agent
+photosensitizing agent
+dermatologic drug
+prodrug
+Brightener
+Emulsifier
+Heat transferring agent
+pheromone
+Hydraulic fluids
+Refrigerants
+Insulators
+Finishing agents
+apoptosis inducer
+antimicrobial food preservative
+oxidising agent
+electron acceptor
+Drier
+vulnerary
+nucleophilic reagent
+EC 1.8.1.12 (trypanothione-disulfide reductase) inhibitor
+antimalarial
+inhibitor
+agonist
+EC 3.5.5.1 (nitrilase) inhibitor
+EC 3.1.1.3 (triacylglycerol lipase) inhibitor
+odorant receptor agonist
+Flame retardants
+drug allergen
+Conductive agent
+reagent
+antiviral agent
+EC 2.7.7.7 (DNA-directed DNA polymerase) inhibitor
+phytotoxin
+antifibrinolytic drug
+hematologic agent
+EC 1.1.1.267 (1-deoxy-D-xylulose-5-phosphate reductoisomerase) inhibitor
+nutraceutical
+diagnostic agent
+alpha-adrenergic antagonist
+serotonergic antagonist
+histamine antagonist
+anxiolytic drug
+H1-receptor antagonist
+oneirogen
+antidepressant
+drug metabolite
+expectorant
+uremic toxin
+human blood serum metabolite
+mammalian metabolite
+Caenorhabditis elegans metabolite
+ethylene releasers
+analgesic
+EC 2.7.11.18 (myosin-light-chain kinase) inhibitor
+protective agent
+EC 2.3.2.13 (protein-glutamine gamma-glutamyltransferase) inhibitor
+fluorochrome
+antibacterial drug
+EC 3.1.1.7 (acetylcholinesterase) inhibitor
+EC 4.2.1.1 (carbonic anhydrase) inhibitor
+EC 2.7.1.1 (hexokinase) inhibitor
+EC 1.3.1.8 [acyl-CoA dehydrogenase (NADP(+))] inhibitor
+EC 2.1.1.122 [(S)-tetrahydroprotoberberine N-methyltransferase] inhibitor
+anticoronaviral agent
+EC 1.4.3.4 (monoamine oxidase) inhibitor
+membrane transport modulator
+non-steroidal anti-inflammatory drug
+DNA synthesis inhibitor
+EC 3.1.1.8 (cholinesterase) inhibitor
+acaricide
+agrochemical
+EC 3.5.1.98 (histone deacetylase) inhibitor
+GABA agonist
+psychotropic drug
+serotonergic agonist
+anti-arrhythmia drug
+anti-inflammatory drug
+antihypertensive agent
+rat metabolite
+poison
+electron donor
+emetic
+explosive
+GABA antagonist
+bleaching agent
+Antioxidant
+skin lightening agent
+nitric oxide donor
+EC 1.1.3.13 (alcohol oxidase) inhibitor
+EC 4.3.1.10 (serine-sulfate ammonia-lyase) inhibitor
+auxin
+nutrient
+hapten
+mitogen
+fungal xenobiotic metabolite
+muscle relaxant
+ryanodine receptor antagonist
+leprostatic drug
+vasoconstrictor agent
+sweetening agent
+serotonin uptake inhibitor
+antiviral drug
+HIV-1 reverse transcriptase inhibitor
+calcium channel blocker
+tocolytic agent
+anti-inflammatory agent
+iron chelator
+siderophore
+ferroptosis inhibitor
+adrenergic uptake inhibitor
+cholinergic antagonist
+EC 3.1.4.12 (sphingomyelin phosphodiesterase) inhibitor
+EC 3.4.21.26 (prolyl oligopeptidase) inhibitor
+sedative
+adrenergic agent
+sympatholytic agent
+Abrasives
+micronutrient
+hepatoprotective agent
+EC 2.1.2.1 (glycine hydroxymethyltransferase) inhibitor
+NMDA receptor agonist
+osmolyte
+detergent
+antidyskinesia agent
+antitussive
+Anti-stain agent
+Photosensitive agent
+adrenergic agonist
+adenosine phosphodiesterase inhibitor
+EC 3.5.4.4 (adenosine deaminase) inhibitor
+androgen antagonist
+cardiovascular drug
+anti-ulcer drug
+H2-receptor antagonist
+cholinergic drug
+dopamine uptake inhibitor
+potassium channel opener
+EC 2.7.11.22 (cyclin-dependent kinase) inhibitor
+EC 3.2.1.20 (alpha-glucosidase) inhibitor
+synthetic auxin
+cellulose synthesis inhibitor
+antipyretic
+EC 1.14.99.1 (prostaglandin-endoperoxide synthase) inhibitor
+endocrine disruptor
+bridged diphenyl acaricide
+antiglaucoma drug
+ophthalmology drug
+anthelminthic drug
+muscarinic antagonist
+enzyme inhibitor
+ultraviolet filter
+alpha-adrenergic agonist
+nasal decongestant
+gout suppressant
+antitubercular agent
+central nervous system stimulant
+hormone
+immunological adjuvant
+tropomyosin-related kinase B receptor agonist
+Polymerization promoter
+antispasmodic drug
+parasympatholytic
+copper chelator
+antiemetic
+anti-allergic agent
+antiparkinson drug
+antipruritic drug
+local anaesthetic
+bronchodilator agent
+diuretic
+K-ATP channel agonist
+marine metabolite
+topical anaesthetic
+plasticiser
+GABA modulator
+lachrymator
+trypanocidal drug
+nematicide
+sodium channel blocker
+platelet aggregation inhibitor
+cardioprotective agent
+antiprotozoal drug
+antiparasitic agent
+plant growth retardant
+Anti-scaling agent
+fertilizer
+MALDI matrix material
+water-soluble vitamin (role)
+peripheral nervous system drug
+antirheumatic drug
+cyclooxygenase 3 inhibitor
+angiogenesis inhibitor
+apoptosis inhibitor
+Alloys
+Sir2 inhibitor
+EC 2.4.2.30 (NAD(+) ADP-ribosyltransferase) inhibitor
+EC 3.5.1.19 (nicotinamidase) inhibitor
+antilipemic drug
+general anaesthetic
+raising agent
+inhalation anaesthetic
+first generation antipsychotic
+EC 3.1.4.* (phosphoric diester hydrolase) inhibitor
+EC 1.13.11.34 (arachidonate 5-lipoxygenase) inhibitor
+EC 2.5.1.7 (UDP-N-acetylglucosamine 1-carboxyvinyltransferase) inhibitor
+EC 2.7.10.1 (receptor protein-tyrosine kinase) inhibitor
+EC 3.5.4.1 (cytosine deaminase) inhibitor
+EC 5.1.3.2 (UDP-glucose 4-epimerase) inhibitor
+EC 3.1.3.25 (inositol-phosphate phosphatase) inhibitor
+enzyme mimic
+EC 3.4.22.69 (SARS coronavirus main proteinase) inhibitor
+hepatitis C protease inhibitor
+tyrosine kinase inhibitor
+laxative
+GABA-gated chloride channel antagonist
+mucolytic
+radiosensitizing agent
+antipsychotic agent
+phosphodiesterase IV inhibitor
+EC 3.1.1.1 (carboxylesterase) inhibitor
+EC 5.99.1.2 (DNA topoisomerase) inhibitor
+fungicide
+NF-kappaB inhibitor
+ferroptosis inducer
+EC 1.2.1.3 [aldehyde dehydrogenase (NAD(+))] inhibitor
+photosystem-II inhibitor
+GABA agent
+antimanic drug
+vascular endothelial growth factor receptor antagonist
+dopaminergic antagonist
+antihyperplasia drug
+anaesthesia adjuvant
+Wetting agent (non-aqueous)
+EC 1.1.1.189 (prostaglandin-E2 9-reductase) inhibitor
+avicide
+chromogenic compound
+EC 6.4.1.1 (pyruvate carboxylase) inhibitor
+Aspergillus metabolite
+EC 3.1.3.1 (alkaline phosphatase) inhibitor
+adenosine A1 receptor agonist
+prosthetic group
+carbamate insecticide
+antidote to paracetamol poisoning
+antimetabolite
+metabotropic glutamate receptor agonist
+vesicular glutamate transport inhibitor
+animal metabolite
+soluble guanylate cyclase activator
+antifungal agrochemical
+Penicillium metabolite
+mycotoxin
+epidermal growth factor receptor antagonist
+EC 2.7.11.24 (mitogen-activated protein kinase) inhibitor
+chemokine receptor 5 antagonist
+EC 2.3.1.48 (histone acetyltransferase) inhibitor
+calmodulin antagonist
+S100 calcium-binding protein B inhibitor
+GABAA receptor agonist
+phenothiazine antipsychotic drug
+anticoagulant
+excitatory amino acid antagonist
+two-colour indicator
+acid-base indicator
+anti-asthmatic drug
+adenosine receptor antagonist
+food component
+fibrin modulating drug
+P2Y12 receptor antagonist
+interferon inducer
+nicotinic acetylcholine receptor agonist
+antiamoebic agent
+potassium channel blocker
+insulin secretagogue
+antifungal drug
+Humectant
+fuel additive
+adjuvant
+food additive carrier
+food emulsifier
+food humectant
+EC 1.5.1.3 (dihydrofolate reductase) inhibitor
+EC 1.3.1.9 [enoyl-[acyl-carrier-protein] reductase (NADH)] inhibitor
+EC 5.3.3.5 (cholestenol Delta-isomerase) inhibitor
+antihypotensive agent
+EC 3.1.3.11 (fructose-bisphosphatase) inhibitor
+alpha-secretase activator
+ion transport inhibitor
+loop diuretic
+EC 2.5.1.18 (glutathione transferase) inhibitor
+antinematodal drug
+adrenergic antagonist
+T-type calcium channel blocker
+food antioxidant
+UDP-glucuronosyltransferase activator
+Hsp90 inhibitor
+pyrethroid ester insecticide
+appetite depressant
+central nervous system drug
+EC 3.1.3.48 (protein-tyrosine-phosphatase) inhibitor
+EC 1.1.1.184 [carbonyl reductase (NADPH)] inhibitor
+serine proteinase inhibitor
+EC 5.3.1.1 (triose-phosphate isomerase) inhibitor
+beta-adrenergic antagonist
+insulin-sensitizing drug
+EC 2.7.1.33 (pantothenate kinase) inhibitor
+hypoglycemic agent
+EC 6.2.1.3 (long-chain-fatty-acid--CoA ligase) inhibitor
+PPARgamma agonist
+antiatherosclerotic agent
+ectoparasiticide
+food stabiliser
+food thickening agent
+compatible osmolytes
+indicator
+protein-sequencing agent
+EC 2.7.3.2 (creatine kinase) inhibitor
+chromatographic reagent
+spectrophotometric reagent
+chromophore
+dye
+fumigant insecticide
+rodenticide
+Flotation agent
+Density modifier
+EC 4.3.1.3 (histidine ammonia-lyase) inhibitor
+pesticide synergist
+insect sterilant
+mydriatic agent
+antithyroid drug
+thyroid hormone
+muscarinic agonist
+miotic
+EC 1.14.13.39 (nitric oxide synthase) inhibitor
+EC 1.14.14.94 (leukotriene-B4 20-monooxygenase) inhibitor
+EC 1.14.15.3 (alkane 1-monooxygenase) inhibitor
+EC 4.6.1.2 (guanylate cyclase) inhibitor
+anti-HIV agent
+bone density conservation agent
+voltage-gated sodium channel blocker
+ionophore
+ATP synthase inhibitor
+cyclooxygenase 1 inhibitor
+intravenous anaesthetic
+pyrethroid ester acaricide
+EC 5.99.1.3 [DNA topoisomerase (ATP-hydrolysing)] inhibitor
+topoisomerase IV inhibitor
+antidote to benzodiazepine poisoning
+radioopaque medium
+immunosuppressive agent
+EC 1.14.13.70 (sterol 14alpha-demethylase) inhibitor
+EC 1.1.1.1 (alcohol dehydrogenase) inhibitor
+sodium-dependent Pi-transporter inhibitor
+calcium channel agonist
+antitrichomonal drug
+nephroprotective agent
+glycine transporter 1 inhibitor
+glycine receptor agonist
+autophagy inducer
+radiation protective agent
+Ion exchange agent
+Leaching agent
+catalyst
+food bleaching agent
+Heat stabilizer
+Anti-adhesive/cohesive
+EC 2.7.10.2 (non-specific protein-tyrosine kinase) inhibitor
+purinergic receptor P2X antagonist
+anticholesteremic drug
+dopamine receptor D2 antagonist
+cholecystokinin antagonist
+gastrointestinal drug
+delta-opioid receptor agonist
+sulfite ester acaricide
+EC 2.7.11.1 (non-specific serine/threonine protein kinase) inhibitor
+EC 3.6.3.10 (H(+)/K(+)-exchanging ATPase) inhibitor
+phenoxy herbicide
+defoliant
+oxidative phosphorylation inhibitor
+IP3 receptor antagonist
+serine protease inhibitor
+EC 1.11.1.6 (catalase) inhibitor
+carotenoid biosynthesis inhibitor
+collagen cross-linking inhibitor
+EC 1.1.1.34/EC 1.1.1.88 (hydroxymethylglutaryl-CoA reductase) inhibitor
+aryl hydrocarbon receptor agonist
+leukotriene antagonist
+anti-asthmatic agent
+second generation antipsychotic
+alpha-adrenergic drug
+serotonergic drug
+protein denaturant
+kappa-opioid receptor agonist
+mu-opioid receptor agonist
+opioid analgesic
+dopamine agonist
+hallucinogen
+impurity
+osmotic diuretic
+food bulking agent
+food anticaking agent
+flour treatment agent
+antimitotic
+Solids separation (precipitating) agent, not otherwise specified
+Swelling agent
+Thickening agent
+Waterproofing agent
+Foamant
+antigen
+EC 3.4.19.3 (pyroglutamyl-peptidase I) inhibitor
+adenosine A1 receptor antagonist
+fluorescent probe
+fibroblast growth factor receptor antagonist
+EC 1.3.5.1 [succinate dehydrogenase (quinone)] inhibitor
+antimycobacterial drug
+EC 4.2.1.20 (tryptophan synthase) inhibitor
+orphan drug
+ryanodine receptor agonist
+EC 1.13.11.31 (arachidonate 12-lipoxygenase) inhibitor
+odorant receptor antagonist
+5-hydroxytryptamine 2A receptor agonist
+5-hydroxytryptamine 2B receptor agonist
+5-hydroxytryptamine 2C receptor agonist
+EC 1.17.4.1 (ribonucleoside-diphosphate reductase) inhibitor
+immunomodulator
+H3-receptor agonist
+H4-receptor agonist
+nephrotoxic agent
+angiotensin receptor antagonist
+reactive oxygen species generator
+Flame retardant
+buffer
+surfactant
+pesticide
+marine xenobiotic metabolite
+Anti-static agent
+CB1 receptor antagonist
+retinoic acid receptor alpha/beta agonist
+EC 1.14.14.14 (aromatase) inhibitor
+EC 2.1.1.8 (histamine N-methyltransferase) inhibitor
+vitamin K antagonist
+antipsoriatic
+EC 1.6.3.1. [NAD(P)H oxidase (H2O2-forming)] inhibitor
+nephrotoxin
+plant activator
+EC 1.1.1.188 (prostaglandin-F synthase) inhibitor
+prostaglandin antagonist
+histological dye
+antidote to curare poisoning
+xenoestrogen
+polymerisation monomer
+anabolic agent
+antimicrobial drug
+cross-linking reagent
+Coalescing agent
+Film former
+Impregnation agent
+Brassica napus metabolite
+EC 5.4.99.7 (lanosterol synthase) inhibitor
+EC 3.5.1.5 (urease) inhibitor
+tubulin modulator
+microtubule-destabilising agent
+EC 2.5.1.1 (dimethylallyltranstransferase) inhibitor
+EC 3.1.1.4 (phospholipase A2) inhibitor
+Terminator/Blocker
+Elasticizer
+fumigant
+plant growth regulator
+melanin synthesis inhibitor
+insect attractant
+histamine agonist
+EC 4.3.1.15 (diaminopropionate ammonia-lyase) inhibitor
+protein synthesis inhibitor
+phytoalexin
+EC 1.3.1.43 (arogenate dehydrogenase) inhibitor
+estrogen receptor modulator
+estrogen antagonist
+erythropoietin inhibitor
+glioma-associated oncogene inhibitor
+EC 2.7.11.13 (protein kinase C) inhibitor
+coccidiostat
+animal growth promotant
+EC 3.5.2.6 (beta-lactamase) inhibitor
+anti-obesity agent
+EC 1.1.1.153 [sepiapterin reductase (L-erythro-7,8-dihydrobiopterin forming)] inhibitor
+EC 2.5.1.15 (dihydropteroate synthase) inhibitor
+flame retardant
+Maillard reaction product
+schistosomicide drug
+antiseborrheic
+EC 3.1.4.17 (3',5'-cyclic-nucleotide phosphodiesterase) inhibitor
+H3-receptor antagonist
+PPARalpha agonist
+scabicide
+tranquilizing drug
+EC 2.5.1.6 (methionine adenosyltransferase) inhibitor
+molluscicide
+semiochemical
+EC 1.4.3.22 (diamine oxidase) inhibitor
+EC 1.14.16.2 (tyrosine 3-monooxygenase) inhibitor
+hepatic steatosis inducing agent
+precocenes
+reducing agent
+EC 1.3.3.4 (protoporphyrinogen oxidase) inhibitor
+film-forming compound
+EC 4.1.1.28 (aromatic-L-amino-acid decarboxylase) inhibitor
+H1-receptor agonist
+antidote to sarin poisoning
+antiplatyhelmintic drug
+Flow promoter
+androstane receptor agonist
+antimutagen
+phytoestrogen
+Wrinkle resisting agent
+EC 1.2.1.88 (L-glutamate gamma-semialdehyde dehydrogenase) inhibitor
+ultrasound contrast agent
+peptide coupling reagent
+food additive
+biological pigment
+EC 1.1.1.37 (malate dehydrogenase) inhibitor
+chain carrier
+PPAR modulator
+virulence factor
+intercalator
+curing agent
+nitrification inhibitor
+antileishmanial agent
+insulin-like growth factor receptor 1 antagonist
+EC 2.7.11.26 (tau-protein kinase) inhibitor
+cytokinin
+EC 1.10.3.1 (catechol oxidase) inhibitor
+EC 1.10.3.2 (laccase) inhibitor
+EC 1.13.11.24 (quercetin 2,3-dioxygenase) inhibitor
+EC 1.14.18.1 (tyrosinase) inhibitor
+EC 1.4.3.3 (D-amino-acid oxidase) inhibitor
+G-protein-coupled receptor agonist
+nicotinic antagonist
+metabotropic glutamate receptor antagonist
+EC 1.3.98.1 [dihydroorotate oxidase (fumarate)] inhibitor
+pyrimidine synthesis inhibitor
+EC 3.1.3.16 (phosphoprotein phosphatase) inhibitor
+endothelin receptor antagonist
+autophagy inhibitor
+EC 2.7.1.137 (phosphatidylinositol 3-kinase) inhibitor
+EC 4.2.1.3 (aconitate hydratase) inhibitor
+EC 4.6.1.1 (adenylate cyclase) inhibitor
+Anti-slip agent
+Aurora kinase inhibitor
+renal agent
+EC 1.14.13.181 (13-deoxydaunorubicin hydroxylase) inhibitor
+EC 1.14.13.67 (quinine 3-monooxygenase) inhibitor
+uricosuric drug
+fixative
+EC 3.6.3.49 (channel-conductance-controlling ATPase) inhibitor
+EC 2.5.1.19 (3-phosphoshikimate 1-carboxyvinyltransferase) inhibitor
+GABA reuptake inhibitor
+protein kinase inhibitor
+antiplasmodial drug
+monolignol
+gamma-secretase modulator
+Jacobaea metabolite
+somatostatin receptor agonist
+TRP channel blocker
+antidote to opioid poisoning
+insulin release inhibitor
+juvenile hormone mimic
+EC 2.7.1.105 (6-phosphofructo-2-kinase) inhibitor
+EC 2.6.1.* (transaminase) inhibitor
+EC 2.3.1.* (acyltransferase transferring other than amino-acyl group) inhibitor
+mitochondrial NADH:ubiquinone reductase inhibitor
+estrogen receptor agonist
+neonicotinoid insectide
+cysteine protease inhibitor
+fatty acid oxidation inhibitor
+EC 3.6.3.44 (xenobiotic-transporting ATPase) inhibitor
+Anti-caking agent
+Dusting agent
+EC 2.5.1.58 (protein farnesyltransferase) inhibitor
+EC 2.3.2.* (aminoacyltransferase) inhibitor
+nucleoside antibiotic
+vibriostatic agent
+Papio hamadryas metabolite
+EC 1.13.11.27 (4-hydroxyphenylpyruvate dioxygenase) inhibitor
+prohormone
+EC 2.1.1.116 [3'-hydroxy-N-methyl-(S)-coclaurine 4'-O-methyltransferase] inhibitor
+matrix metalloproteinase inhibitor
+EC 3.4.24.35 (gelatinase B) inhibitor
+Camellia sinensis metabolite
+anti-HIV-1 agent
+vasopressin receptor antagonist
+aquaretic
+EC 2.5.1.59 (protein geranylgeranyltransferase type I) inhibitor
+antifouling biocide
+anti-HSV-1 agent
+nerve growth factor stimulator
+ovicide
+STAT3 inhibitor
+EC 2.3.2.2 (gamma-glutamyltransferase) inhibitor
+EC 6.4.1.2 (acetyl-CoA carboxylase) inhibitor
+cell dedifferentiation agent
+adenosine A3 receptor antagonist
+EC 3.4.21.5 (thrombin) inhibitor
+EC 1.14.13.72 (methylsterol monooxygenase) inhibitor
+EC 1.10.99.2 [ribosyldihydronicotinamide dehydrogenase (quinone)] inhibitor
+spin label
+uncoupling protein inhibitor
+EC 1.1.1.21 (aldehyde reductase) inhibitor
+EC 3.4.15.1 (peptidyl-dipeptidase A) inhibitor
+retinoic acid receptor alpha antagonist
+HIV protease inhibitor
+Lewis base
+cannabinoid receptor agonist
+estrogen receptor antagonist
+TRPA1 channel agonist
+lichen metabolite
+GHB receptor agonist
+quorum sensing inhibitor
+vesicant
+Hsp70 inducer
+antifolate
+glutamine antagonist
+EC 6.3.4.2 [CTP synthase (glutamine hydrolyzing)] inhibitor
+EC 6.3.5.3 (phosphoribosylformylglycinamidine synthase) inhibitor
+EC 6.3.5.2 [GMP synthase (glutamine-hydrolysing)] inhibitor
+EC 6.3.5.5 [carbamoyl-phosphate synthase (glutamine-hydrolysing)] inhibitor
+EC 2.4.2.14 (amidophosphoribosyltransferase) inhibitor
+EC 3.5.1.2 (glutaminase) inhibitor
+EC 6.3.5.1 [NAD(+) synthase (glutamine-hydrolysing)] inhibitor
+EC 6.3.5.4 [asparagine synthase (glutamine-hydrolysing)] inhibitor
+EC 6.3.2.2 (glutamate--cysteine ligase) inhibitor
+anti-HBV agent
+EC 1.8.1.4 (dihydrolipoyl dehydrogenase) inhibitor
+Incandescent agent
+Magnetic element
+Adsorbent
+phospholipid biosynthesis inhibitor
+profungicide
+EC 3.2.1.18 (exo-alpha-sialidase) inhibitor
+chemical hybridisation agent
+HIV-1 integrase inhibitor
+Daphnia tenebrosa metabolite
+corticotropin-releasing factor receptor antagonist
+phase-transfer catalyst
+Arabidopsis thaliana metabolite
+EC 4.1.1.17 (ornithine decarboxylase) inhibitor
+EC 2.3.1.97 (glycylpeptide N-tetradecanoyltransferase) inhibitor
+tracer
+electrophilic reagent
+EC 3.6.1.3 (adenosinetriphosphatase) inhibitor
+gibberellin biosynthesis inhibitor
+EC 2.6.1.2 (alanine transaminase) inhibitor
+EC 2.5.1.48 (cystathionine gamma-synthase) inhibitor
+EC 1.4.3.2 (L-amino-acid oxidase) inhibitor
+phytogenic insecticide
+neurotransmitter agent
+topoisomerase inhibitor
+sterol biosynthesis inhibitor
+proherbicide
+mite growth regulator
+EC 1.1.1.205 (IMP dehydrogenase) inhibitor
+proteasome inhibitor
+EC 1.14.11.29 (hypoxia-inducible factor-proline dioxygenase) inhibitor
+TGFbeta receptor antagonist
+EC 3.4.17.23 (angiotensin-converting enzyme 2) inhibitor
+EC 2.5.1.46 (deoxyhypusine synthase) inhibitor
+pregnane X receptor agonist
+anxiogenic
+mitochondrial cytochrome-bc1 complex inhibitor
+quinone outside inhibitor
+protease inhibitor
+EC 2.7.7.48 (RNA-directed RNA polymerase) inhibitor
+LRH-1 agonist
+macrophage migration inhibitory factor inhibitor
+chiral reagent
+actin polymerisation inhibitor
+VEGF activator
+abscisic acid receptor agonist
+ferroptosis suppressor protein 1 inhibitor
+EC 3.1.26.13 (retroviral ribonuclease H) inhibitor
+Sir1 inhibitor
+EC 2.3.1.50 (serine C-palmitoyltransferase) inhibitor
+Wnt signalling inhibitor
+hormone antagonist
+sclerotherapy agent
+MAIT cell agonist
+formyl peptide receptor agonist
+EC 6.3.2.19 (ubiquitin--protein ligase) inhibitor
+corrosion inhibitor
+SMO receptor agonist
+osteogenesis regulator
+bradykinin receptor B2 agonist
+EC 2.1.1.37 [DNA (cytosine-5-)-methyltransferase] inhibitor
+EC 3.4.23.46 (memapsin 2) inhibitor
+hyaluronan synthesis inhibitor
+EC 1.3.1.22 [3-oxo-5alpha-steroid 4-dehydrogenase (NADP(+))] inhibitor
+EC 2.4.2.1 (purine-nucleoside phosphorylase) inhibitor
+macronutrient
+acyl-CoA:cholesterol acyltransferase 2 inhibitor
+EC 2.7.11.20 (elongation factor 2 kinase) inhibitor
+cholinesterase reactivator
+EC 2.4.2.4 (thymidine phosphorylase) inhibitor
+EC 6.3.1.2 (glutamate--ammonia ligase) inhibitor
+EC 3.4.21.37 (leukocyte elastase) inhibitor
+physical tracer
+synthetic oral contraceptive
+progestin
+EC 2.1.1.45 (thymidylate synthase) inhibitor
+female contraceptive drug
+cathartic
+aldosterone antagonist
+contraceptive drug
+progesterone receptor agonist
+Daphnia galeata metabolite
+bronchoconstrictor agent
+cholinergic agonist
+neuromuscular agent
+appetite enhancer
+EC 1.1.1.141 [15-hydroxyprostaglandin dehydrogenase (NAD(+))] inhibitor
+EC 1.13.11.52 (indoleamine 2,3-dioxygenase) inhibitor
+EC 1.21.3.3 (reticuline oxidase) inhibitor
+EC 3.4.14.5 (dipeptidyl-peptidase IV) inhibitor
+EC 2.7.11.10 (IkappaB kinase) inhibitor
+piscicide
+food colouring
+antacid
+food firming agent
+GABAA receptor antagonist
+excitatory amino acid agonist
+glucocorticoid receptor agonist
+EC 1.15.1.1 (superoxide dismutase) inhibitor
+EC 2.7.7.49 (RNA-directed DNA polymerase) inhibitor
+Photosensitizers
+oral contraceptive
+cardiotoxic agent
+EC 1.3.1.72 (Delta(24)-sterol reductase) inhibitor
+CETP inhibitor
+EC 4.1.1.39 (ribulose-bisphosphate carboxylase) inhibitor
+sterol methyltransferase inhibitor
+EC 1.1.1.146 (11beta-hydroxysteroid dehydrogenase) inhibitor
+AP-1 antagonist
+glycine receptor antagonist
+EC 3.6.3.9 (Na(+)/K(+)-transporting ATPase) inhibitor
+ergosterol biosynthesis inhibitor
+EC 1.14.14.154 (sterol 14alpha-demethylase) inhibitor
+EC 2.4.1.231 [alpha,alpha-trehalose phosphorylase (configuration-retaining)] inhibitor
+EC 2.4.1.64 (alpha,alpha-trehalose phosphorylase) inhibitor
+EC 3.2.1.28 (alpha,alpha-trehalase) inhibitor
+pro-angiogenic agent
+EC 2.5.1.9 (riboflavin synthase) inhibitor
+nitric oxide synthase activator
+lipoxygenase inhibitor
+oxytocic
+EC 3.4.24.11 (neprilysin) inhibitor
+EC 3.4.24.71 (endothelin-converting enzyme 1) inhibitor
+HIV-1 maturation inhibitor
+gap junctional intercellular communication inhibitor
+tumour antigen
+farnesoid X receptor agonist
+microtubule-stabilising agent
+adenosine A2A receptor agonist
+autoinducer
+hormone agonist
+adenylate cyclase agonist
+retinoid X receptor agonist
+retinoic acid receptor agonist
+EC 3.2.1.45 (glucosylceramidase) inhibitor
+TRPV4 agonist
+EC 2.7.11.11 (cAMP-dependent protein kinase) inhibitor
+EC 4.3.1.24 (phenylalanine ammonia-lyase) inhibitor
+EC 3.2.1.1 (alpha-amylase) inhibitor
+capsaicin receptor antagonist
+kappa-opioid receptor antagonist
+delta-opioid receptor antagonist
+nicotinic acid adenine dinucleotide phosphate receptor antagonist
+axin stabilizer
+radioactive imaging agent
+radioactive tracer
+EC 2.3.1.85 (fatty acid synthase) inhibitor
+EC 2.3.1.20 (diacylglycerol O-acyltransferase) inhibitor
+abortifacient
+EC 1.1.1.210 [3beta(or 20alpha)-hydroxysteroid dehydrogenase] inhibitor
+proinsecticide
+pronematicide
+EC 1.6.5.2 [NAD(P)H dehydrogenase (quinone)] inhibitor
+EC 1.8.1.9 (thioredoxin reductase) inhibitor
+TRPV1 agonist
+colorimetric reagent
+Chaetomium metabolite
+TRPM4 channel inhibitor
+colour indicator
+coral metabolite
+base
+emulsifier
+antifeedant
+cosmetic
+reaction intermediate
+EC 2.7.7.6 (RNA polymerase) inhibitor
+antiauxins
+tolerogen
+EC 1.1.1.44 (NADP(+)-dependent decarboxylating phosphogluconate dehydrogenase) inhibitor
+alarm pheromone
+blood substitute
+plant growth stimulator
+antidiarrhoeal drug
+fatty acid synthesis inhibitor
+aryl hydrocarbon receptor antagonist
+environmental food contaminant
+vitamin B1 antagonist
+EC 1.2.3.1 (aldehyde oxidase) inhibitor
+Crystal growth modifiers (nucleating agents)
+EC 1.14.14.91 ( trans-cinnamate 4-monooxygenase) inhibitor
+hydrogen donor
+dinitrophenol insecticide
+EC 1.14.13.132 (squalene monooxygenase) inhibitor
+oxidized luciferins
+adenosine A2A receptor antagonist
+glutamate transporter activator
+crustacean metabolite
+nonionic surfactant
+antiatherogenic agent
+mu-opioid receptor antagonist
+c-Jun N-terminal kinase inhibitor
+aprotic solvent
+Daphnia pulex metabolite
+kairomone
+opioid receptor agonist
+antispermatogenic agent
+EC 2.2.1.6 (acetolactate synthase) inhibitor

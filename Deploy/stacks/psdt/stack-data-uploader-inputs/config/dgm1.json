@@ -1,0 +1,43 @@
+{
+    "name": "dgm1",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "dgm1",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "Elevation",
+            "subdirectory": "elevation",
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "twa:dgm1_elevation"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "HoehenlinienDGM",
+            "subdirectory": "contours",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:dgm1_smoothed_vector_contours"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "dgm1_elevation",
+            "file": "dgm1_elevation.sld"
+        },
+        {
+            "name": "dgm1_smoothed_vector_contours",
+            "file": "dgm1_smoothed_vector_contours.sld"
+        }
+    ]
+}

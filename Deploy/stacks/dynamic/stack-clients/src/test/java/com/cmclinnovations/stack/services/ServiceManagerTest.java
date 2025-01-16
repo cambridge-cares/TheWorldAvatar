@@ -1,8 +1,5 @@
 package com.cmclinnovations.stack.services;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,7 +8,7 @@ public class ServiceManagerTest {
     private static ServiceManager manager;
 
     @BeforeClass
-    public static void constructFromFiles() throws IOException, URISyntaxException {
+    public static void constructFromFiles() {
 
         manager = new ServiceManager();
     }

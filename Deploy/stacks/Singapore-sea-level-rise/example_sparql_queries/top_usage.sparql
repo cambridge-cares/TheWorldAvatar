@@ -1,0 +1,11 @@
+PREFIX sea: <https://www.theworldavatar.com/kg/ontosealevel/>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+PREFIX env: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+
+SELECT ?usage (COUNT(?usage) AS ?num) WHERE {
+  <SEA_LEVEL_IMPACT_IRI> sea:hasPotentialImpact ?building.
+  ?building a bldg:Building;
+    env:hasPropertyUsage/rdf:type ?usage.
+}
+GROUP BY ?usage
+ORDER BY DESC (?num)

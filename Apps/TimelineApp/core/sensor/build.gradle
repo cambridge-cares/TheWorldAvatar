@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply plugin: 'dagger.hilt.android.plugin'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+apply from: "${project.rootDir}/worker_dependencies.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.sensor'
+}
+
+
+dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.android.volley:volley:1.2.1'
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    implementation "androidx.core:core:1.13.1"
+
+    implementation project(path: ':core:utils')
+    implementation project(path: ':core:login')
+    implementation project(path: ':core:ui')
+    implementation project(path: ':core:data')
+
+
+    def room_version = "2.6.1"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-rxjava3:$room_version"
+    // To use Kotlin annotation processing tool (kapt)
+    kapt "androidx.room:room-compiler:$room_version"
+
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+}
