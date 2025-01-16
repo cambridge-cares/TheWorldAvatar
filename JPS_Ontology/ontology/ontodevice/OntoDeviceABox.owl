@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/NormallyClosedPosition">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NormallyClosedPosition</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4ab90a47c3d54c60a8431a55c2fdd786">
+    <ns1:imports rdf:resource="https://www.theworldavatar.com/kg/ontodevice"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/NormallyOpenPosition">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NormallyOpenPosition</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition"/>
+  </rdf:Description>
+</rdf:RDF>
