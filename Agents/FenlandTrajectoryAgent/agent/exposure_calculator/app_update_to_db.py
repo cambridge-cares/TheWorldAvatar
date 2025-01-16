@@ -146,81 +146,113 @@ def get_domain_and_featuretype(env_data_iri: str, endpoint_url: str) -> Tuple[st
 
 # ============ 4) fetch_env_data =============
 def fetch_env_data(env_data_iri: str, endpoint_url=ENV_DATA_ENDPOINT_URL) -> Tuple[pd.DataFrame, str]:
+    """
+    Fetch environmental feature data with specialized queries for known domain_labels and fallback logic for others.
+    """
     domain_label, feature_type = get_domain_and_featuretype(env_data_iri, endpoint_url)
+    dl_lower = domain_label.strip().lower()
 
+    logging.info(f"[fetch_env_data] Processing env_data_iri={env_data_iri}, domain_label={domain_label}, feature_type={feature_type}")
+
+    # Specialized queries for known POINT domains
     if feature_type.upper() == "POINT":
-        sparql_query = f"""
-        PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
-        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-        SELECT ?id ?businessName ?businessType ?ratingTime ?ratingValue ?longitude ?latitude
-        WHERE {{
-          ?id fh:isPartOfDomain <{env_data_iri}> ;
-              fh:hasBusinessName ?businessName ;
-              fh:hasBusinessType ?businessType ;
-              fh:hasRatingDate ?ratingTime ;
-              fh:hasRatingValue ?ratingValue .
-          ?geo geo:isPartOf ?id ;
-               geo:hasLongitude ?longitude ;
-               geo:hasLatitude ?latitude .
-        }}
-        """
-        headers = {"Content-Type":"application/sparql-query","Accept":"application/json"}
+        if dl_lower.startswith("food hygiene rating"):
+            # Specialized SPARQL query for Food Hygiene Rating
+            sparql_query = f"""
+            PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?id ?businessName ?businessType ?ratingTime ?ratingValue ?longitude ?latitude
+            WHERE {{
+              ?id fh:isPartOfDomain <{env_data_iri}> ;
+                  fh:hasBusinessName ?businessName ;
+                  fh:hasBusinessType ?businessType ;
+                  fh:hasRatingDate ?ratingTime ;
+                  fh:hasRatingValue ?ratingValue .
+              ?geo geo:isPartOf ?id ;
+                   geo:hasLongitude ?longitude ;
+                   geo:hasLatitude ?latitude .
+            }}
+            """
+        else:
+            # Fallback SPARQL query for generic POINT type
+            sparql_query = f"""
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?id ?longitude ?latitude
+            WHERE {{
+              ?id geo:isPartOfDomain <{env_data_iri}> .
+              ?geo geo:isPartOf ?id ;
+                   geo:hasLongitude ?longitude ;
+                   geo:hasLatitude ?latitude .
+            }}
+            """
+
+        headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
         resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
         resp.raise_for_status()
         json_res = resp.json()
-        data = []
-        for b in json_res["results"]["bindings"]:
-            row = {
-                "ID": b.get("id", {}).get("value","N/A"),
-                "Business Name": b.get("businessName", {}).get("value","N/A"),
-                "Business Type": b.get("businessType", {}).get("value","N/A"),
-                "Rating Time": b.get("ratingTime", {}).get("value","N/A"),
-                "Rating Value": b.get("ratingValue", {}).get("value","N/A"),
-                "Longitude": b.get("longitude", {}).get("value","N/A"),
-                "Latitude": b.get("latitude", {}).get("value","N/A"),
+        data = [
+            {
+                "ID": b.get("id", {}).get("value", "N/A"),
+                "Longitude": b.get("longitude", {}).get("value", "N/A"),
+                "Latitude": b.get("latitude", {}).get("value", "N/A"),
             }
-            data.append(row)
+            for b in json_res["results"]["bindings"]
+        ]
         df = pd.DataFrame(data)
-        # Print the first and last 3 rows for POINT type
         logging.info(f"[POINT] Extracted DataFrame for {env_data_iri}:")
         logging.info(f"First 3 rows:\n{df.head(3)}")
         logging.info(f"Last 3 rows:\n{df.tail(3)}")
-        return (df, domain_label)
+        return df, domain_label
 
+    # Specialized queries for known AREA domains
     elif feature_type.upper() == "AREA":
-        sparql_query = f"""
-        PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
-        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-        SELECT ?feature ?function ?geometry
-        WHERE {{
-          ?feature gs:isPartOfDomain <{env_data_iri}> ;
-                   gs:hasFunction ?function .
-          ?geoPoint gs:isPartOf ?feature ;
-                    geo:hasGeometry ?geometry .
-        }}
-        """
-        headers = {"Content-Type":"application/sparql-query","Accept":"application/json"}
+        if dl_lower.startswith("greenspace"):
+            # Specialized SPARQL query for Greenspace
+            sparql_query = f"""
+            PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?feature ?function ?geometry
+            WHERE {{
+              ?feature gs:isPartOfDomain <{env_data_iri}> ;
+                       gs:hasFunction ?function .
+              ?geoPoint gs:isPartOf ?feature ;
+                        geo:hasGeometry ?geometry .
+            }}
+            """
+        else:
+            # Fallback SPARQL query for generic AREA type
+            sparql_query = f"""
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?feature ?geometry
+            WHERE {{
+              ?feature geo:isPartOfDomain <{env_data_iri}> .
+              ?geoRef geo:isPartOf ?feature ;
+                      geo:hasGeometry ?geometry .
+            }}
+            """
+
+        headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
         resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
         resp.raise_for_status()
         json_res = resp.json()
-        data = []
-        for b in json_res["results"]["bindings"]:
-            row = {
-                "Feature": b.get("feature",{}).get("value","N/A"),
-                "Function": b.get("function",{}).get("value","N/A"),
-                "Geometry": b.get("geometry",{}).get("value","N/A"),
+        data = [
+            {
+                "Feature": b.get("feature", {}).get("value", "N/A"),
+                "Geometry": b.get("geometry", {}).get("value", "N/A"),
             }
-            data.append(row)
+            for b in json_res["results"]["bindings"]
+        ]
         df = pd.DataFrame(data)
-        # Print the first and last 3 rows for AREA type
         logging.info(f"[AREA] Extracted DataFrame for {env_data_iri}:")
         logging.info(f"First 3 rows:\n{df.head(3)}")
         logging.info(f"Last 3 rows:\n{df.tail(3)}")
-        return (df, domain_label)
+        return df, domain_label
 
+    # Unknown feature type
     else:
         logging.warning(f"featureType={feature_type} unknown for {env_data_iri}, returning empty df.")
-        return (pd.DataFrame([]), domain_label)
+        return pd.DataFrame([]), domain_label
+
 
 # ============ 5) The "exposure_calculation" with extended logging =============
 def exposure_calculation(
