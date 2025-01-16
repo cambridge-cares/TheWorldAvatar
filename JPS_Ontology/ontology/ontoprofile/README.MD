@@ -144,6 +144,8 @@ flowchart LR
     %% Contents
     PartyRole[[cmns-pts:PartyRole]] -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm:FormalOrganization]]
     Organisation -. cmns-dsg:hasName .-> OrganizationName[["<h4>fibo-fnd-org-org:OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"]]:::literal
+    Organisation -. cmns-col:hasPart .-> OrganizationalSubUnit[[<h4>fibo-fnd-org-org:OrganizationalSubUnit]]
+    OrganizationalSubUnit --> Organisation
 
     Organisation -. fibo-fnd-pty-pty:hasMailingAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
@@ -189,7 +191,7 @@ This section describes the various situations that organisations or people are i
 
 ### 2.2.1 Employment
 
-In this situation, a person can be employed by an organisation, who plays an employer role. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil, such as their working hours specified by `cmns-dt:hasTimePeriod`.
+In this situation, a person can be employed by an organisation, who plays an employer role. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil, such as their working hours specified by `cmns-dt:hasTimePeriod`. Employees can also be assigned to specific branches or departments under the organisation by using the `fibo-fnd-org-org:OrganizationalSubUnit` concept.
 
 Figure 3: TBox representation for an employment situation
 
@@ -214,6 +216,8 @@ flowchart LR
     Employer -. cmns-rlcmp:isPlayedBy .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
     Employee -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
     Org -. cmns-col:hasMember .-> Person
+    Org -. cmns-col:hasPart .-> OrganizationalSubUnit[[<h4>fibo-fnd-org-org:OrganizationalSubUnit]]
+    OrganizationalSubUnit -. cmns-col:hasMember .-> Person
 
     Employee -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:TimePeriod]]
     TimePeriod -. cmns-dt:hasStart .-> StartTime[[Start Time]]
