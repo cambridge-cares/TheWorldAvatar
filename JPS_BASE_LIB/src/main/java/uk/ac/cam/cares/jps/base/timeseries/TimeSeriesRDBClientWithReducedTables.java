@@ -1684,6 +1684,58 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     @Override
+    public void addColumnsToExistingTimeSeries(List<String> dataIRIs, List<Class<?>> dataClasses, String tsIri,
+            Integer srid, Connection conn) {
+        DSLContext context = DSL.using(conn);
+        String tsTableName = getTableWithMatchingTimeColumn(conn);
+
+        // Assign column name for each dataIRI; name for time column is fixed
+        Map<String, String> dataColumnNames = new HashMap<>();
+
+        List<String> existingColumns = context.select(COLUMNNAME_COLUMN).from(getDSLTable(DB_TABLE_NAME))
+                .where(TS_IRI_COLUMN.eq(tsIri)).fetch(COLUMNNAME_COLUMN);
+
+        if (tsTableName != null) {
+            TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn,
+                    tsTableName, existingColumns);
+            List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClasses, srid);
+
+            for (int i = 0; i < hasMatchingColumn.size(); i++) {
+                if (Boolean.TRUE.equals(hasMatchingColumn.get(i))) {
+                    // use existing column
+                    String existingSuitableColumn = timeSeriesDatabaseMetadata
+                            .getExistingSuitableColumn(dataClasses.get(i), srid);
+                    dataColumnNames.put(dataIRIs.get(i), existingSuitableColumn);
+                } else {
+                    // add new columns
+                    int columnIndex = getNumberOfDataColumns(tsTableName, conn) + 1;
+                    String columnName = PREFIX_COLUMN + columnIndex;
+                    try {
+                        addColumn(tsTableName, dataClasses.get(i), columnName, srid, conn);
+                    } catch (SQLException e) {
+                        String errmsg = "Failed to add column for " + dataClasses.get(i).getSimpleName();
+                        LOGGER.error(errmsg);
+                        throw new JPSRuntimeException(errmsg);
+                    }
+
+                    dataColumnNames.put(dataIRIs.get(i), columnName);
+                }
+            }
+        } else {
+            String errmsg = "Probably the wrong time class is initialised for TimeSeriesClient";
+            throw new JPSRuntimeException(exceptionPrefix + errmsg);
+        }
+
+        populateCentralTable(tsTableName, dataIRIs, dataColumnNames, tsIri, conn);
+    }
+
+    @Override
+    public boolean timeSeriesExists(String tsIRI, Connection conn) {
+        DSLContext context = DSL.using(conn);
+        return context.fetchExists(selectFrom(getDSLTable(DB_TABLE_NAME)).where(TS_IRI_COLUMN.eq(tsIRI)));
+    }
+
+    @Override
     public Connection getConnection() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
@@ -1715,13 +1767,19 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      * 
      * @param conn
      * @param tableName
+     * @param columnsToExclude // used when adding new columns
      * @return
      */
-    private TimeSeriesDatabaseMetadata getTimeSeriesDatabaseMetadata(Connection conn, String tableName) {
+    private TimeSeriesDatabaseMetadata getTimeSeriesDatabaseMetadata(Connection conn, String tableName,
+            List<String> columnsToExclude) {
         TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = new TimeSeriesDatabaseMetadata();
-        addDataTypes(conn, timeSeriesDatabaseMetadata, tableName);
+        addDataTypes(conn, timeSeriesDatabaseMetadata, tableName, columnsToExclude);
         addSpecificGeometryClass(conn, timeSeriesDatabaseMetadata, tableName);
         return timeSeriesDatabaseMetadata;
+    }
+
+    private TimeSeriesDatabaseMetadata getTimeSeriesDatabaseMetadata(Connection conn, String tableName) {
+        return getTimeSeriesDatabaseMetadata(conn, tableName, new ArrayList<>());
     }
 
     /**
@@ -1733,7 +1791,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      * @param tableName
      */
     private void addDataTypes(Connection conn, TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata,
-            String tableName) {
+            String tableName, List<String> columnsToExclude) {
         DSLContext context = DSL.using(conn, DIALECT);
         Field<String> dataTypeColumn = DSL.field("data_type", String.class);
         Field<String> udtNameColumn = DSL.field("udt_name", String.class);
@@ -1749,7 +1807,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 .select(dataTypeColumn, udtNameColumn, COLUMNNAME_COLUMN).from(COLUMNS_TABLE)
                 .where(condition).fetch();
 
-        queryResult.forEach(rec -> {
+        queryResult.stream().filter(rec -> !columnsToExclude.contains(rec.get(COLUMNNAME_COLUMN))).forEach(rec -> {
             String dataType = rec.get(dataTypeColumn);
             String udtName = rec.get(udtNameColumn);
             String columnName = rec.get(COLUMNNAME_COLUMN);

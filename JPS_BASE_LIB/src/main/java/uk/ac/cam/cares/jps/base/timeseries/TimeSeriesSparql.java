@@ -972,6 +972,20 @@ public class TimeSeriesSparql {
         } else {
             return anyExist;
         }
+    }
 
+    /**
+     * 
+     * @param dataIriList
+     * @param tsIri
+     */
+    void addDataToExistingTimeSeries(List<String> dataIriList, String tsIri) {
+        ModifyQuery modify = Queries.MODIFY();
+
+        dataIriList.forEach(dataIri -> modify.insert(iri(dataIri).has(hasTimeSeries, iri(tsIri))));
+
+        modify.prefix(PREFIX_ONTOLOGY);
+
+        kbClient.executeUpdate(modify.getQueryString());
     }
 }

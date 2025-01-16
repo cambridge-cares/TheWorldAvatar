@@ -1696,6 +1696,79 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         }
     }
 
+    /**
+     * Adds columns to an existing time series table, set srid to null if no
+     * geometry columns are required
+     */
+    @Override
+    public void addColumnsToExistingTimeSeries(List<String> dataIRIs, List<Class<?>> dataClasses, String tsIri,
+            Integer srid, Connection conn) {
+        DSLContext context = DSL.using(conn);
+
+        // there is already a check on whether time series exists before this method is
+        // called
+        String tsTableName = context.select(TABLENAME_COLUMN).from(getDSLTable(DB_TABLE_NAME))
+                .where(TS_IRI_COLUMN.eq(tsIri)).fetch(TABLENAME_COLUMN).get(0);
+
+        List<String> existingColumns = context.select(COLUMNNAME_COLUMN).from(getDSLTable(DB_TABLE_NAME))
+                .where(TS_IRI_COLUMN.eq(tsIri)).fetch(COLUMNNAME_COLUMN);
+
+        int largestNum = 0;
+        for (String column : existingColumns) {
+            // extract number
+            int number = Integer.parseInt(column.split("column")[1]);
+            if (number > largestNum) {
+                largestNum = number;
+            }
+        }
+
+        // Assign column name for each dataIRI; name for time column is fixed
+        Map<String, String> dataColumnNames = new HashMap<>();
+        largestNum++;
+        for (String s : dataIRIs) {
+            dataColumnNames.put(s, "column" + largestNum);
+            largestNum++;
+        }
+
+        // Add corresponding entries in central lookup table
+        populateCentralTable(tsTableName, dataIRIs, dataColumnNames, tsIri, conn);
+
+        List<String> additionalGeomColumns = new ArrayList<>();
+        List<Class<?>> classForAdditionalGeomColumns = new ArrayList<>();
+
+        List<Query> allSteps = new ArrayList<>();
+        for (int i = 0; i < dataIRIs.size(); i++) {
+            if (Geometry.class.isAssignableFrom(dataClasses.get(i))) {
+                // these columns will be added with their respective restrictions
+                additionalGeomColumns.add(dataColumnNames.get(dataIRIs.get(i)));
+                classForAdditionalGeomColumns.add(dataClasses.get(i));
+            } else {
+                allSteps.add(context.alterTable(getDSLTable(tsTableName)).add(dataColumnNames.get(dataIRIs.get(i)),
+                        DefaultDataType.getDataType(DIALECT, dataClasses.get(i))));
+            }
+        }
+
+        context.batch(allSteps).execute();
+
+        // add remaining geometry columns with restrictions
+        try {
+            if (!additionalGeomColumns.isEmpty()) {
+                addGeometryColumns(tsTableName, additionalGeomColumns, classForAdditionalGeomColumns, srid, conn);
+            }
+        } catch (SQLException e) {
+            String errmsg = "Failed to add geometry columns";
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            throw new JPSRuntimeException(errmsg, e);
+        }
+    }
+
+    @Override
+    public boolean timeSeriesExists(String tsIRI, Connection conn) {
+        DSLContext context = DSL.using(conn);
+        return context.fetchExists(selectFrom(getDSLTable(DB_TABLE_NAME)).where(TS_IRI_COLUMN.eq(tsIRI)));
+    }
+
     @Override
     public Connection getConnection() throws SQLException {
         try {

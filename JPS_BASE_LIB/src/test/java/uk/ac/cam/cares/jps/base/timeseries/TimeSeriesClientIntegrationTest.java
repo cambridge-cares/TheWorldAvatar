@@ -664,4 +664,23 @@ public class TimeSeriesClientIntegrationTest {
             Assertions.assertEquals(dataIRI_2.size(), ts2.getDataIRIs().size());
         }
     }
+
+    @Test
+    void testAddNewColumns() throws SQLException {
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+
+            // if there are no errors it can be assumed it is initialised correctly
+            tsClient.getTimeSeries(dataIRI_1, conn);
+
+            TimeSeriesSparql timeSeriesSparql = new TimeSeriesSparql(kbClient);
+            String tsIri = timeSeriesSparql.getTimeSeries(dataIRI_1.get(0));
+
+            tsClient.addColumnsToExistingTimeSeries(tsIri, dataIRI_2, dataClass_2, null, conn);
+
+            List<String> combinedList = new ArrayList<>(dataIRI_1);
+            combinedList.addAll(dataIRI_2);
+            tsClient.getTimeSeries(combinedList, conn);
+        }
+    }
 }
