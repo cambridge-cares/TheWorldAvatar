@@ -392,9 +392,11 @@ public class QueryTemplateFactory {
       }
       // If this is an instance, add a statement targeting the exact class
       if (queryLine.instanceClass() != null) {
+        // Inverse the label predicate if it exist
+        String inverseLabelPred = !queryLine.labelPredicate().isEmpty() ? "^(" + queryLine.labelPredicate() + ")/" : "";
         StringResource.appendTriple(currentLine,
-            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()), "rdf:type",
-            StringResource.parseIriForQuery(queryLine.instanceClass()));
+            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()),
+            inverseLabelPred + "rdf:type", StringResource.parseIriForQuery(queryLine.instanceClass()));
       }
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {
