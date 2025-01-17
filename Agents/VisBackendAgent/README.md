@@ -340,6 +340,8 @@ Users can send a `GET` request to
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
 
+To retrieve an instance with human-readable fields, users can send a `GET` request to `<baseURL>/vis-backend-agent/{type}/label/{id}`, where parameters are the same as the default route.
+
 ##### Get all instances with human readable fields
 
 This route retrieves all instances with human-readable fields. Users can send a `GET` request to

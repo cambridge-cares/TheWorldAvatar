@@ -119,7 +119,17 @@ public class VisBackendAgent {
   @GetMapping("/{type}/{id}")
   public ResponseEntity<?> getInstance(@PathVariable String type, @PathVariable String id) {
     LOGGER.info("Received request to get a specific instance of {}...", type);
-    return this.getService.getInstance(type, id);
+    return this.getService.getInstance(type, id, false);
+  }
+
+  /**
+   * Retrieve the target instance of the specified type in the knowledge graph
+   * with human readable properties.
+   */
+  @GetMapping("/{type}/label/{id}")
+  public ResponseEntity<?> getInstanceWithLabels(@PathVariable String type, @PathVariable String id) {
+    LOGGER.info("Received request to get a specific instance of {} with human readable data...", type);
+    return this.getService.getInstance(type, id, true);
   }
 
   /**

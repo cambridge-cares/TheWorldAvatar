@@ -372,7 +372,7 @@ public class LifecycleService {
       LOGGER.debug("Detected specific entity ID! Retrieving relevant entity information for occurrence of {} ...",
           eventType);
       ResponseEntity<?> currentEntityResponse = this.getService.getInstance("occurrence", targetId,
-          replacementQueryLine);
+          replacementQueryLine, false);
       if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
         currentEntity = (Map<String, Object>) currentEntityResponse.getBody();
       }

@@ -98,28 +98,34 @@ public class GetService {
    * Retrieve only the specific instance and its information. This overloaded
    * method will retrieve the replacement value required from the resource ID.
    * 
-   * @param resourceID The target resource identifier for the instance class.
-   * @param targetId   The target instance IRI.
+   * @param resourceID   The target resource identifier for the instance class.
+   * @param targetId     The target instance IRI.
+   * @param requireLabel Indicates if labels should be returned for all the
+   *                     fields that are IRIs.
    */
-  public ResponseEntity<?> getInstance(String resourceID, String targetId) {
+  public ResponseEntity<?> getInstance(String resourceID, String targetId, boolean requireLabel) {
     ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
     }
-    return getInstance(resourceID, targetId, iriResponse.getBody());
+    return getInstance(resourceID, targetId, iriResponse.getBody(), requireLabel);
   }
 
   /**
    * Retrieve only the specific instance and its information.
    * 
-   * @param resourceID  The target resource identifier for the instance class.
-   * @param targetId    The target instance IRI.
-   * @param replacement The replacement value required.
+   * @param resourceID   The target resource identifier for the instance class.
+   * @param targetId     The target instance IRI.
+   * @param replacement  The replacement value required.
+   * @param requireLabel Indicates if labels should be returned for all the
+   *                     fields that are IRIs.
    */
-  public ResponseEntity<?> getInstance(String resourceID, String targetId, String replacement) {
+  public ResponseEntity<?> getInstance(String resourceID, String targetId, String replacement, boolean requireLabel) {
     LOGGER.debug("Retrieving an instance of {} ...", resourceID);
-    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE, replacement);
+    String queryPath = requireLabel ? FileService.SHACL_PATH_LABEL_QUERY_RESOURCE
+        : FileService.SHACL_PATH_QUERY_RESOURCE;
+    String query = this.fileService.getContentsWithReplacement(queryPath, replacement);
     Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
     if (results.size() == 1) {
       return new ResponseEntity<>(
@@ -164,7 +170,7 @@ public class GetService {
     Map<String, Object> currentEntity = new HashMap<>();
     if (targetId != null) {
       LOGGER.debug("Detected specific entity ID! Retrieving relevant entity information for {} ...", resourceID);
-      ResponseEntity<?> currentEntityResponse = this.getInstance(resourceID, targetId);
+      ResponseEntity<?> currentEntityResponse = this.getInstance(resourceID, targetId, false);
       if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
         currentEntity = (Map<String, Object>) currentEntityResponse.getBody();
       }
