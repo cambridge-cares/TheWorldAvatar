@@ -1,6 +1,15 @@
 package uk.ac.cam.cares.jps.agent.useragent;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -17,6 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
@@ -71,15 +81,15 @@ public class UserAgent extends JPSAgent {
         TokenIntrospectionResponse tokenIntrospectionResponse = getTokenIntrospectResponse(request);
         if (request.getRequestURI().contains("registerPhone")) {
             if (tokenIntrospectionResponse.getPermissions().stream().map(p -> p.getResourceName()).collect(Collectors.toList()).contains("registerPhone")) {
-                return registerPhone(requestParams);
+                return registerPhone(requestParams, getUserId(request));
             }
         } else if (request.getRequestURI().contains("getPhoneIds")) {
             if (tokenIntrospectionResponse.getPermissions().stream().map(p -> p.getResourceName()).collect(Collectors.toList()).contains("getPhoneIds")) {
-                return getPhoneIds(requestParams);
+                return getPhoneIds(requestParams, getUserId(request));
             }
         } else if (request.getRequestURI().contains("registerOuraRing")) {
             if (tokenIntrospectionResponse.getPermissions().stream().map(p -> p.getResourceName()).collect(Collectors.toList()).contains("registerOuraRing")) {
-                return registerOuraRing(requestParams);
+                return registerOuraRing(requestParams, getUserId(request));
             }
         }
         throw new JPSRuntimeException("Permission denied");
@@ -93,11 +103,31 @@ public class UserAgent extends JPSAgent {
         return tokenIntrospectionResponse;
     }
 
+    private String getUserId(HttpServletRequest httpRequest) {
+        // NOTICE: didn't handle token expiration case
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            String userinfoEndpoint = authzClient.getServerConfiguration().getIssuer() + "/protocol/openid-connect/userinfo";
+            HttpGet request = new HttpGet(userinfoEndpoint);
+            request.addHeader("Authorization", httpRequest.getHeader("Authorization"));
 
-    private JSONObject getPhoneIds(JSONObject requestParams) {
-        validateInputGetPhoneIds(requestParams);
+            CloseableHttpResponse response = httpClient.execute(request);
+            int statusCode = response.getCode();
 
-        JSONArray phoneIds = kgQueryClient.getPhoneIds(requestParams.getString("userId"));
+            if (statusCode == 200) {
+                String jsonResponse = EntityUtils.toString(response.getEntity());
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode userInfo = objectMapper.readTree(jsonResponse);
+                return userInfo.findValue("sub").asText();
+            }
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+        throw new RuntimeException("Not able to get the user id");
+    }
+
+
+    private JSONObject getPhoneIds(JSONObject requestParams, String userId) {
+        JSONArray phoneIds = kgQueryClient.getPhoneIds(userId);
         JSONObject result = new JSONObject();
         result.put("PhoneIds", phoneIds);
         result.put("Comment", "Phone ids are retrieved.");
@@ -105,10 +135,8 @@ public class UserAgent extends JPSAgent {
     }
 
 
-    private JSONObject registerPhone(JSONObject requestParams) {
+    private JSONObject registerPhone(JSONObject requestParams, String userId) {
         validateInputRegisterPhone(requestParams);
-
-        String userId = requestParams.getString("userId");
         String phoneId = requestParams.getString("phoneId");
 
         JSONArray jsonArray = timelineRdbStoreHelper.getExistingPhoneIdRecord(phoneId);
@@ -131,9 +159,8 @@ public class UserAgent extends JPSAgent {
         return result;
     }
 
-    private JSONObject registerOuraRing(JSONObject requestParams) {
+    private JSONObject registerOuraRing(JSONObject requestParams, String userId) {
         validateInputRegisterOuraRing(requestParams);
-        String userId = requestParams.getString("userId");
         String ouraRingApi = requestParams.getString("ouraRingApiKey");
         JSONArray jsonArray = timelineRdbStoreHelper.getExistingOuraRingRecord(ouraRingApi);
         if (!jsonArray.isEmpty()) {
@@ -157,9 +184,6 @@ public class UserAgent extends JPSAgent {
 
     private void validateInputRegisterPhone(JSONObject requestParams) throws BadRequestException {
         LOGGER.debug("Request received: " + requestParams.toString());
-        if (!requestParams.has("userId")) {
-            throw new BadRequestException("No user id provided");
-        }
         if (!requestParams.has("phoneId")) {
             throw new BadRequestException("No phone id provided");
         }
@@ -168,18 +192,8 @@ public class UserAgent extends JPSAgent {
 
     private void validateInputRegisterOuraRing(JSONObject requestParams) throws BadRequestException {
         LOGGER.debug("Request received: " + requestParams.toString());
-        if (!requestParams.has("userId")) {
-            throw new BadRequestException("No user id provided");
-        }
         if (!requestParams.has("ouraRingApiKey")) {
             throw new BadRequestException("No oura ring api key provided");
-        }
-    }
-
-    private void validateInputGetPhoneIds(JSONObject requestParams) throws BadRequestException {
-        LOGGER.debug("Request received: " + requestParams.toString());
-        if (!requestParams.has("userId")) {
-            throw new BadRequestException("No user id provided");
         }
     }
 }
