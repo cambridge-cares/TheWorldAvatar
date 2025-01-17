@@ -23,7 +23,7 @@
                 background-color: #f2f2f2;
                 margin-bottom: 20px;
                 display: grid;
-                grid-template-columns: 1fr min-content
+                grid-template-columns: 120px 1fr min-content
             }
             .button:hover {
                 background-color: #45a049;
@@ -41,13 +41,15 @@
 
     <body>
         <div class="header-container">
+            <img width="100" src="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/a70fb4b4d68a1a315238f7670249ff4f017b78b6/web/media/twa-logo-blue.svg" alt="TWA Logo">
+            
             {% if selected_equipment==None %}
-            <h1>View bookings</h1>
+            <h1 style="font-size: 40px;">View bookings</h1>
             {% endif %}
 
             {% for a in bookable_assets %}
             {% if a.iri == selected_equipment %}
-            <h1>View bookings of {{ a.display }}</h1>
+            <h1 style="font-size: 40px;">View bookings of {{ a.display }}</h1>
             {% endif %}
             {% endfor %}
             
