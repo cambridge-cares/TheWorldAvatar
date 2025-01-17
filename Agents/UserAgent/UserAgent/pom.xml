@@ -118,24 +118,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-core</artifactId>
-            
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-driver-remote</artifactId>
-
-        </dependency>
-
-        <dependency>
             <groupId>uk.ac.cam.cares.downsampling</groupId>
             <artifactId>downsampling</artifactId>
             <version>1.0.0</version>
@@ -212,6 +194,11 @@
             <scope>test</scope>
         </dependency>
 
+    <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-authz-client</artifactId>
+        <version>26.0.3</version>
+    </dependency>
 
     </dependencies>
     <dependencyManagement>

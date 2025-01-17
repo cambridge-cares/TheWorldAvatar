@@ -5,6 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.keycloak.authorization.client.AuthzClient;
+import org.keycloak.authorization.client.representation.TokenIntrospectionResponse;
+import org.keycloak.representations.idm.authorization.AuthorizationRequest;
+import org.keycloak.representations.idm.authorization.AuthorizationResponse;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -13,8 +17,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 
 @WebServlet(urlPatterns = {"/registerPhone", "/getPhoneIds", "/registerOuraRing", "/status"})
@@ -24,6 +28,7 @@ public class UserAgent extends JPSAgent {
     private final Logger LOGGER = LogManager.getLogger(UserAgent.class);
 
     private static final Path obdaFile = Path.of("/inputs/user.obda");
+    AuthzClient authzClient;
 
     public void init() {
         LOGGER.debug("This is a debug message.");
@@ -35,6 +40,7 @@ public class UserAgent extends JPSAgent {
         EndpointConfig endpointConfig = new EndpointConfig();
 
         kgQueryClient = new KGQueryClient(new RemoteStoreClient(endpointConfig.getOntopurl()));
+        authzClient = AuthzClient.create();
 
         LOGGER.info("initializing rdb");
         RemoteRDBStoreClient postgresRdbClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
@@ -61,25 +67,36 @@ public class UserAgent extends JPSAgent {
             jo.put("Message", "User agent is up and running");
             return jo;
         }
-        else if (request.getRequestURI().contains("registerPhone")) {
-            validateInputRegisterPhone(requestParams);
 
-            return registerPhone(requestParams);
-
+        TokenIntrospectionResponse tokenIntrospectionResponse = getTokenIntrospectResponse(request);
+        if (request.getRequestURI().contains("registerPhone")) {
+            if (tokenIntrospectionResponse.getPermissions().stream().map(p -> p.getResourceName()).collect(Collectors.toList()).contains("registerPhone")) {
+                return registerPhone(requestParams);
+            }
         } else if (request.getRequestURI().contains("getPhoneIds")) {
-            validateInputGetPhoneIds(requestParams);
-            JSONObject result = getPhoneIds(requestParams);
-            return result;
+            if (tokenIntrospectionResponse.getPermissions().stream().map(p -> p.getResourceName()).collect(Collectors.toList()).contains("getPhoneIds")) {
+                return getPhoneIds(requestParams);
+            }
         } else if (request.getRequestURI().contains("registerOuraRing")) {
-            validateInputRegisterOuraRing(requestParams);
-            return registerOuraRing(requestParams);
+            if (tokenIntrospectionResponse.getPermissions().stream().map(p -> p.getResourceName()).collect(Collectors.toList()).contains("registerOuraRing")) {
+                return registerOuraRing(requestParams);
+            }
         }
+        throw new JPSRuntimeException("Permission denied");
+    }
 
-        return processRequestParameters(requestParams);
+    private TokenIntrospectionResponse getTokenIntrospectResponse(HttpServletRequest httpRequest) {
+        AuthorizationRequest request = new AuthorizationRequest();
+        AuthorizationResponse response = authzClient.authorization(httpRequest.getHeader("Authorization").replace("Bearer ", "")).authorize(request);
+
+        TokenIntrospectionResponse tokenIntrospectionResponse = authzClient.protection().introspectRequestingPartyToken(response.getToken());
+        return tokenIntrospectionResponse;
     }
 
 
     private JSONObject getPhoneIds(JSONObject requestParams) {
+        validateInputGetPhoneIds(requestParams);
+
         JSONArray phoneIds = kgQueryClient.getPhoneIds(requestParams.getString("userId"));
         JSONObject result = new JSONObject();
         result.put("PhoneIds", phoneIds);
@@ -89,6 +106,8 @@ public class UserAgent extends JPSAgent {
 
 
     private JSONObject registerPhone(JSONObject requestParams) {
+        validateInputRegisterPhone(requestParams);
+
         String userId = requestParams.getString("userId");
         String phoneId = requestParams.getString("phoneId");
 
@@ -113,6 +132,7 @@ public class UserAgent extends JPSAgent {
     }
 
     private JSONObject registerOuraRing(JSONObject requestParams) {
+        validateInputRegisterOuraRing(requestParams);
         String userId = requestParams.getString("userId");
         String ouraRingApi = requestParams.getString("ouraRingApiKey");
         JSONArray jsonArray = timelineRdbStoreHelper.getExistingOuraRingRecord(ouraRingApi);
@@ -143,7 +163,7 @@ public class UserAgent extends JPSAgent {
         if (!requestParams.has("phoneId")) {
             throw new BadRequestException("No phone id provided");
         }
-        
+
     }
 
     private void validateInputRegisterOuraRing(JSONObject requestParams) throws BadRequestException {
