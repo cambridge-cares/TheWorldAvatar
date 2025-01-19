@@ -25,6 +25,8 @@ app = Flask(__name__)
 CORS(app)
 logging.basicConfig(level=logging.INFO)
 
+env_data_cache = {}
+
 # ============ 1) Read config.properties ==================
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config.properties")
 config = configparser.ConfigParser()
@@ -145,82 +147,116 @@ def get_domain_and_featuretype(env_data_iri: str, endpoint_url: str) -> Tuple[st
     return domain_name, feature_type
 
 # ============ 4) fetch_env_data =============
+
 def fetch_env_data(env_data_iri: str, endpoint_url=ENV_DATA_ENDPOINT_URL) -> Tuple[pd.DataFrame, str]:
+    """
+    Fetch environmental feature data with caching to avoid redundant SPARQL calls.
+    """
+    
     domain_label, feature_type = get_domain_and_featuretype(env_data_iri, endpoint_url)
+    dl_lower = domain_label.strip().lower()
+
+    logging.info(f"[fetch_env_data] Processing env_data_iri={env_data_iri}, domain_label={domain_label}, feature_type={feature_type}")
+
+    if env_data_iri in env_data_cache:
+        logging.info(f"[fetch_env_data] Cache hit for env_data_iri: {env_data_iri}")
+        return env_data_cache[env_data_iri]
 
     if feature_type.upper() == "POINT":
-        sparql_query = f"""
-        PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
-        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-        SELECT ?id ?businessName ?businessType ?ratingTime ?ratingValue ?longitude ?latitude
-        WHERE {{
-          ?id fh:isPartOfDomain <{env_data_iri}> ;
-              fh:hasBusinessName ?businessName ;
-              fh:hasBusinessType ?businessType ;
-              fh:hasRatingDate ?ratingTime ;
-              fh:hasRatingValue ?ratingValue .
-          ?geo geo:isPartOf ?id ;
-               geo:hasLongitude ?longitude ;
-               geo:hasLatitude ?latitude .
-        }}
-        """
-        headers = {"Content-Type":"application/sparql-query","Accept":"application/json"}
+        if dl_lower.startswith("food hygiene rating"):
+            sparql_query = f"""
+            PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?id ?businessName ?businessType ?ratingTime ?ratingValue ?longitude ?latitude
+            WHERE {{
+              ?id fh:isPartOfDomain <{env_data_iri}> ;
+                  fh:hasBusinessName ?businessName ;
+                  fh:hasBusinessType ?businessType ;
+                  fh:hasRatingDate ?ratingTime ;
+                  fh:hasRatingValue ?ratingValue .
+              ?geo geo:isPartOf ?id ;
+                   geo:hasLongitude ?longitude ;
+                   geo:hasLatitude ?latitude .
+            }}
+            """
+        else:
+            sparql_query = f"""
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?id ?longitude ?latitude
+            WHERE {{
+              ?id geo:isPartOfDomain <{env_data_iri}> .
+              ?geo geo:isPartOf ?id ;
+                   geo:hasLongitude ?longitude ;
+                   geo:hasLatitude ?latitude .
+            }}
+            """
+
+        headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
         resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
         resp.raise_for_status()
         json_res = resp.json()
-        data = []
-        for b in json_res["results"]["bindings"]:
-            row = {
-                "ID": b.get("id", {}).get("value","N/A"),
-                "Business Name": b.get("businessName", {}).get("value","N/A"),
-                "Business Type": b.get("businessType", {}).get("value","N/A"),
-                "Rating Time": b.get("ratingTime", {}).get("value","N/A"),
-                "Rating Value": b.get("ratingValue", {}).get("value","N/A"),
-                "Longitude": b.get("longitude", {}).get("value","N/A"),
-                "Latitude": b.get("latitude", {}).get("value","N/A"),
+        data = [
+            {
+                "ID": b.get("id", {}).get("value", "N/A"),
+                "Longitude": b.get("longitude", {}).get("value", "N/A"),
+                "Latitude": b.get("latitude", {}).get("value", "N/A"),
             }
-            data.append(row)
+            for b in json_res["results"]["bindings"]
+        ]
         df = pd.DataFrame(data)
-        # Print the first and last 3 rows for POINT type
         logging.info(f"[POINT] Extracted DataFrame for {env_data_iri}:")
         logging.info(f"First 3 rows:\n{df.head(3)}")
         logging.info(f"Last 3 rows:\n{df.tail(3)}")
-        return (df, domain_label)
 
     elif feature_type.upper() == "AREA":
-        sparql_query = f"""
-        PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
-        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-        SELECT ?feature ?function ?geometry
-        WHERE {{
-          ?feature gs:isPartOfDomain <{env_data_iri}> ;
-                   gs:hasFunction ?function .
-          ?geoPoint gs:isPartOf ?feature ;
-                    geo:hasGeometry ?geometry .
-        }}
-        """
-        headers = {"Content-Type":"application/sparql-query","Accept":"application/json"}
+        if dl_lower.startswith("greenspace"):
+            sparql_query = f"""
+            PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?feature ?function ?geometry
+            WHERE {{
+              ?feature gs:isPartOfDomain <{env_data_iri}> ;
+                       gs:hasFunction ?function .
+              ?geoPoint gs:isPartOf ?feature ;
+                        geo:hasGeometry ?geometry .
+            }}
+            """
+        else:
+            sparql_query = f"""
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            SELECT ?feature ?geometry
+            WHERE {{
+              ?feature geo:isPartOfDomain <{env_data_iri}> .
+              ?geoRef geo:isPartOf ?feature ;
+                      geo:hasGeometry ?geometry .
+            }}
+            """
+
+        headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
         resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
         resp.raise_for_status()
         json_res = resp.json()
-        data = []
-        for b in json_res["results"]["bindings"]:
-            row = {
-                "Feature": b.get("feature",{}).get("value","N/A"),
-                "Function": b.get("function",{}).get("value","N/A"),
-                "Geometry": b.get("geometry",{}).get("value","N/A"),
+        data = [
+            {
+                "Feature": b.get("feature", {}).get("value", "N/A"),
+                "Geometry": b.get("geometry", {}).get("value", "N/A"),
             }
-            data.append(row)
+            for b in json_res["results"]["bindings"]
+        ]
         df = pd.DataFrame(data)
-        # Print the first and last 3 rows for AREA type
         logging.info(f"[AREA] Extracted DataFrame for {env_data_iri}:")
         logging.info(f"First 3 rows:\n{df.head(3)}")
         logging.info(f"Last 3 rows:\n{df.tail(3)}")
-        return (df, domain_label)
 
+    # Step 5: Handle unknown feature type
     else:
         logging.warning(f"featureType={feature_type} unknown for {env_data_iri}, returning empty df.")
-        return (pd.DataFrame([]), domain_label)
+        df = pd.DataFrame([])
+
+    env_data_cache[env_data_iri] = (df, domain_label)
+    logging.info(f"[fetch_env_data] Data cached for env_data_iri: {env_data_iri}")
+
+    return df, domain_label
 
 # ============ 5) The "exposure_calculation" with extended logging =============
 def exposure_calculation(
@@ -229,10 +265,10 @@ def exposure_calculation(
     domain_label: str,
     feature_type: str,
     exposure_radius: float,
-    test_wkb: Optional[str] = None
+    trajectory_iri: str
 ) -> dict:
     """
-    Improved exposure calculation with added test case for specific WKB geometry.
+    Exposure calculation with database update functionality, using trajectory_iri to determine table_name dynamically.
     """
     logging.info(f"[exposure_calculation] Start, domain_label={domain_label}, feature_type={feature_type}, radius={exposure_radius}")
     logging.info(f"[exposure_calculation] Trajectory DF shape={trajectory_df.shape}, Env DF shape={env_df.shape}")
@@ -283,28 +319,10 @@ def exposure_calculation(
     buffer_geom = unary_union(buffers)
     logging.info(f"[exposure_calculation] Created segmented buffer, area={buffer_geom.area:.2f}, bounds={buffer_geom.bounds}")
 
-    # TEST CASE: Check specific WKB geometry
-    if test_wkb:
-        from shapely.geometry import shape
-        import binascii
-        import geopandas as gpd
-        from shapely.wkb import loads as wkb_loads
-        
-        try:
-            test_geom = wkb_loads(binascii.unhexlify(test_wkb), hex=True)
-            logging.info(f"[TEST] Loaded test WKB geometry, type={test_geom.geom_type}, bounds={test_geom.bounds}")
-            if buffer_geom.intersects(test_geom):
-                inter = buffer_geom.intersection(test_geom)
-                logging.info(f"[TEST] Test WKB intersects buffer, intersection area={inter.area:.2f}")
-            else:
-                dist = buffer_geom.distance(test_geom)
-                logging.info(f"[TEST] Test WKB does not intersect buffer, minimum distance={dist:.2f}")
-        except Exception as e:
-            logging.error(f"[TEST] Failed to process test WKB, error={e}")
-
     # 4) Calculate exposure based on feature type
+    point_count, area_count, total_area = 0, 0, 0.0
+
     if feature_type.upper() == "POINT":
-        # Process point data
         visited_ids = set()
         for idx, row in env_df.iterrows():
             try:
@@ -318,20 +336,10 @@ def exposure_calculation(
                 logging.debug(f"[POINT] Skipping row idx={idx} due to error: {e}")
                 continue
 
-        count_val = len(visited_ids)
-        logging.info(f"[POINT] Total count={count_val}, visited_ids={list(visited_ids)[:10]}...")
-        return {
-            "envFeatureName": domain_label,
-            "type": "POINT",
-            "count": count_val,
-            "totalArea": None
-        }
+        point_count = len(visited_ids)
+        logging.info(f"[POINT] Total count={point_count}, visited_ids={list(visited_ids)[:10]}...")
 
     elif feature_type.upper() == "AREA":
-        # Process area data
-        count_val = 0
-        total_area = 0.0
-
         for idx, row in env_df.iterrows():
             wkb_hex = row.get("Geometry", "")
             if not wkb_hex or wkb_hex == "N/A":
@@ -340,28 +348,59 @@ def exposure_calculation(
                 poly = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
                 if buffer_geom.intersects(poly):
                     intersection = buffer_geom.intersection(poly)
-                    count_val += 1
+                    area_count += 1
                     total_area += intersection.area
             except Exception as e:
                 logging.debug(f"[AREA] Skipping row idx={idx} due to error: {e}")
                 continue
 
-        logging.info(f"[AREA] Final count={count_val}, total_area={total_area:.2f}")
-        return {
-            "envFeatureName": domain_label,
-            "type": "AREA",
-            "count": count_val,
-            "totalArea": total_area
-        }
+        logging.info(f"[AREA] Final count={area_count}, total_area={total_area:.2f}")
 
-    else:
-        logging.warning(f"[exposure_calculation] Unknown feature_type={feature_type}, returning count=0.")
-        return {
-            "envFeatureName": domain_label,
-            "type": feature_type,
-            "count": 0,
-            "totalArea": None
-        }
+        # 5) Update the database
+    try:
+        conn = connect_to_database(TRAJECTORY_DB_HOST, DB_PORT, DB_USER, TRAJECTORY_DB_PASSWORD, DB_NAME)
+        table_name = get_table_name_for_timeseries(conn, trajectory_iri)
+        safe_label = domain_label.replace(" ", "_").replace("/", "_")
+        point_column = f"{safe_label}_point_count"
+        area_column = f"{safe_label}_area_count"
+        total_area_column = f"{safe_label}_total_area"
+
+        with conn.cursor() as cursor:
+            # Add columns if not exist
+            for column, dtype in [(point_column, "INTEGER"), (area_column, "INTEGER"), (total_area_column, "DOUBLE PRECISION")]:
+                cursor.execute(f"""
+                DO $$ BEGIN
+                    IF NOT EXISTS (
+                        SELECT FROM information_schema.columns
+                        WHERE table_name = %s AND column_name = %s
+                    ) THEN
+                        EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{column}" {dtype}';
+                    END IF;
+                END $$;
+                """, (table_name, column))
+
+            # Update table rows
+            cursor.execute(f"""
+            UPDATE "{table_name}"
+            SET "{point_column}" = %s, "{area_column}" = %s, "{total_area_column}" = %s;
+            """, (point_count, area_count, total_area))
+            conn.commit()
+            logging.info(f"Database table {table_name} updated successfully.")
+
+    except Exception as e:
+        logging.error(f"Failed to update the database: {e}")
+
+    finally:
+        if conn:
+            conn.close()
+
+    # 6) Return results
+    return {
+        "envFeatureName": domain_label,
+        "type": feature_type,
+        "count": point_count if feature_type.upper() == "POINT" else area_count,
+        "totalArea": total_area
+    }
 
 # ============ 6) The main route ============
 @app.route('/fenland-trajectory-agent/exposure', methods=['POST'])
@@ -392,7 +431,7 @@ def calculate_exposure():
                 domain_label=domain_label,
                 feature_type=feature_type,
                 exposure_radius=exposure_radius,
-                test_wkb = "0106000020346C0000010000000103000000010000000A000000E17A142E5D8B20411F85EB512E280D41CDCCCCCC588B2041333333338F270D41295C8F427A8B20410000000082270D4133333333728B204167666666F2260D413E0AD7A36C8B20417B14AE47F9260D41333333B34A8B20417B14AE47ED250D419A9999190B8B20410000000048260D41295C8FC2268B2041EC51B81E79270D41F6285C0F418B204185EB51B85E270D41E17A142E5D8B20411F85EB512E280D41"
+                trajectory_iri=trajectoryIRI,
             )
             calc_res["trajectoryIRI"] = trajectoryIRI
             final_results.append(calc_res)
