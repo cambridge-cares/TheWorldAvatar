@@ -5,7 +5,7 @@ WITH BufferedLine AS (
             100
         ) AS buffered_geom -- create static buffer
     FROM 
-        "aca2947a-8d41-4edd-a9dd-4ffa8ed616d0" AS gps -- example table name
+        "35cb3043-9bfc-4cc7-b995-fe6290d8c86b" AS gps -- example table name
 ),
 combined_frs AS (
     SELECT "Name", "Address", geom
