@@ -4,7 +4,7 @@
     "Name": "user-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "user-agent:1.0.0",
+        "Image": "user-agent:2.0.0",
         "Mounts": [
           {
             "Type": "bind",

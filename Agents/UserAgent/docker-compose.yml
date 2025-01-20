@@ -2,5 +2,5 @@ version: "3.8"
 
 services:
   user-agent:
-    image: ghcr.io/cambridge-cares/user-agent:2.0.0
+    image: ghcr.io/cambridge-cares/user-agent:2.0.0-ouraring-SNAPSHOT
     build: .
