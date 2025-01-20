@@ -1,0 +1,184 @@
+{
+  "clientId": "user-agent",
+  "name": "user-agent",
+  "description": "",
+  "rootUrl": "http://localhost:3838/user-agent/",
+  "adminUrl": "http://localhost:3838",
+  "baseUrl": "",
+  "surrogateAuthRequired": false,
+  "enabled": true,
+  "alwaysDisplayInConsole": false,
+  "clientAuthenticatorType": "client-secret",
+  "secret": "UaBcO7GSjvNVLtMhA4hhR6yfwIg0Wyss",
+  "redirectUris": [
+    ""
+  ],
+  "webOrigins": [],
+  "notBefore": 0,
+  "bearerOnly": false,
+  "consentRequired": false,
+  "standardFlowEnabled": true,
+  "implicitFlowEnabled": false,
+  "directAccessGrantsEnabled": true,
+  "serviceAccountsEnabled": true,
+  "authorizationServicesEnabled": true,
+  "publicClient": false,
+  "frontchannelLogout": true,
+  "protocol": "openid-connect",
+  "attributes": {
+    "realm_client": "false",
+    "oidc.ciba.grant.enabled": "false",
+    "client.secret.creation.time": "1736998381",
+    "backchannel.logout.session.required": "true",
+    "oauth2.device.authorization.grant.enabled": "false",
+    "display.on.consent.screen": "false",
+    "backchannel.logout.revoke.offline.tokens": "false"
+  },
+  "authenticationFlowBindingOverrides": {},
+  "fullScopeAllowed": true,
+  "nodeReRegistrationTimeout": -1,
+  "protocolMappers": [
+    {
+      "name": "Client IP Address",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientAddress",
+        "id.token.claim": "true",
+        "introspection.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientAddress",
+        "jsonType.label": "String"
+      }
+    },
+    {
+      "name": "Client ID",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "client_id",
+        "id.token.claim": "true",
+        "introspection.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "client_id",
+        "jsonType.label": "String"
+      }
+    },
+    {
+      "name": "Client Host",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientHost",
+        "id.token.claim": "true",
+        "introspection.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientHost",
+        "jsonType.label": "String"
+      }
+    }
+  ],
+  "defaultClientScopes": [
+    "web-origins",
+    "acr",
+    "profile",
+    "roles",
+    "basic",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "access": {
+    "view": true,
+    "configure": true,
+    "manage": true
+  },
+  "authorizationSettings": {
+    "allowRemoteResourceManagement": true,
+    "policyEnforcementMode": "ENFORCING",
+    "resources": [
+      {
+        "name": "Default Resource",
+        "type": "urn:user-agent:resources:default",
+        "ownerManagedAccess": false,
+        "attributes": {},
+        "uris": [
+          "/*"
+        ]
+      },
+      {
+        "name": "registerPhone",
+        "ownerManagedAccess": false,
+        "displayName": "register phone",
+        "attributes": {},
+        "uris": [
+          "registerPhone"
+        ],
+        "icon_uri": ""
+      },
+      {
+        "name": "getPhoneIds",
+        "ownerManagedAccess": false,
+        "displayName": "getPhoneIds",
+        "attributes": {},
+        "uris": [
+          "getPhoneIds"
+        ],
+        "icon_uri": ""
+      },
+      {
+        "name": "registerOuraRing",
+        "ownerManagedAccess": false,
+        "displayName": "registerOuraRing",
+        "attributes": {},
+        "uris": [
+          "registerOuraRing"
+        ],
+        "icon_uri": ""
+      }
+    ],
+    "policies": [
+      {
+        "name": "Default Policy",
+        "description": "A policy that grants access only for users within this realm",
+        "type": "js",
+        "logic": "POSITIVE",
+        "decisionStrategy": "AFFIRMATIVE",
+        "config": {
+          "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
+        }
+      },
+      {
+        "name": "Default Permission",
+        "description": "A permission that applies to the default resource type",
+        "type": "resource",
+        "logic": "POSITIVE",
+        "decisionStrategy": "UNANIMOUS",
+        "config": {
+          "defaultResourceType": "urn:user-agent:resources:default",
+          "applyPolicies": "[\"Default Policy\"]"
+        }
+      },
+      {
+        "name": "General user agent access",
+        "description": "",
+        "type": "resource",
+        "logic": "POSITIVE",
+        "decisionStrategy": "UNANIMOUS",
+        "config": {
+          "resources": "[\"registerOuraRing\",\"registerPhone\",\"getPhoneIds\"]",
+          "applyPolicies": "[\"Default Policy\"]"
+        }
+      }
+    ],
+    "scopes": [],
+    "decisionStrategy": "UNANIMOUS"
+  }
+}
