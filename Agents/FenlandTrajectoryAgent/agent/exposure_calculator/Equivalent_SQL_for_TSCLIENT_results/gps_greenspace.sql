@@ -6,7 +6,7 @@ WITH Trajectory AS (
         )::geometry, 
         27700
     ) AS buffered_trajectory
-    FROM "aca2947a-8d41-4edd-a9dd-4ffa8ed616d0" --placehodler, replace with table name from dbtable
+    FROM "35cb3043-9bfc-4cc7-b995-fe6290d8c86b" --placehodler, replace with table name from dbtable
 )
 SELECT g.ogc_fid, g.function, g."distName1", g."distName2", g.wkb_geometry
 FROM public."GB_GreenspaceSite" g, Trajectory t
