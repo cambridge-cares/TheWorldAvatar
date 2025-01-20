@@ -9,7 +9,7 @@ geo:        http://www.opengis.net/ont/geosparql#
 
 [MappingDeclaration] @collection [[
 mappingId       FoodHygieneDomain
-target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a exposure:Domain ; exposure:hasDomainName "Food hygiene rating"^^xsd:string ; exposure:hasFeatureType "POINT"^^xsd:string .
+target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a exposure:Domain ; exposure:hasDomainName "Food hygiene rating"^^xsd:string ; exposure:hasFeatureType "POINT"^^xsd:string ; exposure:hasDataSource "supermarket"^^xsd:string, "takeaways"^^xsd:string .
 source      SELECT DISTINCT 'Food hygiene rating' AS "DomainName"
             FROM "fhr_cambridge"
 
@@ -29,7 +29,7 @@ source      SELECT "FHRSID", "RatingValue", "RatingDate"
             FROM "fhr_cambridge";
 
 mappingId       GreenspaceDomain
-target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a exposure:Domain ; exposure:hasDomainName "Greenspace"^^xsd:string ; exposure:hasFeatureType "AREA"^^xsd:string .
+target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a exposure:Domain ; exposure:hasDomainName "Greenspace"^^xsd:string ; exposure:hasFeatureType "AREA"^^xsd:string ; exposure:hasDataSource "GB_GreenspaceSite"^^xsd:string .
 source      SELECT DISTINCT 'Greenspace' AS "DomainName"
             FROM "GB_GreenspaceSite"
 
