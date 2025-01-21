@@ -126,7 +126,7 @@ public final class OntopService extends ContainerService {
                         ontopClient.uploadRules(List.of());
                         break;
                     default:
-                        dockerClient.createComplexCommand(containerId, "touch", f).withUser("root").exec();
+                        sendFileContent(f, "".getBytes());
                         break;
                 }
             }

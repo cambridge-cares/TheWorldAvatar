@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -53,17 +52,14 @@ public final class PostGISService extends ContainerService {
     }
 
     private void writePGPASSFile() {
-        sendFiles(Map.of(
-                PGPASS_FILE.getFileName().toString(),
+        sendFileContent(
+                PGPASS_FILE.toString(),
                 ("localhost:"
                         + endpointConfig.getPort() + ":"
                         + "*:"
                         + endpointConfig.getUsername() + ":"
                         + endpointConfig.getPassword())
-                        .getBytes()),
-                PGPASS_FILE.getParent().toString());
-
-        executeCommand("chmod", "0600", PGPASS_FILE.toString());
+                        .getBytes());
     }
 
     private void copyJDBCDriverToVolume() {

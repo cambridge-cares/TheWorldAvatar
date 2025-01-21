@@ -80,7 +80,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
                     .createTempOBDAFile(ontopMappingFilePath)) {
                 mapping.serialize(localTempOntopMappingFilePath.getPath());
 
-                sendFile(containerId, ontopMappingFilePath,
+                sendFileContent(containerId, ontopMappingFilePath,
                         Files.readAllBytes(localTempOntopMappingFilePath.getPath()));
             }
         } catch (IOException ex) {
@@ -96,7 +96,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             sparqlRules.write(outputStream);
-            sendFile(containerId, sparqlRulesFilePath, outputStream.toByteArray());
+            sendFileContent(containerId, sparqlRulesFilePath, outputStream.toByteArray());
         } catch (IOException ex) {
             throw new RuntimeException(
                     "Failed to write SPARQL Rules file.", ex);
@@ -109,7 +109,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             model.write(outputStream, "TURTLE");
-            sendFile(containerId, ontopOntologyFilePath, outputStream.toByteArray());
+            sendFileContent(containerId, ontopOntologyFilePath, outputStream.toByteArray());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -123,8 +123,4 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
                         + " not set through Docker for '" + getContainerName() + "' container."));
     }
 
-    private void sendFile(String containerId, Path filePath, byte[] content) {
-        sendFilesContent(containerId, Map.of(filePath.getFileName().toString(), content),
-                filePath.getParent().toString());
-    }
 }

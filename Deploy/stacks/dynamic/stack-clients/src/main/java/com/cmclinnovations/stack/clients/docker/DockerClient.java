@@ -458,6 +458,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         }
     }
 
+    public void sendFileContent(String containerId, Path filePath, byte[] content) {
+        sendFilesContent(containerId, Map.of(filePath.getFileName().toString(), content),
+                filePath.getParent().toString());
+    }
+
     public void sendFiles(String containerId, String localDirPath, List<String> filePaths, String remoteDirPath) {
         try (FileIterator fileIterator = new FileIterator(localDirPath, filePaths)) {
             sendFileEntries(containerId, remoteDirPath, fileIterator);
@@ -669,7 +674,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     public String getDNSIPAddress() {
-       return "127.0.0.11";
+        return "127.0.0.11";
     }
 
 }

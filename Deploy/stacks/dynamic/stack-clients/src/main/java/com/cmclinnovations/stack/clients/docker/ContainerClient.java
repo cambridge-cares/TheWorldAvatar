@@ -2,6 +2,7 @@ package com.cmclinnovations.stack.clients.docker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,6 +66,10 @@ public class ContainerClient extends BaseClient {
 
     protected final void sendFilesContent(String containerId, Map<String, byte[]> files, String remoteDirPath) {
         DockerClient.getInstance().sendFilesContent(containerId, files, remoteDirPath);
+    }
+
+    protected final void sendFileContent(String containerId, Path filePath, byte[] content) {
+        DockerClient.getInstance().sendFileContent(containerId, filePath, content);
     }
 
     protected final void sendFiles(String containerId, String localDirPath, List<String> filePaths,

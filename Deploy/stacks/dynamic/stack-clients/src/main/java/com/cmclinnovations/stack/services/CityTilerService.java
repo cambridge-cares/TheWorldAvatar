@@ -3,7 +3,6 @@ package com.cmclinnovations.stack.services;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,7 @@ public final class CityTilerService extends ContainerService {
         try (InputStream is = CityTilerService.class
                 .getResourceAsStream("citytiler/citytiler_config_default.json")) {
 
-            dockerClient.sendFilesContent(dockerClient.getContainerId(TYPE),
-                    Map.of(CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE, is.readAllBytes()),
-                    "/");
+            sendFileContent(CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE, is.readAllBytes());
 
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in default citytiler colour config file.", ex);

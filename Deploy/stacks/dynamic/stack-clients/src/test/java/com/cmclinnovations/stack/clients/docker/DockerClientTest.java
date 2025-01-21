@@ -108,6 +108,19 @@ public class DockerClientTest {
     }
 
     @Test
+    public void testSendFileContent() {
+        String remoteBaseDir = "/" + testName.getMethodName() + "/";
+        String filename = "file.txt";
+        String filePath = remoteBaseDir + filename;
+
+        Assert.assertFalse(dockerAPI.fileExists(containerId, filePath));
+        dockerAPI.sendFileContent(containerId, Path.of(filePath), TEST_MESSAGE.getBytes());
+        Assert.assertTrue(dockerAPI.fileExists(containerId, filePath));
+        dockerAPI.deleteFile(containerId, filePath);
+        Assert.assertFalse(dockerAPI.fileExists(containerId, filePath));
+    }
+
+    @Test
     public void testSendFiles() throws IOException {
         String remoteBaseDir = "/" + testName.getMethodName() + "/";
         String dir1 = "testfolder/";

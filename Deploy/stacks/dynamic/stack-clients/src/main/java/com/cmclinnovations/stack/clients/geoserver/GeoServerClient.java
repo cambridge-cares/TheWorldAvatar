@@ -45,6 +45,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
     public static final Path SERVING_DIRECTORY = Path.of("/opt/geoserver_data/www");
     private static final Path STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data");
     private static final Path ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons");
+    private static final String USER_PROJECTIONS_DIR = "/opt/geoserver_data/user_projections";
     private static final String GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX = "_geoserver_indices";
     private static final String DIM_PREFIX = "dim_";
 
@@ -143,10 +144,8 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             sendFolder(containerId, absSourcePath.toString(), absTargetPath.toString());
         } else {
             try {
-                sendFilesContent(containerId,
-                        Map.of(file.getTarget(),
-                                Files.readAllBytes(baseDirectory.resolve(file.getSource()))),
-                        STATIC_DATA_DIRECTORY.toString());
+                sendFileContent(containerId, STATIC_DATA_DIRECTORY.resolve(file.getTarget()),
+                        Files.readAllBytes(baseDirectory.resolve(file.getSource())));
             } catch (IOException ex) {
                 throw new RuntimeException(
                         "Failed to serialise file '" + absSourcePath.toString() + "'.");
@@ -352,12 +351,11 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         String geoserverContainerId = getContainerId("geoserver");
         DockerClient dockerClient = DockerClient.getInstance();
 
-        dockerClient.makeDir(geoserverContainerId, "/opt/geoserver_data/user_projections");
+        dockerClient.makeDir(geoserverContainerId, USER_PROJECTIONS_DIR);
 
-        dockerClient.sendFilesContent(geoserverContainerId,
-                Map.of("epsg.properties",
-                        (srid + "=" + wktString + "\n").getBytes()),
-                "/opt/geoserver_data/user_projections/");
+        sendFileContent(geoserverContainerId,
+                Path.of(USER_PROJECTIONS_DIR, "epsg.properties"),
+                (srid + "=" + wktString + "\n").getBytes());
 
         GeoServerClient.getInstance().reload();
     }
