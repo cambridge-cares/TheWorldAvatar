@@ -69,14 +69,42 @@ def connect_to_database(host: str, port: int, user: str, password: str, database
         logging.error(f"Database connection failed: {e}")
         raise e
 
-def execute_query(connection: psycopg2.extensions.connection, query: str, params: Optional[tuple] = None) -> Any:
+# def execute_query(connection: psycopg2.extensions.connection, query: str, params: Optional[tuple] = None) -> Any:
+#     try:
+#         with connection.cursor() as cursor:
+#             logging.debug(f"Executing query: {query}, params={params}")
+#             cursor.execute(query, params)
+#             rows = cursor.fetchall()
+#             logging.info(f"Query returned {len(rows)} rows." if rows else "No results.")
+#             return rows
+#     except psycopg2.Error as e:
+#         logging.error(f"Query execution error: {e}")
+#         raise e
+def execute_query(connection, query: str, params: Optional[tuple] = None):
+    """
+    Automatically decides whether to fetch rows or not based on the first keyword of the query.
+    This way we do NOT have to change the existing route calls.
+    """
     try:
+        # Determine if the query should fetch results.
+        # A naive approach: if it starts with 'WITH' or 'SELECT', we do fetch.
+        # Otherwise, skip fetchall().
+        do_fetch = False
+        first = query.strip().upper()
+        if first.startswith("WITH") or first.startswith("SELECT"):
+            do_fetch = True
+
         with connection.cursor() as cursor:
             logging.debug(f"Executing query: {query}, params={params}")
             cursor.execute(query, params)
-            rows = cursor.fetchall()
-            logging.info(f"Query returned {len(rows)} rows." if rows else "No results.")
-            return rows
+            if do_fetch:
+                rows = cursor.fetchall()
+                logging.info(f"Query returned {len(rows)} rows." if rows else "No results.")
+                return rows
+            else:
+                logging.info("Query executed (no fetch).")
+                return None
+
     except psycopg2.Error as e:
         logging.error(f"Query execution error: {e}")
         raise e
