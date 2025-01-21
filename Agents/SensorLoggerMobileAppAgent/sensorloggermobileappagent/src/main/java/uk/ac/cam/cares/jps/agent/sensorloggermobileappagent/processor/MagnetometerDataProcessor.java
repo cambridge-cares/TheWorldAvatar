@@ -16,8 +16,8 @@ import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants
 
 public class MagnetometerDataProcessor extends SensorDataDownsampledProcessor {
 
-    public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super("Magnetometer", config, storeClient, smartphoneIRINode,
+    public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("Magnetometer", config, ontopClient, blazegraphClient, smartphoneIRINode,
                 config.getMagnetometerDSResolution(),
                 config.getMagnetometerDSType());
     }
@@ -39,7 +39,7 @@ public class MagnetometerDataProcessor extends SensorDataDownsampledProcessor {
     }
 
     @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var x = Var.alloc("x");
         Var y = Var.alloc("y");
         Var z = Var.alloc("z");
@@ -65,7 +65,7 @@ public class MagnetometerDataProcessor extends SensorDataDownsampledProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -73,9 +73,9 @@ public class MagnetometerDataProcessor extends SensorDataDownsampledProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        this.x.setIri(queryResult.getJSONObject(0).optString("x"));
-        this.y.setIri(queryResult.getJSONObject(0).optString("y"));
-        this.z.setIri(queryResult.getJSONObject(0).optString("z"));
+        this.x.setDataIri(queryResult.getJSONObject(0).optString("x"));
+        this.y.setDataIri(queryResult.getJSONObject(0).optString("y"));
+        this.z.setDataIri(queryResult.getJSONObject(0).optString("z"));
     }
 
     @Override

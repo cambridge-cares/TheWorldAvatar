@@ -4,6 +4,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
@@ -21,8 +22,9 @@ public class ActivityProcessor extends SensorDataProcessor {
     private SensorData<Integer> confidence;
     private SensorData<String> activityType;
 
-    public ActivityProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super("Activity", config, storeClient, smartphoneIRINode);
+    public ActivityProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("Activity", config, ontopClient, blazegraphClient, smartphoneIRINode);
+        logger = LogManager.getLogger(ActivityProcessor.class);
     }
 
     @Override
@@ -54,7 +56,7 @@ public class ActivityProcessor extends SensorDataProcessor {
     }
 
     @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var confidence = Var.alloc("confidence");
         Var activityType = Var.alloc("activityType");
 
@@ -73,7 +75,7 @@ public class ActivityProcessor extends SensorDataProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -81,8 +83,8 @@ public class ActivityProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        this.confidence.setIri(queryResult.getJSONObject(0).optString("confidence"));
-        this.activityType.setIri(queryResult.getJSONObject(0).optString("activityType"));
+        this.confidence.setDataIri(queryResult.getJSONObject(0).optString("confidence"));
+        this.activityType.setDataIri(queryResult.getJSONObject(0).optString("activityType"));
     }
 
     @Override

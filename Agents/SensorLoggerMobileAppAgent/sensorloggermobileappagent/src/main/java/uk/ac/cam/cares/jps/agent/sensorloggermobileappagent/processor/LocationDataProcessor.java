@@ -26,8 +26,8 @@ public class LocationDataProcessor extends SensorDataProcessor {
     private SensorData<Point> geomLocation;
     private SensorData<String> session;
 
-    public LocationDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super("GPSDevice", config, storeClient, smartphoneIRINode);
+    public LocationDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("GPSDevice", config, ontopClient, blazegraphClient, smartphoneIRINode);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var bearing = Var.alloc("bearing");
         Var altitude = Var.alloc("altitude");
         Var speed = Var.alloc("speed");
@@ -98,7 +98,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
                 .addVar(bearing).addVar(altitude).addVar(speed).addVar(point).addVar(session).addWhere(wb);
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -106,11 +106,11 @@ public class LocationDataProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        this.bearing.setIri(queryResult.getJSONObject(0).optString("bearing"));
-        this.altitude.setIri(queryResult.getJSONObject(0).optString("altitude"));
-        this.speed.setIri(queryResult.getJSONObject(0).optString("speed"));
-        this.geomLocation.setIri(queryResult.getJSONObject(0).optString("point"));
-        this.session.setIri(queryResult.getJSONObject(0).optString("session"));
+        this.bearing.setDataIri(queryResult.getJSONObject(0).optString("bearing"));
+        this.altitude.setDataIri(queryResult.getJSONObject(0).optString("altitude"));
+        this.speed.setDataIri(queryResult.getJSONObject(0).optString("speed"));
+        this.geomLocation.setDataIri(queryResult.getJSONObject(0).optString("point"));
+        this.session.setDataIri(queryResult.getJSONObject(0).optString("session"));
     }
 
     @Override

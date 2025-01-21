@@ -18,8 +18,8 @@ public class RelativeBrightnessProcessor extends SensorDataDownsampledProcessor 
 
     private SensorData<Double> brightness;
 
-    public RelativeBrightnessProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super("RelativeBrightness", config, storeClient, smartphoneIRINode,
+    public RelativeBrightnessProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("RelativeBrightness", config, ontopClient, blazegraphClient, smartphoneIRINode,
                 config.getRbDSResolution(),
                 config.getRbDSType());
     }
@@ -37,7 +37,7 @@ public class RelativeBrightnessProcessor extends SensorDataDownsampledProcessor 
     }
 
     @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var varO = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
@@ -55,7 +55,7 @@ public class RelativeBrightnessProcessor extends SensorDataDownsampledProcessor 
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -63,7 +63,7 @@ public class RelativeBrightnessProcessor extends SensorDataDownsampledProcessor 
         if (queryResult.isEmpty()) {
             return;
         }
-        brightness.setIri(queryResult.getJSONObject(0).optString("o"));
+        brightness.setDataIri(queryResult.getJSONObject(0).optString("o"));
     }
 
     @Override

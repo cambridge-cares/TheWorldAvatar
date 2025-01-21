@@ -4,6 +4,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
@@ -16,15 +17,13 @@ import java.util.List;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class AccelerometerProcessor extends SensorDataDownsampledProcessor {
-    SensorData<Double> x;
-    SensorData<Double> y;
-    SensorData<Double> z;
 
-    public AccelerometerProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
-        super("Accelerometer", config, storeClient, smartphoneNode,
+    public AccelerometerProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneNode) {
+        super("Accelerometer", config, ontopClient, blazegraphClient, smartphoneNode,
                 config.getAccelDSResolution(),
                 config.getAccelDSType()
                 );
+        logger = LogManager.getLogger(AccelerometerProcessor.class);
     }
 
     @Override
@@ -44,7 +43,7 @@ public class AccelerometerProcessor extends SensorDataDownsampledProcessor {
     }
 
     @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var x = Var.alloc("x");
         Var y = Var.alloc("y");
         Var z = Var.alloc("z");
@@ -70,7 +69,7 @@ public class AccelerometerProcessor extends SensorDataDownsampledProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -79,9 +78,9 @@ public class AccelerometerProcessor extends SensorDataDownsampledProcessor {
             return;
         }
 
-        this.x.setIri(queryResult.getJSONObject(0).optString("x"));
-        this.y.setIri(queryResult.getJSONObject(0).optString("y"));
-        this.z.setIri(queryResult.getJSONObject(0).optString("z"));
+        this.x.setDataIri(queryResult.getJSONObject(0).optString("x"));
+        this.y.setDataIri(queryResult.getJSONObject(0).optString("y"));
+        this.z.setDataIri(queryResult.getJSONObject(0).optString("z"));
     }
 
     @Override

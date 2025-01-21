@@ -1,7 +1,14 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.core.Var;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -13,21 +20,25 @@ import java.util.stream.Collectors;
 
 public abstract class SensorDataProcessor {
     AgentConfig config;
-    RemoteStoreClient storeClient;
+    RemoteStoreClient ontopClient;
+    RemoteStoreClient blazegraphClient;
     Node smartphoneIRINode;
     final List<OffsetDateTime> timeList = new ArrayList<>();
-    boolean needToInstantiateDevice = false;
     List<SensorData<?>> sensorData;
     String sensorName;
+    String tsIri;
+    Logger logger;
 
-    public SensorDataProcessor(String sensorName, AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
+    public SensorDataProcessor(String sensorName, AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
         this.sensorName = sensorName;
         this.config = config;
-        this.storeClient = storeClient;
+        this.ontopClient = ontopClient;
+        this.blazegraphClient = blazegraphClient;
         this.smartphoneIRINode = smartphoneIRINode;
 
         initSensorData();
         initIRIs();
+        getTimeSeriesIrisFromBlazegraph();
     }
 
     public abstract void addData(Payload data);
@@ -41,14 +52,11 @@ public abstract class SensorDataProcessor {
             return;
         }
 
-        getIrisFromKg();
+        getDataIrisFromKg();
 
-        // device not instantiated, so all sensor data IRIs not instantiated with obda mapping
-        if (getDataIRIs().stream().allMatch(iri -> iri == null)) {
-            needToInstantiateDevice = true;
-        }
+        // If all sensorData iris are null, device not instantiated, so all sensor data IRIs not instantiated with obda mapping
 
-        // Have existing deviceIRI, but some sensor data are not linked with time series, which require check of the blazegraph.
+        // If have existing deviceIRI, but some sensor data are not linked with time series, which require check of the blazegraph.
         // This is handled in the SmartphoneRecordingTask.
     };
 
@@ -61,7 +69,7 @@ public abstract class SensorDataProcessor {
     };
 
     public List<String> getDataIRIs() {
-        return getSensorData().stream().map(SensorData::getIri).toList();
+        return getSensorData().stream().map(SensorData::getDataIri).toList();
     };
 
     public List<List<?>> getValues() {
@@ -73,14 +81,57 @@ public abstract class SensorDataProcessor {
         getSensorData().forEach(SensorData::clearData);
     };
 
-    abstract void getIrisFromKg();
+    abstract void getDataIrisFromKg();
 
-    public boolean isNeedToInstantiateDevice() {
-        return needToInstantiateDevice;
+    public void getTimeSeriesIrisFromBlazegraph() {
+        Var dataIRI = Var.alloc("dataIRI");
+        Var tsIRI = Var.alloc("tsIRI");
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontots", OntoConstants.ONTOTS)
+                .addWhere(dataIRI, "ontots:hasTimeSeries", tsIRI);
+
+        SelectBuilder sb = new SelectBuilder()
+                .setDistinct(true)
+                .addVar(dataIRI)
+                .addVar(tsIRI)
+                .addWhere(wb)
+                .addValueVar(dataIRI);
+        getDataIRIs().stream().map(iri -> String.format("<%s>", iri)).forEach(iri -> sb.addValueRow(iri));
+
+        JSONArray queryResult;
+        try {
+            queryResult = blazegraphClient.executeQuery(sb.buildString());
+        } catch (Exception e) {
+            // ontop does not accept queries before any mapping is added
+            logger.error("Error getting time series IRIs from blazegraph: " + e.getMessage());
+            return;
+        }
+        if (queryResult.isEmpty()) {
+            getSensorData().forEach(needToInitTimeSeries -> needToInitTimeSeries.setNeedToInitTimeSeries(true));
+            return;
+        }
+
+        tsIri = queryResult.getJSONObject(0).optString("tsIRI");
+        List<String> dataIrisWithTs = new ArrayList<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            dataIrisWithTs.add(queryResult.getJSONObject(i).getString("dataIRI"));
+        }
+
+        for (SensorData sd : sensorData) {
+            sd.setNeedToInitTimeSeries(!dataIrisWithTs.contains(sd.getDataIri()));
+        }
     }
 
-    public void setNeedToInstantiateDevice(boolean needToInstantiateDevice) {
-        this.needToInstantiateDevice = needToInstantiateDevice;
+    public String getTsIri() {
+        return tsIri;
+    }
+
+    public boolean isNeedToInstantiateDevice() {
+        return getDataIRIs().stream().allMatch(iri -> iri == null);
+    }
+
+    public boolean isNeedToInitTimeSeries() {
+        return tsIri == null;
     }
 
     public int getTimeSeriesLength() {

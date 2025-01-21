@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SensorData<E> {
-    private String iri;
+    private String dataIri;
+    private boolean needToInitTimeSeries = false;
     private final List<E> values = new ArrayList<>();
     private final Class<E> type;
 
@@ -20,8 +21,12 @@ public class SensorData<E> {
         values.clear();
     }
 
-    public String getIri() {
-        return iri;
+    public String getDataIri() {
+        return dataIri;
+    }
+
+    public boolean isNeedToInitTimeSeries() {
+        return needToInitTimeSeries;
     }
 
     public List<E> getValues() {
@@ -32,7 +37,11 @@ public class SensorData<E> {
         return type;
     }
 
-    public void setIri(String iri) {
-        this.iri = iri;
+    public void setDataIri(String iri) {
+        this.dataIri = iri;
+    }
+
+    public void setNeedToInitTimeSeries(boolean needToInitTimeSeries) {
+        this.needToInitTimeSeries = needToInitTimeSeries;
     }
 }

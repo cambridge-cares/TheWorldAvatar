@@ -4,6 +4,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
@@ -18,8 +19,9 @@ public class DBFSDataProcessor extends SensorDataDownsampledProcessor {
 
     private SensorData<Double> dBFS;
 
-    public DBFSDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
-        super("DBFS", config, storeClient, smartphoneNode, config.getDbfsDSResolution(), config.getDbfsDSType());
+    public DBFSDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneNode) {
+        super("DBFS", config, ontopClient, blazegraphClient, smartphoneNode, config.getDbfsDSResolution(), config.getDbfsDSType());
+        logger = LogManager.getLogger(DBFSDataProcessor.class);
     }
 
     @Override
@@ -35,7 +37,7 @@ public class DBFSDataProcessor extends SensorDataDownsampledProcessor {
     }
 
     @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var varO = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
@@ -53,7 +55,7 @@ public class DBFSDataProcessor extends SensorDataDownsampledProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -61,7 +63,7 @@ public class DBFSDataProcessor extends SensorDataDownsampledProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        dBFS.setIri(queryResult.getJSONObject(0).optString("o"));
+        dBFS.setDataIri(queryResult.getJSONObject(0).optString("o"));
     }
 
     @Override

@@ -1,11 +1,7 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.sparql.core.Var;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
@@ -15,6 +11,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.*;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -22,8 +19,10 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
@@ -67,7 +66,7 @@ public class SmartphoneRecordingTask {
         tsRdbClient.setRdbPassword(rdbStoreClient.getPassword());
 
         this.blazegraphStoreClient = storeClient;
-        this.tsClient = new TimeSeriesClient<>(storeClient, tsRdbClient);
+        this.tsClient = new TimeSeriesClient<>(blazegraphStoreClient, tsRdbClient);
         this.config = config;
         lastActiveTime = System.currentTimeMillis();
         lastProcessedTime = System.currentTimeMillis();
@@ -114,15 +113,18 @@ public class SmartphoneRecordingTask {
             logger.info("Need to init device: " + processorsToInstantiate.stream()
                     .map(SensorDataProcessor::getOntodeviceLabel).collect(Collectors.joining(",")));
             initDeviceKgUsingOntop(processorsToInstantiate);
+            sensorDataProcessors.forEach(s -> s.initIRIs());
+            sensorDataProcessors.forEach(s -> s.getTimeSeriesIrisFromBlazegraph());
         }
 
-        if (!processorsToInstantiate.isEmpty()) {
-            sensorDataProcessors.forEach(s -> s.initIRIs());
-            logger.info("Need to init rdb");
+        List<SensorDataProcessor> processorsToInitTimeSeries = sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInitTimeSeries).toList();
+        if (!processorsToInitTimeSeries.isEmpty()) {
+            logger.info("Need to init rdb for " + processorsToInitTimeSeries.stream()
+                    .map(SensorDataProcessor::getOntodeviceLabel).collect(Collectors.joining(",")));
             initDevicesInRDB();
         }
 
-        processorsToInstantiate.forEach(p -> p.setNeedToInstantiateDevice(false));
         fixUninitializedSensorData();
 
         try {
@@ -148,15 +150,14 @@ public class SmartphoneRecordingTask {
     }
 
     private void initSensorProcessors() {
-        accelerometerProcessor = new AccelerometerProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        dbfsDataProcessor = new DBFSDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        gravityDataProcessor = new GravityDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        illuminationProcessor = new IlluminationProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        locationDataProcessor = new LocationDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, ontopRemoteStoreClient,
-                smartphoneIRI);
-        activityProcessor = new ActivityProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        accelerometerProcessor = new AccelerometerProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        dbfsDataProcessor = new DBFSDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        gravityDataProcessor = new GravityDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        illuminationProcessor = new IlluminationProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        locationDataProcessor = new LocationDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        activityProcessor = new ActivityProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
 
         sensorDataProcessors = Arrays.asList(accelerometerProcessor,
                 dbfsDataProcessor,
@@ -200,7 +201,7 @@ public class SmartphoneRecordingTask {
 
     private void initDevicesInRDB() {
         Iterator<SensorDataProcessor> iterator = sensorDataProcessors.stream()
-                .filter(SensorDataProcessor::isNeedToInstantiateDevice).iterator();
+                .filter(SensorDataProcessor::isNeedToInitTimeSeries).iterator();
         List<List<String>> dataIris = new ArrayList<>();
         List<List<Class<?>>> dataClasses = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -213,6 +214,8 @@ public class SmartphoneRecordingTask {
         List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
 
+        sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInitTimeSeries).forEach(SensorDataProcessor::getTimeSeriesIrisFromBlazegraph);
         logger.info("finish init postgres dbTable and the corresponding table");
     }
 
@@ -229,62 +232,24 @@ public class SmartphoneRecordingTask {
      */
     private void fixUninitializedSensorData() {
         for (SensorDataProcessor sensorDataProcessor : sensorDataProcessors) {
-            JSONArray queryResult = getDataIriWithTsIri(sensorDataProcessor);
-            if (queryResult.length() == sensorDataProcessor.getDataIRIs().size()) {
-                logger.info("All dataIRI have the corresponding tsIRI, skip individual init");
+            List<SensorData<?>> sensorData = sensorDataProcessor.getSensorData().stream().filter(sd -> sd.isNeedToInitTimeSeries()).collect(Collectors.toList());
+            if (sensorData.isEmpty()) {
                 continue;
             }
 
-            String tsIRIString = queryResult.getJSONObject(0).optString("tsIRI");
-            Set<String> dataIRIWithTs = new HashSet<>();
-            logger.info("Unlinked dataIRI: " + String.join(",", dataIRIWithTs) + " with tsIRI: " + tsIRIString);
-            for (int i = 0; i < queryResult.length(); i++) {
-                String dataIRIString = queryResult.getJSONObject(i).getString("dataIRI");
-                dataIRIWithTs.add(dataIRIString);
+            List<String> dataIris = new ArrayList<>();
+            List<Class<?>> classes = new ArrayList<>();
+            for (SensorData sd : sensorData) {
+                dataIris.add(sd.getDataIri());
+                classes.add(sd.getType());
             }
 
-            linkDataIriWithTsIriInKG(sensorDataProcessor, tsIRIString, dataIRIWithTs);
+            logger.debug(sensorDataProcessor.getSensorName() + ": " + String.join(",", dataIris) + " have no tsIRI, fixing is needed.");
 
-            sensorLoggerPostgresClient.linkDataIriWithTsIriInRdb(tsIRIString,
-                    sensorDataProcessor.getDataIRIs().stream().filter(iri -> !dataIRIWithTs.contains(iri))
-                            .collect(Collectors.toSet()),
-                    sensorDataProcessor);
+            tsClient.addColumnsToExistingTimeSeries(sensorDataProcessor.getTsIri(), dataIris, classes,
+                    classes.contains(Point.class)?4326:null);
+            sensorData.forEach(sd -> sd.setNeedToInitTimeSeries(false));
         }
-    }
-
-    private void linkDataIriWithTsIriInKG(SensorDataProcessor sensorDataProcessor, String tsIRIString,
-            Set<String> dataIRIWithTs) {
-        WhereBuilder linkDataIRIToTsIRI = new WhereBuilder()
-                .addPrefix("ontots", OntoConstants.ONTOTS)
-                .addValueVar("?iri")
-                .addValueRow(sensorDataProcessor.getDataIRIs().stream().filter(iri -> !dataIRIWithTs.contains(iri))
-                        .collect(Collectors.toList()))
-                .addWhere("?iri", "ontots:hasTimeSeries", iri(tsIRIString));
-        UpdateBuilder ub = new UpdateBuilder()
-                .addWhere(linkDataIRIToTsIRI);
-        ontopRemoteStoreClient.executeUpdate(ub.toString());
-    }
-
-    private JSONArray getDataIriWithTsIri(SensorDataProcessor sensorDataProcessor) {
-        Var dataIRI = Var.alloc("dataIRI");
-        Var tsIRI = Var.alloc("tsIRI");
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontots", OntoConstants.ONTOTS)
-                .addValueVar("?input")
-                .addWhere("?input", "ontots:hasTimeSeries", tsIRI)
-                .addWhere(dataIRI, "ontots:hasTimeSeries", tsIRI);
-
-        SelectBuilder sb = new SelectBuilder()
-                .setDistinct(true)
-                .addVar(dataIRI)
-                .addVar(tsIRI)
-                .addWhere(wb)
-                .addValueVar("?input");
-        sensorDataProcessor.getDataIRIs().stream().map(iri -> String.format("<%s>", iri))
-                .forEach(iri -> sb.addValueRow(iri));
-
-        logger.info("Get tsIRI for dataIRI in " + sensorDataProcessor.getSensorName());
-        return blazegraphStoreClient.executeQuery(sb.toString());
     }
 
     private void bulkAddTimeSeriesData() throws RuntimeException {
