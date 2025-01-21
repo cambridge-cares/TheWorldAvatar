@@ -19,6 +19,7 @@ from pyproj import CRS, Transformer
 from shapely.geometry import shape
 from shapely.wkb import loads as wkb_loads
 from shapely.ops import transform as shp_transform
+from typing import List, Dict, Tuple
 
 
 app = Flask(__name__)
