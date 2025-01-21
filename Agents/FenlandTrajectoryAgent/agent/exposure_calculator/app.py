@@ -69,17 +69,6 @@ def connect_to_database(host: str, port: int, user: str, password: str, database
         logging.error(f"Database connection failed: {e}")
         raise e
 
-# def execute_query(connection: psycopg2.extensions.connection, query: str, params: Optional[tuple] = None) -> Any:
-#     try:
-#         with connection.cursor() as cursor:
-#             logging.debug(f"Executing query: {query}, params={params}")
-#             cursor.execute(query, params)
-#             rows = cursor.fetchall()
-#             logging.info(f"Query returned {len(rows)} rows." if rows else "No results.")
-#             return rows
-#     except psycopg2.Error as e:
-#         logging.error(f"Query execution error: {e}")
-#         raise e
 def execute_query(connection, query: str, params: Optional[tuple] = None):
     """
     Automatically decides whether to fetch rows or not based on the first keyword of the query,
