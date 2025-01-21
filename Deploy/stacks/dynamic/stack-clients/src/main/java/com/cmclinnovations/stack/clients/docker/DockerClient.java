@@ -399,9 +399,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         filePath = filePath.replace('\\', '/');
         TarArchiveEntry entry = new TarArchiveEntry(filePath);
         entry.setSize(fileContent.length);
-        entry.setMode(0755);
-        // Set the files' user and group to the default ones in that container
-        entry.setIds(1000, 1000);
+        entry.setMode(0600);
         tar.putArchiveEntry(entry);
         tar.write(fileContent);
         tar.closeArchiveEntry();
@@ -412,6 +410,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                 CopyArchiveToContainerCmd copyArchiveToContainerCmd = internalClient
                         .copyArchiveToContainerCmd(containerId)) {
             copyArchiveToContainerCmd.withTarInputStream(is)
+                    .withCopyUIDGID(true)
                     .withRemotePath(remoteDirPath).exec();
 
         }
