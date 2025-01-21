@@ -369,9 +369,12 @@ public class LifecycleService {
         + "sh:property/sh:hasValue " + StringResource.parseIriForQuery(LifecycleResource.getEventClass(eventType));
     Map<String, Object> currentEntity = new HashMap<>();
     if (targetId != null) {
-      LOGGER.debug("Detected specific entity ID! Retrieving relevant entity information for occurrence of {} ...",
-          eventType);
-      ResponseEntity<?> currentEntityResponse = this.getService.getInstance("occurrence", targetId,
+      LOGGER.debug("Detected specific entity ID! Retrieving target event occurrence of {}...", eventType);
+      String query = LifecycleResource.genEventQuery(targetId, eventType);
+      Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+      String targetOccurrence = this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
+      LOGGER.debug("Retrieving relevant entity information for occurrence of {}...", eventType);
+      ResponseEntity<?> currentEntityResponse = this.getService.getInstance("occurrence", targetOccurrence,
           replacementQueryLine, false);
       if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
         currentEntity = (Map<String, Object>) currentEntityResponse.getBody();

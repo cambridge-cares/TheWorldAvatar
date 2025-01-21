@@ -379,6 +379,26 @@ public class LifecycleResource {
   }
 
   /**
+   * Generates a SPARQL query to retrieve the event instance associated with the
+   * target event type and the event instance input. The output event must occur
+   * before the input event.
+   * 
+   * @param event     The input event instance.
+   * @param eventType The target event type to retrieve.
+   */
+  public static String genEventQuery(String event, LifecycleEventType eventType) {
+    return genPrefixes() +
+        "SELECT DISTINCT ?iri ?event WHERE{" +
+        "?contract fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage." +
+        "?stage cmns-col:comprises ?event;" +
+        "cmns-col:comprises ?iri." +
+        "?event cmns-dt:succeeds? ?iri." +
+        "?iri fibo-fnd-rel-rel:exemplifies <" + LifecycleResource.getEventClass(eventType) + ">." +
+        "FILTER STRENDS(STR(?event),\"" + event + "\")" +
+        "}";
+  }
+
+  /**
    * Generates a SPARQL query to retrieve a report associated with the target
    * stage.
    * 
@@ -397,7 +417,8 @@ public class LifecycleResource {
    * Generates a query template containing prefixes query.
    */
   public static String genPrefixes() {
-    return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
+    return "PREFIX cmns-col: <https://www.omg.org/spec/Commons/Collections/>"
+        + "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
         + "PREFIX cmns-dsg: <https://www.omg.org/spec/Commons/Designators/>"
         + "PREFIX cmns-rlcmp: <https://www.omg.org/spec/Commons/RolesAndCompositions/>"
         + "PREFIX fibo-fnd-arr-id:<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/>"
