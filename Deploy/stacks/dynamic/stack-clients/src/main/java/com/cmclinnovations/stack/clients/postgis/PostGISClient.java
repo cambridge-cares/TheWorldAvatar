@@ -44,15 +44,36 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
             String sql = "CREATE DATABASE \"" + database + "\" WITH TEMPLATE = template_postgis";
-            stmt.executeUpdate(sql);
+
+            boolean exit = true;
+            int count = 0;
+            do {
+                try {
+                    stmt.executeUpdate(sql);
+                } catch (SQLException ex) {
+                    switch (ex.getSQLState()) {
+                        case "42P04":
+                            // Database already exists error
+                            break;
+                        case "55006":
+                            // Object being access by other users error
+                            Thread.sleep(1000);
+                            if (++count <= 10)
+                                exit = false;
+                            break;
+                        default:
+                            throw ex;
+                    }
+                }
+            } while (!exit);
         } catch (SQLException ex) {
-            if ("42P04".equals(ex.getSQLState())) {
-                // Database already exists error
-            } else {
-                throw new RuntimeException("Failed to create database '" + database
-                        + "' on the server with JDBC URL '" + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
-                        + "'.", ex);
-            }
+            throw new RuntimeException(
+                    "Failed to create database '" + database + "' on the server with JDBC URL '"
+                            + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME) + "'.",
+                    ex);
+        } catch (InterruptedException iEx) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted sleep.", iEx);
         }
         createDefaultExtensions(database);
     }
