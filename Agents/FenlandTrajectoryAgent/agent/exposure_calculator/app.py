@@ -470,6 +470,228 @@ def calculate_exposure():
 
     return jsonify(final_results)
 
+@app.route('/fenland-trajectory-agent/exposure/simplified', methods=['POST'])
+def calculate_exposure_simplified():
+    """
+    Minimal route: different SQL for POINT/AREA, with specific domain checks.
+    """
+    data = request.json
+    trajectoryIRIs = data.get("trajectoryIRIs", [])
+    exposure_radius = data.get("exposure_radius", 100)
+    dataIRIs = data.get("DataIRIs", [])
+    final_results = []
+
+    # Connect to the database
+    try:
+        conn = connect_to_database(
+            host=TRAJECTORY_DB_HOST,
+            port=DB_PORT,
+            user=DB_USER,
+            password=TRAJECTORY_DB_PASSWORD,
+            database=DB_NAME
+        )
+    except Exception as e:
+        return jsonify({"error": f"Failed to connect DB: {str(e)}"}), 500
+
+    # Loop over each trajectory
+    for trajectory_iri in trajectoryIRIs:
+        try:
+            table_name = get_table_name_for_timeseries(conn, trajectory_iri)
+        except Exception as e:
+            return jsonify({"error": f"Failed to get table_name for {trajectory_iri}: {str(e)}"}), 500
+
+        # Loop over each DataIRI
+        for env_data_iri in dataIRIs:
+            try:
+                # 1) Get domainName, featureType
+                domain_name, feature_type = get_domain_and_featuretype(env_data_iri, ENV_DATA_ENDPOINT_URL)
+                # 2) Get dataSourceName rows
+                ds_rows = fetch_domain_and_data_sources(env_data_iri)
+                if not ds_rows:
+                    final_results.append({
+                        "trajectory_iri": trajectory_iri,
+                        "env_data_iri": env_data_iri,
+                        "error": "No dataSourceName found"
+                    })
+                    continue
+
+                dl_lower = domain_name.strip().lower()
+                row_count = 0
+
+                # Check featureType and domain_name
+                if feature_type.upper() == "AREA":
+                    if dl_lower.startswith("greenspace"):
+                        # Greenspace-specific SQL
+                        sql_query = f"""
+                        WITH Trajectory AS (
+                            SELECT ST_Transform(
+                                ST_Buffer(
+                                    ST_MakeLine("column7"::geometry ORDER BY "time")::geography, 
+                                    {exposure_radius}
+                                )::geometry, 
+                                27700
+                            ) AS buffered_trajectory
+                            FROM "{table_name}"
+                        )
+                        SELECT g.ogc_fid, g.function, g."distName1", g."distName2", g.wkb_geometry
+                        FROM public."GB_GreenspaceSite" g, Trajectory t
+                        WHERE ST_Intersects(g.wkb_geometry, t.buffered_trajectory);
+                        """
+                        rows = execute_query(conn, sql_query)
+                        row_count = len(rows)
+                    else:
+                        # Generic AREA SQL with union of multiple dataSourceName
+                        union_parts = []
+                        for item in ds_rows:
+                            ds_name = item["dataSourceName"]
+                            union_parts.append(f'SELECT wkb_geometry FROM public."{ds_name}"')
+                        union_sql = "\nUNION ALL\n".join(union_parts)
+
+                        sql_query = f"""
+                        WITH Trajectory AS (
+                            SELECT ST_Transform(
+                                ST_Buffer(
+                                    ST_MakeLine("column7"::geometry ORDER BY "time")::geography, 
+                                    {exposure_radius}
+                                )::geometry, 
+                                27700
+                            ) AS buffered_trajectory
+                            FROM "{table_name}"
+                        ),
+                        combined_area AS (
+                            {union_sql}
+                        )
+                        SELECT ca.wkb_geometry
+                        FROM combined_area ca, Trajectory t
+                        WHERE ST_Intersects(ca.wkb_geometry, t.buffered_trajectory);
+                        """
+                        rows = execute_query(conn, sql_query)
+                        row_count = len(rows)
+
+                elif feature_type.upper() == "POINT":
+                    if dl_lower.startswith("food hygiene rating"):
+                        # Food hygiene rating: union multiple dataSourceName, group by name/address
+                        union_parts = []
+                        for item in ds_rows:
+                            ds_name = item["dataSourceName"]
+                            union_parts.append(f'''
+                                SELECT "Name", "Address", geom 
+                                FROM public."{ds_name}"
+                            ''')
+                        union_sql = "\nUNION ALL\n".join(union_parts)
+
+                        sql_query = f"""
+                        WITH BufferedLine AS (
+                            SELECT 
+                                ST_Buffer(
+                                    ST_MakeLine(gps."column7"::geometry ORDER BY gps."time")::geography, 
+                                    {exposure_radius}
+                                ) AS buffered_geom
+                            FROM 
+                                "{table_name}" gps
+                        ),
+                        combined_frs AS (
+                            {union_sql}
+                        )
+                        SELECT 
+                            frs."Name" AS entity_name, 
+                            frs."Address" AS address,
+                            ST_AsText(frs.geom) AS entity_geom,
+                            COUNT(frs."Name") AS no_of_entities
+                        FROM 
+                            BufferedLine bl
+                        JOIN 
+                            combined_frs frs
+                        ON 
+                            ST_Intersects(bl.buffered_geom, frs.geom::geography)
+                        GROUP BY
+                            frs."Name", frs."Address", frs.geom;
+                        """
+                        point_rows = execute_query(conn, sql_query)
+                        row_count = sum(r[3] for r in point_rows)  # sum of no_of_entities
+                    else:
+                        # Other POINT: union multiple dataSourceName, just geom
+                        union_parts = []
+                        for item in ds_rows:
+                            ds_name = item["dataSourceName"]
+                            union_parts.append(f'SELECT geom FROM public."{ds_name}"')
+                        union_sql = "\nUNION ALL\n".join(union_parts)
+
+                        sql_query = f"""
+                        WITH BufferedLine AS (
+                            SELECT 
+                                ST_Buffer(
+                                    ST_MakeLine(gps."column7"::geometry ORDER BY gps."time")::geography, 
+                                    {exposure_radius}
+                                ) AS buffered_geom
+                            FROM 
+                                "{table_name}" gps
+                        ),
+                        combined_pts AS (
+                            {union_sql}
+                        )
+                        SELECT combined_pts.geom
+                        FROM 
+                            BufferedLine bl
+                        JOIN 
+                            combined_pts
+                        ON 
+                            ST_Intersects(bl.buffered_geom, combined_pts.geom::geography);
+                        """
+                        rows = execute_query(conn, sql_query)
+                        row_count = len(rows)
+
+                else:
+                    # Unknown featureType
+                    final_results.append({
+                        "trajectory_iri": trajectory_iri,
+                        "env_data_iri": env_data_iri,
+                        "error": f"Unknown featureType={feature_type}"
+                    })
+                    continue
+
+                # Update the trajectory table
+                safe_column_name = f"{domain_name}_Count".replace(" ", "_").replace("/", "_")
+                alter_sql = f"""
+                DO $$ BEGIN
+                    IF NOT EXISTS (
+                        SELECT FROM information_schema.columns
+                        WHERE table_name = %s AND column_name = %s
+                    ) THEN
+                        EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{safe_column_name}" INTEGER';
+                    END IF;
+                END $$;
+                """
+                execute_query(conn, alter_sql, (table_name, safe_column_name))
+
+                update_sql = f'''
+                UPDATE "{table_name}"
+                SET "{safe_column_name}" = %s
+                '''
+                execute_query(conn, update_sql, (row_count,))
+                conn.commit()
+
+                final_results.append({
+                    "trajectory_iri": trajectory_iri,
+                    "env_data_iri": env_data_iri,
+                    "domain_name": domain_name,
+                    "feature_type": feature_type,
+                    "updated_column": safe_column_name,
+                    "row_count": row_count,
+                    "table_name": table_name
+                })
+            except Exception as e:
+                final_results.append({
+                    "trajectory_iri": trajectory_iri,
+                    "env_data_iri": env_data_iri,
+                    "error": str(e)
+                })
+
+    if conn:
+        conn.close()
+
+    return jsonify(final_results), 200
+
 
 if __name__ == '__main__':
     app.run(port=3840)
