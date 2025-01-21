@@ -416,16 +416,16 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         }
     }
 
-    private final class FileIterater implements Iterable<Entry<String, byte[]>>, AutoCloseable {
+    private final class FileIterator implements Iterable<Entry<String, byte[]>>, AutoCloseable {
         Path dirPath;
         private final Stream<Path> stream;
 
-        public FileIterater(String baseDir) throws IOException {
+        public FileIterator(String baseDir) throws IOException {
             dirPath = Path.of(baseDir);
             stream = Files.walk(Path.of(baseDir));
         }
 
-        public FileIterater(String baseDir, Collection<String> relativeFilePaths) {
+        public FileIterator(String baseDir, Collection<String> relativeFilePaths) {
             dirPath = Path.of(baseDir);
             stream = relativeFilePaths.stream().map(dirPath::resolve);
         }
@@ -459,7 +459,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     public void sendFiles(String containerId, String localDirPath, List<String> filePaths, String remoteDirPath) {
-        try (FileIterater fileIterator = new FileIterater(localDirPath, filePaths)) {
+        try (FileIterator fileIterator = new FileIterator(localDirPath, filePaths)) {
             sendFileEntries(containerId, remoteDirPath, fileIterator);
         } catch (Exception ex) {
             throw new RuntimeException("Failed to send the following files to '" + remoteDirPath + "':\n"
@@ -468,7 +468,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     public void sendFolder(String containerId, String localDirPath, String remoteDirPath) {
-        try (FileIterater fileIterator = new FileIterater(localDirPath)) {
+        try (FileIterator fileIterator = new FileIterator(localDirPath)) {
             sendFileEntries(containerId, remoteDirPath, fileIterator);
         } catch (Exception ex) {
             throw new RuntimeException("Failed to send files from folder '" + localDirPath
