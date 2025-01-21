@@ -82,27 +82,29 @@ def connect_to_database(host: str, port: int, user: str, password: str, database
 #         raise e
 def execute_query(connection, query: str, params: Optional[tuple] = None):
     """
-    Automatically decides whether to fetch rows or not based on the first keyword of the query.
-    This way we do NOT have to change the existing route calls.
+    Automatically decides whether to fetch rows or not based on the first keyword of the query,
+    and logs how long each query takes.
     """
+    import time
     try:
-        # Determine if the query should fetch results.
-        # A naive approach: if it starts with 'WITH' or 'SELECT', we do fetch.
-        # Otherwise, skip fetchall().
         do_fetch = False
         first = query.strip().upper()
+        # If query starts with 'WITH' or 'SELECT', we assume it returns rows.
         if first.startswith("WITH") or first.startswith("SELECT"):
             do_fetch = True
 
+        start_time = time.time()
         with connection.cursor() as cursor:
             logging.debug(f"Executing query: {query}, params={params}")
             cursor.execute(query, params)
+
+            elapsed = time.time() - start_time
             if do_fetch:
                 rows = cursor.fetchall()
-                logging.info(f"Query returned {len(rows)} rows." if rows else "No results.")
+                logging.info(f"Query returned {len(rows)} rows in {elapsed:.3f}s.")
                 return rows
             else:
-                logging.info("Query executed (no fetch).")
+                logging.info(f"Query executed (no fetch) because it's an update or alter operation. Took {elapsed:.3f}s.")
                 return None
 
     except psycopg2.Error as e:
