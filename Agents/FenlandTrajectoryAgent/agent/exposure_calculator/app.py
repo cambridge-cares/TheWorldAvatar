@@ -258,6 +258,38 @@ def fetch_env_data(env_data_iri: str, endpoint_url=ENV_DATA_ENDPOINT_URL) -> Tup
 
     return df, domain_label
 
+def fetch_domain_and_data_sources(env_data_iri: str) -> List[Dict[str, str]]:
+    
+    sparql_query = f"""
+    PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
+    PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+    PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
+    
+    SELECT ?domainIRI ?domainName ?dataSourceName
+    WHERE {{
+      ?domainIRI a exposure:Domain ;
+                 exposure:hasDomainName ?domainName ;
+                 exposure:hasDataSource ?dataSourceName .
+      FILTER(?domainIRI = <{env_data_iri}>)
+    }}
+    """
+
+    headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
+    resp = requests.post(ENV_DATA_ENDPOINT_URL, data=sparql_query, headers=headers, timeout=30)
+    resp.raise_for_status()
+    res_json = resp.json()
+
+    bindings = res_json.get("results", {}).get("bindings", [])
+    results = []
+    for b in bindings:
+        results.append({
+            "domainIRI": b["domainIRI"]["value"],
+            "domainName": b["domainName"]["value"],
+            "dataSourceName": b["dataSourceName"]["value"],
+        })
+    return results
+
+
 # ============ 5) The "exposure_calculation" with extended logging =============
 def exposure_calculation(
     trajectory_df: pd.DataFrame,
