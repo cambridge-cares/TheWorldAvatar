@@ -41,41 +41,51 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
     }
 
     public void createDatabase(String database) {
-        try (Connection conn = getDefaultConnection();
-                Statement stmt = conn.createStatement()) {
-            String sql = "CREATE DATABASE \"" + database + "\" WITH TEMPLATE = template_postgis";
+        createBareDatabase(database);
+        createDefaultExtensions(database);
+    }
 
-            boolean exit = true;
-            int count = 0;
-            do {
-                try {
-                    stmt.executeUpdate(sql);
-                } catch (SQLException ex) {
-                    switch (ex.getSQLState()) {
-                        case "42P04":
-                            // Database already exists error
-                            break;
-                        case "55006":
-                            // Object being access by other users error
-                            Thread.sleep(1000);
-                            if (++count <= 10)
-                                exit = false;
-                            break;
-                        default:
-                            throw ex;
-                    }
-                }
-            } while (!exit);
+    void createBareDatabase(String database) {
+        try (Connection conn = getDefaultConnection(); Statement stmt = conn.createStatement()) {
+            createBareDatabase(database, stmt);
         } catch (SQLException ex) {
             throw new RuntimeException(
                     "Failed to create database '" + database + "' on the server with JDBC URL '"
                             + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME) + "'.",
                     ex);
-        } catch (InterruptedException iEx) {
+        } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted sleep.", iEx);
+            throw new RuntimeException("Interrupted sleep.", ex);
         }
-        createDefaultExtensions(database);
+    }
+
+    void createBareDatabase(String database, Statement stmt) throws InterruptedException, SQLException {
+        String sql = "CREATE DATABASE \"" + database + "\" WITH TEMPLATE = template_postgis";
+
+        boolean exit;
+        int count = 0;
+        do {
+            exit = true;
+            try {
+                stmt.executeUpdate(sql);
+            } catch (SQLException ex) {
+                switch (ex.getSQLState()) {
+                    case "42P04":
+                        // Database already exists error
+                        break;
+                    case "55006":
+                        // Object being access by other users error
+                        Thread.sleep(1000);
+                        if (++count < 10) {
+                            exit = false;
+                            break;
+                        }
+                        // fallthrough
+                    default:
+                        throw ex;
+                }
+            }
+        } while (!exit);
     }
 
     private void createDefaultExtensions(String database) {
