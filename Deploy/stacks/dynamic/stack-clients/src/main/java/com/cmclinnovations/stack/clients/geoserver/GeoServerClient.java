@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
 
     }
 
-    private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) {
+    private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) throws NoSuchElementException {
         Path absSourcePath = baseDirectory.resolve(file.getSource());
         Path absTargetPath = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
 
@@ -155,7 +156,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         }
     }
 
-    public void loadIcons(Path baseDirectory, String iconDir) {
+    public void loadIcons(Path baseDirectory, String iconDir) throws NoSuchElementException {
         if (!Files.exists(baseDirectory.resolve(iconDir))) {
             throw new RuntimeException(
                     "Static GeoServer data '" + baseDirectory.resolve(iconDir)
@@ -241,7 +242,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
     }
 
     public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
-            GeoServerRasterSettings geoServerSettings, MultidimSettings mdimSettings) {
+            GeoServerRasterSettings geoServerSettings, MultidimSettings mdimSettings) throws NoSuchElementException {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coverage store '{}' already exists.", name);
@@ -347,7 +348,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         }
     }
 
-    public void addProjectionsToGeoserver(String wktString, String srid) {
+    public void addProjectionsToGeoserver(String wktString, String srid) throws NoSuchElementException {
 
         String geoserverContainerId = getContainerId("geoserver");
         DockerClient dockerClient = DockerClient.getInstance();
