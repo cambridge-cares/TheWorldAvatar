@@ -167,7 +167,10 @@ public class LifecycleService {
    */
   public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String contract) {
     String activeServiceQuery = LifecycleResource.genServiceTasksQuery(contract, false);
-    return this.executeOccurrenceQuery(activeServiceQuery, LifecycleResource.DATE_KEY);
+    List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
+        LifecycleResource.DATE_KEY);
+    LOGGER.info("Successfuly retrieved all associated services!");
+    return new ResponseEntity<>(occurrences, HttpStatus.OK);
   }
 
   /**
@@ -180,7 +183,10 @@ public class LifecycleService {
     // Get date from timestamp
     String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
     String activeServiceQuery = LifecycleResource.genServiceTasksQuery(targetDate, true);
-    return this.executeOccurrenceQuery(activeServiceQuery, LifecycleResource.CONTRACT_KEY);
+    List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
+        LifecycleResource.CONTRACT_KEY);
+    LOGGER.info("Successfuly retrieved services in progress!");
+    return new ResponseEntity<>(occurrences, HttpStatus.OK);
   }
 
   /**
@@ -189,7 +195,7 @@ public class LifecycleService {
    * @param timestamp Timestamp in UNIX format.
    * @param groupVar  The variable name that should be grouped by.
    */
-  private ResponseEntity<List<Map<String, SparqlResponseField>>> executeOccurrenceQuery(String query, String groupVar) {
+  private List<Map<String, SparqlResponseField>> executeOccurrenceQuery(String query, String groupVar) {
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     Map<String, SparqlBinding> resultMapping = results.stream()
         .collect(Collectors.toMap(
@@ -200,12 +206,21 @@ public class LifecycleService {
                 .getEventPriority(replacement.getFieldValue(LifecycleResource.EVENT_KEY))
                     ? existing
                     : replacement));
-    LOGGER.info("Successfuly retrieved services in progress!");
-    return new ResponseEntity<>(
-        resultMapping.values().stream()
-            .map(SparqlBinding::get)
-            .toList(),
-        HttpStatus.OK);
+    return resultMapping.values().stream()
+        .map(binding -> {
+          Map<String, SparqlResponseField> fields = binding.get();
+          String occurrenceId = binding.getFieldValue(LifecycleResource.IRI_KEY);
+          // Extract and add dispatch details if available
+          ResponseEntity<?> response = this.getOccurrenceDetails(LifecycleEventType.SERVICE_ORDER_DISPATCHED,
+              occurrenceId, true);
+          if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, SparqlResponseField> dispatch = (Map<String, SparqlResponseField>) response.getBody();
+            dispatch.remove("id"); // remove unneeded id key
+            fields.putAll(dispatch);
+          }
+          return fields;
+        })
+        .toList();
   }
 
   /**
@@ -370,14 +385,11 @@ public class LifecycleService {
     Map<String, Object> currentEntity = new HashMap<>();
     if (targetId != null) {
       LOGGER.debug("Detected specific entity ID! Retrieving target event occurrence of {}...", eventType);
-      String query = LifecycleResource.genEventQuery(targetId, eventType);
-      Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-      String targetOccurrence = this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
-      LOGGER.debug("Retrieving relevant entity information for occurrence of {}...", eventType);
-      ResponseEntity<?> currentEntityResponse = this.getService.getInstance("occurrence", targetOccurrence,
-          replacementQueryLine, false);
+      ResponseEntity<?> currentEntityResponse = this.getOccurrenceDetails(eventType, targetId, false);
       if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
         currentEntity = (Map<String, Object>) currentEntityResponse.getBody();
+      } else {
+        return currentEntityResponse;
       }
     }
     String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, replacementQueryLine);
@@ -393,5 +405,28 @@ public class LifecycleService {
           results,
           HttpStatus.OK);
     }
+  }
+
+  /**
+   * Retrieves the occurrence's dynamic details for the specified event type.
+   * 
+   * @param eventType    The target event type.
+   * @param targetId     The target instance IRI.
+   * @param requireLabel Indicates if labels should be returned for all the
+   *                     fields that are IRIs.
+   */
+  private ResponseEntity<?> getOccurrenceDetails(LifecycleEventType eventType, String targetId, boolean requireLabel) {
+    // Ensure that there is a specific event type target
+    String replacementQueryLine = "<https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence>;"
+        + "sh:property/sh:hasValue " + StringResource.parseIriForQuery(LifecycleResource.getEventClass(eventType));
+    String query = LifecycleResource.genEventQuery(targetId, eventType);
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    if (results.size() == 0) {
+      return new ResponseEntity<>("No occurrence detected!", HttpStatus.NOT_ACCEPTABLE);
+    }
+    String targetOccurrence = this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
+    LOGGER.debug("Retrieving relevant entity information for occurrence of {}...", eventType);
+    return this.getService.getInstance("occurrence", targetOccurrence,
+        replacementQueryLine, requireLabel);
   }
 }
