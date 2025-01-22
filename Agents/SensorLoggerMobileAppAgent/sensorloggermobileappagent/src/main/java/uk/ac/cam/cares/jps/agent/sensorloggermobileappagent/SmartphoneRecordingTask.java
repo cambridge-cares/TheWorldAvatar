@@ -113,8 +113,6 @@ public class SmartphoneRecordingTask {
             logger.info("Need to init device: " + processorsToInstantiate.stream()
                     .map(SensorDataProcessor::getOntodeviceLabel).collect(Collectors.joining(",")));
             initDeviceKgUsingOntop(processorsToInstantiate);
-            sensorDataProcessors.forEach(s -> s.initIRIs());
-            sensorDataProcessors.forEach(s -> s.getTimeSeriesIrisFromBlazegraph());
         }
 
         List<SensorDataProcessor> processorsToInitTimeSeries = sensorDataProcessors.stream()
@@ -197,6 +195,8 @@ public class SmartphoneRecordingTask {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+
+        sensorDataProcessors.forEach(s -> s.initIRIs());
     }
 
     private void initDevicesInRDB() {
@@ -296,9 +296,7 @@ public class SmartphoneRecordingTask {
     }
 
     public void instantiate() {
-        // todo: check whether the current design can break this!
         initDeviceKgUsingOntop(sensorDataProcessors);
-        sensorDataProcessors.forEach(SensorDataProcessor::initIRIs);
         initDevicesInRDB();
     }
 }
