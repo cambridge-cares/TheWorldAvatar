@@ -282,7 +282,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
         List<Map<String, String>> dataColumnNamesMaps = new ArrayList<>();
 
-        TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = new TimeSeriesDatabaseMetadata();
+        TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
 
         for (int i = 0; i < dataIRIs.size(); i++) {
             try {
