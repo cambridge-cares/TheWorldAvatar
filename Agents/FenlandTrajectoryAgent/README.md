@@ -113,8 +113,10 @@ The workflow begins by generating a buffer zone around the trajectory geometry, 
 - **Exposure_count**:  
 This route is used when the environmental data and the Fenland Trajectory Agent are deployed in different stacks. In this case, you need to update the [config.properties] file with the following parameters:
 
-- `ENV_DATA_ENDPOINT_URL`(a SPARQL endpoint)
-- `TRAJECTORY_DB_HOST`
+```
+ENV_DATA_ENDPOINT_URL`(a SPARQL endpoint)
+TRAJECTORY_DB_HOST`
+```
 
 For example, when using an Ontop SPARQL endpoint with data such as Food Retail and Greenspace, the matching OBDA mappings should be configured in advance. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
 
@@ -185,3 +187,4 @@ Jiying Chen (jc2341@cam.ac.uk), Jan 2025
 [layer_generator]: ./example-requests/SendHTTP/layer_generator.http
 [KGClient]: ./agent/kgutils/kgclient.py
 [SQL commands for virtual-table generation]: ./agent/layergenerator/virtual_table.sql
+[config.properties]:./agent/exposure_calculator/config.properties
