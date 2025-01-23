@@ -2,9 +2,7 @@
 
 The `Fenland Trajectory Agent` is a specialised tool designed to both instantiate structured time-series GPS trajectory data into a knowledge graph and perform quantitative exposure calculations between these trajectories and environmental features. This agent receives HTTP POST requests or CURL commands to perform specified tasks. These include loading GPS trajectory files, mapping them into RDF triples, and uploading them to the stack. Additionally, for an exposure radius of interest, the agent can interpret environmental features and perform corresponding exposure calculations automatically. Examples of these calculations include determining the number of food retail locations or greenspace objects within the defined radius.
 
-Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example gps data can be found at `Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv`. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. In terms of environmental features from the Fenland Study, the raw data is stored in `Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/Data/Raw data/`. Uploading and instantiating environmental data requires the [Stack-data-uploader] tool, and configuration files can be found in the [AI-for-Public-Health] folder.
-
-This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager].
+Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example gps data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. In terms of environmental features from the Fenland Study, the raw data is stored in Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/Data/Raw data/. Uploading and instantiating environmental data requires the [Stack-data-uploader] tool, and configuration files can be found in the [AI-for-Public-Health] folder. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager].
 
 # 2. Agent Setup
 
@@ -141,6 +139,9 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [ISO 8601]: https://www.iso.org/iso-8601-date-and-time-format.html
 [knowledge graph operations guidance]: https://cambridge-cares.github.io/TheWorldAvatar/examples/sparql/
 [TWA-VF]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
+[Stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+[AI-for-Public-Health]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/AI4PublicHealth
+
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
