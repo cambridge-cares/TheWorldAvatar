@@ -97,23 +97,38 @@ Importantly, the preprocessing step must be completed before moving on to the in
 In addition to the core functionality, this agent offers a route task called layer_generator that creates GeoServer layers from PostGIS tables for visualisation. Given a table name (formed by UUID) and latitude/longitude column names, the agent deploys the [SQL commands for virtual-table generation], creates vector objects, and communicates with the GeoServer REST API to publish the layer. Please note that this functionality is specialized and typically requires manual examination of SQL commands and layer metadata (such as EPSG) to ensure compatibility with specific requirements. This functionality will be further updated and refined after the AI for Public Health (Fenland) project's visualisation is switched to [TWA-VF] 5.4.0.
 
 ### Example HTTP Requests
-Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file, the [instantiate] file, and the [layer_generator] file. 
+Example requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file, the [instantiate] file, and the [layer_generator] file. 
 
 Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
 ## 4.2 Count-Based Exposure Calculation
 
-This functionality calculates exposure for given trajectories based on their interactions with environmental features. The core steps include:
+The agent is configured to calculate exposure by listening to trajectory IRIs and environmental feature IRIs along with a specified exposure radius. 
+The calculation can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. 
 
-- Generating a buffer around each trajectory based on a specified exposure radius.
-- Counting the number of relevant environmental features (e.g., food retail locations) or calculating the total intersected area (e.g., greenspace).
+### Functionality Description
 
+The workflow begins by generating a buffer zone around the trajectory geometry, with the buffer extending outward from the trajectory line by a specified exposure radius. Environmental features, such as food retail locations or greenspaces, are then identified and counted based on their intersections with this buffer zone, providing a quantitative measure of exposure. To accommodate different data storage scenarios, the agent provides two routes for exposure calculations:
 
+- **Exposure_count**:  
+This route is used when the environmental data and the Fenland Trajectory Agent are deployed in different stacks. In this case, you need to update the [config.properties] file with the following parameters:
 
+- `ENV_DATA_ENDPOINT_URL`(a SPARQL endpoint)
+- `TRAJECTORY_DB_HOST`
+
+For example, when using an Ontop SPARQL endpoint with data such as Food Retail and Greenspace, the matching OBDA mappings should be configured in advance. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
+
+- **Exposure_count_single_stack**: If the environmental data and the Fenland Trajectory Agent are deployed in the same stack.
+This route is used when the environmental data and the Fenland Trajectory Agent are deployed in the same stack. In this case, the agent will query the Ontop SPARQL endpoint deployed within the same stack to fetch the datasource table name corresponding to the trajectory IRI. The agent will then populate an query and execute the calculation internally within the stack.
+
+### Example HTTP Requests
+Example requests are available in detailed HTTP files. You can access these examples at the [exposure_count] file and the [exposure_count_single_stack] file. 
+
+Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
 &nbsp;
 # Authors
-Jiying Chen (jc2341@cam.ac.uk), May 2024
+Jiying Chen (jc2341@cam.ac.uk), Jan 2025
  
 
 <!-- Links -->
