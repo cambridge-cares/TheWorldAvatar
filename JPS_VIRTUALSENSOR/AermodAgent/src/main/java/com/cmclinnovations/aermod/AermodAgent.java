@@ -31,6 +31,7 @@ import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
@@ -104,7 +105,7 @@ public class AermodAgent extends DerivationAgent {
         double longitude = scope.getCentroid().getCoordinate().getX();
         longitude = (longitude + 180) - Math.floor((longitude + 180) / 360) * 360 - 180; // ensure never exceeding 180
         double latitude = scope.getCentroid().getCoordinate().getY();
-        int centreZoneNumber = (int) Math.floor((longitude + 180) / 6)+1;
+        int centreZoneNumber = (int) Math.floor((longitude + 180) / 6) + 1;
         int srid = (latitude < 0) ? 32700 + centreZoneNumber : 32600 + centreZoneNumber;
 
         Map<String, Building> allBuildings = new HashMap<>();
@@ -217,6 +218,9 @@ public class AermodAgent extends DerivationAgent {
 
         // fudge, otherwise object needs to be "final" in the loop
         List<JSONObject> elevationJson = new ArrayList<>();
+        List<JSONObject> contourJson = new ArrayList<>();
+        List<PollutantType> pollutantTypes = new ArrayList<>();
+        List<Integer> zList = new ArrayList<>();
 
         Pollutant.getPollutantList().parallelStream()
                 .filter(pollutantType -> sourcesWithEmissions.stream().allMatch(p -> p.hasPollutant(pollutantType)))
@@ -254,11 +258,17 @@ public class AermodAgent extends DerivationAgent {
                     zToOutputMap.get(zIri).addColourBar(pollutantType, colourBarUrl);
 
                     JSONObject geoJSON = response.getJSONObject("contourgeojson");
-                    aermod.createDispersionLayer(geoJSON, derivationInputs.getDerivationIRI(), pollutantType,
-                            simulationTime, zMap.get(zIri));
+                    contourJson.add(geoJSON);
+                    pollutantTypes.add(pollutantType);
+                    zList.add(zMap.get(zIri));
 
                     elevationJson.add(response.getJSONObject("contourgeojson_elev"));
                 }));
+
+        for (int i = 0; i < contourJson.size(); i++) {
+            aermod.createDispersionLayer(contourJson.get(i), derivationInputs.getDerivationIRI(), pollutantTypes.get(i),
+                    simulationTime, zList.get(i));
+        }
 
         if ((!queryClient.tableExists(EnvConfig.ELEVATION_CONTOURS_TABLE) && usesElevation) ||
                 (queryClient.tableExists(EnvConfig.ELEVATION_CONTOURS_TABLE)

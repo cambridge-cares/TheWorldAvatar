@@ -1,3 +1,4 @@
 services:
   trajectoryqueryagent:
-    image: ghcr.io/cambridge-cares/trajectoryqueryagent:3.0.0
+    image: ghcr.io/cambridge-cares/trajectoryqueryagent:4.1.0
+    build: .

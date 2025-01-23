@@ -84,8 +84,7 @@ public class MetaHandlerTest {
 
         // Attempt to get metadata
         JSONObject result = metaHandler.getData(
-            configStore.getConfigEntries().subList(0, 1),
-            TestUtils.mockResponse()
+            configStore.getConfigEntries().subList(0, 1)
         );
 
         // Expected response
@@ -125,8 +124,7 @@ public class MetaHandlerTest {
 
         // Attempt to get metadata
         JSONObject result = metaHandler.getData(
-            configStore.getConfigEntries().subList(0, 2),
-            TestUtils.mockResponse()
+            configStore.getConfigEntries().subList(0, 2)
         );
 
         // Expected response

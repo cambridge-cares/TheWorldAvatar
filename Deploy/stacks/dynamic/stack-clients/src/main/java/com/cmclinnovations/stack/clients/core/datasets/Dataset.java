@@ -61,9 +61,6 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty("mappings")
     private final Optional<List<String>> ontopMappings;
 
-    @JsonProperty("ontopSettings")
-    private final Optional<OntopSettings> ontopSettings;
-
     @JsonProperty("ontologyDatasets")
     private final Optional<List<String>> ontologyDatasetNames;
 
@@ -74,6 +71,9 @@ public class Dataset extends AbstractDataObject {
 
     @JsonProperty
     private final Optional<Metadata> additionalMetadata;
+
+    @JsonProperty
+    private final Optional<List<String>> rules;
 
     @JsonCreator
     Dataset() {
@@ -87,7 +87,7 @@ public class Dataset extends AbstractDataObject {
         this.geoserverStyles = Optional.empty();
         this.staticGeoServerData = Optional.empty();
         this.ontopMappings = Optional.empty();
-        this.ontopSettings = Optional.empty();
+        this.rules = Optional.empty();
         this.ontologyDatasetNames = Optional.empty();
         this.rdfType = Optional.empty();
         this.baseIRI = Optional.empty();
@@ -108,7 +108,7 @@ public class Dataset extends AbstractDataObject {
             Optional<List<GeoServerStyle>> geoserverStyles,
             Optional<StaticGeoServerData> staticGeoServerData,
             Optional<List<String>> ontopMappings,
-            Optional<OntopSettings> ontopSettings,
+            Optional<List<String>> rules,
             Optional<List<String>> ontologyDatasetNames,
             boolean skip,
             Optional<String> rdfType,
@@ -125,7 +125,7 @@ public class Dataset extends AbstractDataObject {
         this.geoserverStyles = geoserverStyles;
         this.staticGeoServerData = staticGeoServerData;
         this.ontopMappings = ontopMappings;
-        this.ontopSettings = ontopSettings;
+        this.rules = rules;
         this.ontologyDatasetNames = ontologyDatasetNames;
         this.rdfType = rdfType;
         this.baseIRI = baseIRI;
@@ -192,8 +192,8 @@ public class Dataset extends AbstractDataObject {
         return ontopMappings.orElse(Collections.emptyList());
     }
 
-    public OntopSettings getOntopSettings() {
-        return ontopSettings.orElse(new OntopSettings());
+    public List<String> getRules() {
+        return rules.orElse(Collections.emptyList());
     }
 
     public List<String> getOntologyDatasetNames() {

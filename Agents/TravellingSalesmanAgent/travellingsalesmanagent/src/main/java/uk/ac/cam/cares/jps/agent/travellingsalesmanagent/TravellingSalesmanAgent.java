@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
@@ -17,18 +18,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 @WebServlet(urlPatterns = "/runtsp")
 
 public class TravellingSalesmanAgent extends JPSAgent {
-    
-    private static String tspFunction = null; 
+
+    private static String tspFunction = null;
 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private final String FUNCTION_KEY = "function";
-
 
     private static final Logger LOGGER = LogManager.getLogger(TravellingSalesmanAgent.class);
 
@@ -38,6 +36,13 @@ public class TravellingSalesmanAgent extends JPSAgent {
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
+    private String poiTableName = "poi_tsp_nearest_node";
+    private String poiLayerName = "poi_tsp_nearest_node";
+    private String floodTableName = "flood_polygon_single_10cm";
+    private Double floodCutOff = 0.0;
+    private String routeTablePrefix = "routing_";
+    private String workspaceName = "twa";
+    private String schema = "public";
 
     /**
      * Initialise agent
@@ -45,14 +50,13 @@ public class TravellingSalesmanAgent extends JPSAgent {
     public void init() {
         readConfig();
 
-        if(!kgEndpoint.isEmpty() ){
+        if (!kgEndpoint.isEmpty()) {
             try {
                 this.storeClient = new RemoteStoreClient(kgEndpoint, kgEndpoint);
             } catch (Exception e) {
-             System.out.println(e + "Invalid blazegraph endpoint specified");
+                System.out.println(e + "Invalid blazegraph endpoint specified");
             }
-        }else
-        {   //Follow the running stack's blazegraph URL
+        } else { // Follow the running stack's blazegraph URL
             this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         }
 
@@ -69,7 +73,27 @@ public class TravellingSalesmanAgent extends JPSAgent {
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
             this.kgEndpoint = prop.getProperty("kgEndpoint");
-
+            if (prop.getProperty("poiTableName") != null) {
+                this.poiTableName = prop.getProperty("poiTableName");
+            }
+            if (prop.getProperty("poiLayerName") != null) {
+                this.poiLayerName = prop.getProperty("poiLayerName");
+            }
+            if (prop.getProperty("floodTableName") != null) {
+                this.floodTableName = prop.getProperty("floodTableName");
+            }
+            if (prop.getProperty("floodCutOff") != null) {
+                this.floodCutOff = Double.parseDouble(prop.getProperty("floodCutOff"));
+            }
+            if (prop.getProperty("routeTablePrefix") != null) {
+                this.routeTablePrefix = prop.getProperty("routeTablePrefix");
+            }
+            if (prop.getProperty("workspaceName") != null) {
+                this.workspaceName = prop.getProperty("workspaceName");
+            }
+            if (prop.getProperty("schema") != null) {
+                this.schema = prop.getProperty("schema");
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -80,11 +104,13 @@ public class TravellingSalesmanAgent extends JPSAgent {
     }
 
     /**
-     * Process request parameters and run functions within agent in the following flow
+     * Process request parameters and run functions within agent in the following
+     * flow
      * 1) Read files
      * 2) Retrieve POI locations from KG
      * 3) Find nearest_nodes of POIs
      * 4) Create TSP layer using geoserverclient - TSP Route, TSP sequence
+     * 
      * @param requestParams
      * @return
      */
@@ -96,67 +122,61 @@ public class TravellingSalesmanAgent extends JPSAgent {
         }
 
         this.tspFunction = requestParams.getString(FUNCTION_KEY);
+        Path FUNCTION_PATH = Path.of("/inputs/" + tspFunction);
+
+        if (!Files.exists(FUNCTION_PATH)) {
+            throw new JPSRuntimeException("Function " + tspFunction + " is not set up with this agent.");
+        }
 
         LOGGER.info("Successfully set tspFunction to " + tspFunction);
 
         JSONObject response = new JSONObject();
         response.put("message", "Successfully set tspFunction to " + tspFunction);
 
-
-        Path POI_PATH = Path.of("/inputs/"+tspFunction+"/POIqueries");
-        Path EDGESTABLESQL_PATH = Path.of("/inputs/"+tspFunction+"/edgesSQLTable");
-
+        Path POI_PATH = FUNCTION_PATH.resolve("POIqueries");
+        Path EDGESTABLESQL_PATH = FUNCTION_PATH.resolve("edgesSQLTable");
 
         try {
             init();
             // Read SPARQL and SQL files.
-            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
-            Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
+            Map<String, String> poiMap = FileReader.readPOIsparql(POI_PATH);
+            Map<String, String> edgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
+            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs
+            // to the cumulative array
+            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, poiMap);
 
             // Split road into multiple smaller segment and find the nearest_node
-            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
+            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder(poiTableName);
 
             // Create a table to store nearest_node
             nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
-            //Create geoserver layer
+            // Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "twa";
-            String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
 
-            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            virtualTable.setSql("SELECT CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom FROM poi_tsp_nearest_node");
-            virtualTable.setEscapeSql(true);
-            virtualTable.setName("poi_tsp_nearest_node");
-            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-            geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISDataStore(workspaceName,"poi_tsp_nearest_node" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"public", "poi_tsp_nearest_node" ,geoServerVectorSettings);
-
+            GeoServerInteractor.addPOIGeoserverLayer(geoServerClient, workspaceName, schema, dbName, poiTableName,
+                    poiLayerName);
 
             /**
-             *  Loop through the edgeTable SQL and generate two geoserver layer for each edgeTableSQL
-             *  - TSP_route:  Gives the geometry of the shortest path for all TSP points
-             *  - TSP_seq:  Gives the sequence of order to visit all the TSP points
+             * Loop through the edgeTable SQL and generate two geoserver layer for each
+             * edgeTableSQL
+             * - TSP_route: Gives the geometry of the shortest path for all TSP points
+             * - TSP_seq: Gives the sequence of order to visit all the TSP points
              */
-            if (tspFunction.equals("UR")){
-                TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
-                for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
-                    String layerName = "TSP_"+entry.getKey();
-                    String sql = entry.getValue();
-                    tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
-                    tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
-                }
+
+            TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator(poiTableName, floodTableName, routeTablePrefix,
+                    floodCutOff);
+
+            tspRouteGenerator.updatePOIFloodStatus(remoteRDBStoreClient);
+            for (Map.Entry<String, String> entry : edgesTableSQLMap.entrySet()) {
+                String layerName = "TSP_" + entry.getKey();
+                String sql = entry.getValue();
+                tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
+                tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName,
+                        sql);
             }
-
-
-
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,7 +186,9 @@ public class TravellingSalesmanAgent extends JPSAgent {
     }
 
     /**
-     * Check if the JSONObject in the processRequestParameters inputs are correct or missing.
+     * Check if the JSONObject in the processRequestParameters inputs are correct or
+     * missing.
+     * 
      * @param requestParams
      * @return
      * @throws BadRequestException
@@ -174,11 +196,10 @@ public class TravellingSalesmanAgent extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (!requestParams.has(FUNCTION_KEY)) {
-            LOGGER.error("Function is missing.");
+            LOGGER.error("The request parameter 'function' must be specified but is missing.");
             return false;
         }
         return true;
     }
-
 
 }

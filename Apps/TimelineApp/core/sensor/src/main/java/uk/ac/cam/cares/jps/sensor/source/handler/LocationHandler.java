@@ -117,28 +117,30 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
      */
     @Override
     public void onLocationChanged(Location location) {
-        double altitude = SensorManager.getAltitude(mslConstant, currentPressure);
+        synchronized (sensorDataLock) {
+            double altitude = SensorManager.getAltitude(mslConstant, currentPressure);
 
-        try {
-            JSONObject locationObject = new JSONObject();
-            locationObject.put("name", "location");
-            locationObject.put("time", System.currentTimeMillis() * 1000000);
-            JSONObject values = new JSONObject();
-            values.put("latitude", location.getLatitude());
-            values.put("longitude", location.getLongitude());
-            values.put("altitude", altitude);
-            values.put("speed", location.getSpeed());
-            values.put("bearing", location.getBearing());
-            values.put("horizontalAccuracy", location.hasAccuracy() ? location.getAccuracy() : null);
-            values.put("bearingAccuracy", location.hasBearingAccuracy() ? location.getBearingAccuracyDegrees() : null);
-            values.put("speedAccuracy", location.hasSpeedAccuracy() ? location.getSpeedAccuracyMetersPerSecond() : null);
-            values.put("verticalAccuracy", location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : null);
+            try {
+                JSONObject locationObject = new JSONObject();
+                locationObject.put("name", "location");
+                locationObject.put("time", System.currentTimeMillis());
+                JSONObject values = new JSONObject();
+                values.put("latitude", location.getLatitude());
+                values.put("longitude", location.getLongitude());
+                values.put("altitude", altitude);
+                values.put("speed", location.getSpeed());
+                values.put("bearing", location.getBearing());
+                values.put("horizontalAccuracy", location.hasAccuracy() ? location.getAccuracy() : null);
+                values.put("bearingAccuracy", location.hasBearingAccuracy() ? location.getBearingAccuracyDegrees() : null);
+                values.put("speedAccuracy", location.hasSpeedAccuracy() ? location.getSpeedAccuracyMetersPerSecond() : null);
+                values.put("verticalAccuracy", location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : null);
 
-            locationObject.put("values", values);
-            locationData.put(locationObject);
+                locationObject.put("values", values);
+                locationData.put(locationObject);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -147,7 +149,9 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
      */
     @Override
     public void clearSensorData() {
-        locationData = new JSONArray();
+        synchronized (sensorDataLock) {
+            locationData = new JSONArray();
+        }
     }
 
     /**
@@ -157,7 +161,13 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
      */
     @Override
     public JSONArray getSensorData() {
-        return locationData;
+        synchronized (sensorDataLock) {
+            try {
+                return new JSONArray(locationData.toString());
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override

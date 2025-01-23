@@ -1,0 +1,11 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX ontobuiltenergy: <https://www.theworldavatar.com/kg/ontobuiltenergy/>
+PREFIX OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoaCode ?fuelPovertyRate
+WHERE {
+  ?lsoaEntity ontobuiltenv:hasIdentifier ?lsoaCode .
+  ?lsoaEntity ontobuiltenergy:hasHousehold ?household .
+  ?household ontobuiltenergy:hasFuelPovertyRate ?fuelPovertyRateEntity .
+  ?fuelPovertyRateEntity OM:hasValue ?fuelPovertyRate .
+}

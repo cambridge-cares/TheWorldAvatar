@@ -1,0 +1,37 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Trajectory Data",
+            "expanded": false,
+            "stack": "<HOST_ADDRESS>",
+            "search": "person",
+            "sources": [
+                {
+                    "type": "vector",
+                    "tiles": [
+                        "http://172.17.0.1:58085/geoserver-jwt-proxy/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:trajectoryUserIdLineSegments&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ],
+                    "id": "trajectory"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "trajectory",
+                    "name": "Trajectory",
+                    "source": "trajectory",
+                    "source-layer": "trajectoryUserIdLineSegments",
+                    "type": "line",
+                    "order": 2,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#000000",
+                        "line-width": 3
+                    }
+                }
+            ]
+        }
+    ]
+}

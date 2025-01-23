@@ -1,6 +1,5 @@
 {
-    "database": "postgres",
-    "workspace": "twa",
+    "database": "population",
     "datasetDirectory": "./",
     "externalDatasets": [
         "population"

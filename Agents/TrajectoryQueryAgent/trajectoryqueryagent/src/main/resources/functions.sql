@@ -94,6 +94,7 @@ RETURNS TABLE (
     "speed" double precision, 
     "altitude" double precision, 
     "bearing" double precision,
+    "session_id" character varying,
     "device_id" TEXT,
     "user_id" TEXT
 ) AS $$
@@ -106,11 +107,12 @@ BEGIN
         END IF;
 
         query := query || format(
-            'SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri=%L',
+            'SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing, %I AS session_id, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri=%L',
             get_column_name(get_point_iri(device_id_array[i])),
             get_column_name(get_speed_iri(device_id_array[i])),
             get_column_name(get_altitude_iri(device_id_array[i])),
             get_column_name(get_bearing_iri(device_id_array[i])),
+            get_column_name(get_session_iri(device_id_array[i])),
             device_id_array[i],
             get_user_id(device_id_array[i]),
             get_table_name(get_point_iri(device_id_array[i])),
@@ -128,11 +130,16 @@ $$
 DECLARE
     phone_id_list TEXT[];
 BEGIN
-    -- Aggregate phone_id values into an array
+    -- Aggregate phone_id values into an array, but only if phone_id exists in the devices table
     SELECT array_agg(phone_id)
     INTO phone_id_list
-    FROM timeline."smartPhone"
-    WHERE user_id = id;
+    FROM timeline."smartPhone" sp
+    WHERE sp.user_id = id
+    AND EXISTS (
+        SELECT 1 
+        FROM devices d
+        WHERE d.device_id = sp.phone_id
+    );
 
     RETURN phone_id_list;
 END;

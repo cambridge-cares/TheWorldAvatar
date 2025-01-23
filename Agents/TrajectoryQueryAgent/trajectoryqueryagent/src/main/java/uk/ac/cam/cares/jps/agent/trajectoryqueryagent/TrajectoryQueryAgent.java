@@ -160,7 +160,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.setSql(lineLayerDeviceId);
             virtualTable.setEscapeSql(true);
             virtualTable.setName("line_layer_device_id_table");
-            virtualTable.addVirtualTableParameter("device_id", "", ".*");
+            virtualTable.addVirtualTableParameter("device_id", "null", ".*");
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
@@ -183,7 +183,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.setEscapeSql(true);
             virtualTable.setName("line_layer_device_id_table");
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326");
-            virtualTable.addVirtualTableParameter("user_id", "", ".*");
+            virtualTable.addVirtualTableParameter("user_id", "null", ".*");
             virtualTable.addVirtualTableParameter("upperbound", "0", "^(0|[1-9][0-9]*)$");
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
@@ -206,12 +206,35 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.setSql(bufferedLineDeviceId);
             virtualTable.setEscapeSql(true);
             virtualTable.setName("buffered_line_device_id_table");
-            virtualTable.addVirtualTableParameter("device_id", "", ".*");
+            virtualTable.addVirtualTableParameter("device_id", "null", ".*");
             virtualTable.addVirtualTableParameter("upperbound", "0", "^(0|[1-9][0-9]*)$");
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName, "bufferedLineDeviceId", geoServerVectorSettings);
+        }
+
+        String lineLayerUserIdLineSegments = null;
+        try (InputStream is = new ClassPathResource("line_layer_user_id_line_segments.sql").getInputStream()) {
+            lineLayerUserIdLineSegments = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read line_layer_user_id_line_segments.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        if (lineLayerUserIdLineSegments != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(lineLayerUserIdLineSegments);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("line_layer_user_id_segments_table");
+            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326");
+            virtualTable.addVirtualTableParameter("user_id", "null", ".*");
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdLineSegments",
+                    geoServerVectorSettings);
         }
     }
 

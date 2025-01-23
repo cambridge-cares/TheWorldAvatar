@@ -21,6 +21,8 @@ import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.TriplesTemplate;
+import org.eclipse.rdf4j.sparqlbuilder.core.PrefixDeclarations;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
@@ -33,7 +35,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
 import org.json.JSONArray;
 
@@ -436,7 +437,7 @@ public class TimeSeriesSparql {
         // Check that the data IRIs are not attached to a different time series IRI
         // already
         List<String> dataIRI = timeSeriesKgMetadata.getDataIriList();
-        if (hasExistingTimeSeries(dataIRI)) {
+        if (hasAnyExistingTimeSeries(dataIRI)) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI has an existing time series");
         }
@@ -474,16 +475,17 @@ public class TimeSeriesSparql {
      */
     protected void bulkInitTS(List<TimeSeriesKgMetadata> timeSeriesKgMetadataList, String rdbURL, String schema,
             Class<?> timeClass, Class<?> rdbClientClass) {
-        ModifyQuery modify = Queries.MODIFY();
+
+        TriplesTemplate modify = SparqlBuilder.triplesTemplate();
         // set prefix declarations
-        modify.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
+        PrefixDeclarations pd = SparqlBuilder.prefixes(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
 
         Map<CustomDuration, String> durationMap = createDurationIRIMapping();
 
-        timeSeriesKgMetadataList.stream().forEach(timeSeriesKgMetadata -> {
+        timeSeriesKgMetadataList.forEach(timeSeriesKgMetadata -> {
             Iri tsIRI = iri(timeSeriesKgMetadata.getTimeSeriesIri());
 
-            modify.insert(tsIRI.isA(timeSeriesKgMetadata.getTimeSeriesType()));
+            modify.and(tsIRI.isA(timeSeriesKgMetadata.getTimeSeriesType()));
 
             if (timeSeriesKgMetadata.getTimeSeriesType().equals(AVERAGE_TIMESERIES)) {
                 Duration duration = timeSeriesKgMetadata.getDuration();
@@ -519,55 +521,36 @@ public class TimeSeriesSparql {
                 }
 
                 if (durationIRI != null) {
-                    modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+                    modify.and(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
                 } else {
                     // Duration IRI
                     durationIRI = TIMESERIES_NAMESPACE + "AveragingPeriod_" + UUID.randomUUID();
-                    modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
-                    modify.insert(iri(durationIRI).isA(Duration));
-                    modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));
-                    modify.insert(iri(durationIRI).has(numericDuration, numericValue));
+                    modify.and(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+                    modify.and(iri(durationIRI).isA(Duration));
+                    modify.and(iri(durationIRI).has(unitType, iri(temporalUnit)));
+                    modify.and(iri(durationIRI).has(numericDuration, numericValue));
                 }
             }
 
             // relational database URL and classes used by TimeSeriesClientFactory
-            modify.insert(
+            modify.and(
                     tsIRI.has(hasRDB, literalOf(rdbURL)).andHas(HAS_RDB_CLIENT_CLASS, rdbClientClass.getCanonicalName())
                             .andHas(HAS_TIME_CLASS, timeClass.getCanonicalName()).andHas(HAS_SCHEMA, schema));
 
             // link each data to time series
             for (String data : timeSeriesKgMetadata.getDataIriList()) {
                 TriplePattern tsTp = iri(data).has(hasTimeSeries, tsIRI);
-                modify.insert(tsTp);
+                modify.and(tsTp);
             }
 
             // optional: define time unit
             String timeUnit = timeSeriesKgMetadata.getTimeUnit();
             if (timeUnit != null) {
-                modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
+                modify.and(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
             }
         });
-        kbClient.executeUpdate(modify.getQueryString());
-    }
-
-    /**
-     * returns true if any of the given data IRIs has a time series attached
-     * 
-     * @param dataIRI
-     * @return
-     */
-    boolean checkAnyTimeSeriesExists(List<String> dataIRI) {
-        SelectQuery query = Queries.SELECT();
-        Variable data = query.var();
-        Variable ts = query.var();
-        ValuesPattern valuesPattern = new ValuesPattern(data,
-                dataIRI.stream().map(Rdf::iri).collect(Collectors.toList()));
-
-        query.where(data.has(hasTimeSeries, ts), valuesPattern).prefix(PREFIX_ONTOLOGY);
-
-        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
-
-        return queryResult.length() > 0;
+        String queryString = pd.getQueryString() + modify.getQueryString().replace("{", "").replace("}", "");
+        kbClient.uploadTriples(queryString);
     }
 
     /**
@@ -943,7 +926,7 @@ public class TimeSeriesSparql {
 
         // Check that the data IRIs are not attached to a different time series IRI
         // already
-        if (hasExistingTimeSeries(timeSeriesKgMetadata.getDataIriList())) {
+        if (hasAnyExistingTimeSeries(timeSeriesKgMetadata.getDataIriList())) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI has an existing time series");
         }
@@ -973,20 +956,22 @@ public class TimeSeriesSparql {
      * @param dataIriList
      * @return
      */
-    boolean hasExistingTimeSeries(List<String> dataIriList) {
-        SelectQuery query = Queries.SELECT();
-        Variable timeSeriesVar = query.var();
-        Variable dataVar = query.var();
+    boolean hasAnyExistingTimeSeries(List<String> dataIriList) {
+        // check if any time series exists
+        String query = String.format("ASK {?data <%s> ?ts }", TIMESERIES_NAMESPACE + "hasTimeSeries");
+        kbClient.setQuery(query);
+        boolean anyExist = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+        if (anyExist) {
+            // check if time series to be created already exists
+            String allDataIRI = String.join(" ",
+                    dataIriList.stream().map(str -> "<" + str + ">").collect(Collectors.toList()));
+            query = String.format("ASK {?data <%s> ?ts . VALUES ?data { %s } }",
+                    (TIMESERIES_NAMESPACE + "hasTimeSeries"), allDataIRI);
+            kbClient.setQuery(query);
+            return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+        } else {
+            return anyExist;
+        }
 
-        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
-                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
-
-        GraphPattern queryPattern = dataVar.has(hasTimeSeries, timeSeriesVar);
-
-        query.where(valuesPattern, queryPattern).prefix(PREFIX_ONTOLOGY).select(timeSeriesVar);
-
-        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
-
-        return queryResult.length() > 0;
     }
 }

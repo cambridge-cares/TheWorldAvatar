@@ -9,7 +9,9 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.swagger.podman.ApiClient;
 import com.cmclinnovations.swagger.podman.ApiException;
+import com.cmclinnovations.swagger.podman.api.NetworksApi;
 import com.cmclinnovations.swagger.podman.api.SecretsApi;
+import com.cmclinnovations.swagger.podman.model.Network;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.model.Config;
@@ -74,6 +76,17 @@ public class PodmanClient extends DockerClient {
                 throw new RuntimeException("Failed to convert Secret to Config.");
             }
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public String getDNSIPAddress() {
+        NetworksApi networksApi = new NetworksApi(getPodmanClient());
+        try {
+            Network network = networksApi.networkInspectLibpod(StackClient.getStackName());
+            return network.getSubnets().get(0).getGateway();
+        } catch (ApiException | IndexOutOfBoundsException | NullPointerException e) {
+            throw new RuntimeException("Failed to get network config.");
+        }
     }
 
 }

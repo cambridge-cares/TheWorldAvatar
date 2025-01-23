@@ -16,6 +16,12 @@ public class Request {
     @JsonProperty("endpoint")
     private String endpoint;
 
+    // time bounds for trajectory
+    @JsonProperty("upperbound")
+    private Long upperbound;
+    @JsonProperty("lowerbound")
+    private Long lowerbound;
+
     public Request() {
     }
 
@@ -30,6 +36,14 @@ public class Request {
 
     public Optional<String> getEndpoint() {
         return Optional.ofNullable(endpoint);
+    }
+
+    public Long getUpperBound() {
+        return upperbound;
+    }
+
+    public Long getLowerBound() {
+        return lowerbound;
     }
 
 }

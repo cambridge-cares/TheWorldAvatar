@@ -70,6 +70,12 @@ In short, you need to add a service configuration file and include the file serv
 }
 ```
 
+### Mount Type
+If mount type is "volume", changes to the fileserver via POST or DELETE requests will not be reflected in the the source directory. HTTP requests will only affect the target directory which is located inside the Docker container. This means, when the container crashes or stack gets restarted, all changes in the meantime will be effectively discarded.  
+If mount type is "bind" on the other side, any changes to the target folder inside the container (via POST or DELETE requests) will be synced to the source folder outside the container. If the stack is restarted, all changes will still be there. 
+
+See https://github.com/cambridge-cares/TheWorldAvatar/issues/1416 for more details.
+
 ## POST
 
 ### Requests

@@ -12,6 +12,13 @@
             "class": "http://www.opengis.net/citygml/building/2.0/Building",
             "meta": {
                 "queryFile": "building.sparql"
+            },
+            "time": {
+                "queryFile": "cea_time.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "CEAAgent"
             }
         },
         {

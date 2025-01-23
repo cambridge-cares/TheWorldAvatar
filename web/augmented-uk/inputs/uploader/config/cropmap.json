@@ -1,0 +1,50 @@
+{
+    "datasetDirectory": "cropmap",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "tabular"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "cropmap",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-select": [
+                        "prob,county,cromeid,lucode"
+                    ]
+                },
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "FID": "fid"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "cropmap_extended",
+                    "sql": "@/inputs/config/sql/cropmap.sql",
+                    "escapeSql": false,
+                    "keyColumn": "label",
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Polygon",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "cropmap"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "cropmap",
+            "file": "./sld/cropmap.sld"
+        }
+    ]
+  }
