@@ -1,6 +1,7 @@
-package com.cmclinnovations.agent.service;
+package com.cmclinnovations.agent.service.application;
 
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.cmclinnovations.agent.model.GeoLocationType;
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.type.GeoLocationType;
+import com.cmclinnovations.agent.model.type.SparqlEndpointType;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.KGService;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
@@ -88,6 +93,23 @@ public class GeocodingService {
   }
 
   /**
+   * Retrieve the coordinates based on the location instance.
+   * 
+   * @param location The IRI of the location.
+   */
+  public ResponseEntity<?> getCoordinates(String location) {
+    LOGGER.debug("Querying for coordinates...");
+    String query = this.genCoordinateQuery(location);
+    List<String> endpoints = this.kgService.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+    Queue<SparqlBinding> allResults = new ArrayDeque<>();
+    endpoints.forEach((endpoint) -> {
+      Queue<SparqlBinding> results = this.kgService.query(query, endpoint);
+      allResults.addAll(results);
+    });
+    return this.parseCoordinates(allResults);
+  }
+
+  /**
    * Retrieve the coordinates based on the street address or postal code.
    * 
    * @param block      The street block identifier.
@@ -109,19 +131,7 @@ public class GeocodingService {
     String query = this.genCoordinateQueryTemplate(block, street, city, country, postalCode);
     LOGGER.debug("Retrieving coordinates for postal code: {} ...", postalCode);
     Queue<SparqlBinding> results = this.kgService.query(query, geocodingEndpointResponse.getBody());
-    if (results.isEmpty()) {
-      LOGGER.info("No coordinates found...");
-      return new ResponseEntity<>(
-          "There are no coordinates associated with the parameters in the knowledge graph.",
-          HttpStatus.NOT_FOUND);
-    } else {
-      LOGGER.info("Found geocoordinates associated with the request!");
-      // Returns the first geoPoint as the same address may have multiple results
-      String geoPoint = results.poll().getFieldValue(LOCATION_VAR);
-      return new ResponseEntity<>(
-          this.parseCoordinates(geoPoint),
-          HttpStatus.OK);
-    }
+    return this.parseCoordinates(results);
   }
 
   /**
@@ -246,18 +256,47 @@ public class GeocodingService {
    * @param whereClauseLines The query lines for the WHERE clause.
    */
   private String genQueryTemplate(String selectVariables, String whereClauseLines) {
-    return "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-        "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " +
-        "PREFIX fibo-fnd-arr-id:<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/> " +
-        "PREFIX fibo-fnd-plc-adr:<https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/> " +
-        "PREFIX fibo-fnd-plc-loc:<https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/> " +
-        "PREFIX fibo-fnd-rel-rel:<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> " +
-        "PREFIX geo:<http://www.opengis.net/ont/geosparql#> " +
-        "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " +
+    return LifecycleResource.genPrefixes() +
         "SELECT DISTINCT " + selectVariables + " WHERE {" +
         ShaclResource.VARIABLE_MARK + ADDRESS_VAR + " a fibo-fnd-plc-adr:ConventionalStreetAddress;" +
         whereClauseLines +
         "}";
+  }
+
+  /**
+   * Generates the query to retrieve the coordinates associated with a location
+   * instance.
+   * 
+   * @param location The IRI of the location.
+   */
+  private String genCoordinateQuery(String location) {
+    String locationVar = ShaclResource.VARIABLE_MARK + LOCATION_VAR;
+    return LifecycleResource.genPrefixes() +
+        "SELECT DISTINCT " + locationVar + "{" +
+        StringResource.parseIriForQuery(location) + " a fibo-fnd-plc-loc:PhysicalLocation;" +
+        "geo:hasGeometry/geo:asWKT " + locationVar + "." +
+        "}";
+  }
+
+  /**
+   * Parses the coordinates from query results into longitude and latitude.
+   * 
+   * @param results The query results.
+   */
+  private ResponseEntity<?> parseCoordinates(Queue<SparqlBinding> results) {
+    if (results.isEmpty()) {
+      LOGGER.info("No coordinates found...");
+      return new ResponseEntity<>(
+          "There are no coordinates associated with the parameters in the knowledge graph.",
+          HttpStatus.NOT_FOUND);
+    } else {
+      LOGGER.info("Found the associated geocoordinates!");
+      // Returns the first geoPoint as the same location may have multiple results
+      String geoPoint = results.poll().getFieldValue(LOCATION_VAR);
+      return new ResponseEntity<>(
+          this.parseCoordinates(geoPoint),
+          HttpStatus.OK);
+    }
   }
 
   /**
@@ -267,7 +306,7 @@ public class GeocodingService {
    */
   private double[] parseCoordinates(String geoPoint) {
     // REGEX for `POINT(Longitude Latitude)` format
-    Pattern pattern = Pattern.compile("POINT\\((\\d+\\.\\d+) (\\d+\\.\\d+)\\)");
+    Pattern pattern = Pattern.compile("POINT\\((\\d+\\.\\d+),? ?(\\d+\\.\\d+)\\)");
     Matcher matcher = pattern.matcher(geoPoint);
 
     if (matcher.matches()) {

@@ -20,11 +20,19 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.5.2 Delete route](#252-delete-route)
       - [2.5.3 Update route](#253-update-route)
       - [2.5.4 Get route](#254-get-route)
+    - [2.6 Service Lifecycle Route](#26-service-lifecycle-route)
+      - [2.6.1 Status route](#261-status-route)
+      - [2.6.2 Draft route](#262-draft-route)
+      - [2.6.3 Schedule route](#263-schedule-route)
+      - [2.6.4 Service commencement route](#264-service-commencement-route)
+      - [2.6.5 Service order route](#265-service-order-route)
+      - [2.6.6 Archive contract route](#266-archive-contract-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
+      - [4.1.1 Service lifecycle](#411-service-lifecycle)
     - [4.2 Geocoding](#42-geocoding)
 
 ## 1. Agent Deployment
@@ -54,6 +62,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 The agent requires the following environment variables. These variables must be set in their respective docker configuration files for the agent to function as intended.
 
 - `NAMESPACE`: Specifies the SPARQL namespace identifier containing the corresponding instances (default: kb)
+- `TASKS_ENABLED`: Specifies if scheduled tasks must be executed. This is tentatively required only for lifecycle related tasks (default: false)
 
 ##### Files
 
@@ -66,7 +75,7 @@ In generating the form template, users must create and upload [`SHACL` restricti
 The agent will require at least two files in order to function as a `REST` endpoint to add, delete, insert, and retrieve instances within the registry in the ViP.
 
 1. `./resources/application-service.json`: A file mapping the resource identifier to the target file name in (2)
-2. At least one `JSON-LD` file at `./resources/jsonld/example.jsonld`: This file provides a structure for the instance that must be instantiated and will follow the schemas defined in [this section](#41-instantiation). Each file should correspond to one type of instance, and the resource ID defined in (1) must correspond to the respective file in order to function.
+2. At least one `JSON-LD` file at `./resources/jsonld/example.jsonld`: This file provides a structure for the instance that must be instantiated and will follow the schemas defined in [this section](#41-instantiation). Each file should correspond to one type of instance, and the resource ID defined in (1) must correspond to the respective file in order to function. For any lifecycle related functionalities, please also included the following `JSON-LD` files as stated in [this section](#411-service-lifecycle).
 
 **GEOCODING ENDPOINT**
 
@@ -144,6 +153,8 @@ To retrieve the geographic coordinates, users can send a `GET` request to `<base
 5. `country`: The country IRI of the address following [this ontology](https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes)
 
 If successful, the response will return the coordinates in the `[longitude, latitude]` format that is compliant with `JSON`.
+
+Users may also send a `GET` request to `<baseURL>/vis-backend-agent/location?iri={location}` where `location` is the location IRI, to retrieve the associated geocoordinates.
 
 #### 2.2.2 Address search route
 
@@ -272,6 +283,8 @@ To add a new instance, users must send a POST request with their corresponding p
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`. The request parameters will depend on the `JSON-LD` file defined. More information on the required schema can be found in [this section](#41-instantiation).
 
+A successful request will return `{"message": "type has been successfully instantiated!", "iri" : "root iri that is instantiated"}`.
+
 #### 2.5.2 Delete route
 
 To delete an instance, users must send a DELETE request to
@@ -282,6 +295,8 @@ To delete an instance, users must send a DELETE request to
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The instance representation will be deleted according to the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
 
+A successful request will return `{"message": "Instance has been successfully deleted!", "iri" : "root iri that is instantiated"}`.
+
 #### 2.5.3 Update route
 
 To update an instance, users must send a PUT request with their corresponding parameters to
@@ -291,6 +306,8 @@ To update an instance, users must send a PUT request with their corresponding pa
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The request parameters will depend on the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
+
+A successful request will return `{"message": "type  has been successfully updated for id!", "iri" : "root iri that is instantiated"}`.
 
 #### 2.5.4 Get route
 
@@ -322,6 +339,8 @@ Users can send a `GET` request to
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
+
+To retrieve an instance with human-readable fields, users can send a `GET` request to `<baseURL>/vis-backend-agent/{type}/label/{id}`, where parameters are the same as the default route.
 
 ##### Get all instances with human readable fields
 
@@ -370,6 +389,238 @@ where `{type}`is the requested identifier that must correspond to a target class
 }
 ```
 
+### 2.6 Service Lifecycle Route
+
+This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to manage the lifecycle of contracts and their associated services. Note that the following scheduled tasks are available and will occur at 6am everyday if `TASKS_ENABLED` is true:
+
+- Discharge of expired active contracts
+
+#### 2.6.1 Status route
+
+This endpoint serves to retrieve the status of a contract using a `GET` request at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/contracts/status/{id}
+```
+
+where `{id}`is the requested contract ID. A successful request will return `{"message": "Pending, Active, or Archived status", "iri" : "associated contract instance"}`.
+
+#### 2.6.2 Draft route
+
+This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule, or retrieve all draft contracts that are awaiting approval.
+
+> New/Edit draft contract
+
+Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft contract at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/contracts/draft
+```
+
+Note that this route will interact with the [schedule route](#263-schedule-route) directly, and users should not sent a separate request to the schedule route unless they wish to interact with the schedule. The draft route will require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "id": "An identifier for the lifecycle",
+  "contract": "The target contract IRI",
+  "start date": "Date when the first service is to be delivered in the YYYY-MM-DD format",
+  "end date": "Date of the final service in the YYYY-MM-DD format",
+  "time slot start": "Beginning of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "time slot end": "End of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "recurrence": "Service interval in the ISO 8601 format eg P1D P7D P2D",
+  "monday": "A boolean indicating if the service should occur on a monday",
+  "tuesday": "A boolean indicating if the service should occur on a tuesday",
+  "wednesday": "A boolean indicating if the service should occur on a wednesday",
+  "thursday": "A boolean indicating if the service should occur on a thursday",
+  "friday": "A boolean indicating if the service should occur on a friday",
+  "saturday": "A boolean indicating if the service should occur on a saturday",
+  "sunday": "A boolean indicating if the service should occur on a sunday"
+}
+```
+
+A successful request will return `{"message": "Contract has been successfully drafted/updated!", "iri" : "root iri that is instantiated"}`.
+
+> Get all draft contracts
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/draft?type={type}` endpoint to retrieve all draft contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+
+There is also an additional optional parameter `label` to retrieve draft contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
+
+#### 2.6.3 Schedule route
+
+> Get contract schedule
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/schedule/{id}` endpoint to retrieve the schedule details for the specified contract, where `{id}`is the requested contract ID. This route serves to support form generation for the viewing of existing contracts. If successful, the request will return the following `JSON` fields:
+
+1. `start_date`: Service start date in the `YYYY-MM-DD` format
+2. `end_date`: Service end date in the `YYYY-MM-DD` format
+3. `start_time`: The expected starting time of the time slot that services are delivered in the `HH:MM` format
+4. `end_time`: The expected ending time of the time slot that services are delivered in the `HH:MM` format
+5. `recurrence`: The recurrence interval between services eg `P1D`, `P2D`, `P7D`, `P14D`...
+6. `monday` ~ `sunday`: Variables indicating if the service should be delivered on the corresponding day of week
+
+> Schedule upcoming tasks
+
+This endpoint serves to assign the upcoming schedule for the services for the specified contract. **WARNING**: It is not intended that this route is called directly, as the [draft route](#262-draft-route) will call this route when a request is received. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/contracts/schedule
+```
+
+Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "id": "An identifier for the scheduler",
+  "contract": "The target contract IRI",
+  "time slot start": "Beginning of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "time slot end": "End of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "recurrence": "Service interval in the ISO 8601 format eg P1D P7D P2D",
+  "monday": "A boolean indicating if the service should occur on a monday",
+  "tuesday": "A boolean indicating if the service should occur on a tuesday",
+  "wednesday": "A boolean indicating if the service should occur on a wednesday",
+  "thursday": "A boolean indicating if the service should occur on a thursday",
+  "friday": "A boolean indicating if the service should occur on a friday",
+  "saturday": "A boolean indicating if the service should occur on a saturday",
+  "sunday": "A boolean indicating if the service should occur on a sunday"
+}
+```
+
+A successful request will return `{"message": "Schedule has been successfully drafted for the contract! _OR_ Draft schedule has been successfully updated!", "iri" : "root iri that is instantiated"}`.
+
+#### 2.6.4 Service commencement route
+
+The endpoint serves to commence the delivery of services by approving the specified contract. This endpoint will also generate the occurrences on their scheduled dates. Users must send a `POST` request to approve the contract at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/contracts/service/commence
+```
+
+Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Remarks for the approval"
+}
+```
+
+A successful request will return `{"message": "Contract has been approved for service execution!", "iri" : "root iri that is instantiated"}`.
+
+#### 2.6.5 Service order route
+
+This `<baseURL>/vis-backend-agent/contracts/service` endpoint serves to interact with all active contracts and tasks.
+
+> Active contracts
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service?type={type}` endpoint to retrieve all active contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+
+There is also an additional optional parameter `label` to retrieve in progress contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
+
+> Records of service tasks
+
+For tasks on a selected date, users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{timestamp}` endpoint to retrieve all tasks for the target date, where `timestamp` is the UNIX timestamp.
+
+For tasks associated with a contract, users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{contract}` endpoint to retrieve all tasks for the target contract, where `contract` is the contract's identifier.
+
+> Service dispatch
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch/{id}` endpoint to retrieve the form template associated with the dispatch event, where `id` is either the identifier of the occurrence of interest, which may be a dispatch or subsequent succeeding instance, or `form` for an empty form template. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceDispatchOccurrenceShape` is defined in `./resources/shacl.ttl`, which can be extended for your specific requirements.
+
+Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch` endpoint to assign dispatch details for a target order. The details are configurable using the `ServiceDispatchOccurrenceShape` and an additional `dispatch.jsonld` file with the corresponding identifier as `dispatch` in the `application-service.json`. A sample file is defined in `./resources/dispatch.jsonld`, with line 1 - 32 being required. It is recommended that the id field comes with a prefix, following the frontend actions. Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "order": "The target order IRI",
+  "date": "Scheduled date of the order delivery in the YYYY-MM-DD format"
+}
+```
+
+> Service completion
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch/form` endpoint to retrieve the form template associated with the service completion event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceOrderCompletedOccurrenceShape` is defined in `./resources/shacl.ttl`, which can be extended for your specific requirements. Note that if you require any form of computation for the completion details, it is recommended to define a separate group using `sh:node` as evident by `WeightLogShape`.
+
+> Report unfulfilled service tasks
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/report/form` endpoint to retrieve the form template associated with the report event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceReportOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
+
+Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/report` endpoint to report an unfulfilled service of a specified contract. Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Remarks for the report",
+  "date": "Date of the unfulfilled service in the YYYY-MM-DD format; Date must be in the past or today"
+}
+```
+
+A successful request will return `{"message": "Report for an unfulfilled service has been successfully lodged!", "iri" : "root iri that is instantiated"}`.
+
+> Cancel service tasks
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/cancel/form` endpoint to retrieve the form template associated with the cancellation event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceTerminationOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
+
+Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/cancel` endpoint to cancel an upcoming service of a specified contract. Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Remarks for the cancellation",
+  "date": "Upcoming service date to be cancelled in the YYYY-MM-DD format; Date must be today or in future"
+}
+```
+
+A successful request will return `{"message": "Service has been successfully cancelled!", "iri" : "root iri that is instantiated"}`.
+
+#### 2.6.6 Archive contract route
+
+The endpoint serves to archive in progress contracts as well as retrieve all contracts that have expired and are in archive.
+
+> Get all archived contracts
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive?type={type}` endpoint to retrieve all archived contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+
+There is also an additional optional parameter `label` to retrieve archived contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
+
+> Rescind an ongoing contract
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive/rescind/form` endpoint to retrieve the form template associated with the contract rescission event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ContractRescissionOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
+
+Users must send a `POST` request to rescind an ongoing contract at the `<baseURL>/vis-backend-agent/contracts/archive/rescind` endpoint, with the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Reasons for the rescindment"
+}
+```
+
+A successful request will return `{"message": "Contract has been successfully rescinded!", "iri" : "root iri that is instantiated"}`.
+
+> Terminate an ongoing contract
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive/terminate/form` endpoint to retrieve the form template associated with the contract rescission event. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ContractTerminationOccurrenceShape` is defined in `./resources/shacl.ttl`. At the moment, properties may ONLY include remarks.
+
+Users must send a `POST` request to terminate an ongoing contract at the `<baseURL>/vis-backend-agent/contracts/archive/terminate` endpoint, with the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Reasons for the early termination"
+}
+```
+
+A successful request will return `{"message": "Contract has been successfully terminated!", "iri" : "root iri that is instantiated"}`.
+
 ## 3. SHACL Restrictions
 
 [SHACL](https://www.w3.org/TR/shacl/) is generally a language for validating RDF graphs against a set of conditions. The World Avatar incorporates these restrictions into our workflow to populate form structure and fields, as well as enabling automated data retrieval.
@@ -385,19 +636,28 @@ base:NameOfConceptShape
   a sh:NodeShape ;
   sh:targetClass base:Concept ;
   sh:property [
-    sh:name "dropdown" ;
+    sh:name "subclass dropdown" ;
     sh:order 1 ;
-    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections" ;
-    sh:path base:hasDropdownOptions ;
-    sh:in base:DropdownOption ;
+    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from the target class and its subclasses" ;
+    sh:path ontoexample:hasDropdownOptions ;
+    sh:in ontoexample:DropdownOption ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "instance dropdown" ;
+    sh:order 2 ;
+    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from instances associated with the target class" ;
+    sh:path ontoexample:hasDropdownForInstances ;
+    sh:class ontoexample:ExampleClass ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
   ] ;
   sh:property [
     sh:name "text input";
     sh:description "A sample property showing the structure for creating a new text input field" ;
-    sh:order 2 ;
-    sh:path base:hasInput ;
+    sh:order 3 ;
+    sh:path ontoexample:hasInput ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -405,8 +665,8 @@ base:NameOfConceptShape
   sh:property [
     sh:name "number input";
     sh:description "A sample property showing the structure for creating a new numerical input field" ;
-    sh:order 3 ;
-    sh:path base:hasInput ;
+    sh:order 4 ;
+    sh:path ontoexample:hasInput ;
     sh:datatype xsd:decimal ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -414,8 +674,8 @@ base:NameOfConceptShape
   sh:property [
     sh:name "date input";
     sh:description "A sample property showing the structure for creating a new date input field" ;
-    sh:order 4 ;
-    sh:path base:hasInput ;
+    sh:order 5 ;
+    sh:path ontoexample:hasInput ;
     sh:datatype xsd:date ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -423,8 +683,8 @@ base:NameOfConceptShape
   sh:property [
     sh:name "group" ;
     sh:description "A sample property showing the structure for creating a new property group" ;
-    sh:order 5 ;
-    sh:path base:hasGroup ;
+    sh:order 6 ;
+    sh:path ontoexample:hasGroup ;
     sh:node base:NestedConceptShape ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
@@ -432,17 +692,45 @@ base:NameOfConceptShape
 
 base:NestedConceptShape
   a sh:NodeShape ;
-  sh:targetClass base:NestedConcept ;
+  sh:targetClass ontoexample:NestedConcept ;
   sh:property [
     sh:name "nested input" ;
     sh:order 1 ;
     sh:description "A sample property showing the structure for creating a nested property input as part of a group" ;
-    sh:path base:hasNestedProperty ;
+    sh:path ontoexample:hasNestedProperty ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
   ] .
+
+base:ExampleClassShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:ExampleClass ;
+  sh:property [
+    sh:name "id";
+    sh:description "Identifier for the example class instance.";
+    sh:order 1;
+    sh:path (
+      rdfs:label
+      [sh:inversePath rdfs:label]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "name";
+    sh:description "Name of the example class instance.";
+    sh:order 2;
+    sh:path rdfs:label ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
 ```
+
+> [!IMPORTANT]
+> For any lifecycle form, users will be required to configure the event occurrences using `SHACL` restrictions. Typically, `TerminatedServiceEvent`, `IncidentReportEvent`, `ContractRescission`, and `ContractTermination` can only accommodate a remarks property. For the `ServiceDispatchEvent`, users may assign additional dispatch details through defining more `SHACL` properties. Note that an id field must be included for a `ServiceDispatchEvent`. A sample file has been created in `./resources/shacl.ttl`
 
 ### 3.2 Automated Data Retrieval
 
@@ -484,7 +772,7 @@ base:ConceptShape
 3. `sh:minCount`: Optional parameter to indicate that the variable is required in the template if set above one.
 4. `sh:qualifiedValueShape`: Optional parameter to indicate that the variable is a parent variable that the instance is dependent on.
 5. `sh:datatype`: Required parameter to generate min-max search criteria based on integer or decimal settings
-6. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary. This must be found in a property shape with `sh:targetClass` to function.
+6. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary. This must be found in a property shape with `sh:targetClass` to function. Note that if your property is `sh:in` a (sub)class, the agent will automatically retrieve the `rdfs:label` of the associated class concept.
 
 ## 4. Schemas
 
@@ -512,6 +800,43 @@ It is expected that we should create a new ID and name for the person instance. 
 ```
 
 A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+#### 4.1.1 Service lifecycle
+
+> [!IMPORTANT]
+> Users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`. This event should assign dispatch details before the service executes. A sample file has been created in `./resources/dispatch.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service dispatch` section [over here](#265-service-order-route).
+
+> [!IMPORTANT]
+> Users will be required to add a `JSON-LD` for the `ServiceDeliveryEvent`. This event should execute upon completion of the service order, and can contain additional properties/details following the user's input. A sample file has been created in `./resources/complete.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service completion` section [over here](#265-service-order-route). Users can also define a special replacement `JSON` object for performing any calculation based upon the completion logs as follows:
+
+```json
+{
+  "@replace": "calculation", # do not change this
+  "@type": "difference", # expected calculation type - difference, total
+  # an array of variable objects for the expression
+  "variable": [
+    {
+      "@id": "parameter 1", # parameter name
+      "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue", # the class of the scalar quantity; optional and defaults to the `https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue` concept
+      "unit": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/MeasurementUnit" # measurement unit; optional and defaults to the `https://www.omg.org/spec/Commons/QuantitiesAndUnits/MeasurementUnit` concept
+    },
+    {
+      "@id": "parameter 2" # parameter name
+    }
+  ],
+  # a variable object to represent the output
+  "output": {
+    "@id": "parameter 1",
+    "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue",
+    "unit": "https://www.theworldavatar.com/kg/ontoservice/tonne"
+  }
+}
+```
+
+The following calculation types are supported:
+
+1. Difference: The second and subsequent variable(s) will be deducted from the first parameter in the array at the `variable` field
+2. Total: Sum of all the variables in the array at the `variable` field
 
 ### 4.2 Geocoding
 
@@ -560,27 +885,15 @@ The `SHACL` property shape for location must target the `https://www.omg.org/spe
 @prefix fibo-fnd-plc-loc: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/> .
 @prefix fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> .
 @prefix lcc-cr:           <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/> .
-@prefix geo:              <http://opengis.net/ont/geosparql#> .
+@prefix geo:              <http://www.opengis.net/ont/geosparql#> .
 
 base:ServiceLocationShape
   a sh:NodeShape ;
-  sh:targetClass lcc-cr:Location ;
-  sh:property [
-    sh:name "id" ;
-    sh:description "Identifier for the location." ;
-    sh:order 1 ;
-    sh:path (
-      geo:hasGeometry
-      [sh:inversePath geo:hasGeometry]
-    ) ;
-    sh:datatype xsd:string ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
-  ] ;
+  sh:targetClass fibo-fnd-plc-loc:PhysicalLocation ;
   sh:property [
     sh:name "geopoint" ;
     sh:description "The WKT serialization of the location." ;
-    sh:order 2 ;
+    sh:order 1 ;
     sh:path (
       geo:hasGeometry
       geo:asWKT
@@ -592,12 +905,12 @@ base:ServiceLocationShape
   sh:property [
     sh:name "address" ;
     sh:description "Address of the service site." ;
-    sh:order 3 ;
+    sh:order 2 ;
     sh:path (
       [sh:inversePath ontoservice:hasServiceLocation]
       fibo-fnd-plc-adr:hasAddress
     ) ;
-    sh:node address:ConventionalStreetAddressShape ;
+    sh:node base:ConventionalStreetAddressShape ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
   ] .
