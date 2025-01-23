@@ -10,6 +10,8 @@ import java.sql.Statement;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.postgresql.util.PSQLException;
+import org.postgresql.util.PSQLState;
 
 public class PostGISClientTest {
 
@@ -27,10 +29,7 @@ public class PostGISClientTest {
                 new MockStatement(new SQLException(REASON, "42P04"), 1)));
 
         assertDoesNotThrow(() -> postGISClient.createBareDatabase(DATABASE,
-                new MockStatement(new SQLException(REASON, "42P04"), 1)));
-
-        assertDoesNotThrow(() -> postGISClient.createBareDatabase(DATABASE,
-                new MockStatement(new SQLException(REASON, "55006"), 2)));
+                new MockStatement(new PSQLException(REASON, PSQLState.OBJECT_IN_USE), 2)));
     }
 
     private class MockStatement implements Statement {
