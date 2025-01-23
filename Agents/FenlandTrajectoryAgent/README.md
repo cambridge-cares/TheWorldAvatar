@@ -1,8 +1,8 @@
 # 1. Description
 
-The `Fenland Trajectory Agent` is a specialised tool designed to both instantiate structured time-series GPS trajectory data into a knowledge graph and perform quantitative exposure calculations between these trajectories and environmental features. This agent receives HTTP POST requests or CURL commands to perform specified tasks. These include loading GPS trajectory files, mapping them into RDF triples, and uploading them to the stack. Additionally, for an exposure radius of interest, the agent can interpret environmental features and perform corresponding exposure calculations automatically. Examples of these calculations include determining the number of food retail locations or greenspace objects within the defined radius.
+The `Fenland Trajectory Agent` is a specialised tool designed to both instantiate structured time-series GPS trajectory data into a knowledge graph and perform quantitative exposure calculations between these trajectories and environmental features. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]. The agent receives HTTP POST requests or CURL commands to perform specified tasks. These include loading GPS trajectory files, mapping them into RDF triples, and uploading them to the stack. Additionally, for an exposure radius of interest, the agent can interpret environmental features and perform corresponding exposure calculations automatically. Examples of these calculations include determining the number of food retail locations or greenspace objects within the defined radius.
 
-Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example gps data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. In terms of environmental features from the Fenland Study, the raw data is stored in Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/Data/Raw data/. Uploading and instantiating environmental data requires the [Stack-data-uploader] tool, and configuration files can be found in the [AI-for-Public-Health] folder. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager].
+Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example gps data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. In terms of environmental features from the Fenland Study, the raw data is stored in Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/Data/Raw data/. Uploading and instantiating environmental data requires the [Stack-data-uploader] tool, and configuration files can be found in the [AI-for-Public-Health] folder. 
 
 # 2. Agent Setup
 
@@ -80,9 +80,11 @@ To spin up the stack, create `postgis_password` and `geoserver_password` files i
 
 # 4. Using the Agent
 
-The agent will automatically register a task upon startup to assimilate the data from the target GPS folder into the Knowledge Graph (KG). This background task can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. Please replace {Port} with the numerical value of the port on which your stack is running.
+## 4.1 Data Ingestion
 
-## Functionality Description
+The agent will automatically register a task upon startup to assimilate the data from the target GPS folder into the Knowledge Graph (KG). This background task can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. Please replace {Port} with the numerical value of the port on which your stack is running. 
+
+### Functionality Description
 
 The operation of this agent is streamlined into two key steps: **Preprocess** and **Instantiate**. Here is a brief description of each:
 
@@ -94,10 +96,19 @@ Importantly, the preprocessing step must be completed before moving on to the in
 
 In addition to the core functionality, this agent offers a route task called layer_generator that creates GeoServer layers from PostGIS tables for visualisation. Given a table name (formed by UUID) and latitude/longitude column names, the agent deploys the [SQL commands for virtual-table generation], creates vector objects, and communicates with the GeoServer REST API to publish the layer. Please note that this functionality is specialized and typically requires manual examination of SQL commands and layer metadata (such as EPSG) to ensure compatibility with specific requirements. This functionality will be further updated and refined after the AI for Public Health (Fenland) project's visualisation is switched to [TWA-VF] 5.4.0.
 
-## Example HTTP Requests
+### Example HTTP Requests
 Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file, the [instantiate] file, and the [layer_generator] file. 
 
 Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
+
+## 4.2 Count-Based Exposure Calculation
+
+This functionality calculates exposure for given trajectories based on their interactions with environmental features. The core steps include:
+
+- Generating a buffer around each trajectory based on a specified exposure radius.
+- Counting the number of relevant environmental features (e.g., food retail locations) or calculating the total intersected area (e.g., greenspace).
+
+
 
 
 &nbsp;
