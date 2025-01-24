@@ -9,14 +9,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import cares.cam.ac.uk.ouraring.data.User;
+import org.apache.logging.log4j.LogManager;
 
 public class OuraRingApi {
-    void setHeartRateData(User user, Instant lowerbound, Instant upperbound) {
+    private static final Logger LOGGER = LogManager.getLogger(OuraRingApi.class);
+
+    static void setHeartRateData(User user, Instant lowerbound, Instant upperbound) {
         URIBuilder uriBuilder;
         try {
             uriBuilder = new URIBuilder("https://api.ouraring.com/v2/usercollection/heartrate");
@@ -31,7 +35,7 @@ public class OuraRingApi {
             get = new HttpGet(uriBuilder.build());
 
         } catch (URISyntaxException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
         get.setHeader("Authorization", "Bearer " + user.getOuraApiKey());
@@ -39,18 +43,28 @@ public class OuraRingApi {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         try (CloseableHttpResponse response = httpClient.execute(get)) {
-            JSONTokener tokener = new JSONTokener(response.getEntity().getContent());
-            JSONObject jsonObject = new JSONObject(tokener);
-            JSONArray data = jsonObject.getJSONArray("data");
+            if (response.getStatusLine().getStatusCode() == 200) {
+                JSONTokener tokener = new JSONTokener(response.getEntity().getContent());
+                JSONObject jsonObject = new JSONObject(tokener);
+                JSONArray data = jsonObject.getJSONArray("data");
 
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject dataElement = data.getJSONObject(i);
-                user.getHeartRateData().addValue(Instant.parse(dataElement.getString("timestamp")),
-                        dataElement.getDouble("bpm"));
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject dataElement = data.getJSONObject(i);
+                    Instant timestampInstant = Instant.parse(dataElement.getString("timestamp"));
+                    user.getHeartRateData().addValue(timestampInstant, dataElement.getInt("bpm"),
+                            dataElement.getString("source"));
+                }
+            } else {
+                String errmsg = "Response code from Oura API: " + response.getStatusLine().getStatusCode();
+                LOGGER.error(errmsg);
+                throw new RuntimeException(errmsg);
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private OuraRingApi() {
+        throw new IllegalStateException("OuraRingApi class");
     }
 }

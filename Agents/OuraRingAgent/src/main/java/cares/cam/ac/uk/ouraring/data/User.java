@@ -22,4 +22,16 @@ public class User {
     public String getOuraApiKey() {
         return ouraApiKey;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setIri(String iri) {
+        this.iri = iri;
+    }
+
+    public String getIri() {
+        return iri;
+    }
 }
