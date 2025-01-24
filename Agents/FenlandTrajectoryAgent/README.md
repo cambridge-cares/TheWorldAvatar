@@ -118,7 +118,9 @@ ENV_DATA_ENDPOINT_URL (a SPARQL endpoint)
 TRAJECTORY_DB_HOST
 ```
 
-For example, when using an Ontop SPARQL endpoint with data such as Food Retail and Greenspace, the matching OBDA mappings should be configured in advance. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
+For example, when using an Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL` with data such as Food Retail and Greenspace, the matching [OBDA mappings] should be configured in advance by [Stack-data-uploader]. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
+
+A typical example involves using an Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL`, where this Ontop endpoint can originate from any other stack created by the [Stack Manager]. Food Retail and Greenspace datasets can be used as demonstration cases. When uploading these structured datasets to the stack, the [Stack-data-uploader] should be preconfigured with particular [OBDA mapping] files containing key metadata, such as FeatureType and SourceTableName. These mappings are essential, as the exposure calculation relies on this metadata to trigger the appropriate computation methods.
 
 - **Exposure_count_single_stack**: If the environmental data and the Fenland Trajectory Agent are deployed in the same stack.
 This route is used when the environmental data and the Fenland Trajectory Agent are deployed in the same stack. In this case, the agent will query the Ontop SPARQL endpoint deployed within the same stack to fetch the datasource table name corresponding to the trajectory IRI. The agent will then populate an query and execute the calculation internally within the stack.
@@ -189,3 +191,4 @@ Jiying Chen (jc2341@cam.ac.uk), Jan 2025
 [config.properties]:./agent/flaskapp/exposure/config.properties
 [exposure_count]: ./example-requests/SendHTTP/exposure_count.http
 [exposure_count_single_stack]: ./example-requests/SendHTTP/exposure_count_single_stack.http
+[OBDA mapping]: ./resources/ontop.obda
