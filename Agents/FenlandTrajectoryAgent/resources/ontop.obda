@@ -1,22 +1,45 @@
 [PrefixDeclaration]
-ontodevice:    http://www.theworldavatar.com/kb/ontodevice/
-rdf:           http://www.w3.org/1999/02/22-rdf-syntax-ns#
-rdfs:          http://www.w3.org/2000/01/rdf-schema#
-geo:           http://www.bigdata.com/rdf/geospatial#
-ts:            http://www.theworldavatar.com/kb/ontotimeseries/
-xsd:           http://www.w3.org/2001/XMLSchema#
-om:            http://www.ontology-of-units-of-measure.org/resource/om-2/
+fh:         http://www.theworldavatar.com/ontology/OntoFHRS/
+gs:         https://www.theworldavatar.com/kg/ontogreenspace/
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+owl:        http://www.w3.org/2002/07/owl#
+xsd:        http://www.w3.org/2001/XMLSchema#
+exposure:   http://www.theworldavatar.com/ontology/OntoEnvExpo/
+geo:        http://www.opengis.net/ont/geosparql#
 
 [MappingDeclaration] @collection [[
+mappingId       FoodHygieneDomain
+target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a exposure:Domain ; exposure:hasDomainName "Food hygiene rating"^^xsd:string ; exposure:hasFeatureType "POINT"^^xsd:string ; exposure:hasDataSource "supermarket"^^xsd:string, "takeaways"^^xsd:string .
+source      SELECT DISTINCT 'Food hygiene rating' AS "DomainName"
+            FROM "fhr_cambridge"
 
-mappingId       GPSDataWithUnits
-target          ontodevice:GPS_{filename} a ontodevice:GPSDevice ; rdfs:label "GPS data for {filename} at {timestamp}"^^xsd:string ; ontodevice:hasLatitude [ a ontodevice:Latitude ; rdf:value "{LATITUDE}"^^xsd:float ; om:hasUnit om:degree ] ; ontodevice:hasLongitude [ a ontodevice:Longitude ; rdf:value "{LONGITUDE}"^^xsd:float ; om:hasUnit om:degree ] ; ontodevice:hasSpeed [ a ontodevice:Speed ; rdf:value "{SPEED}"^^xsd:float ; om:hasUnit om:kilometrePerHour ] ; ontodevice:hasDistance [ a ontodevice:Distance ; rdf:value "{DISTANCE}"^^xsd:string ; om:hasUnit om:metre ] ; ts:hasTimestamp "{timestamp}"^^xsd:dateTime .
-source          SELECT 'gps_testcase' AS filename,
-                       "LATITUDE",
-                       "LONGITUDE",
-                       "SPEED",
-                       "DISTANCE",
-                       ("UTC DATE" || 'T' || "UTC TIME" || 'Z') AS timestamp
-                FROM gps_testcase;
+mappingId       BasicBusinessInfo
+target      fh:{FHRSID} a fh:BusinessEstablishment ; fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> ; fh:hasBusinessName "{BusinessName}"^^xsd:string ; fh:hasBusinessType "{BusinessType}"^^xsd:string ; fh:hasPostcode "{PostCode}"^^xsd:string .
+source      SELECT "FHRSID", "BusinessName", "BusinessType", "PostCode" 
+            FROM "fhr_cambridge";
 
+mappingId       BusinessLocation
+target      fh:GeoPoint_{FHRSID} a geo:Feature ; geo:isPartOf fh:{FHRSID} ; geo:hasLongitude "{Geocode/Longitude}"^^xsd:float ; geo:hasLatitude "{Geocode/Latitude}"^^xsd:float .
+source      SELECT "FHRSID", "Geocode/Longitude", "Geocode/Latitude"
+            FROM "fhr_cambridge";
+
+mappingId       RatingDetails
+target      fh:{FHRSID} fh:hasRatingValue "{RatingValue}"^^xsd:string ; fh:hasRatingDate "{RatingDate}"^^xsd:date .
+source      SELECT "FHRSID", "RatingValue", "RatingDate"
+            FROM "fhr_cambridge";
+
+mappingId       GreenspaceDomain
+target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a exposure:Domain ; exposure:hasDomainName "Greenspace"^^xsd:string ; exposure:hasFeatureType "AREA"^^xsd:string ; exposure:hasDataSource "GB_GreenspaceSite"^^xsd:string .
+source      SELECT DISTINCT 'Greenspace' AS "DomainName"
+            FROM "GB_GreenspaceSite"
+
+mappingId       GreenspaceBasicInfo
+target      gs:{id} a gs:Greenspace ; gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ; gs:hasFunction "{function}"^^xsd:string ; gs:hasDistrictName1 "{distName1}"^^xsd:string ; gs:hasDistrictName2 "{distName2}"^^xsd:string ; gs:hasDistrictName3 "{distName3}"^^xsd:string ; gs:hasDistrictName4 "{distName4}"^^xsd:string .
+source      SELECT "id", "function", "distName1", "distName2", "distName3", "distName4"
+            FROM "GB_GreenspaceSite";
+
+mappingId       GreenspaceLocation
+target      gs:GeoPoint_{id} a gs:SpatialLocation ; gs:isPartOf gs:{id} ; gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ;geo:hasGeometry "{wkb_geometry}" ; geo:hasTransformedGeometry "{geometry_4326}"^^xsd:string ; gs:linkedToGreenspace gs:{id} .
+source      SELECT "id", "wkb_geometry", ST_AsText(ST_Transform("wkb_geometry", 4326)) AS "geometry_4326"
+            FROM "GB_GreenspaceSite";
 ]]
