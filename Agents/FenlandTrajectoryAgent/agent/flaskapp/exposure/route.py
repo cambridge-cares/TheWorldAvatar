@@ -454,7 +454,7 @@ def fetch_domain_and_data_sources(env_data_iri: str) -> List[Dict[str, str]]:
 
 
 # ============ 6) The main route ============
-@exposure_bp.route('/fenland-trajectory-agent/exposure', methods=['POST'])
+@exposure_bp.route('/exposure', methods=['POST'])
 def calculate_exposure():
     data = request.json
     trajectoryIRIs = data.get("trajectoryIRIs", [])
@@ -489,7 +489,7 @@ def calculate_exposure():
 
     return jsonify(final_results)
 
-@exposure_bp.route('/fenland-trajectory-agent/exposure/simplified', methods=['POST'])
+@exposure_bp.route('/exposure/simplified', methods=['POST'])
 def calculate_exposure_simplified():
     """
     Minimal route: different SQL for POINT/AREA, with specific domain checks.
