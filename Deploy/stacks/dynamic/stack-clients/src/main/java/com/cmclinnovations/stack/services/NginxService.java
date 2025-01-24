@@ -185,7 +185,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
         }
 
         public void sendConfigs() {
-            sendFiles(files, NGINX_CONF_DIR);
+            sendFilesContent(files, NGINX_CONF_DIR);
             executeCommand(CMD, "-s", "reload");
             files.clear();
         }

@@ -112,7 +112,7 @@ public final class OntopService extends ContainerService {
         DockerClient dockerClient = DockerClient.getInstance();
         String containerId = dockerClient.getContainerId(containerName);
         dockerClient.createComplexCommand(containerId, "chown", "ontop:ontop", String.join(" ", configDirs))
-                .withUser("root");
+                .withUser("root").exec();
 
         OntopClient ontopClient = OntopClient.getInstance();
         configFiles.forEach(f -> {
@@ -126,7 +126,7 @@ public final class OntopService extends ContainerService {
                         ontopClient.uploadRules(List.of());
                         break;
                     default:
-                        dockerClient.createComplexCommand(containerId, "touch", f).withUser("root").exec();
+                        sendFileContent(f, "".getBytes());
                         break;
                 }
             }

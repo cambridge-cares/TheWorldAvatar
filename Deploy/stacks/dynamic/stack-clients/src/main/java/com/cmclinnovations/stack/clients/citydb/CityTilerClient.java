@@ -64,18 +64,15 @@ public class CityTilerClient extends ContainerClient {
             executeSimpleCommand(containerId, "cp",
                     CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE, CityTilerClient.COLOUR_CONFIG_FILE);
         } else {
-            sendFilesContent(containerId,
-                    Map.of(COLOUR_CONFIG_FILE, colours.toString().getBytes()),
-                    "/");
+            sendFileContent(containerId, Path.of(COLOUR_CONFIG_FILE), colours.toString().getBytes());
         }
 
         try (TempDir configDir = makeRemoteTempDir(containerId)) {
 
             String configFilename = database + "-" + schema + ".yml";
 
-            sendFilesContent(containerId,
-                    Map.of(configFilename, generateConfigFileContent(database, schema).getBytes()),
-                    configDir.toString());
+            sendFileContent(containerId, configDir.getPath().resolve(configFilename),
+                    generateConfigFileContent(database, schema).getBytes());
 
             String crsIn = getCRSFromDatabase(database, schema);
 
@@ -87,7 +84,7 @@ public class CityTilerClient extends ContainerClient {
                 stream.parallel();
             }
             stream.forEach(entry -> generateTileSet(options, containerId, crsIn, configFilePath,
-                            outputDir, entry.getKey(), entry.getValue()));
+                    outputDir, entry.getKey(), entry.getValue()));
         }
 
     }

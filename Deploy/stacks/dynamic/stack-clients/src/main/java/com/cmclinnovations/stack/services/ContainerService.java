@@ -122,8 +122,12 @@ public class ContainerService extends AbstractService {
                         + "' to be specified in its config file.");
     }
 
-    public final void sendFiles(Map<String, byte[]> files, String remoteDirPath) {
+    public final void sendFilesContent(Map<String, byte[]> files, String remoteDirPath) {
         dockerClient.sendFilesContent(containerId, files, remoteDirPath);
+    }
+
+    public final void sendFileContent(String file, byte[] content) {
+        dockerClient.sendFileContent(containerId, Path.of(file), content);
     }
 
     public boolean fileExists(String filePath) {
@@ -138,15 +142,13 @@ public class ContainerService extends AbstractService {
         return dockerClient.createComplexCommand(containerId, cmd);
     }
 
-    protected final void downloadFileAndSendItToContainer(URL url, String folderPath,
-            String filename,
+    protected final void downloadFileAndSendItToContainer(URL url, String folderPath, String filename,
             boolean overwrite) {
         Path filePath = Path.of(folderPath, filename);
-        if (overwrite || !dockerClient.fileExists(containerId, filePath.toString())) {
+        if (overwrite || !fileExists(filePath.toString())) {
             try (InputStream downloadStream = url.openStream()) {
                 byte[] bytes = downloadStream.readAllBytes();
-                Map<String, byte[]> files = Map.of(filename, bytes);
-                dockerClient.sendFilesContent(containerId, files, folderPath);
+                sendFileContent(filePath.toString(), bytes);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to download file from '" + url + "' and send it to '"
                         + folderPath + "' in the container '" + getName() + "'.", ex);
@@ -201,7 +203,7 @@ public class ContainerService extends AbstractService {
         // configuration block
     }
 
-    public String getDNSIPAddress(){
+    public String getDNSIPAddress() {
         return dockerClient.getDNSIPAddress();
     }
 
