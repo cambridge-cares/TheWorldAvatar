@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.NoSuchElementException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,7 +92,7 @@ public class GDALClient extends ContainerClient {
     }
 
     public void uploadVectorFilesToPostGIS(String database, String schema, String layerName, String dirPath,
-            Ogr2OgrOptions options, boolean append) {
+            Ogr2OgrOptions options, boolean append) throws NoSuchElementException {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(Path.of(dirPath));
             String gdalContainerId = getContainerId(GDAL);
@@ -153,7 +154,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private void uploadVectorToPostGIS(String database, String schema, String layerName, String filePath,
-            Ogr2OgrOptions options, boolean append) {
+            Ogr2OgrOptions options, boolean append) throws NoSuchElementException {
 
         options.setSchema(schema);
 
@@ -173,7 +174,7 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    private String excelToCSV(String filePath) {
+    private String excelToCSV(String filePath) throws NoSuchElementException {
         String containerId = getContainerId(GDAL);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
@@ -194,7 +195,7 @@ public class GDALClient extends ContainerClient {
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
-            String dirPath, GDALOptions<?> gdalOptions, MultidimSettings mdimSettings, boolean append) {
+            String dirPath, GDALOptions<?> gdalOptions, MultidimSettings mdimSettings, boolean append) throws NoSuchElementException {
 
         String gdalContainerId = getContainerId(GDAL);
         String postGISContainerId = getContainerId(POSTGIS);
@@ -295,7 +296,7 @@ public class GDALClient extends ContainerClient {
         return outputStream.toString();
     }
 
-    private JSONArray getTimeFromGdalmdiminfo(String timeArrayName, String filePath) {
+    private JSONArray getTimeFromGdalmdiminfo(String timeArrayName, String filePath) throws NoSuchElementException {
         String gdalContainerId = getContainerId(GDAL);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
@@ -311,7 +312,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> multipleGeoTiffRastersFromMultiDim(MultidimSettings mdimSettings, String filePath,
-            Path outputDirectory, String layerName, JSONArray timeArray) {
+            Path outputDirectory, String layerName, JSONArray timeArray) throws NoSuchElementException {
 
         String variableArrayName = mdimSettings.getLayerArrayName();
         String dateTimeFormat = mdimSettings.getTimeOptions().getFormat();
@@ -408,7 +409,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private void createRasterTimesTable(String database, String layerName,
-            Map<String, Integer> postgresOutputPathsAndNBands, JSONArray timeArray, TimeOptions timeOptions) {
+            Map<String, Integer> postgresOutputPathsAndNBands, JSONArray timeArray, TimeOptions timeOptions) throws NoSuchElementException {
 
         String dateTimeFormat = timeOptions.getFormat();
         String timeZone = timeOptions.getTimeZone();

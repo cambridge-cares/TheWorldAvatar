@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.NoSuchElementException;
 
 import org.json.JSONArray;
 import org.slf4j.Logger;
@@ -102,7 +103,7 @@ public class CityDBClient extends ContainerClient {
     }
 
     private void uploadToPostGIS(String filePath, String database, ImpExpOptions options, String lineage,
-            String baseIRI, boolean append) {
+            String baseIRI, boolean append) throws NoSuchElementException {
 
         updateDatabase(database, options.getSridIn());
 
@@ -129,7 +130,7 @@ public class CityDBClient extends ContainerClient {
         addIRIs(database, baseIRI);
     }
 
-    public void updateDatabase(String database, String sridIn) {
+    public void updateDatabase(String database, String sridIn) throws NoSuchElementException {
 
         String containerId = getContainerId("postgis");
 
@@ -174,7 +175,7 @@ public class CityDBClient extends ContainerClient {
         applySQLFileByID(database, "citydb_remove_shifted_thematic_surfaces.sql", shiftedThematicSurfaceIDs);
     }
 
-    public void writeOutToCityGML(String database, String filePath, String lineage) {
+    public void writeOutToCityGML(String database, String filePath, String lineage) throws NoSuchElementException {
         String containerId = getContainerId(CITYDBIMPEXP);
 
         try (TempDir tmpDir = makeLocalTempDir()) {
@@ -206,7 +207,7 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
-    public void deleteObjects(String database, String lineage) {
+    public void deleteObjects(String database, String lineage) throws NoSuchElementException {
         String containerId = getContainerId(CITYDBIMPEXP);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
