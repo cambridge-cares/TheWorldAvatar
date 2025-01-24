@@ -2,6 +2,7 @@ from flask import Flask
 # Import blueprints
 from agent.flaskapp.gpstasks.routes import gps_instantiation_bp
 from agent.flaskapp.home.routes import gps_bp
+from agent.flaskapp.exposure.route import exposure_bp
 # Import utilities for RDF store and database initialization
 from agent.kgutils.initialise_kg import create_blazegraph_namespace
 from agent.kgutils.utils import *
