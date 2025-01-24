@@ -10,6 +10,7 @@ import os
 import sys
 import configparser
 import binascii
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD,SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 # Shapely + pyproj for geometry ops and coordinate transformations
 from shapely.geometry import Point, LineString, Polygon, MultiPolygon
@@ -43,10 +44,11 @@ except configparser.NoOptionError as e:
 except configparser.NoSectionError as e:
     logging.error(f"Missing [DEFAULT] section in config.properties: {e}")
     sys.exit(1)
-
+# ============ Fallbacks, deafult settings in stack-manager ==================
 DB_PORT = 5432
 DB_USER = "postgres"
 DB_NAME = "postgres"
+# ============ Fallbacks, deafult settings in stack-manager ==================
 
 env_data_cache = {}
 
