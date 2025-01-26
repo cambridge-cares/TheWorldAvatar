@@ -5,7 +5,7 @@ WITH BufferedLine AS (
             100
         ) AS buffered_geom -- create static buffer
     FROM 
-        "35cb3043-9bfc-4cc7-b995-fe6290d8c86b" AS gps -- example table name
+        "35cb3043-9bfc-4cc7-b995-fe6290d8c86b" AS gps --This table name is the placehodler for test purpose, this table name will be dynamically populated by the agent during actual usage
 ),
 combined_frs AS (
     SELECT "Name", "Address", geom
