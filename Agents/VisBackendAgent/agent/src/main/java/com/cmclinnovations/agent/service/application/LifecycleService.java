@@ -389,7 +389,7 @@ public class LifecycleService {
       if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
         currentEntity = (Map<String, Object>) currentEntityResponse.getBody();
       } else {
-        return currentEntityResponse;
+        currentEntity = new HashMap<>();
       }
     }
     String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, replacementQueryLine);
