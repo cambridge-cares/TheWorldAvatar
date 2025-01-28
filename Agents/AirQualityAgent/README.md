@@ -137,6 +137,9 @@ Agent start-up will automatically register a recurring task to assimilate latest
 
 Example requests are provided in the [resources] folder, which also contain further information about allowed parameters.
 
+## Note
+
+It has been observed that the UK-AIR API could be unstable, in particular for time series updates. If you receive an error message after a call to the agent, please try again later.
 
 &nbsp;
 # 3. Agent Tests
