@@ -1,5 +1,6 @@
 package com.cmclinnovations.agent.service.application;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +29,15 @@ public class LifecycleReportService {
   private final LoggingService loggingService;
   private final ObjectMapper objectMapper;
 
+  private static final String FLAT_FEE_LABEL = "Base Fee";
+  private static final String UNIT_PRICE_LABEL = "unit price";
+  private static final String RATE_LABEL = "rate";
+  private static final String LOWER_BOUND_LABEL = "lowerBound";
+  private static final String UPPER_BOUND_LABEL = "upperBound";
+
+  private static final String PRICING_MODEL_PREFIX = "https://www.theworldavatar.io/kg/agreement/pricing/";
+  private static final String MONETARY_PRICE_PREFIX = "https://www.theworldavatar.io/kg/agreement/money/";
+  private static final String VARIABLE_FEE_PREFIX = "https://www.theworldavatar.io/kg/agreement/variable/money/";
   private static final String LIFECYCLE_REPORT_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/report/";
   private static final String LIFECYCLE_RECORD_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/record/";
 
@@ -95,6 +105,30 @@ public class LifecycleReportService {
     recordInstance.set(ShaclResource.REVERSE_KEY, reportsOnNode);
     // Parent node should be a reverse node
     parentNode.set(LifecycleResource.IS_ABOUT_RELATIONS, recordInstance);
+  }
+
+  /**
+   * Generates a pricing model JSON node.
+   * 
+   * @param params Mappings of the parameters and their values.
+   */
+  public ObjectNode genPricingModel(Map<String, Object> params) {
+    ArrayNode arguments = this.objectMapper.createArrayNode();
+    ObjectNode pricingModel = this.jsonLdService.genInstance(PRICING_MODEL_PREFIX, LifecycleResource.PRICING_MODEL);
+    ObjectNode flatFee = this.jsonLdService.genInstance(MONETARY_PRICE_PREFIX, LifecycleResource.MONETARY_PRICE,
+        FLAT_FEE_LABEL);
+    flatFee.put(LifecycleResource.HAS_AMOUNT_RELATIONS,
+        Double.parseDouble(params.get(FLAT_FEE_LABEL.toLowerCase()).toString()));
+    arguments.add(flatFee);
+    if (params.containsKey(UNIT_PRICE_LABEL)) {
+      List<Map<String, Object>> unitPrices = (List<Map<String, Object>>) params.get(UNIT_PRICE_LABEL);
+      for (Map<String, Object> unitPrice : unitPrices) {
+        ObjectNode currentNode = this.genUnitPrice(unitPrice);
+        arguments.add(currentNode);
+      }
+    }
+    pricingModel.set(LifecycleResource.HAS_ARGUMENT_RELATIONS, arguments);
+    return pricingModel;
   }
 
   /**
@@ -281,5 +315,24 @@ public class LifecycleReportService {
     quantity.set("https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasNumericValue",
         this.jsonLdService.genLiteral(String.valueOf(value), "http://www.w3.org/2001/XMLSchema#decimal"));
     return quantity;
+  }
+
+  /**
+   * Generates a unit price instance based on the input parameters.
+   *
+   * @param params Mappings of the required parameters and their values.
+   */
+  private ObjectNode genUnitPrice(Map<String, Object> params) {
+    ObjectNode unitPriceNode = this.jsonLdService.genInstance(VARIABLE_FEE_PREFIX,
+        LifecycleResource.VARIABLE_FEE);
+    unitPriceNode.put(LifecycleResource.HAS_AMOUNT_RELATIONS,
+        Double.parseDouble(params.get(RATE_LABEL).toString()));
+    unitPriceNode.put(LifecycleResource.HAS_LOWER_BOUND_RELATIONS,
+        Integer.parseInt(params.get(LOWER_BOUND_LABEL).toString()));
+    if (params.get(UPPER_BOUND_LABEL) != null) {
+      unitPriceNode.put(LifecycleResource.HAS_UPPER_BOUND_RELATIONS,
+          Integer.parseInt(params.get(UPPER_BOUND_LABEL).toString()));
+    }
+    return unitPriceNode;
   }
 }

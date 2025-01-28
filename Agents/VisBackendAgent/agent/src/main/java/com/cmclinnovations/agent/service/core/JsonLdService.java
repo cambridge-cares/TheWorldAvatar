@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class JsonLdService {
   private final ObjectMapper objectMapper;
 
+  private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
   private static final Logger LOGGER = LogManager.getLogger(JsonLdService.class);
 
   /**
@@ -66,6 +67,18 @@ public class JsonLdService {
       throw new IllegalArgumentException(
           MessageFormat.format("Invalid replacement type {0} for {1}!", replacementType, replacementId));
     }
+  }
+
+  /**
+   * Generates a instance object node with a readable label.
+   * 
+   * @param prefix  IRI prefix.
+   * @param concept The ontology concept class/type for the instance.
+   * @param label   The label for the instance.
+   */
+  public ObjectNode genInstance(String prefix, String concept, String label) {
+    return this.genInstance(prefix, concept)
+        .put(RDFS_LABEL, label);
   }
 
   /**

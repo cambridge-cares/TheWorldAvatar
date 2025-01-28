@@ -10,6 +10,7 @@ public class LifecycleResource {
   public static final String LIFECYCLE_RESOURCE = "lifecycle";
   public static final String SCHEDULE_RESOURCE = "schedule";
   public static final String OCCURRENCE_INSTANT_RESOURCE = "occurrence instant";
+  public static final String PRICING_RESOURCE = "pricing";
 
   public static final String IRI_KEY = "iri";
   public static final String CONTRACT_KEY = "contract";
@@ -32,6 +33,9 @@ public class LifecycleResource {
   public static final String SCHEDULE_TYPE_KEY = "schedule type";
 
   public static final String EXEMPLIFIES_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies";
+  public static final String HAS_AMOUNT_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/hasAmount";
+  public static final String HAS_LOWER_BOUND_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasLowerBound";
+  public static final String HAS_UPPER_BOUND_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasUpperBound";
   public static final String HAS_ARGUMENT_RELATIONS = "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasArgument";
   public static final String HAS_MINUEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasMinuend";
   public static final String HAS_SUBTRAHEND_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/hasSubtrahend";
@@ -57,6 +61,9 @@ public class LifecycleResource {
   public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination";
   public static final String LIFECYCLE_RECORD = "https://www.omg.org/spec/Commons/Documents/Record";
   public static final String LIFECYCLE_REPORT = "https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/Report";
+  public static final String PRICING_MODEL = "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/PricingModel";
+  public static final String MONETARY_PRICE = "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryPrice";
+  public static final String VARIABLE_FEE = "https://www.theworldavatar.com/kg/ontoservice/VariableFee";
 
   // Private constructor to prevent instantiation
   private LifecycleResource() {
@@ -218,6 +225,8 @@ public class LifecycleResource {
         return FileService.OCCURRENCE_INSTANT_JSON_LD_RESOURCE;
       case LifecycleResource.SCHEDULE_RESOURCE:
         return FileService.SCHEDULE_JSON_LD_RESOURCE;
+      case LifecycleResource.PRICING_RESOURCE:
+        return FileService.PRICING_JSON_LD_RESOURCE;
       default:
         return null;
     }

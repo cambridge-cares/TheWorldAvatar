@@ -153,6 +153,10 @@ public class AddService {
           // Add a different interaction for calculations
         } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("calculation")) {
           this.lifecycleReportService.appendCalculationRecord(parentNode, currentNode, replacements);
+          // Add a different interaction for pricing model
+        } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("pricing")) {
+          ObjectNode pricingModel = this.lifecycleReportService.genPricingModel(replacements);
+          parentNode.set(parentField, pricingModel);
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {

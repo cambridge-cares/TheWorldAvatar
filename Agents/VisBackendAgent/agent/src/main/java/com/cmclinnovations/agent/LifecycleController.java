@@ -359,6 +359,30 @@ public class LifecycleController {
   }
 
   /**
+   * Update the pricing model for the target contract in the knowledge graph.
+   */
+  @PutMapping("/contracts/pricing")
+  public ResponseEntity<ApiResponse> updatePricingModel(@RequestBody Map<String, Object> params) {
+    LOGGER.info("Received request to set the pricing model...");
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
+      return new ResponseEntity<>(
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
+    }
+    String targetId = params.get("id").toString();
+    ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(LifecycleResource.PRICING_RESOURCE,
+        targetId, params);
+    if (addResponse.getStatusCode() == HttpStatus.CREATED) {
+      LOGGER.info("Pricing model has been successfully set!");
+      return new ResponseEntity<>(
+          new ApiResponse("Pricing model has been successfully set!", addResponse.getBody().getIri()),
+          HttpStatus.OK);
+    } else {
+      return addResponse;
+    }
+  }
+
+  /**
    * Retrieve the status of the contract
    */
   @GetMapping("/contracts/status/{id}")
