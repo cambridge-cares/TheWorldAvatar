@@ -132,8 +132,7 @@ public class LifecycleController {
       }
       this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
       response = this.addService.instantiate(
-          LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
-          params);
+          LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
       if (response.getStatusCode() == HttpStatus.CREATED) {
         LOGGER.info("Contract has been approved for service execution!");
         return new ResponseEntity<>("Contract has been approved for service execution!", HttpStatus.OK);
@@ -236,8 +235,7 @@ public class LifecycleController {
     LOGGER.info("Received request to cancel the upcoming service...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_CANCELLATION);
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
-        params);
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
       // If successfully added, remove the active service occurrence
       String occurrenceIri = this.lifecycleService
@@ -264,8 +262,7 @@ public class LifecycleController {
     LOGGER.info("Received request to rescind the contract...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_RESCINDMENT);
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
-        params);
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
       LOGGER.info("Contract has been successfully rescinded!");
       return new ResponseEntity<>(new ApiResponse("Contract has been successfully rescinded!"), HttpStatus.OK);
@@ -287,8 +284,7 @@ public class LifecycleController {
     LOGGER.info("Received request to terminate the contract...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_TERMINATION);
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
-        params);
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
       LOGGER.info("Contract has been successfully terminated!");
       return new ResponseEntity<>(new ApiResponse("Contract has been successfully terminated!"), HttpStatus.OK);
@@ -310,8 +306,7 @@ public class LifecycleController {
       // Add current date into parameters
       params.put(LifecycleResource.CURRENT_DATE_KEY, this.dateTimeService.getCurrentDate());
       ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(
-          LifecycleResource.LIFECYCLE_RESOURCE, targetId,
-          params);
+          LifecycleResource.LIFECYCLE_RESOURCE, targetId, params);
       if (addResponse.getStatusCode() == HttpStatus.CREATED) {
         LOGGER.info("The lifecycle of the contract has been successfully updated!");
         // Execute request for schedule as well
@@ -343,8 +338,7 @@ public class LifecycleController {
         targetId);
     if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
       ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(LifecycleResource.SCHEDULE_RESOURCE,
-          targetId,
-          params);
+          targetId, params);
       if (addResponse.getStatusCode() == HttpStatus.CREATED) {
         LOGGER.info("Draft schedule has been successfully updated!");
         return new ResponseEntity<>(
