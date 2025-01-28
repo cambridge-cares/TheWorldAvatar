@@ -27,6 +27,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.6.4 Service commencement route](#264-service-commencement-route)
       - [2.6.5 Service order route](#265-service-order-route)
       - [2.6.6 Archive contract route](#266-archive-contract-route)
+      - [2.6.7 Pricing route](#267-pricing-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -621,6 +622,25 @@ Users must send a `POST` request to terminate an ongoing contract at the `<baseU
 
 A successful request will return `{"message": "Contract has been successfully terminated!", "iri" : "root iri that is instantiated"}`.
 
+#### 2.6.7 Pricing route
+
+Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pricing` endpoint to set a new pricing model. This route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "base fee": "The base fee in the decimal format ie 1.00",
+  "unit price": [{
+    "rate": "The rate charged per service metric in the decimal format",
+    "lowerBound": "The minimum value within the range of a service metric where the specified rate applies",
+    "upperBound": "The maximum value within the range of a service metric where the specified rate applies"
+  },...]
+}
+```
+
+The `unit price` parameter holds an array of the same JSON object. Note that the final `upperBound` field can be left empty or null to indicate that the rate applies for any excess of the `lowerBound` service metric.
+
 ## 3. SHACL Restrictions
 
 [SHACL](https://www.w3.org/TR/shacl/) is generally a language for validating RDF graphs against a set of conditions. The World Avatar incorporates these restrictions into our workflow to populate form structure and fields, as well as enabling automated data retrieval.
@@ -799,7 +819,13 @@ It is expected that we should create a new ID and name for the person instance. 
 }
 ```
 
-A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted.
+
+> [!CAUTION]
+> Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+> [!NOTE]
+> There are additional `@replace` options such as `schedule` and `pricing` that will be used by default in the agent, but it is not intended for users and should be ignored.
 
 #### 4.1.1 Service lifecycle
 
