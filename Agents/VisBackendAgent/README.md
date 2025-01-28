@@ -624,7 +624,7 @@ A successful request will return `{"message": "Contract has been successfully te
 
 #### 2.6.7 Pricing route
 
-Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pricing` endpoint to set a new pricing model. This route does require the following `JSON` request parameters:
+Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pricing` endpoint to set a new pricing model. Note that this will override any pricing model that was previously set. This route does require the following `JSON` request parameters:
 
 ```json
 {
@@ -639,7 +639,8 @@ Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pri
 }
 ```
 
-The `unit price` parameter holds an array of the same JSON object. Note that the final `upperBound` field can be left empty or null to indicate that the rate applies for any excess of the `lowerBound` service metric.
+> [!IMPORTANT]
+> The `unit price` parameter is optional and can hold an array of the same JSON object. The final `upperBound` field can be left empty or null to indicate that the rate applies for any excess of the `lowerBound` service metric.
 
 ## 3. SHACL Restrictions
 
