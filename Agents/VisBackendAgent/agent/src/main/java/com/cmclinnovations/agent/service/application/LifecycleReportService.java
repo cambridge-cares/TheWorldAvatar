@@ -92,7 +92,8 @@ public class LifecycleReportService {
         params);
     parentNode.set(LifecycleResource.SUCCEEDS_RELATIONS, calculationInstance);
     // Generate record instance
-    ObjectNode recordInstance = this.genRecordInstance();
+    ObjectNode recordInstance = this.jsonLdService.genInstance(LIFECYCLE_RECORD_PREFIX,
+        LifecycleResource.LIFECYCLE_RECORD);
     // Retrieve and associate output value in calculation
     recordInstance.set(LifecycleResource.RECORDS_RELATIONS,
         calculationInstance.get(LifecycleResource.HAS_QTY_VAL_RELATIONS));
@@ -129,13 +130,6 @@ public class LifecycleReportService {
     }
     pricingModel.set(LifecycleResource.HAS_ARGUMENT_RELATIONS, arguments);
     return pricingModel;
-  }
-
-  /**
-   * Generates a record instance.
-   */
-  private ObjectNode genRecordInstance() {
-    return this.jsonLdService.genInstance(LIFECYCLE_RECORD_PREFIX, LifecycleResource.LIFECYCLE_RECORD);
   }
 
   /**
