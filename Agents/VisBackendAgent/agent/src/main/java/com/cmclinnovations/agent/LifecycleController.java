@@ -364,15 +364,21 @@ public class LifecycleController {
           HttpStatus.BAD_REQUEST);
     }
     String targetId = params.get("id").toString();
-    ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(LifecycleResource.PRICING_RESOURCE,
-        targetId, params);
-    if (addResponse.getStatusCode() == HttpStatus.CREATED) {
-      LOGGER.info("Pricing model has been successfully set!");
-      return new ResponseEntity<>(
-          new ApiResponse("Pricing model has been successfully set!", addResponse.getBody().getIri()),
-          HttpStatus.OK);
+    ResponseEntity<ApiResponse> deleteResponse = this.deleteService.delete(LifecycleResource.PRICING_RESOURCE,
+        targetId);
+    if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
+      ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(LifecycleResource.PRICING_RESOURCE,
+          targetId, params);
+      if (addResponse.getStatusCode() == HttpStatus.CREATED) {
+        LOGGER.info("Pricing model has been successfully set!");
+        return new ResponseEntity<>(
+            new ApiResponse("Pricing model has been successfully set!", addResponse.getBody().getIri()),
+            HttpStatus.OK);
+      } else {
+        return addResponse;
+      }
     } else {
-      return addResponse;
+      return deleteResponse;
     }
   }
 
@@ -508,6 +514,16 @@ public class LifecycleController {
   public ResponseEntity<?> getContractTerminationForm() {
     LOGGER.info("Received request to get form template to terminate the contract...");
     return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_TERMINATION, null);
+  }
+
+  /**
+   * Retrieves a status to indicate if the pricing model has been instantiated for
+   * the specified contract.
+   */
+  @GetMapping("/contracts/pricing/{id}")
+  public ResponseEntity<?> getPricingStatus(@PathVariable String id) {
+    LOGGER.info("Received request to get form template to rescind the contract...");
+    return null;
   }
 
   /**
