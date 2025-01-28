@@ -1,0 +1,59 @@
+{
+    "ServiceSpec": {
+        "Name": "air-quality-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/airquality_agent:1.1.0-SNAPSHOT",
+                "Env": [
+                    "STACK_NAME=${STACK_NAME}",
+                    "NAMESPACE=airquality",
+                    "LAYERNAME=airquality",
+                    "DATABASE=postgres",
+                    "GEOSERVER_WORKSPACE=stations",
+					"ONTOP_FILE=/app/resources/ontop.obda"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/AirQualityAgent/output",
+                        "Target": "/app/output"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    }
+                ],
+				"Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+					{
+                        "ConfigName": "geoserver"
+                    },
+					{
+                        "ConfigName": "ontop"
+                    },
+					{
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+					{
+                        "SecretName": "geoserver_password"
+                    }
+
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:5000/airqualityagent/",
+            "externalPath": "/airqualityagent/"
+        }
+    }
+}
