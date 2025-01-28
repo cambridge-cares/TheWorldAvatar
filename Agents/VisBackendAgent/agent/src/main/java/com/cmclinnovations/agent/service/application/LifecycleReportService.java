@@ -322,10 +322,10 @@ public class LifecycleReportService {
     unitPriceNode.put(LifecycleResource.HAS_AMOUNT_RELATIONS,
         Double.parseDouble(params.get(RATE_LABEL).toString()));
     unitPriceNode.put(LifecycleResource.HAS_LOWER_BOUND_RELATIONS,
-        Integer.parseInt(params.get(LOWER_BOUND_LABEL).toString()));
+        Double.parseDouble(params.get(LOWER_BOUND_LABEL).toString()));
     if (params.get(UPPER_BOUND_LABEL) != null) {
       unitPriceNode.put(LifecycleResource.HAS_UPPER_BOUND_RELATIONS,
-          Integer.parseInt(params.get(UPPER_BOUND_LABEL).toString()));
+          Double.parseDouble(params.get(UPPER_BOUND_LABEL).toString()));
     }
     return unitPriceNode;
   }
