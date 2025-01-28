@@ -135,7 +135,7 @@ Agent start-up will automatically register a recurring task to assimilate latest
 - GET request to update all UK-AIR stations and associated readings, and add latest data for all time series (i.e. instantiate missing stations and readings and append latest time series readings)
 > `/airqualityagent/update/all`
 - GET request to retrieve data about UK-AIR stations and create respective JSON output files (i.e. request expects all individual query parameter to be provided in a single nested JSON object with key 'query') - **please note** that this query was required to create DTVF input files previously and is now deprecated as DTVF retrieves visualisation input from PostGIS via Geoserver. This endpoint is mainly kept here for reference purposes.
-> `/api/metofficeagent/retrieve/all`
+> `/airqualityagent/retrieve/all`
 
 Example requests are provided in the [resources] folder, which also contain further information about allowed parameters.
 
