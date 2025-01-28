@@ -33,11 +33,7 @@ docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 ```
 
-### **3) Accessing CMCL docker registry**
-
-The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
-
-### **4) VS Code specifics**
+### **3) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -59,10 +55,12 @@ bash ./stack.sh remove <STACK_NAME> -v
 
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
 
+Alternatively, you may copy [airqualityagent.json](stack-manager-config/inputs/config/services/airqualityagent.json) in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). Note that the Air Quality Agent is now exposed on localhost port 3838 instead.
+
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.30`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the following information should suffice in this context:
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.38`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the following information should suffice in this context:
 * When building the Docker images, the `StackClients` resource is copied from the published Docker image (details in the [Dockerfile])
 * For testing purposes, the latest `StackClients` resource needs to be compiled and installed locally using the [py4jps] Resource Manager
 
@@ -77,7 +75,7 @@ bash ./stack.sh build
 bash ./stack.sh start <STACK_NAME>
 ```
 
-In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
+In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull ghcr.io/cambridge-cares/stack-client:1.40.1`
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to [Github container registry]) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
