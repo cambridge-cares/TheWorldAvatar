@@ -1,10 +1,10 @@
 WITH OrderedPoints AS (
     SELECT
-        "UTC DATE" AS date,
-        "UTC TIME" AS time,
-        geom,
-        ROW_NUMBER() OVER (ORDER BY "UTC DATE", "UTC TIME") AS row_id
-    FROM public.gps_data
+        "time" AS time,
+        "time"::date AS date,
+        "column7" AS geom,
+        ROW_NUMBER() OVER (ORDER BY "time") AS row_id
+    FROM "35cb3043-9bfc-4cc7-b995-fe6290d8c86b"
 ),
 StaticBuffers AS (
     SELECT
