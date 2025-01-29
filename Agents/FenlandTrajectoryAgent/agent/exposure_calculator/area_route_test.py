@@ -719,7 +719,7 @@ def calculate_exposure_area():
     """
     data = request.json
     trajectoryIRIs = data.get("trajectoryIRIs", [])
-    exposure_radius = data.get("exposure_radius", 100)
+    exposure_radius = data.get("exposure_radius")
     dataIRIs = data.get("DataIRIs", [])
     final_results = []
 
