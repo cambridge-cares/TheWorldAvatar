@@ -734,6 +734,76 @@ def calculate_exposure_area():
     except Exception as e:
         return jsonify({"error": f"Failed to connect DB: {str(e)}"}), 500
 
+    for trajectory_iri in trajectoryIRIs:
+        try:
+            table_name = get_table_name_for_timeseries(conn, trajectory_iri)
+        except Exception as e:
+            final_results.append({
+                "trajectory_iri": trajectory_iri,
+                "error": f"Failed to get table_name: {str(e)}"
+            })
+            continue
+
+        for env_data_iri in dataIRIs:
+            try:
+                domain_name, feature_type = get_domain_and_featuretype(env_data_iri, ENV_DATA_ENDPOINT_URL)
+                logging.info(f"Processing env_data_iri={env_data_iri}, domain_name={domain_name}, feature_type={feature_type}")
+
+                if feature_type.upper() == "AREA":
+                    ds_rows = fetch_domain_and_data_sources(env_data_iri)
+                    if not ds_rows:
+                        final_results.append({
+                            "trajectory_iri": trajectory_iri,
+                            "env_data_iri": env_data_iri,
+                            "error": "No dataSourceName found"
+                        })
+                        continue
+
+                    sql_query = f"""
+                    WITH OrderedPoints AS (
+                        SELECT
+                            "time" AS time,
+                            "column7" AS geom,
+                            ROW_NUMBER() OVER (ORDER BY "time") AS row_id
+                        FROM "{table_name}"
+                    ),
+                    Trajectory AS (
+                        SELECT
+                            ST_Transform(
+                                ST_Buffer(
+                                    ST_MakeLine(o.geom::geometry ORDER BY o.row_id)::geography,
+                                    {exposure_radius}
+                                )::geometry,
+                                27700
+                            ) AS buffered_trajectory
+                        FROM OrderedPoints o
+                    )
+                    SELECT
+                        COUNT(g.ogc_fid) AS total_greenspace_count,
+                        COALESCE(SUM(ST_Area(ST_Intersection(t.buffered_trajectory, g.wkb_geometry))), 0) AS total_intersection_area
+                    FROM Trajectory t
+                    LEFT JOIN public."{ds_rows[0]['dataSourceName']}" g
+                    ON ST_Intersects(g.wkb_geometry, t.buffered_trajectory);
+                    """
+
+                    rows = execute_query(conn, sql_query)
+                    total_greenspace_count = rows[0][0] if rows else 0
+                    total_intersection_area = rows[0][1] if rows else 0
+
+                    final_results.append({
+                        "trajectory_iri": trajectory_iri,
+                        "env_data_iri": env_data_iri,
+                        "domain_name": domain_name,
+                        "feature_type": feature_type,
+                        "total_greenspace_count": total_greenspace_count,
+                        "total_intersection_area": total_intersection_area
+                    })
+
+
+    if conn:
+        conn.close()
+
+    return jsonify(final_results), 200
 
 
 if __name__ == '__main__':
