@@ -723,13 +723,14 @@ def calculate_exposure_area():
     dataIRIs = data.get("DataIRIs", [])
     final_results = []
 
+
     try:
         conn = connect_to_database(
             host=TRAJECTORY_DB_HOST,
             port=DB_PORT,
             user=DB_USER,
             password=TRAJECTORY_DB_PASSWORD,
-            database=DB_NAME
+            database=postgres
         )
     except Exception as e:
         return jsonify({"error": f"Failed to connect DB: {str(e)}"}), 500
