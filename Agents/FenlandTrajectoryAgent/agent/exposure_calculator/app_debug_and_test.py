@@ -712,29 +712,5 @@ def calculate_exposure_simplified():
 
     return jsonify(final_results), 200
 
-@app.route('/fenland-trajectory-agent/exposure/area', methods=['POST'])
-def calculate_exposure_area():
-    """
-    AREA INTERSECTION USING TRAJECTORY DATA INSTANTIATED BY TSCLIENT
-    """
-    data = request.json
-    trajectoryIRIs = data.get("trajectoryIRIs", [])
-    exposure_radius = data.get("exposure_radius", 100)
-    dataIRIs = data.get("DataIRIs", [])
-    final_results = []
-
-    try:
-        conn = connect_to_database(
-            host=TRAJECTORY_DB_HOST,
-            port=DB_PORT,
-            user=DB_USER,
-            password=TRAJECTORY_DB_PASSWORD,
-            database=DB_NAME
-        )
-    except Exception as e:
-        return jsonify({"error": f"Failed to connect DB: {str(e)}"}), 500
-
-
-
 if __name__ == '__main__':
     app.run(port=3840)

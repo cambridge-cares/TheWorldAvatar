@@ -82,19 +82,18 @@ def execute_query(connection, query: str, params: Optional[tuple] = None):
         if first.startswith("WITH") or first.startswith("SELECT"):
             do_fetch = True
 
-        start_time = time.time()  
+        start_time = time.time()
         with connection.cursor() as cursor:
             logging.debug(f"Executing query: {query}, params={params}")
             cursor.execute(query, params)
 
-            elapsed = time.time() - start_time 
+            elapsed = time.time() - start_time
             if do_fetch:
                 rows = cursor.fetchall()
-                fetch_time = time.time() - start_time  
-                logging.info(f"Query returned {len(rows)} rows in {fetch_time:.3f}s (execution: {elapsed:.3f}s).")
+                logging.info(f"Query returned {len(rows)} rows in {elapsed:.3f}s.")
                 return rows
             else:
-                logging.info(f"Query executed (no fetch) in {elapsed:.3f}s.")
+                logging.info(f"Query executed (no fetch) because it's an update or alter operation. Took {elapsed:.3f}s.")
                 return None
 
     except psycopg2.Error as e:
