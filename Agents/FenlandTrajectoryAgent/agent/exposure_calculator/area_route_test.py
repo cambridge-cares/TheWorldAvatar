@@ -719,7 +719,7 @@ def calculate_exposure_area():
     """
     data = request.json
     trajectoryIRIs = data.get("trajectoryIRIs", [])
-    exposure_radius = data.get("exposure_radius",100)
+    exposure_radius = data.get("exposure_radius", 100)
     dataIRIs = data.get("DataIRIs", [])
     final_results = []
 
@@ -798,7 +798,19 @@ def calculate_exposure_area():
                         "total_greenspace_count": total_greenspace_count,
                         "total_intersection_area": total_intersection_area
                     })
-        else:
+
+                elif feature_type.upper() == "POINT":
+
+                    final_results.append({
+                        "trajectory_iri": trajectory_iri,
+                        "env_data_iri": env_data_iri,
+                        "domain_name": domain_name,
+                        "feature_type": feature_type,
+                        "total_greenspace_count": 0,
+                        "total_intersection_area": 0
+                    })
+
+                else:
 
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
@@ -806,19 +818,17 @@ def calculate_exposure_area():
                         "error": f"Unknown feature_type: {feature_type}"
                     })
 
-        except Exception as e:
-            final_results.append({
+            except Exception as e:
+                final_results.append({
                     "trajectory_iri": trajectory_iri,
                     "env_data_iri": env_data_iri,
                     "error": str(e)
                 })
 
-
     if conn:
         conn.close()
 
     return jsonify(final_results), 200
-
 
 if __name__ == '__main__':
     app.run(port=3840)
