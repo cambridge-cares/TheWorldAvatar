@@ -789,6 +789,8 @@ def calculate_exposure_area():
                     rows = execute_query(conn, sql_query)
                     total_greenspace_count = rows[0][0] if rows else 0
                     total_intersection_area = rows[0][1] if rows else 0
+                    safe_domain_name = domain_name.replace(" ", "_").replace("/", "_").lower()
+                    column_name = f"total_intersection_area_of_{safe_domain_name}"
 
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
