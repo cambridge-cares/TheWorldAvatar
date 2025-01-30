@@ -715,14 +715,23 @@ def calculate_exposure_simplified():
 @app.route('/fenland-trajectory-agent/exposure/area', methods=['POST'])
 def calculate_exposure_area():
     """
-    Note: Here we calculate the intersection of trajectories with environmental data with only AREA types, and then update the results in the trajectory table.
-    Only calculation results related to areas are returned. 
+    Calculate intersection of trajectories with environmental data (AREA types only).
+    Update results in the trajectory table and return area-related calculations.
     """
     data = request.json
     trajectoryIRIs = data.get("trajectoryIRIs", [])
     exposure_radius = data.get("exposure_radius", 100)
     dataIRIs = data.get("DataIRIs", [])
     final_results = []
+
+    # Validate input
+    if not trajectoryIRIs or not dataIRIs:
+        logging.error("Invalid input: trajectoryIRIs or DataIRIs is empty")
+        return jsonify({"error": "trajectoryIRIs and DataIRIs must not be empty"}), 400
+
+    if not isinstance(exposure_radius, (int, float)) or exposure_radius <= 0:
+        logging.error(f"Invalid exposure_radius: {exposure_radius}")
+        return jsonify({"error": "exposure_radius must be a positive number"}), 400
 
     try:
         conn = connect_to_database(
@@ -733,12 +742,15 @@ def calculate_exposure_area():
             database=DB_NAME
         )
     except Exception as e:
+        logging.error(f"Failed to connect to database: {str(e)}")
         return jsonify({"error": f"Failed to connect DB: {str(e)}"}), 500
 
     for trajectory_iri in trajectoryIRIs:
         try:
             table_name = get_table_name_for_timeseries(conn, trajectory_iri)
+            logging.info(f"Processing trajectory_iri={trajectory_iri}, table_name={table_name}")
         except Exception as e:
+            logging.error(f"Failed to get table_name for trajectory_iri={trajectory_iri}: {str(e)}")
             final_results.append({
                 "trajectory_iri": trajectory_iri,
                 "error": f"Failed to get table_name: {str(e)}"
@@ -751,9 +763,9 @@ def calculate_exposure_area():
                 logging.info(f"Processing env_data_iri={env_data_iri}, domain_name={domain_name}, feature_type={feature_type}")
 
                 if feature_type.upper() == "AREA":
-
                     ds_rows = fetch_domain_and_data_sources(env_data_iri)
                     if not ds_rows:
+                        logging.warning(f"No dataSourceName found for env_data_iri={env_data_iri}")
                         final_results.append({
                             "trajectory_iri": trajectory_iri,
                             "env_data_iri": env_data_iri,
@@ -787,8 +799,10 @@ def calculate_exposure_area():
                     ON ST_Intersects(g.wkb_geometry, t.buffered_trajectory);
                     """
 
+                    logging.debug(f"Executing SQL query: {sql_query}")
                     rows = execute_query(conn, sql_query)
                     total_intersection_area = rows[0][0] if rows else 0
+                    logging.info(f"Calculated total_intersection_area={total_intersection_area} for env_data_iri={env_data_iri}")
 
                     safe_domain_name = domain_name.replace(" ", "_").replace("/", "_").lower()
                     column_name = f"total_intersection_area_of_{safe_domain_name}"
@@ -802,12 +816,14 @@ def calculate_exposure_area():
                         END IF;
                     END $$;
                     """
+                    logging.debug(f"Executing ALTER TABLE SQL: {alter_sql}")
                     execute_query(conn, alter_sql, (table_name, column_name))
 
                     update_sql = f"""
                     UPDATE "{table_name}"
                     SET "{column_name}" = %s;
                     """
+                    logging.debug(f"Executing UPDATE SQL: {update_sql}")
                     execute_query(conn, update_sql, (total_intersection_area,))
                     conn.commit()
 
@@ -822,6 +838,7 @@ def calculate_exposure_area():
                     })
 
                 elif feature_type.upper() == "POINT":
+                    logging.info(f"Skipping POINT feature type for env_data_iri={env_data_iri}")
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
                         "env_data_iri": env_data_iri,
@@ -831,6 +848,7 @@ def calculate_exposure_area():
                     })
 
                 else:
+                    logging.warning(f"Unknown feature_type={feature_type} for env_data_iri={env_data_iri}")
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
                         "env_data_iri": env_data_iri,
@@ -838,6 +856,7 @@ def calculate_exposure_area():
                     })
 
             except Exception as e:
+                logging.error(f"Error processing env_data_iri={env_data_iri}: {str(e)}")
                 final_results.append({
                     "trajectory_iri": trajectory_iri,
                     "env_data_iri": env_data_iri,
