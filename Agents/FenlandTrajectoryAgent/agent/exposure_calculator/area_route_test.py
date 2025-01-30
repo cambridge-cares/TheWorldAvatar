@@ -795,8 +795,9 @@ def calculate_exposure_area():
                         "env_data_iri": env_data_iri,
                         "domain_name": domain_name,
                         "feature_type": feature_type,
-                        "total_greenspace_count": total_greenspace_count,
-                        "total_intersection_area": total_intersection_area
+                        "total_intersection_area": total_intersection_area,
+                        "updated_column": column_name,
+                        "table_name": table_name
                     })
 
                 elif feature_type.upper() == "POINT":
@@ -806,7 +807,6 @@ def calculate_exposure_area():
                         "env_data_iri": env_data_iri,
                         "domain_name": domain_name,
                         "feature_type": feature_type,
-                        "total_greenspace_count": 0,
                         "total_intersection_area": 0
                     })
 
