@@ -798,6 +798,20 @@ def calculate_exposure_area():
                         "total_greenspace_count": total_greenspace_count,
                         "total_intersection_area": total_intersection_area
                     })
+        else:
+
+                    final_results.append({
+                        "trajectory_iri": trajectory_iri,
+                        "env_data_iri": env_data_iri,
+                        "error": f"Unknown feature_type: {feature_type}"
+                    })
+
+        except Exception as e:
+            final_results.append({
+                    "trajectory_iri": trajectory_iri,
+                    "env_data_iri": env_data_iri,
+                    "error": str(e)
+                })
 
 
     if conn:
