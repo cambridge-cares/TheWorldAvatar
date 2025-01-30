@@ -521,9 +521,11 @@ public class LifecycleController {
    * the specified contract.
    */
   @GetMapping("/contracts/pricing/{id}")
-  public ResponseEntity<?> getPricingStatus(@PathVariable String id) {
-    LOGGER.info("Received request to get form template to rescind the contract...");
-    return null;
+  public ResponseEntity<Boolean> getPricingStatus(@PathVariable String id) {
+    LOGGER.info("Received request to get pricing status for the contract {}...", id);
+    return new ResponseEntity<>(
+        this.lifecycleReportService.getHasPricingStatus(id),
+        HttpStatus.OK);
   }
 
   /**

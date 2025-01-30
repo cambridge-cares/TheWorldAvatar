@@ -61,6 +61,7 @@ public class LifecycleResource {
   public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination";
   public static final String LIFECYCLE_RECORD = "https://www.omg.org/spec/Commons/Documents/Record";
   public static final String LIFECYCLE_REPORT = "https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/Report";
+  public static final String PAYMENT_OBLIGATION = "https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation";
   public static final String PRICING_MODEL = "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/PricingModel";
   public static final String MONETARY_PRICE = "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryPrice";
   public static final String VARIABLE_FEE = "https://www.theworldavatar.com/kg/ontoservice/VariableFee";
@@ -419,6 +420,21 @@ public class LifecycleResource {
         + "?iri a " + StringResource.parseIriForQuery(LifecycleResource.LIFECYCLE_REPORT) + ";"
         + StringResource.parseIriForQuery(LifecycleResource.IS_ABOUT_RELATIONS)
         + "/fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage <" + stage + ">."
+        + "}";
+  }
+
+  /**
+   * Generates a SPARQL query to get the current pricing status of the contract.
+   * 
+   * @param contract the target contract id.
+   */
+  public static String genPricingStatusQuery(String contract) {
+    return genPrefixes()
+        + "SELECT DISTINCT ?iri WHERE {"
+        + "?iri fibo-fnd-rel-rel:confers ?payment."
+        + "?payment a " + StringResource.parseIriForQuery(LifecycleResource.PAYMENT_OBLIGATION)
+        + ShaclResource.FULL_STOP
+        + "FILTER STRENDS(STR(?iri),\"" + contract + "\")"
         + "}";
   }
 

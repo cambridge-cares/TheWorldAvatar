@@ -2,12 +2,18 @@ package com.cmclinnovations.agent.service.application;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.CalculationType;
+import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.GetService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.service.core.JsonLdService;
@@ -130,6 +136,28 @@ public class LifecycleReportService {
     }
     pricingModel.set(LifecycleResource.HAS_ARGUMENT_RELATIONS, arguments);
     return pricingModel;
+  }
+
+  /**
+   * Verifies if the contract has a pricing model set.
+   * 
+   * @param contract The ID of the target contract.
+   */
+  public boolean getHasPricingStatus(String contract) {
+    LOGGER.debug("Checking for an existing pricing model...");
+    String query = LifecycleResource.genPricingStatusQuery(contract);
+    // If there is a pricing model set, no exception is thrown
+    try {
+      this.getService.getInstance(query);
+      return true;
+    } catch (IllegalStateException e) {
+      // There are multiple results returned for the same contract
+      // ie at least one pricing model is available
+      return true;
+    } catch (NullPointerException e) {
+      // No results indicate that no pricing model has been set
+      return false;
+    }
   }
 
   /**

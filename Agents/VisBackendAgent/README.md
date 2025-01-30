@@ -624,6 +624,10 @@ A successful request will return `{"message": "Contract has been successfully te
 
 #### 2.6.7 Pricing route
 
+The `<baseURL>/vis-backend-agent/contracts/pricing` endpoint serves to handle any pricing model related transactions. 
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/pricing/{id}` endpoint to retrieve the pricing model for the specific contract, , where `{id}`is the identifier of the target contract.
+
 Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pricing` endpoint to set a new pricing model. Note that this will override any pricing model that was previously set. This route does require the following `JSON` request parameters:
 
 ```json
