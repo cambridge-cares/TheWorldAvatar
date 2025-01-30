@@ -715,7 +715,8 @@ def calculate_exposure_simplified():
 @app.route('/fenland-trajectory-agent/exposure/area', methods=['POST'])
 def calculate_exposure_area():
     """
-    AREA INTERSECTION USING TRAJECTORY DATA INSTANTIATED BY TSCLIENT
+    Note: Here we calculate the intersection of trajectories with environmental data with only AREA types, and then update the results in the trajectory table.
+    Only calculation results related to areas are returned. 
     """
     data = request.json
     trajectoryIRIs = data.get("trajectoryIRIs", [])
@@ -723,14 +724,13 @@ def calculate_exposure_area():
     dataIRIs = data.get("DataIRIs", [])
     final_results = []
 
-
     try:
         conn = connect_to_database(
             host=TRAJECTORY_DB_HOST,
             port=DB_PORT,
             user=DB_USER,
             password=TRAJECTORY_DB_PASSWORD,
-            database=postgres
+            database=DB_NAME
         )
     except Exception as e:
         return jsonify({"error": f"Failed to connect DB: {str(e)}"}), 500
@@ -751,6 +751,7 @@ def calculate_exposure_area():
                 logging.info(f"Processing env_data_iri={env_data_iri}, domain_name={domain_name}, feature_type={feature_type}")
 
                 if feature_type.upper() == "AREA":
+
                     ds_rows = fetch_domain_and_data_sources(env_data_iri)
                     if not ds_rows:
                         final_results.append({
@@ -780,7 +781,6 @@ def calculate_exposure_area():
                         FROM OrderedPoints o
                     )
                     SELECT
-                        COUNT(g.ogc_fid) AS total_greenspace_count,
                         COALESCE(SUM(ST_Area(ST_Intersection(t.buffered_trajectory, g.wkb_geometry))), 0) AS total_intersection_area
                     FROM Trajectory t
                     LEFT JOIN public."{ds_rows[0]['dataSourceName']}" g
@@ -788,10 +788,28 @@ def calculate_exposure_area():
                     """
 
                     rows = execute_query(conn, sql_query)
-                    total_greenspace_count = rows[0][0] if rows else 0
-                    total_intersection_area = rows[0][1] if rows else 0
+                    total_intersection_area = rows[0][0] if rows else 0
+
                     safe_domain_name = domain_name.replace(" ", "_").replace("/", "_").lower()
                     column_name = f"total_intersection_area_of_{safe_domain_name}"
+                    alter_sql = f"""
+                    DO $$ BEGIN
+                        IF NOT EXISTS (
+                            SELECT FROM information_schema.columns
+                            WHERE table_name = %s AND column_name = %s
+                        ) THEN
+                            EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{column_name}" DOUBLE PRECISION';
+                        END IF;
+                    END $$;
+                    """
+                    execute_query(conn, alter_sql, (table_name, column_name))
+
+                    update_sql = f"""
+                    UPDATE "{table_name}"
+                    SET "{column_name}" = %s;
+                    """
+                    execute_query(conn, update_sql, (total_intersection_area,))
+                    conn.commit()
 
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
@@ -804,7 +822,6 @@ def calculate_exposure_area():
                     })
 
                 elif feature_type.upper() == "POINT":
-
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
                         "env_data_iri": env_data_iri,
@@ -814,7 +831,6 @@ def calculate_exposure_area():
                     })
 
                 else:
-
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
                         "env_data_iri": env_data_iri,
