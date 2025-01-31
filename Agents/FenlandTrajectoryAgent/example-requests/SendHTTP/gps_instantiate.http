@@ -1,4 +1,4 @@
-POST http://174.138.27.240:3840/fenland-trajectory-agent/instantiate
+POST http://localhost:3840/fenland-trajectory-agent/instantiate
 Content-Type: application/json
 
 {
