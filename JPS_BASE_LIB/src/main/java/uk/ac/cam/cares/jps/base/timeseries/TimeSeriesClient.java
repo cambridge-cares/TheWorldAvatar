@@ -1341,6 +1341,41 @@ public class TimeSeriesClient<T> {
         }
     }
 
+    /**
+     * add columns to an existing timeseries, srid is only used when one of the new
+     * columns has the geometry type, can be null
+     * 
+     * @param timeSeriesIri
+     * @param dataIri
+     * @param classes
+     * @param srid
+     * @param conn
+     */
+    public void addColumnsToExistingTimeSeries(String timeSeriesIri, List<String> dataIri, List<Class<?>> classes,
+            Integer srid, Connection conn) {
+        if (rdbClient.checkAnyDataHasTimeSeries(dataIri, conn) != null) {
+            throw new JPSRuntimeException(
+                    exceptionPrefix + "one or more provided data IRI contains an existing time series");
+        }
+
+        if (!rdbClient.timeSeriesExists(timeSeriesIri, conn)) {
+            throw new JPSRuntimeException(
+                    exceptionPrefix + "provided time series does not exist");
+        }
+
+        rdfClient.addDataToExistingTimeSeries(dataIri, timeSeriesIri);
+        rdbClient.addColumnsToExistingTimeSeries(dataIri, classes, timeSeriesIri, srid, conn);
+    }
+
+    public void addColumnsToExistingTimeSeries(String timeSeriesIri, List<String> dataIri, List<Class<?>> classes,
+            Integer srid) {
+        try (Connection conn = rdbClient.getConnection()) {
+            addColumnsToExistingTimeSeries(timeSeriesIri, dataIri, classes, srid, conn);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+        }
+    }
+
     public String getRdbUrl() {
         return rdbClient.getRdbURL();
     }
