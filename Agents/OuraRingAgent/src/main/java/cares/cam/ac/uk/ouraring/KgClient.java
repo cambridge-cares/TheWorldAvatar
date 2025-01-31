@@ -89,12 +89,22 @@ public class KgClient {
         }
     }
 
+    /**
+     * assume if any user is query-able, ontop has been initialised
+     * this query may scale badly if there are many users
+     * 
+     * @param users
+     */
     void initialiseOntop(List<User> users) {
         // checking one user is sufficient
         SelectQuery query = Queries.SELECT();
         Variable ouraring = query.var();
+        Variable userVar = query.var();
 
-        query.where(Rdf.iri(users.get(0).getIri()).has(HAS_OURARING, ouraring)).prefix(PREFIX_OURA);
+        ValuesPattern valuesPattern = new ValuesPattern(userVar,
+                users.stream().map(u -> Rdf.iri(u.getIri())).collect(Collectors.toList()));
+
+        query.where(userVar.has(HAS_OURARING, ouraring), valuesPattern).prefix(PREFIX_OURA);
 
         JSONArray queryResult = ontopClient.executeQuery(query.getQueryString());
 
