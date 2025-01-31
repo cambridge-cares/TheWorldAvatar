@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -55,7 +56,7 @@ public class OuraRingApi {
                             dataElement.getString("source"));
                 }
             } else {
-                String errmsg = "Response code from Oura API: " + response.getStatusLine().getStatusCode();
+                String errmsg = "Response from Oura API: " + EntityUtils.toString(response.getEntity());
                 LOGGER.error(errmsg);
                 throw new RuntimeException(errmsg);
             }

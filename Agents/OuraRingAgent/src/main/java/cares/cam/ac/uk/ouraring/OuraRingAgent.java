@@ -26,14 +26,24 @@ public class OuraRingAgent extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String startDateTime = req.getParameter("start_datetime");
         String endDateTime = req.getParameter("end_datetime");
 
-        Instant upperbound;
+        Instant startDateTimeInstant = null;
+
+        Instant endDateTimeInstant = null;
 
         if (endDateTime == null) {
-            upperbound = Instant.now();
+            endDateTimeInstant = Instant.now();
         } else {
-            upperbound = Instant.parse(endDateTime);
+            endDateTimeInstant = Instant.parse(endDateTime);
+        }
+
+        if (startDateTime == null) {
+            // heart rate API restricts range to 30 days
+            startDateTimeInstant = endDateTimeInstant.minus(Duration.ofDays(30));
+        } else {
+            startDateTimeInstant = Instant.parse(startDateTime);
         }
 
         PostgresClient postgresClient = new PostgresClient();
@@ -48,6 +58,10 @@ public class OuraRingAgent extends HttpServlet {
 
         KgClient kgClient = new KgClient();
 
+        kgClient.setUserIri(users);
+        kgClient.initialiseOntop(users);
+        kgClient.setHeartRateIris(users);
+
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             kgClient.setLastUpdate(users, conn);
         } catch (SQLException e) {
@@ -55,19 +69,26 @@ public class OuraRingAgent extends HttpServlet {
         }
 
         // download data from API
-        users.forEach(user -> {
+        // each user may have a different last update, so the API call is customised for
+        // each user
+        for (User user : users) {
             Instant lowerbound;
+            Instant upperbound;
             if (user.getHeartRateData().getLastUpdate() == null) {
-                lowerbound = upperbound.minus(Duration.ofDays(1));
+                lowerbound = startDateTimeInstant;
             } else {
-                lowerbound = user.getHeartRateData().getLastUpdate();
+                lowerbound = user.getHeartRateData().getLastUpdate().plusMillis(1);
             }
-            OuraRingApi.setHeartRateData(user, lowerbound, upperbound);
-        });
 
-        kgClient.setUserIri(users);
-        kgClient.initialiseOntop(users);
-        kgClient.setHeartRateIris(users);
+            // heart rate API restricts range to 30 days
+            if (Duration.between(lowerbound, endDateTimeInstant).toDays() > 30) {
+                upperbound = lowerbound.plus(Duration.ofDays(30));
+            } else {
+                upperbound = endDateTimeInstant;
+            }
+
+            OuraRingApi.setHeartRateData(user, lowerbound, upperbound);
+        }
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             kgClient.initialiseTimeSeries(users, conn);
