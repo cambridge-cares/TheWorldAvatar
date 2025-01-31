@@ -29,14 +29,15 @@ public class SensorNetworkSource {
     Context context;
     RequestQueue requestQueue;
     Logger LOGGER = Logger.getLogger(SensorNetworkSource.class);
-    @Inject
     SensorLocalSource sensorLocalSource;
     int messageId;
 
     public SensorNetworkSource(Context applicationContext,
-                               RequestQueue requestQueue) {
+                               RequestQueue requestQueue,
+                               SensorLocalSource sensorLocalSource) {
         context = applicationContext;
         this.requestQueue = requestQueue;
+        this.sensorLocalSource = sensorLocalSource;
     }
 
     /**
