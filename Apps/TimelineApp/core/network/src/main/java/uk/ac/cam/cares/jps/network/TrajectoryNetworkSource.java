@@ -128,10 +128,11 @@ public class TrajectoryNetworkSource {
                 LOGGER.debug("Full server response: " + s1);
 
                 JSONObject trajectoryResponse = new JSONObject(s1);
-                if (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
-                        .getJSONArray("features")
-                        .getJSONObject(0)
-                        .getString("geometry").equals("null")) {
+                if (trajectoryResponse.getInt("totalFeatures") == 0 ||
+                        (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
+                                .getJSONArray("features")
+                                .getJSONObject(0)
+                                .getString("geometry").equals("null"))) {
                     onSuccessUpper.onResponse("");
                 } else {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());
