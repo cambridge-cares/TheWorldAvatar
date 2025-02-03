@@ -104,7 +104,7 @@ public class UserAgent extends JPSAgent {
     }
 
     private String getUserId(HttpServletRequest httpRequest) {
-        // NOTICE: didn't handle token expiration case
+        // NOTICE: the function won't retrieve the latest token if the provided one has expired
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             String userinfoEndpoint = authzClient.getServerConfiguration().getIssuer() + "/protocol/openid-connect/userinfo";
             HttpGet request = new HttpGet(userinfoEndpoint);
