@@ -1,0 +1,868 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontowastemanagement/"
+     xml:base="https://www.theworldavatar.com/kg/ontowastemanagement/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontowastemanagement="https://www.theworldavatar.com/kg/ontowastemanagement/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/">
+        <dc:date>10 December 2024</dc:date>
+        <rdfs:comment>OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.</rdfs:comment>
+        <owl:versionInfo>1.2</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:comment>A relationship describing the bin type for a series of waste services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has bin type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasStatus -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasStatus">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/BinStatus"/>
+        <rdfs:comment>A relationship describing the current bin status.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has status</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:comment>A relationship describing the waste category for a series of waste services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has waste type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasBinNumber -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinNumber">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>An identifier for a bin.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has bin number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/isRecyclable -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/isRecyclable">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>A property indicating if the waste is recyclable or not.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>is recyclable</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Class -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/AluminiumWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/AluminiumWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/NonFerrousMetalWaste"/>
+        <rdfs:comment>Waste consisting of aluminum products, such as cans, foil, and packaging materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Aluminium waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/AshWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/AshWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>The residual byproduct generated from the incineration of various materials, including municipal solid waste, hazardous waste, and industrial byproducts.   Ash waste typically contains concentrated trace metals and other inorganic compounds.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Ash waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/Bin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/Bin">
+        <rdfs:comment>A container used to carry and store waste.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Bin</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/BinDeliveryService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinDeliveryService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:comment>A service that delivers an empty bin to the specified site.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Bin delivery service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/BinExchangeService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinExchangeService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
+        <rdfs:comment>A service that delivers an empty bin to the specified site and tows away the full bin to a disposal site. The bin will not be returned to the service site afterwards.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Bin exchange service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/BinStatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinStatus">
+        <rdfs:comment>The current state of a bin. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Bin status</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/CompactorBin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/CompactorBin">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
+        <rdfs:comment>An open top container bin with the ability to compact waste.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Compactor bin</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/ConstructionDemolitionWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/ConstructionDemolitionWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste generated from the construction, renovation, and demolition of buildings, roads, and other structures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Construction and demolition waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/CopperWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/CopperWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/NonFerrousMetalWaste"/>
+        <rdfs:comment>Waste consisting of copper products, such as wiring, plumbing pipes, and electronics components.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Copper waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/DumpAndReturnService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/DumpAndReturnService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
+        <rdfs:comment>A service that collects the bin containing waste from the service site and disposes the waste at the disposal site, before returning the newly emptied bin to the service site.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Dump and return service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/ElectronicWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/ElectronicWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Discarded electrical or electronic devices, such as computers, mobile phones, household appliances, and medical equipment. E-waste can contain hazardous materials like lead and mercury.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Electronic waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/FerrousMetalWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/FerrousMetalWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste composed of iron and steel. These metals are magnetic and are commonly found in items like appliances, cars, and construction materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Ferrous metal waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/FishWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/FishWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/FoodWaste"/>
+        <rdfs:comment>Organic materials resulting from fish cleaning or processing, including flesh, skin, bones, and entrails.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Fish waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/FoodWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/FoodWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Edible food that is discarded at the retail or consumption stages, often due to spoilage or overproduction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Food waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/FurnitureWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/FurnitureWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WoodWaste"/>
+        <rdfs:comment>Waste consisting of discarded furniture items, such as chairs, tables, and sofas.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Furniture waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/GlassWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/GlassWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Discarded glass products, such as bottles and jars, which can be recycled into new glass products.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Glass waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/GrossTruckWeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/GrossTruckWeight">
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
+        <rdfs:comment>Weight of a truck and its waste before any disposal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Gross truck weight</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/HighDensityPolyethyleneWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/HighDensityPolyethyleneWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste"/>
+        <rdfs:comment>Waste composed of high-density polyethylene materials, including milk jugs, detergent bottles, and piping. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>High-density polyethylene (HDPE) waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
+        <rdfs:comment>A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Hooklift truck</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/HorticulturalWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/HorticulturalWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste generated in orchards, parks, gardens, and roadside plants, including green foliage, branches, and leaves.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Horticultural waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/LeavesWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/LeavesWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HorticulturalWaste"/>
+        <rdfs:comment>Waste consisting of fallen leaves from trees and plants, often collected during seasonal cleanups.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Leaves waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/LowDensityPolyethyleneWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/LowDensityPolyethyleneWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste"/>
+        <rdfs:comment>Waste composed of low-density polyethylene materials, including plastic bags, film wraps, and squeeze bottles.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Low-density polyethylene (LDPE) waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/MixedWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/MixedWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste that contains a combination of different materials, that may or may not be difficult to identify and separate individual components.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Mixed waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/NetWasteWeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/NetWasteWeight">
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
+        <rdfs:comment>Weight of the waste disposed, which is calculated through the difference of gross and unladen weight.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Net waste weight</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/NonFerrousMetalWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/NonFerrousMetalWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste composed of metals that do not contain iron, such as aluminum, copper, and brass. These metals are not magnetic.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Non-ferrous metal waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+        <rdfs:comment>A bin capable of attaching to an OTC truck.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Open Top Container Bin</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/OldCorrugatedCardboardWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/OldCorrugatedCardboardWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PaperCardboardWaste"/>
+        <rdfs:comment>Waste consisting of used corrugated cardboard, often from packaging and shipping materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Old corrugated cardboard waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PalletWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PalletWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WoodWaste"/>
+        <rdfs:comment>Waste composed of wooden pallets used for shipping and storage.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Pallet waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PaperCardboardWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PaperCardboardWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste consisting of paper and cardboard materials, including office paper, newspapers, and packaging.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Paper or cardboard waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PaperWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PaperWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PaperCardboardWaste"/>
+        <rdfs:comment>Waste composed of paper products, such as office paper, newspapers, and magazines.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Paper waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste composed of plastic materials, including bottles, packaging, and containers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Plastics waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PolyethyleneTerephthalateWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PolyethyleneTerephthalateWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste"/>
+        <rdfs:comment>Waste composed of polyethylene terephthalate materials, including beverage bottles and food containers. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Polyethylene terephthalate (PET) waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PolypropyleneWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PolypropyleneWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste"/>
+        <rdfs:comment>Waste composed of polypropylene materials, including packaging, automotive parts, and textiles.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Polypropylene (PP) waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/PolystyreneWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/PolystyreneWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/PlasticsWaste"/>
+        <rdfs:comment>Waste composed of polystyrene materials, including disposable food containers, packaging materials, and insulation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Polystyrene (PS) waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
+        <rdfs:comment>A truck designed for municipal waste collection, featuring a rear-loading mechanism with a hydraulic lift to compact waste into the truck body.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Rear end loader truck</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/RecyclingTruck -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/RecyclingTruck">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
+        <rdfs:comment>A truck specifically designed and equipped to collect, transport, and sometimes sort recyclable materials from various collection points to recycling facilities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Recycling truck</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/ScrapTyresWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/ScrapTyresWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste consisting of used and discarded tires from vehicles.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Scrap tyres waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/SludgeWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/SludgeWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>A semi-solid slurry that accumulates as a byproduct of wastewater treatment processes. It consists of organic and inorganic materials, including water, microorganisms, and chemical residues.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Sludge waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/StainlessSteelWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/StainlessSteelWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/NonFerrousMetalWaste"/>
+        <rdfs:comment>Waste composed of stainless steel, which is an alloy of iron, chromium, and other elements, known for its corrosion resistance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Stainless steel waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/TextileLeatherWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TextileLeatherWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste composed of textile and leather materials, including clothing, upholstery, and footwear.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Textile or leather waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/TouchAndGoService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TouchAndGoService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
+        <rdfs:comment>A service that brings an empty bin to collect the waste from the service site and disposes the waste at the disposal site.  The bin will not be returned to the service site afterwards.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Touch and go service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/TowAwayService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TowAwayService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
+        <rdfs:comment>A service that collects the bin containing waste from the service site and disposes the waste at the disposal site. The bin will not be returned to the service site afterwards.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Tow away service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/TreeBranchesWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TreeBranchesWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HorticulturalWaste"/>
+        <rdfs:comment>Smaller limbs and twigs removed from trees during pruning or tree removal. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Tree branches waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/TreeTrunkWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TreeTrunkWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HorticulturalWaste"/>
+        <rdfs:comment>The large, central part of a tree that is cut down and discarded during tree removal or logging activities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Tree trunk waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/UnladenTruckWeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenTruckWeight">
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
+        <rdfs:comment>Weight of an empty truck after waste disposal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Unladen truck weight</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/UsedSlagWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/UsedSlagWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste produced from the smelting and refining of metals, consisting of byproducts like slag.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Used slag waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/VegetableWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/VegetableWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/FoodWaste"/>
+        <rdfs:comment>Waste comprised mainly of vegetable matter, which is capable of being decomposed by microorganisms.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Vegetable waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/Waste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/Waste">
+        <rdfs:comment>Any material, substance, or by-product that is no longer useful or required after the completion of a process. It is typically discarded because it is considered worthless, defective, or surplus to requirements.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste collection service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+        <rdfs:comment>A facility with waste disposal services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste disposal facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalService">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:comment>A service for the management, treatment, and disposal of waste that adheres to environmental regulations and promoting sustainability.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste disposal service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials and equipment from residential, commercial, or industrial sources.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WoodWaste -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WoodWaste">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:comment>Waste consisting of wood materials, including lumber, pallets, and furniture.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Wood waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/3ftBin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/3ftBin">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
+        <rdfs:comment>An open top container bin with a length of 3 feet.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>3-feet bin</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/5ftBin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/5ftBin">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
+        <rdfs:comment>An open top container bin with a length of 5 feet.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>5-feet bin</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/7ftBin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/7ftBin">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
+        <rdfs:comment>An open top container bin with a length of 7 feet.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>7-feet bin</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

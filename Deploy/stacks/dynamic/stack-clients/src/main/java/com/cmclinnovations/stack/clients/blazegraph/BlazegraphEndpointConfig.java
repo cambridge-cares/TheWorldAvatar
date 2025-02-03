@@ -50,7 +50,7 @@ public class BlazegraphEndpointConfig extends PasswordEndpointConfig {
         if (null == url) {
             Objects.requireNonNull(namespace,
                     "If the 'url' is not explicitly specified then a namespace must be specified in the code.");
-            return getServiceUrl() + "/namespace/" + namespace + "/sparql/";
+            return getServiceUrl() + "/namespace/" + namespace + "/sparql";
         } else {
             return url;
         }

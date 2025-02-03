@@ -4,7 +4,7 @@
 
 ** AERMOD Control Pathway
 CO STARTING
-   TITLEONE SG Test Run Building
+   TITLEONE Emission dispersion simulation
    MODELOPT DFAULT CONC 
    AVERTIME PERIOD  
    POLLUTID OTHER

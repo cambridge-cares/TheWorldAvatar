@@ -9,12 +9,12 @@ import requests
 import agentlogging
 import json
 import os
+import uuid
 
 ROUTE = "/getAermodGeoJSON"
 
 get_aermod_geojson_bp = Blueprint('get_aermod_geojson_bp', __name__)
 logger = agentlogging.get_logger("dev")
-
 
 @get_aermod_geojson_bp.route(ROUTE, methods=['GET'])
 def api():
@@ -24,7 +24,7 @@ def api():
     # download file from url
     dispersion_file = requests.get(
         aermod_output_url, auth=requests.auth.HTTPBasicAuth('fs_user', 'fs_pass'))
-
+    
     return get_aermod_geojson(dispersion_file.text, srid)
 
 
@@ -89,9 +89,10 @@ def get_aermod_geojson(aermod_output, srid):
         plt.title("Concentration (g/m$^3$)")
     else:
         plt.title("Concentration ($\mu$g/m$^3$)")
-    plt.savefig("colorbar.png", bbox_inches='tight', transparent=True, dpi=300)
+    fn_cb = f"colorbar_{str(uuid.uuid4())}.png"
+    plt.savefig(fn_cb, bbox_inches='tight', transparent=True, dpi=300)
 
-    files = {'colorbar': open('colorbar.png', 'rb')}
+    files = {'colorbar': open(fn_cb, 'rb')}
 
     response = requests.post(os.environ['FILE_SERVER'].replace('${STACK_NAME}', os.environ['STACK_NAME']) + 'colorbar/colorbar.png',
                              files=files, auth=requests.auth.HTTPBasicAuth('fs_user', 'fs_pass'))
@@ -107,5 +108,9 @@ def get_aermod_geojson(aermod_output, srid):
 
     response = {'contourgeojson': json.loads(
         geojsonstring), 'colourbar': url, 'contourgeojson_elev': json.loads(geojsonstring_elev)}
+
+    plt.close()
+    
+    os.remove(fn_cb) # delete local colourbar file after uploading to file server
 
     return jsonify(response), 200

@@ -1,0 +1,188 @@
+{
+    "name": "Hamburg",
+    "stack": "http://localhost:3838",
+    "groups": [
+        {
+            "name": "Schulen",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "nicht-staatliche-schulen-source",
+                    "type": "geojson",
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Anichtstaatlicheschulen&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "staatliche-schulen-source",
+                    "type": "geojson",
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Astaatlicheschulen&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "nicht-staatliche-schulen-layer",
+                    "name": "Nicht-staatliche Schulen",
+                    "source": "nicht-staatliche-schulen-source",
+                    "order": 1001,
+                    "type": "symbol",
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "education",
+                        "icon-size": 0.5,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "staatliche-schulen-layer",
+                    "name": "Staatliche Schulen",
+                    "source": "staatliche-schulen-source",
+                    "order": 1001,
+                    "type": "symbol",
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "education",
+                        "icon-size": 0.5,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Verwaltung",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "verwaltungsgrenzen-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Averwaltungsgrenzen&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "verwaltungsgrenzen-layer",
+                    "name": "Verwaltungsgrenzen",
+                    "source": "verwaltungsgrenzen-source",
+                    "source-layer": "verwaltungsgrenzen",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#00ff00",
+                        "line-width": 3
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Dispersion",
+            "stack": "http://localhost:3838",
+            "expanded": true,
+            "sources": [
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                    ],
+                    "id": "dispersion-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                    ],
+                    "id": "weather-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                    ],
+                    "id": "ship-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                    ],
+                    "id": "sensor-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
+                    ],
+                    "id": "building-source",
+                    "type": "vector"
+                }
+            ],
+            "layers": [
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Plumes",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.5
+                    },
+                    "id": "dispersion-layer",
+                    "source": "dispersion-source",
+                    "source-layer": "dispersion_contours",
+                    "type": "fill",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Weather station",
+                    "paint": {
+                        "circle-color": "blue"
+                    },
+                    "id": "weather-layer",
+                    "source": "weather-source",
+                    "source-layer": "weather",
+                    "type": "circle"
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Ships",
+                    "paint": {
+                        "circle-color": "black"
+                    },
+                    "id": "ships-layer",
+                    "source": "ship-source",
+                    "source-layer": "ships",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Virtual sensors",
+                    "paint": {
+                        "circle-color": "red"
+                    },
+                    "id": "sensor-layer",
+                    "source": "sensor-source",
+                    "source-layer": "sensors",
+                    "type": "circle",
+                    "minzoom": 4
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "services": {
+        "includes": [
+            "sensorloggermobileappagent",
+            "user-agent",
+            "trajectoryqueryagent",
+            "visualisation",
+            "feature-info-agent",
+            "geoserver-jwt-proxy",
+            "keycloak-test",
+            "vis-backend-agent"
+        ],
+        "excludes": [
+            "citydbimpexp",
+            "citytiler"
+        ]
+    },
+    "volumes": {
+        "vis-files": "visualisation",
+        "fia-queries": "fia",
+        "vis-backend-agent": "vis-backend-agent"
+    }
+}

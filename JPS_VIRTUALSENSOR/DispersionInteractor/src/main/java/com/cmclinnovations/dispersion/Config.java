@@ -24,6 +24,8 @@ public class Config {
             "${STACK_NAME}", STACK_NAME);
     public static final String ELEVATION_CONTOURS_TABLE = System.getenv("ELEVATION_CONTOURS_TABLE");
     public static final String WEATHER_LAYER_NAME = System.getenv("WEATHER_LAYER_NAME");
+    public static final String NUMBER_OF_LAYERS = System.getenv("NUMBER_OF_LAYERS");
+    public static final Long VIS_TIME_LIMIT = Long.parseLong(System.getenv("VIS_TIME_LIMIT"));
 
     private Config() {
         throw new IllegalStateException();

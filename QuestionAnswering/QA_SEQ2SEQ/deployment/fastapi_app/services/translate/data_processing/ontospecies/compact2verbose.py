@@ -270,11 +270,11 @@ class OSSparqlCompact2VerboseConverter:
             return None
 
         """
-        ?Species (a|!a)+ [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
+        ?Species (<>|!<>)+ [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
         """
         return TriplePattern.from_triple(
             "?Species",
-            "(a|!a)+",
+            "(<>|!<>)+",
             "[ rdf:type os:ChemicalClass ; rdfs:label {label} ]".format(label=obj),
         )
 

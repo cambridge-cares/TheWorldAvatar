@@ -1,46 +1,46 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import javax.annotation.Nonnull;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import com.cmclinnovations.stack.clients.gdal.GDALOptions;
+import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
+import com.cmclinnovations.stack.clients.gdal.GDALWarpOptions;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(Parameterized.class)
-public class DataSubsetTest {
+class DataSubsetTest {
 
     private static String formatJson(String json) {
         return json.replace("'", "\"");
     }
 
-    @Parameters(name = "{index}: {2}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { "{'type':'Raster','name':'elevation'}", Raster.class, "Raster" }
-        });
+    private static Stream<Arguments> getArgsForRasterTests() {
+        return Stream.of(
+                Arguments.of("{'type':'Raster','name':'elevation'}", new GDALTranslateOptions()),
+                Arguments.of("{'type':'Raster','name':'elevation', 'gdalTranslateOptions':{}}",
+                        new GDALTranslateOptions()),
+                Arguments.of("{'type':'Raster','name':'elevation', 'gdalWarpOptions':{}}", new GDALWarpOptions()));
     }
 
-    private String json;
+    @ParameterizedTest
+    @MethodSource("getArgsForRasterTests")
+    <T extends GDALOptions<T>> void testRasterParse(String json, @Nonnull T expectedOptions)
+            throws JsonProcessingException {
+        ObjectMapper mapper = JsonHelper.getMapper();
+        Raster dataSubset = mapper.readValue(formatJson(json), Raster.class);
 
-    private Class<? extends DataSubset> clazz;
+        Assertions.assertEquals(expectedOptions.getClass(), dataSubset.gdalOptions.getClass());
 
-    public DataSubsetTest(String json, Class<? extends DataSubset> clazz, String className) {
-        this.json = formatJson(json);
-        this.clazz = clazz;
-    }
-
-    @Test
-    public void testClass() throws JsonMappingException, JsonProcessingException {
-
-        DataSubset readValue = new ObjectMapper().readValue(json, DataSubset.class);
-        Assert.assertEquals(clazz, readValue.getClass());
+        Assertions.assertEquals(mapper.writeValueAsString(expectedOptions),
+                mapper.writeValueAsString(dataSubset.gdalOptions));
     }
 
 }

@@ -13,13 +13,15 @@
 			"aermod-agent",
 			"python-service",
 			"visualisation",
-			"feature-info-agent"
+			"feature-info-agent",
+            "filter-agent"
         ],
         "excludes": [
         ]
     },
     "volumes": {
         "vis-files": "visualisation",
-        "fia-queries": "fia-queries"
+        "fia-queries": "fia-queries",
+        "filter-queries": "spacefinder_filters"
     }
 }

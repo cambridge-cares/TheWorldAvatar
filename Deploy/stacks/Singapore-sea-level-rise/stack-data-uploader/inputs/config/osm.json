@@ -1,0 +1,23 @@
+{
+    "name": "osm",
+    "database": "postgres",
+    "datasetDirectory": "osm",
+    "externalDatasets": [
+        "buildings"
+    ],
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "subdirectory": "sql",
+            "sql": "@/inputs/data/osm/sql/240612_osm.sql"
+        },
+        {
+            "type": "tabular",
+            "subdirectory": "sql",
+            "sql": "@/inputs/data/osm/sql/240626_buildinginfo.sql"
+        }
+    ],
+    "mappings": [
+        "buildinginfo.obda"
+    ]
+}

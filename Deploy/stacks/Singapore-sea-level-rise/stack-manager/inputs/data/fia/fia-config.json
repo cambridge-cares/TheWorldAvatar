@@ -1,0 +1,88 @@
+{
+    "entries": [
+        {
+            "id": "plots",
+            "class": "https://www.theworldavatar.com/kg/ontoplot/Plot",
+            "meta": {
+                "queryFile": "plot.sparql"
+            }
+        },
+        {
+            "id": "building",
+            "class": "http://www.opengis.net/citygml/building/2.0/Building",
+            "meta": {
+                "queryFile": "building.sparql"
+            },
+            "time": {
+                "queryFile": "cea_time.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "CEAAgent"
+            }
+        },
+        {
+            "id": "Isochrone",
+            "class": "https://www.theworldavatar.com/kg/ontoisochrone/Isochrone",
+            "meta": {
+                "queryFile": "isochrone.sparql"
+            }
+        },
+        {
+            "id": "Station",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "meta": {
+                "queryFile": "ReportingStations_Meta.sparql"
+            },
+            "time": {
+                "queryFile": "ReportingStations_Time.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "postgres"
+            }
+        },
+        {
+            "id": "Dispersion polygons",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon",
+            "meta": {
+                "queryFile": "dispersion_polygon.sparql"
+            }
+        },
+        {
+            "id": "Ships",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/Ship",
+            "meta": {
+                "queryFile": "ship_meta.sparql"
+            },
+            "time": {
+                "queryFile": "ship_time.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "postgres"
+            }
+        },
+        {
+            "id": "Carpark",
+            "class": "https://www.theworldavatar.com/kg/ontocarpark/Carpark",
+            "meta": {
+                "queryFile": "carpark_meta.sparql"
+            },
+            "time": {
+                "queryFile": "carpark_time.sparql",
+                "database": "carpark",
+                "limit": 1,
+                "unit": "hours",
+                "reference": "latest"
+            }
+        },
+        {
+            "id": "city furniture",
+            "class": "http://www.opengis.net/citygml/cityfurniture/2.0/CityFurniture",
+            "meta": {
+                "queryFile": "city_furniture.sparql"
+            }
+        }
+    ]
+}

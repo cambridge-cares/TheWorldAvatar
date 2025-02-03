@@ -1,0 +1,796 @@
+{
+    "name": "Augmented UK",
+    "groups": [
+        {
+            "name": "Street Lighting",
+            "stack": "https://theworldavatar.io/demos/uk",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "street-lights-cambridge",
+                    "type": "geojson",
+                    "data": "https://theworldavatar.io/demos/uk/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_cambridge_table&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterRadius": 100,
+                    "clusterMaxZoom": 15
+                },
+                {
+                    "id": "street-lights-york",
+                    "type": "geojson",
+                    "data": "https://theworldavatar.io/demos/uk/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_york_table&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterRadius": 100,
+                    "clusterMaxZoom": 15
+                },
+                {
+                    "id": "street-lights-pk",
+                    "type": "geojson",
+                    "data": "https://theworldavatar.io/demos/uk/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_pk_table&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterRadius": 100,
+                    "clusterMaxZoom": 15
+                },
+                {
+                    "id": "street-lights-kl",
+                    "type": "geojson",
+                    "data": "https://theworldavatar.io/demos/uk/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_kl_table&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterRadius": 100,
+                    "clusterMaxZoom": 15
+                },
+                {
+                    "id": "street-lights-camden",
+                    "type": "geojson",
+                    "data": "https://theworldavatar.io/demos/uk/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_camden_table&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterRadius": 100,
+                    "clusterMaxZoom": 15
+                },
+                {
+                    "id": "street-lights-bradford",
+                    "type": "geojson",
+                    "data": "https://theworldavatar.io/demos/uk/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_bradford_table&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterRadius": 100,
+                    "clusterMaxZoom": 15
+                }
+            ],
+            "layers": [
+                {
+                    "id": "street-lights-cambridge",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "street-lights-cambridge",
+                    "filter": [
+                        "!",
+                        [
+                            "has",
+                            "point_count"
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "clusters_cambridge",
+                    "name": "Lights",
+                    "type": "circle",
+                    "source": "street-lights-cambridge",
+                    "filter": true,
+                    "paint": {
+                        "circle-color": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            "#51bbd6",
+                            100,
+                            "#f1f075",
+                            750,
+                            "#f28cb1"
+                        ],
+                        "circle-radius": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            12.5,
+                            100,
+                            15,
+                            750,
+                            17.5
+                        ]
+                    }
+                },
+                {
+                    "id": "cluster-count_cambridge",
+                    "name": "Lights",
+                    "type": "symbol",
+                    "source": "street-lights-cambridge",
+                    "filter": [
+                        "has",
+                        "point_count"
+                    ],
+                    "layout": {
+                        "text-field": [
+                            "get",
+                            "point_count_abbreviated"
+                        ],
+                        "text-font": [
+                            "DIN Offc Pro Medium",
+                            "Arial Unicode MS Bold"
+                        ],
+                        "text-size": 15
+                    }
+                },
+                {
+                    "id": "street-lights-york",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "street-lights-york",
+                    "filter": [
+                        "!",
+                        [
+                            "has",
+                            "point_count"
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "clusters_york",
+                    "name": "Lights",
+                    "type": "circle",
+                    "source": "street-lights-york",
+                    "filter": true,
+                    "paint": {
+                        "circle-color": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            "#51bbd6",
+                            100,
+                            "#f1f075",
+                            750,
+                            "#f28cb1"
+                        ],
+                        "circle-radius": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            12.5,
+                            100,
+                            15,
+                            750,
+                            17.5
+                        ]
+                    }
+                },
+                {
+                    "id": "cluster-count_york",
+                    "name": "Lights",
+                    "type": "symbol",
+                    "source": "street-lights-york",
+                    "filter": [
+                        "has",
+                        "point_count"
+                    ],
+                    "layout": {
+                        "text-field": [
+                            "get",
+                            "point_count_abbreviated"
+                        ],
+                        "text-font": [
+                            "DIN Offc Pro Medium",
+                            "Arial Unicode MS Bold"
+                        ],
+                        "text-size": 15
+                    }
+                },
+                {
+                    "id": "street-lights-pk",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "street-lights-pk",
+                    "filter": [
+                        "!",
+                        [
+                            "has",
+                            "point_count"
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "clusters_pk",
+                    "name": "Lights",
+                    "type": "circle",
+                    "source": "street-lights-pk",
+                    "filter": true,
+                    "paint": {
+                        "circle-color": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            "#51bbd6",
+                            100,
+                            "#f1f075",
+                            750,
+                            "#f28cb1"
+                        ],
+                        "circle-radius": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            12.5,
+                            100,
+                            15,
+                            750,
+                            17.5
+                        ]
+                    }
+                },
+                {
+                    "id": "cluster-count_pk",
+                    "name": "Lights",
+                    "type": "symbol",
+                    "source": "street-lights-pk",
+                    "filter": [
+                        "has",
+                        "point_count"
+                    ],
+                    "layout": {
+                        "text-field": [
+                            "get",
+                            "point_count_abbreviated"
+                        ],
+                        "text-font": [
+                            "DIN Offc Pro Medium",
+                            "Arial Unicode MS Bold"
+                        ],
+                        "text-size": 15
+                    }
+                },
+                {
+                    "id": "street-lights-camden",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "street-lights-camden",
+                    "filter": [
+                        "!",
+                        [
+                            "has",
+                            "point_count"
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "clusters_camden",
+                    "name": "Lights",
+                    "type": "circle",
+                    "source": "street-lights-camden",
+                    "filter": true,
+                    "paint": {
+                        "circle-color": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            "#51bbd6",
+                            100,
+                            "#f1f075",
+                            750,
+                            "#f28cb1"
+                        ],
+                        "circle-radius": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            12.5,
+                            100,
+                            15,
+                            750,
+                            17.5
+                        ]
+                    }
+                },
+                {
+                    "id": "cluster-count_camden",
+                    "name": "Lights",
+                    "type": "symbol",
+                    "source": "street-lights-camden",
+                    "filter": [
+                        "has",
+                        "point_count"
+                    ],
+                    "layout": {
+                        "text-field": [
+                            "get",
+                            "point_count_abbreviated"
+                        ],
+                        "text-font": [
+                            "DIN Offc Pro Medium",
+                            "Arial Unicode MS Bold"
+                        ],
+                        "text-size": 15
+                    }
+                },
+                {
+                    "id": "street-lights-kl",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "street-lights-kl",
+                    "filter": [
+                        "all",
+                        [
+                            "!",
+                            [
+                                "has",
+                                "point_count"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "status"
+                            ],
+                            0.0
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "failed-street-lights-kl",
+                    "type": "symbol",
+                    "name": "Failed Lights",
+                    "source": "street-lights-kl",
+                    "filter": [
+                        "all",
+                        [
+                            "!",
+                            [
+                                "has",
+                                "point_count"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "status"
+                            ],
+                            1.0
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light_failed",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "clusters_kl",
+                    "name": "Lights",
+                    "type": "circle",
+                    "source": "street-lights-kl",
+                    "filter": true,
+                    "paint": {
+                        "circle-color": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            "#51bbd6",
+                            100,
+                            "#f1f075",
+                            750,
+                            "#f28cb1"
+                        ],
+                        "circle-radius": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            12.5,
+                            100,
+                            15,
+                            750,
+                            17.5
+                        ]
+                    }
+                },
+                {
+                    "id": "cluster-count_kl",
+                    "name": "Lights",
+                    "type": "symbol",
+                    "source": "street-lights-kl",
+                    "filter": [
+                        "has",
+                        "point_count"
+                    ],
+                    "layout": {
+                        "text-field": [
+                            "get",
+                            "point_count_abbreviated"
+                        ],
+                        "text-font": [
+                            "DIN Offc Pro Medium",
+                            "Arial Unicode MS Bold"
+                        ],
+                        "text-size": 15
+                    }
+                },
+                {
+                    "id": "street-lights-bradford",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "street-lights-bradford",
+                    "filter": [
+                        "!",
+                        [
+                            "has",
+                            "point_count"
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "street_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.04
+                        ]
+                    }
+                },
+                {
+                    "id": "clusters_bradford",
+                    "name": "Lights",
+                    "type": "circle",
+                    "source": "street-lights-bradford",
+                    "filter": true,
+                    "paint": {
+                        "circle-color": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            "#51bbd6",
+                            100,
+                            "#f1f075",
+                            750,
+                            "#f28cb1"
+                        ],
+                        "circle-radius": [
+                            "step",
+                            [
+                                "get",
+                                "point_count"
+                            ],
+                            12.5,
+                            100,
+                            15,
+                            750,
+                            17.5
+                        ]
+                    }
+                },
+                {
+                    "id": "cluster-count_bradford",
+                    "name": "Lights",
+                    "type": "symbol",
+                    "source": "street-lights-bradford",
+                    "filter": [
+                        "has",
+                        "point_count"
+                    ],
+                    "layout": {
+                        "text-field": [
+                            "get",
+                            "point_count_abbreviated"
+                        ],
+                        "text-font": [
+                            "DIN Offc Pro Medium",
+                            "Arial Unicode MS Bold"
+                        ],
+                        "text-size": 15
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Traffic Lighting",
+            "stack": "https://theworldavatar.io/demos/uk",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "traffic-lights-leeds",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:traffic_lighting_leeds_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "traffic-lights-york_traffic",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:traffic_lighting_york_traffic_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "traffic-lights-leeds",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "traffic-lights-leeds",
+                    "source-layer": "traffic_lighting_leeds_table",
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "traffic_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.025
+                        ]
+                    }
+                },
+                {
+                    "id": "traffic-lights-york_traffic",
+                    "type": "symbol",
+                    "name": "Lights",
+                    "source": "traffic-lights-york_traffic",
+                    "source-layer": "traffic_lighting_york_traffic_table",
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "traffic_light",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.0000015,
+                            12,
+                            0.01,
+                            16,
+                            0.025
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "England Highway",
+            "stack": "https://theworldavatar.io/demos/uk",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "highway",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:england_highway_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "highway",
+                    "type": "line",
+                    "name": "Highway",
+                    "source": "highway",
+                    "source-layer": "england_highway_table",
+                    "paint": {
+                        "line-color": "#9E151A",
+                        "line-width": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Electric Vehicle Charging Point",
+            "stack": "https://theworldavatar.io/demos/uk",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "charging_point_kl",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:charging_point_kl_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "charging_point_kl",
+                    "type": "symbol",
+                    "name": "Charging Point",
+                    "source": "charging_point_kl",
+                    "source-layer": "charging_point_kl_table",
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": true,
+                        "icon-image": "charging_point",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            5,
+                            0.025,
+                            12,
+                            0.05,
+                            16,
+                            0.125
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

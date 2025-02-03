@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   stack-client:
-    image: ghcr.io/cambridge-cares/stack-client${IMAGE_SUFFIX}:1.27.0
+    image: ghcr.io/cambridge-cares/stack-client${IMAGE_SUFFIX}:1.40.1
     secrets:
       - blazegraph_password
       - postgis_password

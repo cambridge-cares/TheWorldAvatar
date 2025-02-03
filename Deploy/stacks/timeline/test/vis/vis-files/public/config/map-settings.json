@@ -1,0 +1,51 @@
+{
+    "type": "mapbox",
+    "camera": {
+        "default": "Singapore",
+        "positions": [
+            {
+                "name": "Singapore",
+                "center": [
+                    103.848062,
+                    1.276904
+                ],
+                "zoom": 10,
+                "bearing": 0,
+                "pitch": 0
+            }
+        ]
+    },
+    "imagery": {
+        "default": "Auto",
+        "options": [
+            {
+                "name": "Light",
+                "url": "mapbox://styles/mapbox/light-v11?optimize=true"
+            },
+            {
+                "name": "Dark",
+                "url": "mapbox://styles/mapbox/dark-v11?optimize=true"
+            },
+            {
+                "name": "Outdoors",
+                "url": "mapbox://styles/mapbox/outdoors-v12?optimize=true"
+            },
+            {
+                "name": "Satellite",
+                "url": "mapbox://styles/mapbox/satellite-streets-v12?optimize=true"
+            },
+            {
+                "name": "3D (Day)",
+                "url": "mapbox://styles/mapbox/standard",
+                "time": "dawn"
+            },
+            {
+                "name": "3D (Night)",
+                "url": "mapbox://styles/mapbox/standard",
+                "time": "dusk"
+            }
+        ]
+    },
+    "icons": {
+    }
+}

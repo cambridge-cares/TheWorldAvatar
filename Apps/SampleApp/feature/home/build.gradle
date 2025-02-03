@@ -1,0 +1,12 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.home'
+}
+
+dependencies {
+    implementation project(path: ':core:ui')
+    implementation project(path: ':core:utils')
+}

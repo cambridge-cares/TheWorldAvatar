@@ -8,4 +8,7 @@ unit_parse
 Pint
 Levenshtein
 jinja2
-sentencepiece
+dash
+python-multipart
+periodictable
+tiktoken

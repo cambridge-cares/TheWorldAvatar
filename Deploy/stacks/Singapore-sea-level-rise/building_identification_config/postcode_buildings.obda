@@ -1,0 +1,9 @@
+[PrefixDeclaration]
+twa:    https://www.theworldavatar.com/kg/
+env:    https://www.theworldavatar.com/kg/ontobuiltenv/
+
+[MappingDeclaration] @collection [[
+mappingId   building_to_address
+target      twa:Building/{building_uuid} env:hasAddress twa:address/{ogc_fid} .
+source      SELECT building_uuid, ogc_fid FROM sgpostcode
+]]

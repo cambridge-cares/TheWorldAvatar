@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "IDE_water_storage",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "IDE_water_storage",
+            "subdirectory": "vector"
+        }
+    ]
+   
+
+}

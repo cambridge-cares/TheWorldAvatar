@@ -1,6 +1,6 @@
 import random
 
-from locate_then_ask.ontokin.make_example_base import ExampleMakerBase
+from locate_then_ask.make_example_base import ExampleMakerBase
 from locate_then_ask.ontokin.entity_store import OKEntityStore
 from .locate import OKMechanismLocator
 from .ask import OKMechanismAsker

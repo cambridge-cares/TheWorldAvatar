@@ -1,0 +1,2 @@
+# switch POST to DELETE to stop live updates
+POST http://localhost:3838/ship-input-agent/live-server

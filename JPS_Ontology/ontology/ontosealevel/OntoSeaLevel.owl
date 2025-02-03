@@ -1,0 +1,737 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontosealevel/"
+     xml:base="https://www.theworldavatar.com/kg/ontosealevel/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 July 2024</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#gYear -->
+
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/associatedWith -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/associatedWith">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedArea"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedLength"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a Sea Level Change and its associated properties.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">associated with</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasAffectedArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasAffectedArea">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a landplot and its affected area due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has affected area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasAffectedLength -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasAffectedLength">
+        <rdfs:domain rdf:resource="https://w3id.org/openstreetmap/terms#Way"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an OpenStreetMap&apos;s road and its affected road length due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has affected length</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasConfidenceLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasConfidenceLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ConfidenceLevel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its respective IPCC&apos;s defined confidence level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has confidence level</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level measurement and the sea level height.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has height</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasLength -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasLength">
+        <rdfs:domain rdf:resource="https://w3id.org/openstreetmap/terms#Way"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an OpenStreetMap&apos;s road and its  road length.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has length</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasPotentialImpact -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasPotentialImpact">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ImpactedSite"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its potential damage.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has potential impact</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasRCP -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasRCP">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its representative concentration pathway. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has representative concentration pathway</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasRadioactiveForcingValues -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasRadioactiveForcingValues">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a representative concentration pathway and its radioactive forcing values of greenhouse gases.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has radioactive forcing values</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasSSP -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasSSP">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its shared socioeconomic pathway.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has shared socioeconomic pathway</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasBaselineYear -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasBaselineYear">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its  baseline year used as reference.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has baseline  year</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasChildrenPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasChildrenPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of children population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has children population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasElderlyPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasElderlyPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of elderly population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has elderly population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasMenPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasMenPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of men population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has men population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasPercentageQuantile -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasPercentageQuantile">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its statistical percentage quantile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has percentage quantile</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasProjectionYear -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasProjectionYear">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its  projection year.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has projection year</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasTotalPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasTotalPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the total number of population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has total population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasWomenPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasWomenPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of women population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has women population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasWomenofReproductiveAgePopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasWomenofReproductiveAgePopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of women of reproductive age population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has women of reproductive age population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasYouthPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasYouthPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of youth population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has youth population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Length -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+    
+
+
+    <!-- https://dbpedia.org/ontology/tree -->
+
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/tree"/>
+    
+
+
+    <!-- https://raw.githubusercontent.com/beAWARE-project/ontology/master/beAWARE_ontology#Monument -->
+
+
+    <owl:Class rdf:about="https://raw.githubusercontent.com/beAWARE-project/ontology/master/beAWARE_ontology#Monument">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Monument"/>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/Museum -->
+
+
+    <owl:Class rdf:about="https://schema.org/Museum">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Museum"/>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/TouristAttraction -->
+
+
+    <owl:Class rdf:about="https://schema.org/TouristAttraction">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/TouristAttraction"/>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/openstreetmap/terms#Way -->
+
+
+    <owl:Class rdf:about="https://w3id.org/openstreetmap/terms#Way"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/AffectedArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amount of area affected by sea level rise. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AffectedArea</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/AffectedLength -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedLength">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amount of length affected by sea level rise. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AffectedLength</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/ConfidenceLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/ConfidenceLevel">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An indicator to evaluate the validity of a finding following IPCC AR5 Uncertainties Guidance Note.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Confidence Level</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/CulturalSite -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A place or building of cultural importance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cultural site</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/HeritageTree -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/HeritageTree">
+        <rdfs:subClassOf rdf:resource="https://dbpedia.org/ontology/tree"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A tree that is the natural heritage of a specific place.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heritage tree</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/HistoricSite -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/HistoricSite">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Historic site</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/ImpactedSite -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/ImpactedSite">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A site impacted by sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Impacted Site</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/LowConfidence -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/LowConfidence">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ConfidenceLevel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A confidence level that indicates the reuslts are of low agreement and limited evidence.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Low Confidence</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/MediumConfidence -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/MediumConfidence">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ConfidenceLevel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A confidence level that indicates the reuslts are of medium agreement and medium evidence.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medium Confidence</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/Monument -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Monument">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A structure for the commemoration of a person or event.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monument</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/Museum -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Museum">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Museum</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A climate change scenario that project future greenhouse gas concentrations.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway1.9 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway1.9">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with lower emissions in radiative forcing at 1.9 W/m2 in 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 1.9</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway2.6 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway2.6">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway that peak in radiative forcing at approximately 3 W/m2 mid-century before declining to 2.6 W/m2 by 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 2.6</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway3.4 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway3.4">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with emissions in radiative forcing at 3.4 W/m2 in 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 3.4</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway4.5 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway4.5">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway that represents a stabilization (without overshoot) in radiative forcing at 4.5 W/m2 post 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 4.5</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway6.0 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway6.0">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway that represents a stabilization (without overshoot) in radiative forcing at 6 W/m2 post 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 6.0</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway7.0 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway7.0">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with emissions in radiative forcing at 7.0 W/m2 in 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 7.0</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway8.5 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway8.5">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway that represents a rise in radiative forcing to 8.5 W/m2 in 2100.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 8.5</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A change in  sea level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sea level change</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A climate change scenario of projected socioeconomic changes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shared Socioeconomic Pathway</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway1 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway1">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A scenario that emphasise inclusive development, environmental boundaries, and low resource intensity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shared Socioeconomic Pathway 1</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway2 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway2">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A scenario that follows moderate growth and uneven development.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shared Socioeconomic Pathway 2</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway3 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway3">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A scenario that follows increasing regional conflicts with slow economic development, and high environmental degradation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shared Socioeconomic Pathway 3</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway4 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway4">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A scenario that follows increasing economic disparity, technological development in high-tech sectors, and local environmental policies.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shared Socioeconomic Pathway 4</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway5 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway5">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A scenario that prioritizes rapid technological progress and economic growth through intensive resource use and fossil fuels.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shared Socioeconomic Pathway 5</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/TouristAttraction -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/TouristAttraction">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tourist attraction</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

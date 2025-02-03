@@ -7,33 +7,35 @@ class ScenarioHandler {
     /**
      * Base URL of the agent to contact about scenarios.
      */
-    private agentBaseURL;
+    private agentBaseURL: string;
 
     /**
      * Optional dataset identify to send to the scenario agent.
      */
-    private agentDataset;
+    private agentDataset: string;
 
     /**
      * JSON object holding definitions of possible scenarios.
      */
-    private definitions;
+    public definitions: JSON;
 
     /**
      * ID of currently selected scenario.
      */
-    public selectedScenario;
-    public scenarioName;
+    public selectedScenario: string;
+    public scenarioName: string;
 
+    private manager: Manager;
     /**
      * Initialise a new scenario handler.
      * 
      * @param agentBaseURL Base URL of the agent to contact about scenarios.
      * @param agentDataset Optional dataset identify to send to the scenario agent.
      */
-    constructor(agentBaseURL: string, agentDataset: string) {
+    constructor(agentBaseURL: string, agentDataset: string, manager: Manager) {
         this.agentBaseURL = agentBaseURL;
         this.agentDataset = agentDataset;
+        this.manager = manager;
     }
 
     /**
@@ -44,7 +46,7 @@ class ScenarioHandler {
      * @returns Promise object
      */
     private queryForScenarios() {
-        if(this.definitions != null) return Promise.resolve();
+        if (this.definitions != null) return Promise.resolve();
         console.log("Querying for list of available scenarios...");
 
         // Build params
@@ -58,9 +60,9 @@ class ScenarioHandler {
         url += (url.endsWith("/")) ? "getScenarios" : "/getScenarios";
         console.log("Querying for scenarios at " + url);
 
-        let promise = $.getJSON(url, params, function(rawJSON) {
+        let promise = $.getJSON(url, params, function (rawJSON) {
             self.definitions = rawJSON;
-        }).fail(function() {
+        }).fail(function () {
             console.error("Could not determine what scenarios are available!");
         });
 
@@ -73,7 +75,7 @@ class ScenarioHandler {
     public showSelector() {
         let container = document.getElementById("scenario-container");
 
-        if(container == null) {
+        if (container == null) {
             // Create and add the UI element
             container = document.createElement("div");
             container.id = "scenario-container";
@@ -81,19 +83,19 @@ class ScenarioHandler {
             container.innerHTML = `
                 <div id="scenario-blocker"></div>
                 <div id="scenario-popup">
-                    <div id="scenario-close"><i class="fa fa-times"></i></div>
-                    <div id="scenario-header">
-                        <b style="font-size: 120%;">Select a scenario:</b><br/><br/>
-                        <p>Please identify a scenario from the list below, then select the 'View' button to plot its data.</p>
+                <div id="scenario-header">
+                <b style="font-size: 120%;">Select a scenario:</b><br/><br/>
+                <button id="scenario-close"><i class="fa fa-times"></i></button>
+                <p>Please identify a scenario from the list below, then select the 'View' button to plot its data.</p>
                     </div>
                     <div id="scenario-inner">
                         <div id="scenario-loading" style="display: table;">
                             <img style="width: 200px;" src="loading.gif"></img>
                             <p style="color: grey; font-style: italic;">Loading scenario details, please wait...</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                            `;
             document.body.appendChild(container);
 
             // Send of request to get the scenario details
@@ -104,11 +106,8 @@ class ScenarioHandler {
             });
         }
 
-        // Hide the close button if there's no scenario already selected
-        if(this.selectedScenario == null) {
-            let closeButton = document.getElementById("scenario-close");
-            closeButton.style.display = "none";
-        }
+        this.handleEscButton();
+
 
         // Update the width of the container
         let map = document.getElementById("map");
@@ -119,6 +118,29 @@ class ScenarioHandler {
 
         // Show controls
         container.style.display = "block";
+
+        // Hide the close button if there's never been a scenario selected
+
+    }
+
+    private handleEscButton() {
+        let closeButton = document.getElementById("scenario-close");
+
+        closeButton.style.display = (this.manager.selectScenarioResolved) ? "block" : "none";
+
+        closeButton.addEventListener('click', () => {
+            this.selectScenario(this.selectedScenario, this.scenarioName)
+        });
+
+        // Close selector on esc press 
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                // Get the scenario close button element
+                let closeButton = document.getElementById("scenario-close");
+                // Trigger a click event on the scenario close button
+                closeButton.click();
+            }
+        });
     }
 
     /**
@@ -126,10 +148,10 @@ class ScenarioHandler {
      * 
      * @param show boolean
      */
-    private changeOther(show) {
+    private changeOther(show: boolean) {
         let controls = document.getElementById("controlsContainer");
         controls.style.visibility = (show) ? "visible" : "hidden";
-        
+
         let attributions = document.getElementById("attributionContainer");
         attributions.style.visibility = (show) ? "visible" : "hidden";
 
@@ -148,14 +170,14 @@ class ScenarioHandler {
         let container = document.getElementById("scenario-inner");
         container.innerHTML = "";
 
-        for(let key in this.definitions) {
+        for (let key in this.definitions) {
             let scenario = this.definitions[key];
 
             // Create element
             let element = document.createElement("div");
             element.id = scenario["id"];
             element.setAttribute("name", scenario["name"]);
-            element.addEventListener("click", function(){
+            element.addEventListener("click", function () {
                 window.manager.selectScenario(scenario["id"], scenario["name"])
             });
 
@@ -165,27 +187,40 @@ class ScenarioHandler {
             element.innerHTML = `
                 <b> ` + scenario["name"] + `</b><br/><br/>
                 <p>` + scenario["description"] + `</p><br/>
-                <button type="button" class="scenario-button" id="` + element.id + `" name="` + scenario["name"] + `" + onclick="manager.selectScenario(this.id, this.name)">View</button>
             `;
 
             // Add to container
             container.appendChild(element);
         }
     }
-    
+
     /**
      * Sets the selected scenario ID.
      * 
      * @param scenarioID scenario ID
      * @param scenarioName user facing scenario name
      */
-    public selectScenario(scenarioID, scenarioName) {
-        this.selectedScenario = scenarioID;
-        this.scenarioName = scenarioName;
+    public selectScenario(scenarioID: string, scenarioName: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (!scenarioID || !scenarioName) {
+                reject(new Error("Invalid scenarioID or scenarioName"));
+                return;
+            }
 
-        let container = document.getElementById("scenario-container");
-        if(container != null) container.style.display = "none";
-        this.changeOther(true);
+            this.selectedScenario = scenarioID;
+            this.scenarioName = scenarioName;
+
+            window.currentTimeIndex = '1';
+
+            let container = document.getElementById("scenario-container");
+            if (container != null) container.style.display = "none";
+
+            this.changeOther(true);
+
+            this.manager.selectScenarioResolved = true;
+
+            resolve();
+        });
     }
 
     /**
@@ -195,7 +230,7 @@ class ScenarioHandler {
      * @param callback to pass JSON object to.
      */
     public getConfiguration(callback) {
-        if(this.selectedScenario == null) return;
+        if (this.selectedScenario == null) return;
         console.log("Querying for scenario configuration file...");
 
         // Set query params
@@ -203,23 +238,37 @@ class ScenarioHandler {
             "type": "get"
         }
 
-        let url = this.agentBaseURL;
-        url += (url.endsWith("/")) ? "getDataJson/" : "/getDataJson/";
-        url += this.selectedScenario;
-
-        if(this.agentDataset != null) {
-            url += "?dataset=" + this.agentDataset;
-        }
-
+        let url = this.getDataURL();
         console.log("Querying for config at " + url);
-        
+
         // Query for scenario configuration
-        $.getJSON(url, params, function(rawJSON) {
+        $.getJSON(url, params, function (rawJSON) {
             callback(rawJSON);
-        }).fail(function() {
+        }).fail(function () {
             console.error("Could not get the data configuration for the scenario!");
         });
     }
 
+
+    private getDataURL() {
+        let url = this.agentBaseURL;
+        url += (url.endsWith("/")) ? "getDataJson/" : "/getDataJson/";
+        url += this.selectedScenario;
+
+        if (this.agentDataset) {
+            url += "?dataset=" + this.agentDataset;
+        }
+        return url;
+    }
+
+    public async fetchScenarioDimensions(): Promise<ScenarioDimensionsData> {
+        try {
+            const response = await fetch(`${this.agentBaseURL}/getScenarioTimes/${this.selectedScenario}`);
+            const data: ScenarioDimensionsData = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching times from CentralStackAgent/getScenarioTimes:', error);
+        }
+    }
 }
 // End of class.

@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -31,6 +31,7 @@ import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
@@ -48,9 +49,32 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
+    private Thread thread;
 
+    // only allowing one thread at a time to prevent duplicate request updates
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+        try {
+            if (thread != null && thread.isAlive()) {
+                LOGGER.info("Previous thread is still alive, waiting for it to finish");
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Error from previous thread");
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        thread = new Thread(() -> run(derivationInputs));
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void run(DerivationInputs derivationInputs) {
         String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
         String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
@@ -59,6 +83,11 @@ public class AermodAgent extends DerivationAgent {
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
 
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
+
+        if (queryClient.timestepExists(simulationTime, derivationInputs.getDerivationIRI())) {
+            LOGGER.info("Duplicate request for the same timestep, ignoring request");
+            return;
+        }
 
         if (simulationTime == 0) {
             LOGGER.info("Simulation time = 0, this is from calling createSyncDerivationForNewInfo the first time");
@@ -73,43 +102,51 @@ public class AermodAgent extends DerivationAgent {
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
         // compute srid
-        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
-        int srid;
-        if (scope.getCentroid().getCoordinate().getY() < 0) {
-            srid = Integer.valueOf("327" + centreZoneNumber);
+        double longitude = scope.getCentroid().getCoordinate().getX();
+        longitude = (longitude + 180) - Math.floor((longitude + 180) / 360) * 360 - 180; // ensure never exceeding 180
+        double latitude = scope.getCentroid().getCoordinate().getY();
+        int centreZoneNumber = (int) Math.floor((longitude + 180) / 6) + 1;
+        int srid = (latitude < 0) ? 32700 + centreZoneNumber : 32600 + centreZoneNumber;
 
-        } else {
-            srid = Integer.valueOf("326" + centreZoneNumber);
+        Map<String, Building> allBuildings = new HashMap<>();
+        if (!EnvConfig.IGNORE_BUILDINGS) {
+            LOGGER.info("Querying for buildings within simulation domain");
+            allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
         }
-
-        Map<String, Building> allBuildings = null;
-        LOGGER.info("Querying for buildings within simulation domain");
-        allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
         List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
 
         long timeBuffer = 1800; // 30 minutes
+
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 
         // update ensure ship derivations use the right simulation time
+
         queryClient.attachSimTimeToShips(ships, simulationTimeIri);
 
         List<PointSource> allSources = new ArrayList<>();
+
         allSources.addAll(staticPointSources);
+
         allSources.addAll(ships);
 
         queryClient.setPointSourceLabel(allSources);
 
         // new ontop way
-        List<Building> buildings = queryClient.getBuildings(allSources, allBuildings);
+        List<Building> buildings;
+        if (!EnvConfig.IGNORE_BUILDINGS) {
+            buildings = queryClient.getBuildings(allSources, allBuildings);
+        } else {
+            buildings = new ArrayList<>();
+        }
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_EMISSIONS_UPDATE)) {
-            derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
+            devClient.updatePureSyncDerivationsInParallel(derivationsToUpdate);
         } else {
-            derivationsToUpdate.stream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
+            devClient.updatePureSyncDerivations(derivationsToUpdate);
         }
 
         // get emissions and set the values in the ships
@@ -181,20 +218,27 @@ public class AermodAgent extends DerivationAgent {
 
         // fudge, otherwise object needs to be "final" in the loop
         List<JSONObject> elevationJson = new ArrayList<>();
+        List<JSONObject> contourJson = new ArrayList<>();
+        List<PollutantType> pollutantTypes = new ArrayList<>();
+        List<Integer> zList = new ArrayList<>();
 
         Pollutant.getPollutantList().parallelStream()
                 .filter(pollutantType -> sourcesWithEmissions.stream().allMatch(p -> p.hasPollutant(pollutantType)))
                 .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
                     aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
-                    // create emissions input
-                    aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
-                    aermod.runAermod(pollutantType, zMap.get(zIri));
+                    if (aermod.validAermodInput(weatherData, sourcesWithEmissions)) {
+                        // create emissions input
+                        aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
+                        aermod.runAermod(pollutantType, zMap.get(zIri));
+
+                    }
 
                     // Upload files used by scripts within Python Service to file server.
                     Path concFile = simulationDirectory.resolve(
                             Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType),
                                     String.valueOf(zMap.get(zIri)), "averageConcentration.dat"));
+
                     String outputFileURL = aermod.uploadToFileServer(concFile);
                     zToOutputMap.get(zIri).addDispMatrix(pollutantType, outputFileURL);
 
@@ -214,11 +258,17 @@ public class AermodAgent extends DerivationAgent {
                     zToOutputMap.get(zIri).addColourBar(pollutantType, colourBarUrl);
 
                     JSONObject geoJSON = response.getJSONObject("contourgeojson");
-                    aermod.createDispersionLayer(geoJSON, derivationInputs.getDerivationIRI(), pollutantType,
-                            simulationTime, zMap.get(zIri));
+                    contourJson.add(geoJSON);
+                    pollutantTypes.add(pollutantType);
+                    zList.add(zMap.get(zIri));
 
                     elevationJson.add(response.getJSONObject("contourgeojson_elev"));
                 }));
+
+        for (int i = 0; i < contourJson.size(); i++) {
+            aermod.createDispersionLayer(contourJson.get(i), derivationInputs.getDerivationIRI(), pollutantTypes.get(i),
+                    simulationTime, zList.get(i));
+        }
 
         if ((!queryClient.tableExists(EnvConfig.ELEVATION_CONTOURS_TABLE) && usesElevation) ||
                 (queryClient.tableExists(EnvConfig.ELEVATION_CONTOURS_TABLE)
@@ -248,7 +298,7 @@ public class AermodAgent extends DerivationAgent {
         aermod.uploadRasterToPostGIS(srid, append);
 
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), zToOutputMap, !ships.isEmpty(),
-                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation);
+                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation, srid);
     }
 
     /**

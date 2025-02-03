@@ -2,6 +2,8 @@
 
 # Copy stack manager config file to stack manager repo
 cp ./inputs/stack-manager/inputs/config/KINGS-LYNN.json ../../dynamic/stack-manager/inputs/config/
+# Copy required stack manager inputs data
+cp ./inputs/stack-manager/inputs/data/* ../../dynamic/stack-manager/inputs/data/ -r
 
 # Change directory to stack manager repo
 cd ../../dynamic/stack-manager
@@ -17,7 +19,7 @@ done
 
 # Specify required stack-manager version number
 # NOTE: 1.13.3 is the latest on that uses PostGIS 14
-REQUIRED_VERSION="1.22.0"
+REQUIRED_VERSION="1.27.1"
 sed -i "s/\(ghcr\.io\/cambridge-cares\/stack-manager\${IMAGE_SUFFIX}:\)[0-9]\+\.[0-9]\+\.[0-9]\+/\1${REQUIRED_VERSION}/" docker-compose.yml
 
 # Restart stack with required version

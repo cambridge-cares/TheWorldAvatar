@@ -1,0 +1,5030 @@
+{
+    "name": "Augmented Singapore",
+    "stack": "http://localhost:3838",
+    "sources": [
+        {
+            "id": "CarPark-source",
+            "type": "vector",
+            "tiles": [
+                "http://localhost:3838/geoserver/carparks/wms?service=WMS&version=1.1.0&request=GetMap&layers=carparks%3Acarparks&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ]
+        },
+        {
+            "type": "vector",
+            "tiles": [
+                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:cea&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ],
+            "id": "cea"
+        }
+    ],
+    "layers": [
+        {
+            "id": "CarPark-layer",
+            "name": "Carparks",
+            "source": "CarPark-source",
+            "source-layer": "carparks",
+            "type": "symbol",
+            "order": 50,
+            "layout": {
+                "visibility": "none",
+                "icon-image": "carpark_image",
+                "icon-size": [
+                    "interpolate",
+                    [
+                        "linear"
+                    ],
+                    [
+                        "zoom"
+                    ],
+                    12,
+                    0.1
+                ],
+                "icon-anchor": "bottom"
+            }
+        },
+        {
+            "id": "cea-layer",
+            "name": "Buildings with CEA data",
+            "source": "cea",
+            "source-layer": "cea",
+            "type": "fill-extrusion",
+            "minzoom": 8,
+            "order": 23,
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "fill-extrusion-color": "#8D99AE",
+                "fill-extrusion-opacity": 0.9,
+                "fill-extrusion-base": 0,
+                "fill-extrusion-height": [
+                    "case",
+                    [
+                        "has",
+                        "building_height"
+                    ],
+                    [
+                        "get",
+                        "building_height"
+                    ],
+                    8
+                ]
+            }
+        }
+    ],
+    "groups": [
+        {
+            "name": "Land plots",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "plot-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "all-landplot",
+                    "name": "All",
+                    "source": "plot-source",
+                    "source-layer": "landplot",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": [
+                            "match",
+                            [
+                                "get",
+                                "LU_DESC"
+                            ],
+                            "AGRICULTURE",
+                            "#8c875d",
+                            "BEACH AREA",
+                            "#f9f7c7",
+                            "BUSINESS 1",
+                            "#c8a5cf",
+                            "BUSINESS 1 - WHITE",
+                            "#c8a5cf",
+                            "BUSINESS 2",
+                            "#b10166",
+                            "BUSINESS 2 - WHITE",
+                            "#b10166",
+                            "BUSINESS PARK",
+                            "#227fa2",
+                            "BUSINESS PARK - WHITE",
+                            "#227fa2",
+                            "CEMETERY",
+                            "#9f8900",
+                            "CIVIC & COMMUNITY INSTITUTION",
+                            "#cc0022",
+                            "COMMERCIAL",
+                            "#215297",
+                            "COMMERCIAL / INSTITUTION",
+                            "#9ffeff",
+                            "COMMERCIAL & RESIDENTIAL",
+                            "#36ade5",
+                            "EDUCATIONAL INSTITUTION",
+                            "#f4f2c2",
+                            "HEALTH & MEDICAL CARE",
+                            "#cc0022",
+                            "HOTEL",
+                            "#a79cc6",
+                            "LIGHT RAPID TRANSIT",
+                            "#ffffff",
+                            "MASS RAPID TRANSIT",
+                            "#ffffff",
+                            "OPEN SPACE",
+                            "#abb20e",
+                            "PARK",
+                            "#3ba339",
+                            "PLACE OF WORSHIP",
+                            "#cc0022",
+                            "PORT / AIRPORT",
+                            "#d0d0d0",
+                            "RESERVE SITE",
+                            "#fef66d",
+                            "RESIDENTIAL",
+                            "#f6bb81",
+                            "RESIDENTIAL / INSTITUTION",
+                            "#ef9c36",
+                            "RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY",
+                            "#e78384",
+                            "ROAD",
+                            "#ffffff",
+                            "SPECIAL USE",
+                            "#516703",
+                            "SPORTS & RECREATION",
+                            "#a3d49d",
+                            "TRANSPORT FACILITIES",
+                            "#959a9d",
+                            "UTILITY",
+                            "#959a9d",
+                            "WATERBODY",
+                            "#bedef3",
+                            "WHITE",
+                            "#f5f1f2",
+                            "#808080"
+                        ],
+                        "fill-opacity": 0.5,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "gfa-exceeded",
+                    "name": "GFA exceeded",
+                    "source": "plot-source",
+                    "source-layer": "landplot",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            ">",
+                            [
+                                "get",
+                                "calc_gfa"
+                            ],
+                            [
+                                "get",
+                                "ref_gfa"
+                            ]
+                        ],
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "ref_gfa"
+                            ],
+                            0
+                        ],
+                        [
+                            "has",
+                            "calc_gfa"
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": "#c00000",
+                        "fill-opacity": 0.5,
+                        "fill-outline-color": "#c00000"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Population",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "population",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_men",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_men&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_women",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_women&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_women_reproductive",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_women_reproductive&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_childrenu5",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_childrenu5&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_youth",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_youth&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_elderly",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_elderly&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "groups": [
+                {
+                    "name": "General",
+                    "layers": [
+                        {
+                            "id": "population",
+                            "type": "raster",
+                            "name": "Population",
+                            "source": "population",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "By age",
+                    "layers": [
+                        {
+                            "id": "population_childrenu5",
+                            "type": "raster",
+                            "name": "Children",
+                            "source": "population_childrenu5",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_youth",
+                            "type": "raster",
+                            "name": "Youth",
+                            "source": "population_youth",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_elderly",
+                            "type": "raster",
+                            "name": "Elderly",
+                            "source": "population_elderly",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "By gender",
+                    "layers": [
+                        {
+                            "id": "population_men",
+                            "type": "raster",
+                            "name": "Men",
+                            "source": "population_men",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_women",
+                            "type": "raster",
+                            "name": "Women",
+                            "source": "population_women",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_women_reproductive",
+                            "type": "raster",
+                            "name": "Women of reproductive age",
+                            "source": "population_women_reproductive",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Biodiversity",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "tree",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "heritagetree",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritagetree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "sgtree",
+                    "name": "Trees",
+                    "source": "tree",
+                    "source-layer": "tree",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#50723C"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "sgheritagetree",
+                    "name": "Heritage trees",
+                    "source": "heritagetree",
+                    "source-layer": "heritagetree",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#28391E"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Park accessibility",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "walk",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "walk_layer_5",
+                    "name": "5 minute walking accessibility",
+                    "source": "walk",
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Park",
+                            [
+                                "get",
+                                "poi_type"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "minute"
+                                ]
+                            ],
+                            5
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": [
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "minute"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "minute"
+                                    ]
+                                ],
+                                0,
+                                "#0074E4",
+                                10,
+                                "#00C86F"
+                            ]
+                        ],
+                        "fill-outline-color": "#FF0000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "walk_layer_10",
+                    "name": "10 minute walking accessibility",
+                    "source": "walk",
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Park",
+                            [
+                                "get",
+                                "poi_type"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "minute"
+                                ]
+                            ],
+                            10
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": [
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "minute"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "minute"
+                                    ]
+                                ],
+                                0,
+                                "#0074E4",
+                                10,
+                                "#00C86F"
+                            ]
+                        ],
+                        "fill-outline-color": "#FF0000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "walk_layer_15",
+                    "name": "15 minute walking accessibility",
+                    "source": "walk",
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Park",
+                            [
+                                "get",
+                                "poi_type"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "minute"
+                                ]
+                            ],
+                            15
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": [
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "minute"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "minute"
+                                    ]
+                                ],
+                                0,
+                                "#0074E4",
+                                10,
+                                "#00C86F"
+                            ]
+                        ],
+                        "fill-outline-color": "#FF0000",
+                        "fill-opacity": 0.20
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Cultural sites",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "historicsite",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:historicsite&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "monument",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:monument&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "museum",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:museum&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "touristattraction",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:touristattraction&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "sghistoricsites",
+                    "name": "Historic sites",
+                    "source": "historicsite",
+                    "source-layer": "historicsite",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#8A2BE2"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "sgmonuments",
+                    "name": "Monuments",
+                    "source": "monument",
+                    "source-layer": "monument",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#FF4500"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "sgmuseums",
+                    "name": "Museums",
+                    "source": "museum",
+                    "source-layer": "museum",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#1E90FF"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "sgtouristattractions",
+                    "name": "Tourist attractions",
+                    "source": "touristattraction",
+                    "source-layer": "touristattraction",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#FFD700"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Buildings",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "usage",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Multi-residential",
+                    "source-layer": "building_usage",
+                    "name": "Multi-residential",
+                    "source": "usage",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ],
+                        "MultiResidential"
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4169E1",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Religious Facility",
+                    "source-layer": "building_usage",
+                    "name": "Religious facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "ReligiousFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Industrial Facility",
+                    "source-layer": "building_usage",
+                    "name": "Industrial facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "IndustrialFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFA500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Police Station",
+                    "source-layer": "building_usage",
+                    "name": "Police station",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "PoliceStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Emergency Service",
+                    "source-layer": "building_usage",
+                    "name": "Emergency Service",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "EmergencyService",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Fire Station",
+                    "source-layer": "building_usage",
+                    "name": "Fire station",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "FireStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hotel",
+                    "source-layer": "building_usage",
+                    "name": "Hotel",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Hotel",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF1493",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Non-Domestic",
+                    "source-layer": "building_usage",
+                    "name": "Non-domestic",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Non-Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#F1EB9C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Domestic",
+                    "source-layer": "building_usage",
+                    "name": "Domestic",
+                    "source": "usage",
+                    "filter": [
+                        "==",
+                        "Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Transport Facility",
+                    "source-layer": "building_usage",
+                    "name": "Transport facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "TransportFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#2CA02C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Retail Establishment",
+                    "source-layer": "building_usage",
+                    "name": "Retail establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "RetailEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#DC143C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Office",
+                    "source-layer": "building_usage",
+                    "name": "Office",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Office",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hospital",
+                    "source-layer": "building_usage",
+                    "name": "Hospital",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Hospital",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Medical",
+                    "source-layer": "building_usage",
+                    "name": "Medical",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Medical",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Pharmacy",
+                    "source-layer": "building_usage",
+                    "name": "Pharmacy",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Pharmacy",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "School",
+                    "source-layer": "building_usage",
+                    "name": "School",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "School",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Eating Establishment",
+                    "source-layer": "building_usage",
+                    "name": "Eating establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "EatingEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "University",
+                    "source-layer": "building_usage",
+                    "name": "University",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "University",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#9932CC",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "education",
+                    "source-layer": "building_usage",
+                    "name": "Education",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Education",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#9932CC",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Cultural facility",
+                    "source-layer": "building_usage",
+                    "name": "Cultural facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "CulturalFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Clinic",
+                    "source-layer": "building_usage",
+                    "name": "Clinic",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Clinic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Single residential",
+                    "source-layer": "building_usage",
+                    "name": "Single residential",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "SingleResidential",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#6495ED",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Bank",
+                    "source-layer": "building_usage",
+                    "name": "Bank",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Bank",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Drinking establishment",
+                    "source-layer": "building_usage",
+                    "name": "Drinking establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "DrinkingEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#008000",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Sports facility",
+                    "source-layer": "building_usage",
+                    "name": "Sports facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "SportsFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "without-usage",
+                    "source-layer": "building_usage",
+                    "name": "Other",
+                    "source": "usage",
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            [
+                                "get",
+                                "ontobuilt"
+                            ],
+                            null
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Industry heat emissions",
+            "expanded": false,
+            "sources": [
+                {
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ],
+                    "id": "usage"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "data-centres",
+                    "name": "Data centres",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "data_centres"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "chemicals",
+                    "name": "Chemicals",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "chemicals"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "precision-engineering",
+                    "name": "Precision engineering",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "precision_engineering"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "printing",
+                    "name": "Printing",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "printing"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "food_beverages",
+                    "name": "Food and Beverages",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "food_beverages"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "semiconductors",
+                    "name": "Semiconductors",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "semiconductors"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "pharmaceuticals",
+                    "name": "Pharmaceuticals",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "pharmaceuticals"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "City furniture",
+                    "source-layer": "building_usage",
+                    "name": "City furniture",
+                    "source": "usage",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "objectclass"
+                        ],
+                        "CityFurniture"
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "without-heat",
+                    "name": "Buildings without heat emissions",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "heat_emissions"
+                        ],
+                        null
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Roads",
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "road",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Arouting_ways&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "road_layer",
+                    "name": "Road",
+                    "treeable": false,
+                    "source": "road",
+                    "type": "line",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": [
+                            "match",
+                            [
+                                "get",
+                                "road_type"
+                            ],
+                            "motorway",
+                            "#de0000",
+                            "motorway_link",
+                            "#de0000",
+                            "primary",
+                            "#087500",
+                            "primary_link",
+                            "#087500",
+                            "secondary",
+                            "#666600",
+                            "secondary_link",
+                            "#666600",
+                            "tertiary",
+                            "#ffa099",
+                            "tertiary_link",
+                            "#ffa099",
+                            "trunk",
+                            "#ff00ff",
+                            "trunk_link",
+                            "#ff00ff",
+                            "unclassified",
+                            "#ffa099",
+                            "residential",
+                            "#ffa099",
+                            "service",
+                            "#ffa099",
+                            "#808080"
+                        ],
+                        "line-width": [
+                            "match",
+                            [
+                                "get",
+                                "road_type"
+                            ],
+                            "motorway",
+                            5,
+                            "motorway_link",
+                            5,
+                            "primary",
+                            4,
+                            "primary_link",
+                            4,
+                            "secondary",
+                            3,
+                            "secondary_link",
+                            3,
+                            "tertiary",
+                            2,
+                            "tertiary_link",
+                            2,
+                            "trunk",
+                            3,
+                            "trunk_link",
+                            3,
+                            1
+                        ],
+                        "line-opacity": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Sea level rise",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "sealevelprojectionssp5852150medium83",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:sealevelprojectionssp5852150medium83&bbox={bbox-epsg-3857}&width=768&height=474&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "sealevelprojectionssp5852150medium83",
+                    "name": "Sea-level rise",
+                    "source": "sealevelprojectionssp5852150medium83",
+                    "type": "raster",
+                    "minzoom": 10,
+                    "order": 4,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Estimated construction cost",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "usage",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "cost",
+                    "name": "Cost",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "has",
+                            "cost"
+                        ]
+                    ],
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                2205303.1382411714
+                            ],
+                            "#ffff66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                4863361.931536359
+                            ],
+                            "#e8f366",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                10725187.330019798
+                            ],
+                            "#d1e866",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                23652289.27711711
+                            ],
+                            "#badc66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                52160467.76941437
+                            ],
+                            "#a2d066",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                115029643.26401722
+                            ],
+                            "#8bc566",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                253675233.2809001
+                            ],
+                            "#74ba66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                559430788.0484291
+                            ],
+                            "#5dae66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                1233714472.5119298
+                            ],
+                            "#45a266",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                2720714397.9241157
+                            ],
+                            "#2e9666",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                6000000000.000003
+                            ],
+                            "#178b66",
+                            "#178b66"
+                        ],
+                        "fill-extrusion-opacity": 1.0,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "without-cost",
+                    "name": "Buildings without cost",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "!has",
+                            "cost"
+                        ]
+                    ],
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Dispersion",
+            "expanded": false,
+            "sources": [
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                    ],
+                    "id": "dispersion-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                    ],
+                    "id": "weather-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                    ],
+                    "id": "ship-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                    ],
+                    "id": "sensor-source",
+                    "type": "vector"
+                }
+            ],
+            "layers": [
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Plumes",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.5
+                    },
+                    "id": "dispersion-layer",
+                    "source": "dispersion-source",
+                    "source-layer": "dispersion_contours",
+                    "type": "fill",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Weather station",
+                    "paint": {
+                        "circle-color": "blue"
+                    },
+                    "id": "weather-layer",
+                    "source": "weather-source",
+                    "source-layer": "weather",
+                    "type": "circle"
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Ships",
+                    "paint": {
+                        "circle-color": "black"
+                    },
+                    "id": "ships-layer",
+                    "source": "ship-source",
+                    "source-layer": "ships",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Virtual sensors",
+                    "paint": {
+                        "circle-color": "red"
+                    },
+                    "id": "sensor-layer",
+                    "source": "sensor-source",
+                    "source-layer": "sensors",
+                    "type": "circle",
+                    "minzoom": 4
+                }
+            ]
+        },
+        {
+            "name": "Weather",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "cares-weather-station-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:caresweather&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Cares-weather-station-layer",
+                    "name": "CARES weather station",
+                    "source": "cares-weather-station-source",
+                    "source-layer": "caresweather",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "weather_station_image",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ],
+                        "icon-anchor": "bottom"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Active traffic incidents",
+            "stack": "http://localhost:3838",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "traffic_incident",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atrafficincident&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "active_accidents",
+                    "name": "Active accidents",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 1,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Accident",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-accident",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.055
+                        ]
+                    }
+                },
+                {
+                    "id": "active_road_works",
+                    "name": "Active roadworks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 2,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Roadwork",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-work",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "active_vehicle_breakdowns",
+                    "name": "Active vehicle breakdowns",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 3,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Vehicle breakdown",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-vehicle-breakdown",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.16
+                        ]
+                    }
+                },
+                {
+                    "id": "active_weathers",
+                    "name": "Active weather",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 4,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Weather",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-weather",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "active_road_obstacle",
+                    "name": "Active road obstacles",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 5,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Obstacle",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-obstacle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "active_road_block",
+                    "name": "Active roadblocks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 6,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Road Block",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-block",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.03
+                        ]
+                    }
+                },
+                {
+                    "id": "active_heavy_traffic",
+                    "name": "Active heavy traffic",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 7,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Traffic",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-heavy-traffic",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.075
+                        ]
+                    }
+                },
+                {
+                    "id": "active_misc.",
+                    "name": "Active misc.",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 8,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Misc",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-misc",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "active_diversion",
+                    "name": "Active diversion",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 9,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Diversion",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-diversion",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.05
+                        ]
+                    }
+                },
+                {
+                    "id": "active_unattended_vehicle",
+                    "name": "Active unattended vehicle",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 10,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Unattended",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-unattended-vehicle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Past traffic incidents",
+            "stack": "http://localhost:3838",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "traffic_incident",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atrafficincident&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "past_accidents",
+                    "name": "Past accidents",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 1,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Accident",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-accident",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.055
+                        ]
+                    }
+                },
+                {
+                    "id": "past_road_works",
+                    "name": "Past roadworks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 2,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Roadwork",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-work",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "past_vehicle_breakdowns",
+                    "name": "Past vehicle breakdowns",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 3,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Vehicle breakdown",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-vehicle-breakdown",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.16
+                        ]
+                    }
+                },
+                {
+                    "id": "past_weathers",
+                    "name": "Past weather",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 4,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Weather",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-weather",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "past_road_obstacle",
+                    "name": "Past road obstacles",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 5,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Obstacle",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-obstacle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "past_road_block",
+                    "name": "Past roadblocks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 6,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Road Block",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-block",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.03
+                        ]
+                    }
+                },
+                {
+                    "id": "past_heavy_traffic",
+                    "name": "Past heavy traffic",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 7,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Traffic",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-heavy-traffic",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.075
+                        ]
+                    }
+                },
+                {
+                    "id": "past_misc.",
+                    "name": "Past misc.",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 8,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Misc",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-misc",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "past_diversion",
+                    "name": "Past diversion",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Diversion",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "order": 9,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-diversion",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.05
+                        ]
+                    }
+                },
+                {
+                    "id": "past_unattended_vehicle",
+                    "name": "Past unattended vehicle",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 10,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Unattended",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-unattended-vehicle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Buildings in Bukit Merah",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "usage",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_bukit_merah&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Multi-residential",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Multi-residential",
+                    "source": "usage",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ],
+                        "MultiResidential"
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4169E1",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Religious Facility",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Religious facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "ReligiousFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Industrial Facility",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Industrial facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "IndustrialFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFA500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Police Station",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Police station",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "PoliceStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Emergency Service",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Emergency Service",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "EmergencyService",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Fire Station",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Fire station",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "FireStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hotel",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Hotel",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Hotel",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF1493",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Non-Domestic",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Non-domestic",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Non-Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#F1EB9C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Domestic",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Domestic",
+                    "source": "usage",
+                    "filter": [
+                        "==",
+                        "Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Transport Facility",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Transport facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "TransportFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#2CA02C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Retail Establishment",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Retail establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "RetailEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#DC143C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Office",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Office",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Office",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hospital",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Hospital",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Hospital",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Medical",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Medical",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Medical",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Pharmacy",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Pharmacy",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Pharmacy",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "School",
+                    "source-layer": "building_bukit_merah",
+                    "name": "School",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "School",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Eating Establishment",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Eating establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "EatingEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "University",
+                    "source-layer": "building_bukit_merah",
+                    "name": "University",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "University",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#9932CC",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "education",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Education",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Education",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#9932CC",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Cultural facility",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Cultural facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "CulturalFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Clinic",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Clinic",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Clinic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Single residential",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Single residential",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "SingleResidential",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#6495ED",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Bank",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Bank",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Bank",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Drinking establishment",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Drinking establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "DrinkingEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#008000",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Sports facility",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Sports facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "SportsFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "without-usage",
+                    "source-layer": "building_bukit_merah",
+                    "name": "Other",
+                    "source": "usage",
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            [
+                                "get",
+                                "ontobuilt"
+                            ],
+                            null
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -3,7 +3,7 @@
         "Name": "ship-input-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.4",
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.9",
 				"Env": [
 					"DATABASE=postgres",
 					"DATA_DIR=/data",
@@ -17,7 +17,10 @@
 					"USE_LIVE_DATA=false",
 					"API_KEY=",
 					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]], [[1.2162967, 103.6518113], [1.3067911, 103.741632]]]",
-					"UPLOAD_INTERVAL_MINUTES=10"
+					"UPLOAD_INTERVAL_MINUTES=10",
+					"SKIP_UPDATE_RDB=true",
+                    "SHIP_DATA_AGENT_URL=http://${STACK_NAME}-ship-data-agent:8080/ShipDataAgent/",
+                    "SHIP_DATA_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/ShipDataAgent"
 				],
 				"Configs": [
 					{

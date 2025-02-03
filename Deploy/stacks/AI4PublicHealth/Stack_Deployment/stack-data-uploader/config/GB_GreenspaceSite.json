@@ -1,0 +1,23 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "GB_GreenspaceSite",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "GB_GreenspaceSite",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"]
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "greenspace.obda"
+    ]
+}
+

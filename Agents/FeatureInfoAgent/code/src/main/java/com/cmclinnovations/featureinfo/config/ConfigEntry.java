@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +18,7 @@ import com.google.common.base.Objects;
  * meta/time query.
  */
 public class ConfigEntry {
-    
+
     /**
      * Unique ID for this entry (may be auto-generated).
      */
@@ -54,6 +55,11 @@ public class ConfigEntry {
     private TimeReference timeReference;
 
     /**
+     * Time reference (may be null).
+     */
+    private Instant time;
+
+    /**
      * Time limit value (may be null).
      */
     private int timeLimitValue;
@@ -67,6 +73,14 @@ public class ConfigEntry {
      * Name of Postgres database containing time series data.
      */
     private String timeDatabase;
+
+    private String pointIriQueryFile;
+    private String pointIriQueryContent;
+    private String featureIriQueryFile;
+    private String featureIriQueryContent;
+    private String trajectoryMetaFile;
+    private String trajectoryMetaContent;
+    private String trajectoryDatabase;
 
     /**
      * Initialise a new ConfigEntry instance.
@@ -123,6 +137,15 @@ public class ConfigEntry {
     }
 
     /**
+     * Time reference.
+     * 
+     * @return Time reference.
+     */
+    public Instant getTime() {
+        return this.time;
+    }
+
+    /**
      * Time limit value.
      * 
      * @return time limit value.
@@ -149,6 +172,22 @@ public class ConfigEntry {
         return this.timeDatabase;
     }
 
+    public String getPointIriQuery() {
+        return pointIriQueryContent;
+    }
+
+    public String getFeatureIriQuery() {
+        return featureIriQueryContent;
+    }
+
+    public String getTrajectoryMetaQuery() {
+        return trajectoryMetaContent;
+    }
+
+    public String getTrajectoryDatabase() {
+        return trajectoryDatabase;
+    }
+
     /**
      * Generates hash code for this instance.
      * 
@@ -165,6 +204,10 @@ public class ConfigEntry {
         hash = prime * hash + (this.timeLimitValue);
         hash = prime * hash + (this.timeLimitUnit != null ? this.timeLimitUnit.hashCode() : 0);
         hash = prime * hash + (this.timeDatabase != null ? this.timeDatabase.hashCode() : 0);
+        hash = prime * hash + (this.pointIriQueryFile != null ? this.pointIriQueryFile.hashCode() : 0);
+        hash = prime * hash + (this.featureIriQueryFile != null ? this.featureIriQueryFile.hashCode() : 0);
+        hash = prime * hash + (this.trajectoryMetaFile != null ? this.trajectoryMetaFile.hashCode() : 0);
+        hash = prime * hash + (this.trajectoryDatabase != null ? this.trajectoryDatabase.hashCode() : 0);
         return hash;
     }
 
@@ -177,18 +220,35 @@ public class ConfigEntry {
      */
     @Override
     public boolean equals(Object object) {
-        if(object == this) return true;
-        if(!(object instanceof ConfigEntry)) return false;
+        if (object == this)
+            return true;
+        if (!(object instanceof ConfigEntry))
+            return false;
 
         ConfigEntry that = (ConfigEntry) object;
 
-        if(!Objects.equal(this.id, that.id)) return false;
-        if(!Objects.equal(this.metaQueryFile, that.metaQueryFile)) return false;
-        if(!Objects.equal(this.timeQueryFile, that.timeQueryFile)) return false;
-        if(!Objects.equal(this.timeReference, that.timeReference)) return false;
-        if(!Objects.equal(this.timeLimitValue, that.timeLimitValue)) return false;
-        if(!Objects.equal(this.timeLimitUnit, that.timeLimitUnit)) return false;
-        if(!Objects.equal(this.timeDatabase, that.timeDatabase)) return false;
+        if (!Objects.equal(this.id, that.id))
+            return false;
+        if (!Objects.equal(this.metaQueryFile, that.metaQueryFile))
+            return false;
+        if (!Objects.equal(this.timeQueryFile, that.timeQueryFile))
+            return false;
+        if (!Objects.equal(this.timeReference, that.timeReference))
+            return false;
+        if (!Objects.equal(this.timeLimitValue, that.timeLimitValue))
+            return false;
+        if (!Objects.equal(this.timeLimitUnit, that.timeLimitUnit))
+            return false;
+        if (!Objects.equal(this.timeDatabase, that.timeDatabase))
+            return false;
+        if (!Objects.equal(this.pointIriQueryFile, that.pointIriQueryFile))
+            return false;
+        if (!Objects.equal(this.featureIriQueryFile, that.featureIriQueryFile))
+            return false;
+        if (!Objects.equal(this.trajectoryMetaFile, that.trajectoryMetaFile))
+            return false;
+        if (!Objects.equal(this.trajectoryDatabase, that.trajectoryDatabase))
+            return false;
 
         return true;
     }
@@ -220,45 +280,47 @@ public class ConfigEntry {
         /**
          * Build a new ConfigEntry with metadata information only.
          * 
-         * @param id unique ID for entry.
-         * @param clazz matching class IRI.
+         * @param id            unique ID for entry.
+         * @param clazz         matching class IRI.
          * @param metaQueryFile relative location of metadata query file.
          * 
          * @return new ConfigEntry instance.
          * @throws IllegalArgumentException If values for enumerators are invalid.
-         * @throws IOException If query files are present, but cannot be read.
+         * @throws IOException              If query files are present, but cannot be
+         *                                  read.
          */
         public ConfigEntry build(
-            String id,
-            String classIRI,
-            String metaQueryFile) throws IllegalArgumentException, IOException {
+                String id,
+                String classIRI,
+                String metaQueryFile) throws IllegalArgumentException, IOException {
 
-           return build(id, classIRI, metaQueryFile, null, null, 0, null, null);
+            return build(id, classIRI, metaQueryFile, null, null, 0, null, null);
         }
 
         /**
          * Build a new ConfigEntry with time series information only.
          * 
-         * @param id unique ID for entry.
-         * @param classIRI matching class IRI.
-         * @param timeQueryFile relative location of time series query file.
-         * @param timeReference reference for start of time limit.
+         * @param id             unique ID for entry.
+         * @param classIRI       matching class IRI.
+         * @param timeQueryFile  relative location of time series query file.
+         * @param timeReference  reference for start of time limit.
          * @param timeLimitValue time limit value.
-         * @param timeLimitUnit time limit unit.
-         * @param timeDatabase name of Postgres database with time data.
+         * @param timeLimitUnit  time limit unit.
+         * @param timeDatabase   name of Postgres database with time data.
          * 
          * @return new ConfigEntry instance.
          * @throws IllegalArgumentException If values for enumerators are invalid.
-         * @throws IOException If query files are present, but cannot be read.
+         * @throws IOException              If query files are present, but cannot be
+         *                                  read.
          */
         public ConfigEntry build(
-            String id,
-            String classIRI,
-            String timeQueryFile,
-            String timeReference,
-            int timeLimitValue,
-            String timeLimitUnit,
-            String timeDatabase) throws IllegalArgumentException, IOException {
+                String id,
+                String classIRI,
+                String timeQueryFile,
+                String timeReference,
+                int timeLimitValue,
+                String timeLimitUnit,
+                String timeDatabase) throws IllegalArgumentException, IOException {
 
             return build(id, classIRI, null, timeQueryFile, timeReference, timeLimitValue, timeLimitUnit, timeDatabase);
         }
@@ -266,32 +328,34 @@ public class ConfigEntry {
         /**
          * Build a new ConfigEntry.
          * 
-         * @param id unique ID for entry.
-         * @param classIRI matching class IRI.
-         * @param metaQueryFile relative location of metadata query file.
-         * @param timeQueryFile relative location of time series query file.
-         * @param timeReference reference for start of time limit.
+         * @param id             unique ID for entry.
+         * @param classIRI       matching class IRI.
+         * @param metaQueryFile  relative location of metadata query file.
+         * @param timeQueryFile  relative location of time series query file.
+         * @param timeReference  reference for start of time limit.
          * @param timeLimitValue time limit value.
-         * @param timeLimitUnit time limit unit.
-         * @param timeDatabase name of Postgres database with time data.
+         * @param timeLimitUnit  time limit unit.
+         * @param timeDatabase   name of Postgres database with time data.
          * 
          * @return new ConfigEntry instance.
          * @throws IllegalArgumentException If values for enumerators are invalid.
-         * @throws IOException If query files are present, but cannot be read.
+         * @throws IOException              If query files are present, but cannot be
+         *                                  read.
          */
         public ConfigEntry build(
-            String id,
-            String classIRI,
-            String metaQueryFile,
-            String timeQueryFile,
-            String timeReference,
-            int timeLimitValue,
-            String timeLimitUnit,
-            String timeDatabase) throws IllegalArgumentException, IOException {
+                String id,
+                String classIRI,
+                String metaQueryFile,
+                String timeQueryFile,
+                String timeReference,
+                int timeLimitValue,
+                String timeLimitUnit,
+                String timeDatabase) throws IllegalArgumentException, IOException {
 
             // Check for valid parameters
-            if(timeQueryFile != null && !timeQueryFile.isEmpty() && (timeDatabase == null || timeDatabase.isEmpty())) {
-                throw new IllegalArgumentException("Invalid value for 'timeDatabase' parameter, please see documentation for allowed values.");
+            if (timeQueryFile != null && !timeQueryFile.isEmpty() && (timeDatabase == null || timeDatabase.isEmpty())) {
+                throw new IllegalArgumentException(
+                        "Invalid value for 'timeDatabase' parameter, please see documentation for allowed values.");
             }
 
             // Create and return ConfigEntry instance.
@@ -300,25 +364,70 @@ public class ConfigEntry {
             entry.metaQueryFile = metaQueryFile;
             entry.timeQueryFile = timeQueryFile;
 
-            if(timeReference == null) {
+            if (timeReference == null) {
                 entry.timeReference = TimeReference.NOW;
             } else {
-                entry.timeReference = TimeReference.valueOf(timeReference.toUpperCase());
+                entry.timeReference = TimeReference.valueOfLabel(timeReference.toLowerCase());
+                if (entry.timeReference == null) {
+                    try {
+                        entry.time = Instant.parse(timeReference);
+                    } catch (Exception ex) {
+                        throw new IllegalArgumentException(
+                                "timeReference is not set as a \"NOW\", \"LATEST\", \"FIRST\" nor can be parsed as an Instant.",
+                                ex);
+                    }
+                    entry.timeReference = TimeReference.SPECIFIED;
+                } else if (entry.timeReference == TimeReference.SPECIFIED) {
+                    throw new IllegalArgumentException(
+                            "timeReference is set as a \"SPECIFIED\" but now time specified.");
+                }
             }
 
-            if(timeLimitUnit == null) {
+            if (timeLimitUnit == null) {
                 entry.timeLimitUnit = TimeUnit.HOURS;
             } else {
                 entry.timeLimitUnit = TimeUnit.valueOf(timeLimitUnit.toUpperCase());
             }
 
-            if(timeLimitValue == 0) {
+            if (timeLimitValue == 0) {
                 entry.timeLimitValue = 24;
             } else {
                 entry.timeLimitValue = timeLimitValue;
             }
-           
+
             entry.timeDatabase = timeDatabase;
+
+            // Populate query contents
+            readQueryContent(entry);
+            return entry;
+        }
+
+        /**
+         * special case for trajectory query
+         * 
+         * @param id
+         * @param classIRI
+         * @param trajectoryQuery
+         * @param featureIriQuery
+         * @param metaQuery
+         * @return
+         * @throws IOException
+         */
+        public ConfigEntry build(
+                String id,
+                String classIRI,
+                String pointIriQuery,
+                String featureIriQuery,
+                String metaQuery,
+                String database) throws IOException {
+
+            // Create and return ConfigEntry instance.
+            ConfigEntry entry = new ConfigEntry(id);
+            entry.classIRI = classIRI;
+            entry.pointIriQueryFile = pointIriQuery;
+            entry.featureIriQueryFile = featureIriQuery;
+            entry.trajectoryMetaFile = metaQuery;
+            entry.trajectoryDatabase = database;
 
             // Populate query contents
             readQueryContent(entry);
@@ -332,7 +441,7 @@ public class ConfigEntry {
          */
         private void readQueryContent(ConfigEntry entry) throws IOException {
             // Parse metadata query
-            if(entry.metaQueryFile != null && !entry.metaQueryFile.isEmpty()) {
+            if (entry.metaQueryFile != null && !entry.metaQueryFile.isEmpty()) {
                 Path file = this.configDirectory.resolve(Paths.get(entry.metaQueryFile));
                 entry.metaQueryContent = Files.readString(file);
             } else {
@@ -343,13 +452,27 @@ public class ConfigEntry {
             LOGGER.debug("ON CLASS ENTRY: {}", entry.classIRI);
             LOGGER.debug("LOADING TIME FILE" + entry.timeQueryFile);
 
-            if(entry.timeQueryFile != null && !entry.timeQueryFile.isEmpty()) {
+            if (entry.timeQueryFile != null && !entry.timeQueryFile.isEmpty()) {
                 Path file = this.configDirectory.resolve(Paths.get(entry.timeQueryFile));
                 entry.timeQueryContent = Files.readString(file);
                 LOGGER.debug("QUERY CONTENT");
                 LOGGER.debug(entry.timeQueryContent);
             } else {
                 LOGGER.info("No valid entry for time series query file in entry '{}', skipping.", entry.id);
+            }
+
+            // Parse trajectory query
+            if (entry.pointIriQueryFile != null && !entry.pointIriQueryFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.pointIriQueryFile));
+                entry.pointIriQueryContent = Files.readString(file);
+            }
+            if (entry.featureIriQueryFile != null && !entry.featureIriQueryFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.featureIriQueryFile));
+                entry.featureIriQueryContent = Files.readString(file);
+            }
+            if (entry.trajectoryMetaFile != null && !entry.trajectoryMetaFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.trajectoryMetaFile));
+                entry.trajectoryMetaContent = Files.readString(file);
             }
         }
     }

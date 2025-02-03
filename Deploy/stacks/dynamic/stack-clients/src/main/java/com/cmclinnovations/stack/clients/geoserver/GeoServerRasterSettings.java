@@ -3,12 +3,13 @@ package com.cmclinnovations.stack.clients.geoserver;
 import java.util.Map;
 
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder21;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 
 public class GeoServerRasterSettings implements GeoServerDimensionSettings {
 
     private final GSImageMosaicEncoder dataStoreSettings = new GSImageMosaicEncoder();
-    private final GSLayerEncoder layerSettings = new GSLayerEncoder();
+    private final GSLayerEncoder21 layerSettings = new GSLayerEncoder21();
 
     public GSImageMosaicEncoder getDataStoreSettings() {
         return dataStoreSettings;

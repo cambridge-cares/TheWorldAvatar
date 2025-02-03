@@ -4,7 +4,14 @@
         "Name": "nginx",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "nginx:1.19.6"
+                "Image": "docker.io/nginx:1.27.3",
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "nginx_config",
+                        "Target": "/etc/nginx/conf.d"
+                    }
+                ]
             }
         },
         "EndpointSpec": {

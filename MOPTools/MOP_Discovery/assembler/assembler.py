@@ -165,8 +165,8 @@ def mop_string_writer(mop_building_1, mop_building_2):
 def mop_data_wrapper(mopFormula, altmopFormula, mop_symmetry, mop_weight,mop_charge):
     """First queries each MOP formula string, then wraps the provenanve, molecular weight and charge."""
     checked = []
-    result1  = querykg(SPARQL_ENDPOINTS['ontomops'], mop_reference(mopFormula, mop_symmetry))
-    result2  = querykg(SPARQL_ENDPOINTS['ontomops'], mop_reference(altmopFormula, mop_symmetry))
+    result1  = querykg(SPARQL_ENDPOINTS.ontomops, mop_reference(mopFormula, mop_symmetry))
+    result2  = querykg(SPARQL_ENDPOINTS.ontomops, mop_reference(altmopFormula, mop_symmetry))
     if result1:
         if 'MOPReference' in result1[0].keys():
             provenance = result1[0]['MOPReference']

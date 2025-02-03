@@ -2,18 +2,19 @@ package com.cmclinnovations.stack.clients.geoserver;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class StaticGeoServerData {
 
-    private String iconsDir;
-    private List<GeoserverOtherStaticFile> otherFiles;
+    private final String iconsDir = null;
+    private final Optional<List<GeoserverOtherStaticFile>> otherFiles = Optional.empty();
 
     public String getIconsDir() {
         return iconsDir;
     }
 
     public List<GeoserverOtherStaticFile> getOtherFiles() {
-        return (null != otherFiles) ? otherFiles : Collections.emptyList();
+        return otherFiles.orElse(Collections.emptyList());
     }
 
 }

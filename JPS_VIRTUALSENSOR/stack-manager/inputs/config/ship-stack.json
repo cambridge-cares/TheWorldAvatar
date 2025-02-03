@@ -11,7 +11,9 @@
 			"jurong-island-input-agent",
 			"visualisation",
 			"feature-info-agent",
-			"ship-input-agent"
+			"ship-input-agent",
+			"ship-data-agent",
+			"dome-interactor"
 		]
 	},
 	"volumes": {

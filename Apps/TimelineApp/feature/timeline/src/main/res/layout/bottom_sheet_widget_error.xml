@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/component_margin"
+    android:paddingTop="@dimen/component_margin_xs">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="@dimen/component_margin_small" />
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/outline_cancel_24"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="@dimen/component_margin"
+        android:layout_marginVertical="@dimen/component_margin_small"
+        android:id="@+id/error_icon"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_connection_please_check_internet_connection_and_try_again"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:layout_marginHorizontal="@dimen/component_margin"
+        android:layout_marginVertical="@dimen/component_margin"
+        android:gravity="center"
+        android:id="@+id/error_tv"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/component_margin"
+        android:layout_marginVertical="@dimen/component_margin_xs"
+        android:text="@string/try_again"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="?attr/colorPrimary"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:id="@+id/try_again_button"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

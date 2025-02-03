@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
     <artifactId>DispersionInteractor</artifactId>
-    <version>1.3-dev-aermod-vis-SNAPSHOT</version>
+    <version>1.9</version>
     <packaging>war</packaging>
     
     <!-- Parent POM -->
@@ -82,7 +82,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.43.0</version>
+			<version>1.44.1</version>
 		</dependency>
 
 		<dependency>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.25.0</version>
+            <version>1.27.2</version>
         </dependency>
 
         <!-- parse wkt literals from ontop -->

@@ -1,0 +1,21 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "gfabrikLanduse",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "gfabrikLanduse",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"]
+                }
+            }
+        }
+    ]
+   
+
+}

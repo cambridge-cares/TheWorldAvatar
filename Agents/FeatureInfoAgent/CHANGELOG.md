@@ -1,14 +1,49 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
-# 3.0.1
-### Features:
+# 3.3
+
+### Features
+
+* Added option to generate metadata for a selected trajectory.
+
+# 3.2
+
+### Features
+
+* TimeSeriesClient is constructed using the TimeSeriesClientFactory.
+
+# 3.1.1
+### Features
 * _No features present._
 ### Bug Fixes:
+* Improved logging when reading configuration files.
+* Updated documentation.
+
+# 3.1.0
+
+### Features
+
+* _Add ability to query for specific times.
+
+### Bug Fixes
+
+* _No bug_fixes present._
+
+# 3.0.1
+
+### Features
+
+* _No features present._
+
+### Bug Fixes
+
 * No longer cache enforced endpoint so is changeable from query to query.
 * Minor code improvements to help in maintenance.
 
 # 3.0.0
-### Features:
+
+### Features
+
 * Added ability to set the reference time for time series queries.
 * Added ability to change the limit unit for time series bounding.
 * Entire class hierarchy is now queried, any point in the tree can be registered in the configuration.
@@ -18,6 +53,8 @@
 * Updated configuration format to better support future changes.
 * Updated documentation.
 * Docker image now pushes with multiple tags.
-### Bug Fixes:
+
+### Bug Fixes
+
 * Updated class determination query to no longer require inheritance from OWL class.
 * Major refactoring.

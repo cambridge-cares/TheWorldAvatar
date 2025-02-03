@@ -135,4 +135,5 @@ def make_operand_and_verbn(
 
 
 def normalize_1d(arr: ArrayLike):
-    return np.array(arr) / sum(arr)
+    arr = np.array(arr)
+    return arr / sum(arr)

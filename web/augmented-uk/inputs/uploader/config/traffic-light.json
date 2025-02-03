@@ -1,0 +1,66 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "traffic_light",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "leeds",
+            "table": "traffic_lighting_leeds_table",
+            "name": "traffic_lighting_leeds_layer",
+            "sql": "@/inputs/config/sql/traffic-light-leeds.sql",
+            "ogr2ogrOptions": {
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Easting",
+                    "Y_POSSIBLE_NAMES": "Northing"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "traffic_lighting_leeds_virtual_table",
+                    "sql": "@/inputs/config/sql/virtualTables/traffic-light-leeds-virtual.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry_leeds",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "york_traffic",
+            "table": "traffic_lighting_york_traffic_table",
+            "name": "traffic_lighting_york_traffic_layer",
+            "ogr2ogrOptions": {
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "X",
+                    "Y_POSSIBLE_NAMES": "Y"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "traffic_lighting_york_traffic_virtual_table",
+                    "sql": "@/inputs/config/sql/traffic-light-york.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry_york_traffic",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        }
+    ],
+    "mappings": [
+        "traffic-light.obda"
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
+}

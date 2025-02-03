@@ -1,0 +1,147 @@
+[PrefixDeclaration]
+# ANY CHANGES IN THE FILE SHOULD BE CROSS CHECKED WITH THE PREFIXES IN functions.sql
+xsd:		     http://www.w3.org/2001/XMLSchema#
+sensorloggerapp: https://www.theworldavatar.com/kg/sensorloggerapp/
+ontodevice:      https://www.theworldavatar.com/kg/ontodevice/
+om:              http://www.ontology-of-units-of-measure.org/resource/om-2/	   
+
+[MappingDeclaration] @collection [[
+mappingId   gps_device
+target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:gpsdevice_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} ;
+                ontodevice:hasSessionID sensorloggerapp:sessionID_{device_id} .
+            sensorloggerapp:sessionID_{device_id} a ontodevice:SessionID .
+            sensorloggerapp:gpsdevice_{device_id} a ontodevice:{sensor_class} ;
+                ontodevice:hasGeoLocation sensorloggerapp:point_{device_id} ;
+                ontodevice:measures sensorloggerapp:altitude_{device_id} ;
+                ontodevice:measures sensorloggerapp:bearing_{device_id} ;
+                ontodevice:measures sensorloggerapp:speed_{device_id} .
+            sensorloggerapp:point_{device_id} a <http://www.opengis.net/ont/sf#Point> .
+            sensorloggerapp:altitude_{device_id} a ontodevice:Altitude ;
+                om:hasValue sensorloggerapp:altitude_measure_{device_id} .
+            sensorloggerapp:altitude_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metre .
+            sensorloggerapp:bearing_{device_id} a ontodevice:Bearing ;
+                om:hasValue sensorloggerapp:bearing_measure_{device_id} .
+            sensorloggerapp:bearing_measure_{device_id} a om:Measure ;
+                om:hasUnit om:degree .
+            sensorloggerapp:speed_{device_id} a om:Speed ;
+                om:hasValue sensorloggerapp:speed_measure_{device_id} .
+            sensorloggerapp:speed_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-Time .
+            om:metrePerSecond-Time om:symbol "m/s" .
+            om:metre om:symbol "m" .
+            om:degree om:symbol "&#x00B0;" .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='GPSDevice'
+
+mappingId   accelerometer
+target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:accelerometer_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} .
+            sensorloggerapp:accelerometer_{device_id} a ontodevice:{sensor_class} ;
+                ontodevice:measures sensorloggerapp:accelerationvector_{device_id} .
+            sensorloggerapp:accelerationvector_{device_id} a ontodevice:AccelerationVector ;
+                ontodevice:hasXComponent sensorloggerapp:accelerationvector_x_{device_id} ;
+                ontodevice:hasYComponent sensorloggerapp:accelerationvector_y_{device_id} ;
+                ontodevice:hasZComponent sensorloggerapp:accelerationvector_z_{device_id} .
+            sensorloggerapp:accelerationvector_x_{device_id} a om:Acceleration ;
+                om:hasValue sensorloggerapp:accelerationvector_x_measure_{device_id} .
+            sensorloggerapp:accelerationvector_x_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-TimeSquared .
+            sensorloggerapp:accelerationvector_y_{device_id} a om:Acceleration ;
+                om:hasValue sensorloggerapp:accelerationvector_y_measure_{device_id} .
+            sensorloggerapp:accelerationvector_y_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-TimeSquared .
+            sensorloggerapp:accelerationvector_z_{device_id} a om:Acceleration ;
+                om:hasValue sensorloggerapp:accelerationvector_z_measure_{device_id} .
+            sensorloggerapp:accelerationvector_z_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-TimeSquared .
+            om:metrePerSecond-TimeSquared om:symbol "m/s2" .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='Accelerometer'
+
+mappingId   microphone
+target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:microphone_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} .
+            sensorloggerapp:microphone_{device_id} a ontodevice:{sensor_class} ;
+                ontodevice:measures sensorloggerapp:soundpressurelevel_{device_id} .
+            sensorloggerapp:soundpressurelevel_{device_id} a om:SoundPressureLevel ;
+                om:hasValue sensorloggerapp:soundpressurelevel_measure_{device_id} .
+            sensorloggerapp:soundpressurelevel_measure_{device_id} a om:Measure ;
+                om:hasUnit om:decibelsRelativeToFullScale .
+            om:decibelsRelativeToFullScale om:symbol "dBFS" .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='Microphone'
+
+mappingId   gravity
+target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:gravitysensor_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} .
+            sensorloggerapp:gravitysensor_{device_id} a ontodevice:{sensor_class} ;
+                ontodevice:measures sensorloggerapp:gravityvector_{device_id} .
+            sensorloggerapp:gravityvector_{device_id} a ontodevice:GravityVector ;
+                ontodevice:hasXComponent sensorloggerapp:gravity_x_{device_id} ;
+                ontodevice:hasYComponent sensorloggerapp:gravity_y_{device_id} ;
+                ontodevice:hasZComponent sensorloggerapp:gravity_z_{device_id} .
+            sensorloggerapp:gravity_x_{device_id} a om:Acceleration ;
+                om:hasValue sensorloggerapp:gravity_x_measure_{device_id} .
+            sensorloggerapp:gravity_y_{device_id} a om:Acceleration ;
+                om:hasValue sensorloggerapp:gravity_y_measure_{device_id} .
+            sensorloggerapp:gravity_z_{device_id} a om:Acceleration ;
+                om:hasValue sensorloggerapp:gravity_z_measure_{device_id} .
+            sensorloggerapp:gravity_x_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-TimeSquared .
+            sensorloggerapp:gravity_y_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-TimeSquared .
+            sensorloggerapp:gravity_z_measure_{device_id} a om:Measure ;
+                om:hasUnit om:metrePerSecond-TimeSquared .
+            om:metrePerSecond-TimeSquared om:symbol "m/s2" .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='GravitySensor'
+
+mappingId   camera
+target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:camera_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} .
+            sensorloggerapp:camera_{device_id} a ontodevice:{sensor_class} ;
+                ontodevice:measures sensorloggerapp:illuminance_{device_id} .
+            sensorloggerapp:illuminance_{device_id} a om:Illuminance ;
+                om:hasValue sensorloggerapp:illuminance_measure_{device_id} .
+            sensorloggerapp:illuminance_measure_{device_id} a om:Measure ;
+                om:hasUnit om:lux .
+            om:lux om:symbol "lx" .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='Camera'
+
+mappingId   magnetometer
+target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:magnetometer_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} .
+            sensorloggerapp:magnetometer_{device_id} a ontodevice:{sensor_class} ;
+                ontodevice:measures sensorloggerapp:magneticflux_{device_id} .
+            sensorloggerapp:magneticflux_{device_id} a ontodevice:MagneticFluxDensityVector ;
+                ontodevice:hasXComponent sensorloggerapp:magneticflux_x_{device_id} ;
+                ontodevice:hasYComponent sensorloggerapp:magneticflux_y_{device_id} ;
+                ontodevice:hasZComponent sensorloggerapp:magneticflux_z_{device_id} .
+            sensorloggerapp:magneticflux_x_{device_id} a om:MagneticFluxDensity ;
+                om:hasValue sensorloggerapp:magneticflux_x_measure_{device_id} .
+            sensorloggerapp:magneticflux_y_{device_id} a om:MagneticFluxDensity ;
+                om:hasValue sensorloggerapp:magneticflux_y_measure_{device_id} .
+            sensorloggerapp:magneticflux_z_{device_id} a om:MagneticFluxDensity ;
+                om:hasValue sensorloggerapp:magneticflux_z_measure_{device_id} .
+            sensorloggerapp:magneticflux_x_measure_{device_id} a om:Measure ;
+                om:hasUnit om:microtesla .
+            sensorloggerapp:magneticflux_y_measure_{device_id} a om:Measure ;
+                om:hasUnit om:microtesla .
+            sensorloggerapp:magneticflux_z_measure_{device_id} a om:Measure ;
+                om:hasUnit om:microtesla .
+            om:microtesla om:symbol "&#x00B5;T" .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='Magnetometer'
+
+mappingId   brightness
+target      sensorloggerapp:smartphone_{device_id} ontodevice:hasScreenBrightness sensorloggerapp:brightness_{device_id} ;
+                a ontodevice:Smartphone ;
+                ontodevice:hasDeviceID {device_id} .
+            sensorloggerapp:brightness_{device_id} a ontodevice:RelativeBrightness ;
+                om:hasValue sensorloggerapp:brightness_measure_{device_id} .
+            sensorloggerapp:brightness_measure_{device_id} a om:Measure .
+source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='RelativeBrightness'
+]]

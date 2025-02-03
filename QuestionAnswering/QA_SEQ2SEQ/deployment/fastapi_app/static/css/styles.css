@@ -48,3 +48,8 @@
 .list-group {
     margin: 0
 }
+
+#results-table .clickable-iri {
+    color: #007bff; /* Adjust the color as needed */
+    cursor: pointer;
+}

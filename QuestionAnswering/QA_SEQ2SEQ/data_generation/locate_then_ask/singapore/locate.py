@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from constants.functions import OBE_NUM_OPS
+from constants.functions import BASIC_NUM_OPS
 from constants.namespaces import NAMESPACE2PREFIX, OM, OZNG
 from constants.om import OM_KEY_LABELS
 from constants.plot import (
@@ -40,7 +40,7 @@ class OPltPlotLocator:
         key: OPltPlotAttrKey,
         measure: OmMeasure,
     ):
-        operator = random.choice(OBE_NUM_OPS)
+        operator = random.choice(BASIC_NUM_OPS)
         operand, op_verbn = make_operand_and_verbn(
             operator, value=measure.numerical_value
         )

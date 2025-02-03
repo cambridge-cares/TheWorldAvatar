@@ -3,8 +3,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
-    <artifactId>caresweatherstation-agent</artifactId>
-    <version>1.5.0</version>
+    <artifactId>cares-weather-station-agent</artifactId>
+    <version>1.6.0</version>
     <packaging>war</packaging>
 
 
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.22.0</version>
+            <version>1.28.0</version>
         </dependency>
 
         <!-- For sending HTTP request to the API -->

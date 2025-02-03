@@ -3,15 +3,15 @@
         "Name": "dispersion-interactor",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.5",
+                "Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.10",
                 "Env": [
                     "DATABASE=postgres",
                     "SCOPE_TABLE_NAME=scopes",
-                    "AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
+                    "AERMOD_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/AermodAgent",
                     "AERMOD_AGENT_URL=http://${STACK_NAME}-aermod-agent:8080/AermodAgent/",
                     "WEATHER_AGENT_URL=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/CreateStation",
                     "SHIP_INPUT_AGENT=http://${STACK_NAME}-ship-input-agent:8080/ShipInputAgent/update",
-                    "VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
+                    "VIRTUAL_SENSOR_AGENT_IRI=https://www.theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
                     "GEOSERVER_WORKSPACE=dispersion",
                     "SENSORS_TABLE_NAME=sensors",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
@@ -21,6 +21,8 @@
 					"VIRTUAL_SENSOR_AGENT_URL=http://${STACK_NAME}-virtual-sensor-agent:8080/VirtualSensorAgent/",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
 					"WEATHER_LAYER_NAME=weather",
+					"NUMBER_OF_LAYERS=20",
+                    "VIS_TIME_LIMIT=86400",
                     "JPDA_ADDRESS=0.0.0.0:5005",
                     "JPDA_TRANSPORT=dt_socket",
                     "DEBUG=ON"

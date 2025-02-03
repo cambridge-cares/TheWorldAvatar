@@ -1,0 +1,26 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+
+SELECT ?polygon 
+WHERE {
+  SERVICE [ONTOP] {
+      ?polygon a disp:DispersionPolygon;
+               disp:hasTime ?time;
+               disp:hasPollutant/rdf:type <https://www.theworldavatar.com/kg/ontodispersion/NOx>;
+               geo:asWKT ?geom.
+
+      # Subquery to find the maximum time value
+      {
+        SELECT (MAX(?maxTime) AS ?time)
+        WHERE {
+          ?polygon a disp:DispersionPolygon;
+                   disp:hasTime ?maxTime.
+        }
+      }
+
+      # Filter for spatial intersection
+      FILTER(geof:sfIntersects(?geom, "[LINE_WKT]"^^geo:wktLiteral))
+  }
+}

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -96,7 +97,7 @@ public final class GeoServerService extends ContainerService {
 
         HttpRequest settingsGetRequest = settingsRequestBuilder.build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JsonHelper.getMapper();
 
         boolean serverReady = false;
         do {

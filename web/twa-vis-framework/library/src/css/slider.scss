@@ -1,0 +1,113 @@
+@import "compass/css3";
+
+$chromeurl: image-url('https://s3.amazonaws.com/codepen/chrome_radial.jpg');
+
+html, body {
+  background-color: #e6e6e6;
+}
+
+article.mainfeature {
+  width: 400px;
+  height: 300px;
+  border: 20px solid white;
+  margin: 30px auto;
+  background-color: #d4d4d4;
+  @include border-radius(2px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.sliderset {
+  margin-top: 70px; 
+}
+
+.slider {
+  position: relative;
+  margin: 32px auto;
+  width: 250px;
+  display: block;
+  background: #565656;
+  height: 7px;
+  box-shadow: 0 1px 0px rgba(255,255,255,0.25),
+    inset 0 0 4px rgba(0,0,0,0.9);
+  @include border-radius(7px);
+  div.ui-slider-range {
+    display: block;
+    height: 7px;
+    @include border-radius(7px);
+    @include transition-property(background-color);
+    @include transition-duration(100ms);
+  }
+  &.red div.ui-slider-range {
+    background-color: rgb(230, 158, 155);
+    box-shadow: inset 0 0 4px rgba(163, 18, 0, 0.7),
+      inset 0 0 2px rgba(0, 0, 0,0.5);
+    &.hilite, &.dragging {
+      background-color: rgb(255, 160, 155);
+    }
+  }
+  &.blue div.ui-slider-range {
+     background-color: #9FD0E9;
+     box-shadow: inset 0 0 4px rgba(0, 85, 151, 0.8),
+      inset 0 0 2px rgba(0, 0, 0,0.5);
+     &.hilite, &.dragging {
+      background-color: rgb(159, 213, 255);
+     }
+  }
+  &.green div.ui-slider-range {
+     background-color: #9edbbc;
+     box-shadow: inset 0 0 4px rgba(19, 121, 72, 0.8),
+      inset 0 0 2px rgba(0, 0, 0,0.5);
+     &.hilite, &.dragging {
+      background-color: rgb(158, 231, 194);
+     }
+  }
+  &.black div.ui-slider-range {
+     background-color: #aaaaaa;
+     box-shadow: inset 0 0 4px rgba(24, 24, 24, 0.8),
+      inset 0 0 2px rgba(0, 0, 0,0.5);
+     &.hilite, &.dragging {
+      background-color: #bbbbbb;
+     }
+  }
+  &.white div.ui-slider-range {
+     background-color: #e3e3e3;
+     box-shadow: inset 0 0 4px rgba(88, 88, 88, 0.5),
+      inset 0 0 2px rgba(0, 0, 0,0.3);
+     &.hilite, &.dragging {
+      background-color: #f0f0f0;
+     }
+  }
+  
+  a.ui-slider-handle {
+    position: absolute;
+    top: -5px;
+    margin-left: -9px;
+    z-index: 2;
+    height: 16px;
+    width: 16px;
+    @include border-radius(20px);
+    background-color: #d4d4d4;
+    @include background-image($chromeurl);
+    @include background-size(100% 100%);
+    border: 0px solid rgba(0,0,0,0.1);
+    box-shadow: 0 0px 2px rgba(0,0,0,0.4),
+      inset 0 0px 1px rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.6),
+      0 4px 2px rgba(0,0,0,0.2),
+      0 9px 4px rgba(0,0,0,0.1),
+      inset 0 2px 1px rgba(255,255,255,1.0);
+    outline: none;
+  }
+  
+  a.ui-slider-handle:after {
+   content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    left: -1px;
+    top: -4px;
+    background-color: none;
+    @include border-radius(12px);
+    @include background-image(radial-gradient(rgba(255,255,255,1.0), rgba(255,255,255,0.05) rgba(255,255,255,0.0)));
+  }
+}

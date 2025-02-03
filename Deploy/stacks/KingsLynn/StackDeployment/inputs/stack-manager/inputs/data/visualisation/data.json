@@ -397,6 +397,7 @@
         {
             "name": "Population Data",
             "stack": "http://165.232.172.16:3838",
+            "expanded": false,
             "sources": [
                 {
                     "id": "openpopgrid",
@@ -425,16 +426,17 @@
             "groups": [
                 {
                     "name": "Fully operational",
+                    "expanded": false,
                     "groups": [
                         {   
 
-                            "name": "Water Network (Synthetic)",
+                            "name": "Water Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/water",
                             "sources": [
                                 {
                                     "id": "water-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/gxibUm4A/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gxibUm4A%3AWater&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/sFCkEoNC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sFCkEoNC%3AWater&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -534,7 +536,7 @@
                                 {
                                     "id": "sludge-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/gxibUm4A/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gxibUm4A%3ASludge&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/sFCkEoNC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sFCkEoNC%3ASludge&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -634,7 +636,7 @@
                                 {
                                     "id": "sewage-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/gxibUm4A/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gxibUm4A%3ASewage&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/sFCkEoNC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sFCkEoNC%3ASewage&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -1897,13 +1899,13 @@
                             ]
                         },
                         {
-                            "name": "Power Network (Synthetic)",
+                            "name": "Power Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/power",
                             "sources": [
                                 {
                                     "id": "primary-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/gxibUm4A/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gxibUm4A%3APrimary&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/sFCkEoNC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sFCkEoNC%3APrimary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -2003,7 +2005,7 @@
                                 {
                                     "id": "secondary-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/gxibUm4A/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gxibUm4A%3ASecondary&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/sFCkEoNC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sFCkEoNC%3ASecondary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -2879,7 +2881,7 @@
                             ]
                         },      
                         {
-                            "name": "Connectivity (Synthetic)",
+                            "name": "Connectivity",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/central",
                             "groups": [
                                 {
@@ -2889,7 +2891,7 @@
                                             "id": "power-conns",
                                             "type": "vector",
                                             "tiles": [
-                                                "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/gxibUm4A/wms?service=WMS&version=1.1.0&request=GetMap&layers=gxibUm4A%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                                "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/sFCkEoNC/wms?service=WMS&version=1.1.0&request=GetMap&layers=sFCkEoNC%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                             ]
                                         }
                                     ],
@@ -3128,9 +3130,16 @@
                                     "id": "water-conns",
                                     "type": "vector",
                                     "tiles": [
-                                        "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/gxibUm4A/wms?service=WMS&version=1.1.0&request=GetMap&layers=gxibUm4A%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                        "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/sFCkEoNC/wms?service=WMS&version=1.1.0&request=GetMap&layers=sFCkEoNC%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                     ]
-                                }
+                                },
+                                {
+                                    "id": "sewage-conns",
+                                    "type": "vector",
+                                    "tiles": [
+                                        "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/sFCkEoNC/wms?service=WMS&version=1.1.0&request=GetMap&layers=sFCkEoNC%3ASewage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                    ]
+                                }  
                             ],
                             "layers": [
                                 {
@@ -3221,6 +3230,82 @@
                                             "#E08733"
                                         ]
                                     }
+                                },
+                                {
+                                    "id": "sewage-conn-layer-core",
+                                    "name": "Sewage Network",
+                                    "source": "sewage-conns",
+                                    "source-layer": "Sewage",
+                                    "type": "line",
+                                    "order": 100,
+                                    "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
+                                    "paint": {
+                                        "line-color": "#86C3EB",
+                                        "line-width": 3
+                                    }
+                                },
+                                {
+                                    "id": "sewage-conn-layer-arrow",
+                                    "name": "Sewage Network",
+                                    "source": "sewage-conns",
+                                    "source-layer": "Sewage",
+                                    "type": "symbol",
+                                    "order": 100,
+                                    "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "icon-image": "arrow",
+                                        "icon-rotate": 90,
+                                        "icon-allow-overlap": true,
+                                        "symbol-placement": "line",
+                                        "symbol-spacing": 100,
+                                        "icon-size": 0.2
+                                    },
+                                    "paint": {
+                                        "icon-color": "#000000"
+                                    }
+                                },
+                                {
+                                    "id": "sewage-conn-layer-under",
+                                    "name": "Sewage Network",
+                                    "source": "sewage-conns",
+                                    "source-layer": "Sewage",
+                                    "type": "line",
+                                    "order": 99,
+                                    "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
+                                    "filter": [
+                                        "<", ["to-number", ["get", "state"]], 1.0
+                                    ],
+                                    "paint": {
+                                        "line-width": 7,
+                                        "line-color": [
+                                            "interpolate",
+                                            [
+                                                "linear"
+                                            ],
+                                            [
+                                                "-",
+                                                1.0,
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "state"
+                                                    ]
+                                                ]
+                                            ],
+                                            0.001,
+                                            "#E08733",
+                                            1.0,
+                                            "#E08733"
+                                        ]
+                                    }
                                 }
                             ]
                         }
@@ -3228,16 +3313,17 @@
                 },
                 {
                     "name": "Disrupted operations",
+                    "expanded": false,
                     "groups": [
                         {   
 
-                            "name": "Water Network (Synthetic)",
+                            "name": "Water Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/water",
                             "sources": [
                                 {
                                     "id": "water-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/z8bigz9E/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=z8bigz9E%3AWater&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/q41ude1X/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=q41ude1X%3AWater&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -3337,7 +3423,7 @@
                                 {
                                     "id": "sludge-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/z8bigz9E/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=z8bigz9E%3ASludge&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/q41ude1X/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=q41ude1X%3ASludge&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -3437,7 +3523,7 @@
                                 {
                                     "id": "sewage-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/z8bigz9E/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=z8bigz9E%3ASewage&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/q41ude1X/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=q41ude1X%3ASewage&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -4700,13 +4786,13 @@
                             ]
                         },
                         {
-                            "name": "Power Network (Synthetic)",
+                            "name": "Power Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/power",
                             "sources": [
                                 {
                                     "id": "primary-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/z8bigz9E/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=z8bigz9E%3APrimary&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/q41ude1X/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=q41ude1X%3APrimary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -4806,7 +4892,7 @@
                                 {
                                     "id": "secondary-source",
                                     "type": "geojson",
-                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/z8bigz9E/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=z8bigz9E%3ASecondary&outputFormat=application%2Fjson",
+                                    "data": "https://kg.cmclinnovations.com/credo/phase2/power/geoserver/q41ude1X/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=q41ude1X%3ASecondary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -5682,7 +5768,7 @@
                             ]
                         },      
                         {
-                            "name": "Connectivity (Synthetic)",
+                            "name": "Connectivity",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/central",
                             "groups": [
                                 {
@@ -5692,7 +5778,7 @@
                                             "id": "power-conns",
                                             "type": "vector",
                                             "tiles": [
-                                                "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/z8bigz9E/wms?service=WMS&version=1.1.0&request=GetMap&layers=z8bigz9E%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                                "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/q41ude1X/wms?service=WMS&version=1.1.0&request=GetMap&layers=q41ude1X%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                             ]
                                         }
                                     ],
@@ -5931,9 +6017,16 @@
                                     "id": "water-conns",
                                     "type": "vector",
                                     "tiles": [
-                                        "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/z8bigz9E/wms?service=WMS&version=1.1.0&request=GetMap&layers=z8bigz9E%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                        "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/q41ude1X/wms?service=WMS&version=1.1.0&request=GetMap&layers=q41ude1X%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                     ]
-                                }
+                                },
+                                {
+                                    "id": "sewage-conns",
+                                    "type": "vector",
+                                    "tiles": [
+                                        "https://kg.cmclinnovations.com/credo/phase2/central/geoserver/q41ude1X/wms?service=WMS&version=1.1.0&request=GetMap&layers=q41ude1X%3ASewage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                    ]
+                                }  
                             ],
                             "layers": [
                                 {
@@ -5999,6 +6092,82 @@
                                         ["==", ["get", "supplier_type"], "Water"],
                                         ["==", ["get", "receiver_type"], "Water"],
                                         ["<", ["to-number", ["get", "state"]], 1.0]
+                                    ],
+                                    "paint": {
+                                        "line-width": 7,
+                                        "line-color": [
+                                            "interpolate",
+                                            [
+                                                "linear"
+                                            ],
+                                            [
+                                                "-",
+                                                1.0,
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "state"
+                                                    ]
+                                                ]
+                                            ],
+                                            0.001,
+                                            "#E08733",
+                                            1.0,
+                                            "#E08733"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sewage-conn-layer-core",
+                                    "name": "Sewage Network",
+                                    "source": "sewage-conns",
+                                    "source-layer": "Sewage",
+                                    "type": "line",
+                                    "order": 100,
+                                    "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
+                                    "paint": {
+                                        "line-color": "#86C3EB",
+                                        "line-width": 3
+                                    }
+                                },
+                                {
+                                    "id": "sewage-conn-layer-arrow",
+                                    "name": "Sewage Network",
+                                    "source": "sewage-conns",
+                                    "source-layer": "Sewage",
+                                    "type": "symbol",
+                                    "order": 100,
+                                    "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "icon-image": "arrow",
+                                        "icon-rotate": 90,
+                                        "icon-allow-overlap": true,
+                                        "symbol-placement": "line",
+                                        "symbol-spacing": 100,
+                                        "icon-size": 0.2
+                                    },
+                                    "paint": {
+                                        "icon-color": "#000000"
+                                    }
+                                },
+                                {
+                                    "id": "sewage-conn-layer-under",
+                                    "name": "Sewage Network",
+                                    "source": "sewage-conns",
+                                    "source-layer": "Sewage",
+                                    "type": "line",
+                                    "order": 99,
+                                    "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
+                                    "filter": [
+                                        "<", ["to-number", ["get", "state"]], 1.0
                                     ],
                                     "paint": {
                                         "line-width": 7,

@@ -20,6 +20,10 @@ public class EnvConfig {
     public static final String API_KEY = System.getenv("API_KEY");
     public static final JSONArray BOUNDING_BOXES = new JSONArray(System.getenv("BOUNDING_BOXES"));
     public static final String UPLOAD_INTERVAL_MINUTES = System.getenv("UPLOAD_INTERVAL_MINUTES");
+    public static final boolean SKIP_UPDATE_RDB = Boolean.parseBoolean(System.getenv("SKIP_UPDATE_RDB"));
+    public static final String SHIP_DATA_AGENT_IRI = System.getenv("SHIP_DATA_AGENT_IRI");
+    public static final String SHIP_DATA_AGENT_URL = System.getenv("SHIP_DATA_AGENT_URL").replace("${STACK_NAME}",
+            STACK_NAME);
 
     private EnvConfig() {
         throw new IllegalStateException();

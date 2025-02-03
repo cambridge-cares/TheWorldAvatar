@@ -1,0 +1,29 @@
+{
+    "maxDistance": "300.0",
+    "coordinates": [
+        [
+            103.67455581177452,
+            1.2711156279472327
+        ],
+        [
+            103.68455581177452,
+            1.2611156279472327
+        ]
+    ],
+    "srid": "4326",
+    "table": "data_centres",
+    "column": "wkb_geometry",
+    "overlapFraction": "0.70",
+    "oneToMany": "false",
+    "newTable": "matched_buildings",
+    "filterColumns": [
+        "LU_DESC"
+    ],
+    "excludedValues": [
+        [
+            "ROAD",
+            "PARK"
+        ]
+    ],
+    "mapping": "industry_buildings.obda"
+}

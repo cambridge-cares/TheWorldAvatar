@@ -12,7 +12,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 public class LocalTempDir extends LocalTempPath implements TempDir {
 
     public LocalTempDir() throws IOException {
-        super(Files.createTempDirectory(Path.of(StackClient.SCRATCH_DIR), "tmp"));
+        super(Files.createTempDirectory(Path.of(StackClient.getScratchDir()), "tmp"));
     }
 
     @Override

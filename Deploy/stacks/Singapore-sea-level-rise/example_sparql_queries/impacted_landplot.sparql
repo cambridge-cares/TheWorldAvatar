@@ -1,0 +1,26 @@
+# Query for affected landplot area given a sea level change UUID
+PREFIX ont: <http://purl.org/net/ns/ontology-annot#>
+PREFIX plo: <http://purl.org/net/po#>
+PREFIX ontop: <https://w3id.org/ontop/>
+PREFIX onto: <http://www.ontotext.com/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX osm: <https://w3id.org/openstreetmap/terms#>
+PREFIX ontosl:   <https://www.theworldavatar.com/kg/ontosealevel/>
+PREFIX om:     <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ontoplot: <https://www.theworldavatar.com/kg/landplot/>
+PREFIX plot: <https://www.theworldavatar.com/kg/ontoplot/>
+
+
+SELECT * WHERE {
+  <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/d4ae1d4c-c92f-4fcb-b70e-d49cac113f68> ontosl:hasPotentialImpact ?landplot.
+  ?landplot a ontosl:ImpactedSite. 
+  ?landplot a plot:Plot.
+  ?landplot plot:hasPlotArea ?area.
+  ?landplot ontosl:hasAffectedArea ?affectedArea. ?affectedArea om:hasValue ?measureafarea; ontosl:associatedWith <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/d4ae1d4c-c92f-4fcb-b70e-d49cac113f68>. ?measureafarea om:hasNumericalValue ?afareavalue. 
+  ?area om:hasValue ?areameasure.
+  ?areameasure om:hasNumericalValue ?areaValue.
+
+} 
+ORDER BY DESC (?afareavalue)
+LIMIT 5

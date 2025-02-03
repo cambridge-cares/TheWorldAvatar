@@ -1,6 +1,6 @@
 # Initialise a dispersion simulation in the MBS area
 # Switch POST to DELETE to stop the scheduled simulations
-POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
+POST http://localhost:4242/dispersion-interactor/ScheduledDispersion
 ?ewkt=SRID=32648;POLYGON((363838 134778,377838 134778,377838 144778,363838 144778,363838 134778))
 &nx=100
 &ny=100
@@ -9,3 +9,4 @@ POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
 &label=Marina Bay Sands and Sentosa
 &delayMinutes=30
 &intervalMinutes=60
+&maxTimeMinutes=30

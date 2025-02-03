@@ -3,7 +3,7 @@
         "Name": "adminer",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "adminer:latest"
+                "Image": "docker.io/adminer:latest"
             }
         }
     },

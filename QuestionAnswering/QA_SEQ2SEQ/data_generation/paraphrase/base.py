@@ -7,7 +7,7 @@ from openai import OpenAI
 
 class OpenAiClientForBulletPointResponse:
     PARAPHRASE_NUM = 3
-    SYSTEM_PROMPT_TEMPLATE = '''You will be provided with a machine-generated query. Rephrase it in {num} different ways. Additionally, keep the square brackets, tags, and their enclosing text unchanged.
+    SYSTEM_PROMPT_TEMPLATE = '''You will be provided with a machine-generated query. Rephrase it in {num} different ways. Additionally, keep the <span> tags and their enclosing text unchanged.
     
 Text: """
 {text}
@@ -97,9 +97,8 @@ Paraphrases:
                 {
                     "role": "user",
                     "content": self.SYSTEM_PROMPT_TEMPLATE.format(
-                        num=self.PARAPHRASE_NUM,
-                        text=input_text
-                    )
+                        num=self.PARAPHRASE_NUM, text=input_text
+                    ),
                 },
             ],
             **self.kwargs
@@ -129,7 +128,25 @@ class Paraphraser:
                 endpoint, api_key, model, **openai_kwargs
             )
 
+    def _extract_literals_by_tag(self, text: str):
+        """Extracts literals enclosed by <span> tags."""
+        literals: List[str] = []
+        ptr = 0
+        while ptr < len(text):
+            start = text.find("<span>", ptr)
+            if start < 0:
+                break
+
+            end = text.find("</span>", start)
+            if end < 0:
+                break
+
+            ptr = end + len("</span>")
+            literals.append(text[start:ptr])
+        return literals
+
     def _extract_literals(self, text: str):
+        # to be deprecated
         """Extracts literals enclosed by square brackets."""
         literals: List[str] = []
         ptr = 0
@@ -138,6 +155,7 @@ class Paraphraser:
             if start < 0:
                 break
 
+            # check that [ is not in the middle of a word
             if start > 0 and not text[start - 1].isspace():
                 ptr = start + 1
                 continue
@@ -163,7 +181,58 @@ class Paraphraser:
             ptr = end + 1
         return tuple(literals)
 
+    def _correct_paraphrase_by_tag(self, paraphrase: str, literals: Tuple[str, ...]):
+        corrected = True
+
+        for literal in literals:
+            if literal in paraphrase:
+                continue
+
+            assert literal.startswith("<span>") and literal.endswith("</span>"), literal
+            literal_core = literal[len("<span>") : -len("</span>")]
+            literal_lower = literal_core.lower()
+            w_num = len(literal_lower.split())
+
+            if paraphrase.endswith(".") or paraphrase.endswith("?"):
+                paraphrase = paraphrase[:-1]
+            words = paraphrase.split()
+            candidates = [words[i : i + w_num] for i in range(len(words) - w_num + 1)]
+            if not candidates:
+                corrected = False
+                break
+
+            dists = [
+                Levenshtein.distance(" ".join(c).lower(), literal_lower)
+                for c in candidates
+            ]
+            min_dist = min(dists)
+            if min_dist > self.FUZZY_TOLERANCE:
+                corrected = False
+                break
+
+            idxes = [i for i, d in enumerate(dists) if d == min_dist]
+            if len(idxes) > 1:
+                shortlisted = [candidates[i] for i in idxes]
+                dists = [
+                    Levenshtein.distance(" ".join(c), literal_core) for c in shortlisted
+                ]
+                idx = idxes[np.argmin(dists)]
+            else:
+                idx = idxes[0]
+
+            paraphrase = "{pre} {mid} {post}".format(
+                pre=" ".join(words[:idx]),
+                mid=literal,
+                post=" ".join(words[idx + w_num :]),
+            )
+
+        if corrected:
+            return paraphrase
+        else:
+            return None
+
     def _correct_paraphrase(self, paraphrase: str, literals: Tuple[str, ...]):
+        # to be deprecated
         corrected = True
 
         for l in literals:
@@ -184,12 +253,9 @@ class Paraphraser:
             if not candidates:
                 corrected = False
                 break
-            
+
             dists = np.array(
-                [
-                    Levenshtein.distance(" ".join(c).lower(), _l)
-                    for c in candidates
-                ]
+                [Levenshtein.distance(" ".join(c).lower(), _l) for c in candidates]
             )
             idx = np.argmin(dists)
             if dists[idx] > self.FUZZY_TOLERANCE:
@@ -205,7 +271,8 @@ class Paraphraser:
             return None
 
     def paraphrase(self, text: str):
-        literals = self._extract_literals(text)
+        # literals = self._extract_literals(text)
+        literals = self._extract_literals_by_tag(text)
 
         try_num = 0
         paraphrases: List[str] = []
@@ -215,7 +282,8 @@ class Paraphraser:
                 if all(l in p for l in literals):
                     paraphrases.append(p)
                 else:
-                    corrected = self._correct_paraphrase(p, literals)
+                    # corrected = self._correct_paraphrase(p, literals)
+                    corrected = self._correct_paraphrase_by_tag(p, literals)
                     if corrected:
                         print(
                             "Successful correction.\nFrom: {i}\nTo:{o}\n".format(

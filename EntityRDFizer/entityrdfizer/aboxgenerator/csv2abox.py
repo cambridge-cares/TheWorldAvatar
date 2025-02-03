@@ -5,11 +5,12 @@ import os
 
 def run_abox_generator(
     csvFileOrDirPath,
-    outDir
+    outDir,
+    csvTbox
 ):
     if os.path.isfile(csvFileOrDirPath):
-        convertFile(csvFileOrDirPath,outDir)
+        convertFile(csvFileOrDirPath,outDir,csvTbox)
     elif os.path.isdir(csvFileOrDirPath):
-        convertDir(csvFileOrDirPath,outDir)
+        convertDir(csvFileOrDirPath,outDir,csvTbox)
     else:
         print(f"File or directory {csvFileOrDirPath} does not exists")

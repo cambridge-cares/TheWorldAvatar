@@ -3,6 +3,7 @@ This module contains utility function of config parser
 '''
 
 import configparser
+import json
 import os
 from pathlib import Path
 from typing import List
@@ -15,6 +16,10 @@ def load_conf(fullfilepath: str) -> configparser.ConfigParser:
     config.read(fullfilepath)
     return config
 
+def load_json(file_path):
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    return data
 
 def load_confs_from_dir(fulldirpath) -> list:
     filepaths = []

@@ -1,0 +1,73 @@
+[PrefixDeclaration]
+OM:               http://www.ontology-of-units-of-measure.org/resource/om-2/
+ontobuiltenv:      https://www.theworldavatar.com/kg/ontobuiltenv/
+OntoONS:           https://www.ordnancesurvey.co.uk/linked-data/ontology/
+GeoSparql:         http://www.opengis.net/ont/geosparql#
+owl:               http://www.w3.org/2002/07/owl#
+rdf:               http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:               http://www.w3.org/2001/XMLSchema#
+OCHV:              http://sbmi.uth.tmc.edu/ontology/ochv/CHV_Concept/
+
+[MappingDeclaration] @collection [[
+
+mappingId   PublicHealth-LSOA-COPD-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasCOPDCase <https://www.theworldavatar.com/kg/ontobuiltenv/COPDCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-COPDCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/COPDCase/{lsoa_code}> a OCHV:COPDCase ; OM:hasRate {copd_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "copd_rate" AS copd_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-CvD-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasCVDCase <https://www.theworldavatar.com/kg/ontobuiltenv/CVDCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-CVDCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/CVDCase/{lsoa_code}> a OCHV:CVDCase ; OM:hasRate {cvd_rate}^^xsd:decimal .
+source      SELECT "lsoa_code" AS lsoa_code, "coronary_heart_disease_rate" AS cvd_rate
+            FROM "public_health_record"
+
+
+mappingId   PublicHealth-LSOA-HeartFailure-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasHeartFailureCase <https://www.theworldavatar.com/kg/ontobuiltenv/HeartFailureCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-HeartFailureCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/HeartFailureCase/{lsoa_code}> a OCHV:HeartFailureCase ; OM:hasRate {heart_failure_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "heart_failure_rate" AS heart_failure_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-Stroke-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasStrokeCase <https://www.theworldavatar.com/kg/ontobuiltenv/StrokeCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-StrokeCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/StrokeCase/{lsoa_code}> a OCHV:StrokeCase ; OM:hasRate {stroke_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "stroke_rate" AS stroke_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-Hypertension-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasHypertensionCase <https://www.theworldavatar.com/kg/ontobuiltenv/HypertensionCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-HypertensionCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/HypertensionCase/{lsoa_code}> a OCHV:HypertensionCase ; OM:hasRate {hypertension_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "hypertension_rate" AS hypertension_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-RheumatoidArthritis-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasRheumatoidArthritisCase <https://www.theworldavatar.com/kg/ontobuiltenv/RheumatoidArthritisCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-RheumatoidArthritisCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/RheumatoidArthritisCase/{lsoa_code}> a OCHV:RheumatoidArthritisCase ; OM:hasRate {rheumatoid_arthritis_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "rheumatoid_arthritis_rate" AS rheumatoid_arthritis_rate
+				FROM "public_health_record"
+]]

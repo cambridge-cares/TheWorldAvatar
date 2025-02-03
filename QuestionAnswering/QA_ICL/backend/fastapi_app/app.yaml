@@ -1,0 +1,64 @@
+redis:
+  host: 
+text_embedding:
+  backend: 
+  url: ""
+  model: 
+translator:
+  base_url: 
+  api_key: ""
+  model: 
+chat:
+  base_url: 
+  api_key: ""
+  model: 
+qt_recog:
+  base_url: 
+  api_key: ""
+  model: 
+location_iq:
+  api_key: ""
+chemistry_endpoints:
+  ontospecies: 
+  ontokin: 
+  ontocompchem: 
+  ontozeolite: 
+  ontomops: 
+singapore_endpoints:
+  ontop: 
+  ontop_internal: 
+  dispersion: 
+  plot: 
+  company: 
+  carpark: 
+  carpark_internal: 
+  feature_info_agent: 
+  pollutant_concentration: 
+entity_linking:
+  semantic:
+    threshold: 
+  entries:
+    - cls: 
+      strategy: 
+      k: 
+    - cls: 
+      strategy: 
+      k: 
+    - cls: 
+      strategy: 
+      k: 
+    - cls: 
+      strategy: 
+      k: 
+    - cls: 
+      strategy: 
+      k: 
+    - cls: 
+      strategy": 
+semantic_parsing:
+  context_augmentation:
+    example_num: 
+    relation_num: 
+ontomops_fileserver:
+  username: ""
+  password: ""

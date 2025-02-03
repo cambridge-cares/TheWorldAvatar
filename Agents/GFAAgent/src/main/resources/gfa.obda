@@ -1,0 +1,11 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+env: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+twa:    https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	gfa
+target		twa:Building/{building_uuid} env:hasGFA {gfa} .
+source      SELECT * FROM gfa_floors.gfa
+]]

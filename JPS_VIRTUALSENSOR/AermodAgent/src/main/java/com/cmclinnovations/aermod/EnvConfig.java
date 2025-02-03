@@ -24,6 +24,9 @@ public class EnvConfig {
     public static final double TARGET_EMISSION_VOLUME_FRACTION = Double
             .parseDouble(System.getenv("TARGET_EMISSION_VOLUME_FRACTION"));
     public static final String SHIPS_LAYER_NAME = System.getenv("SHIPS_LAYER_NAME");
+    public static final String NUMBER_OF_LAYERS = System.getenv("NUMBER_OF_LAYERS");
+    public static final boolean IGNORE_BUILDINGS = Boolean.parseBoolean(System.getenv("IGNORE_BUILDINGS"));
+    public static final String RDB_SCHEMA = System.getenv("RDB_SCHEMA") != null ? System.getenv("RDB_SCHEMA") : "public";
 
     private EnvConfig() {
         throw new IllegalStateException();

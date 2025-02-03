@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 @WebServlet(urlPatterns = { "/GetDataJson" })
 public class GetDataJson extends HttpServlet {
@@ -75,9 +76,10 @@ public class GetDataJson extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
-                Instant.class);
+                new TimeSeriesRDBClientWithReducedTables<>(Instant.class));
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
         dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
                 endpointConfig.getDbpassword());
@@ -186,7 +188,7 @@ public class GetDataJson extends HttpServlet {
             // extract buildings group from pirmasensData.json template
             try (InputStream is = getClass().getClassLoader().getResourceAsStream("pirmasensData.json")) {
                 String templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-                templateContent = templateContent.replace("http://localhost:3838", Config.STACK_URL);
+                templateContent = templateContent.replace("http://localhost:4242", Config.STACK_URL);
 
                 JSONObject buildingjson = new JSONObject(templateContent);
                 JSONArray buildingGroups = buildingjson.getJSONArray("groups");

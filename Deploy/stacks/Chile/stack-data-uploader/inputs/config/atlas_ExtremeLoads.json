@@ -1,0 +1,26 @@
+{
+    "name": "atlas_ExtremeLoads",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlas_ExtremeLoads",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "atlas_ExtremeLoads",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "atlas_extreme_loads"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "atlas_extreme_loads",
+            "file": "atlas_extreme_loads.sld"
+        }
+    ]
+}

@@ -9,6 +9,7 @@ from services.translate.sparql.graph_pattern import (
     TriplePattern,
     ValuesClause,
 )
+from services.translate.sparql.constraint import BrackettedExpression
 from services.translate.sparql.where_clause import WhereClause
 from services.translate.sparql.query_form import SelectClause
 from services.translate.sparql import SparqlQuery
@@ -124,7 +125,9 @@ class TestOSCompact2VerboseConverter:
                                 "os:hasMeltingPoint/os:value",
                                 "?MeltingPointValue",
                             ),
-                            FilterClause("?MeltingPointValue > 100"),
+                            FilterClause(
+                                BrackettedExpression("?MeltingPointValue > 100")
+                            ),
                         ]
                     ),
                 ),
@@ -177,7 +180,9 @@ class TestOSCompact2VerboseConverter:
                                     )
                                 ]
                             ),
-                            FilterClause("?MeltingPointValue > 100"),
+                            FilterClause(
+                                BrackettedExpression("?MeltingPointValue > 100")
+                            ),
                         ]
                     ),
                 ),
@@ -204,7 +209,7 @@ class TestOSCompact2VerboseConverter:
                 ),
                 # SELECT ?UseLabel ?SpeciesLabel WHERE {
                 #   ?Species a os:Species ; rdfs:label ?SpeciesLabel .
-                #   ?Species (a|!a)+ [ rdf:type os:ChemicalClass ; rdfs:label "alcohol" ] .
+                #   ?Species (<>|!<>)+ [ rdf:type os:ChemicalClass ; rdfs:label "alcohol" ] .
                 #   ?Species os:hasUse/rdfs:label ?UseLabel
                 # }
                 SparqlQuery(
@@ -223,7 +228,7 @@ class TestOSCompact2VerboseConverter:
                             ),
                             TriplePattern.from_triple(
                                 "?Species",
-                                "(a|!a)+",
+                                "(<>|!<>)+",
                                 '[ rdf:type os:ChemicalClass ; rdfs:label "alcohol" ]',
                             ),
                             TriplePattern.from_triple(
