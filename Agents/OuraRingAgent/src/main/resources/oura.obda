@@ -4,6 +4,7 @@ ouraring:    https://www.theworldavatar.com/kg/ouraring/
 om:          http://www.ontology-of-units-of-measure.org/resource/om-2/
 
 [MappingDeclaration] @collection [[
+# The user IRI mon:person_{user_id} needs to match the obda added by the UserAgent
 mappingId   ouraring
 target      mon:person_{user_id} ouraring:hasOuraRing ouraring:ring_{user_id}.
             ouraring:ring_{user_id} a ouraring:OuraRing;

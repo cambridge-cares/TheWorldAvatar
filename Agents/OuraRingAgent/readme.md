@@ -1,0 +1,32 @@
+# Ouraring agent
+
+## Requirements
+
+Users instantiated in the timeline."ouraRing" table with their corresponding Ouraring API key.
+
+Following triple to be queried from Ontop:
+
+SELECT ?user
+WHERE {
+?user rdfs:label "USER_ID"
+}
+
+## Routes
+
+1) POST "/"
+
+   Optional parameters:
+   1) start_datetime
+   2) end_datetime
+
+   If bounds are not given, agent will set the upperbound to current time and lowerbound to 30 days before current time.
+
+   Example request:
+
+   ```bash
+   curl -X POST http://localhost:3838/ouraring-agent/
+   ```
+
+   ```bash
+   curl -X POST "http://localhost:3838/ouraring-agent/?start_datetime=2024-11-20T00:00:00Z&end_datetime=2024-11-22T00:00:00Z"
+   ```
