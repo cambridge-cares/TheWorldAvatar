@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import cares.cam.ac.uk.ouraring.data.User;
@@ -22,12 +25,17 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 @WebServlet(urlPatterns = { "/" })
 public class OuraRingAgent extends HttpServlet {
+    private static final Logger LOGGER = LogManager.getLogger(OuraRingAgent.class);
     RemoteRDBStoreClient remoteRDBStoreClient;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String startDateTime = req.getParameter("start_datetime");
         String endDateTime = req.getParameter("end_datetime");
+
+        LOGGER.info("Received request with parameters");
+        LOGGER.info("start_datetime = {}", startDateTime);
+        LOGGER.info("end_datetime = {}", endDateTime);
 
         Instant startDateTimeInstant = null;
 
@@ -96,6 +104,8 @@ public class OuraRingAgent extends HttpServlet {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        LOGGER.info("Update complete");
     }
 
     @Override
