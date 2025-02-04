@@ -1,6 +1,7 @@
 {   "ServiceSpec": {
         "Name": "dragonfly",
-        "TaskTemplate": {
+        "TaskTemplate": 
+        {
             "ContainerSpec": {
                 "Image": "ghcr.io/dragonflydb/dragonfly:v1.26.2-ubuntu",
                 "Mounts": [
