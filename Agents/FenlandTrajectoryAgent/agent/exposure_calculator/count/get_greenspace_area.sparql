@@ -1,0 +1,9 @@
+PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+SELECT ?feature ?function ?geometry
+WHERE {
+  ?feature gs:isPartOfDomain <{env_data_iri}> ;
+           gs:hasFunction ?function .
+  ?geoPoint gs:isPartOf ?feature ;
+            geo:hasGeometry ?geometry .
+}
