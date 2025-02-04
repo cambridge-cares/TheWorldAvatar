@@ -5,14 +5,10 @@ WITH BufferedLine AS (
             {exposure_radius}
         ) AS buffered_geom
     FROM 
-        "{table_name}" AS gps
+        "{table_name}" gps
 ),
 combined_frs AS (
-    SELECT "Name", "Address", geom
-    FROM public.supermarket
-    UNION ALL
-    SELECT "Name", "Address", geom
-    FROM public.takeaways
+    {union_sql}
 )
 SELECT 
     frs."Name" AS entity_name, 
