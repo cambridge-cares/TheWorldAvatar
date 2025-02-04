@@ -1,4 +1,3 @@
-# route.py
 from flask import Blueprint, request, jsonify
 from agent.exposure_calculator.exposure_utilities import ExposureUtils
 

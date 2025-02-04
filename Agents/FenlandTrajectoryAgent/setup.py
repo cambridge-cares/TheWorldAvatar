@@ -7,6 +7,7 @@ setup(
     author_email='jc2341@cam.ac.uk',  
     packages=find_packages(),  # Automatically find all packages 
     install_requires=[
+        'pyproj==3.4.0',
         'Flask==2.2.2',
         'flask-cors==3.0.10',
         'SPARQLWrapper==1.8.5',
