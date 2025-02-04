@@ -41,6 +41,15 @@ class ExposureUtils:
 
         self.env_data_cache = {}
 
+        # Base directory for SQL and SPARQL templates
+        self.template_dir = os.path.join(os.path.dirname(__file__), "count")
+
+    def load_template(self, filename: str) -> str:
+        filepath = os.path.join(self.template_dir, filename)
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+        return content
+
     def connect_to_database(self, host: str, port: int, user: str, password: str, database: str) -> psycopg2.extensions.connection:
         try:
             self.logger.info(f"Connecting to database {database} at {host}:{port}...")
@@ -59,9 +68,6 @@ class ExposureUtils:
             raise e
 
     def execute_query(self, connection, query: str, params: Optional[tuple] = None):
-        """
-        record response time
-        """
         try:
             do_fetch = False
             first = query.strip().upper()
@@ -85,21 +91,15 @@ class ExposureUtils:
             raise e
 
     def get_table_name_for_timeseries(self, conn, timeseriesIRI: str) -> str:
-        query = """
-        SELECT DISTINCT "tableName"
-        FROM "dbTable"
-        WHERE "timeseriesIRI" = %s;
-        """
-        rows = self.execute_query(conn, query, (timeseriesIRI,))
+        query_template = self.load_template("get_table_name_for_timeseries.sql")
+        rows = self.execute_query(conn, query_template, (timeseriesIRI,))
         if not rows:
             raise ValueError(f"No tableName found for timeseriesIRI: {timeseriesIRI}")
         return rows[0][0]
 
     def get_timeseries_data(self, conn, table_name: str) -> pd.DataFrame:
-        query = f'''
-        SELECT "time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"
-        FROM "{table_name}";
-        '''
+        query_template = self.load_template("get_timeseries_data.sql")
+        query = query_template.format(table_name=table_name)
         rows = self.execute_query(conn, query)
         df = pd.DataFrame(rows, columns=["time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"])
         return df
@@ -138,16 +138,10 @@ class ExposureUtils:
     def get_domain_and_featuretype(self, env_data_iri: str, endpoint_url: Optional[str] = None) -> Tuple[str, str]:
         if endpoint_url is None:
             endpoint_url = self.ENV_DATA_ENDPOINT_URL
-        sparql_query = f"""
-        PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
-        SELECT ?domainName ?featureType
-        WHERE {{
-            <{env_data_iri}> exposure:hasDomainName ?domainName ;
-                             exposure:hasFeatureType ?featureType .
-        }}
-        """
+        template = self.load_template("get_domain_and_featuretype.sparql")
+        query = template.format(env_data_iri=env_data_iri)
         headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
-        resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
+        resp = requests.post(endpoint_url, data=query, headers=headers, timeout=30)
         resp.raise_for_status()
         results = resp.json().get("results", {}).get("bindings", [])
         if not results:
@@ -158,9 +152,6 @@ class ExposureUtils:
         return domain_name, feature_type
 
     def fetch_env_data(self, env_data_iri: str, endpoint_url: Optional[str] = None) -> Tuple[pd.DataFrame, str]:
-        """
-        use env_data_iri to get env data, and create cache
-        """
         if endpoint_url is None:
             endpoint_url = self.ENV_DATA_ENDPOINT_URL
 
@@ -175,33 +166,10 @@ class ExposureUtils:
 
         if feature_type.upper() == "POINT":
             if dl_lower.startswith("food hygiene rating"):
-                sparql_query = f"""
-                PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
-                PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-                SELECT ?id ?businessName ?businessType ?ratingTime ?ratingValue ?longitude ?latitude
-                WHERE {{
-                  ?id fh:isPartOfDomain <{env_data_iri}> ;
-                      fh:hasBusinessName ?businessName ;
-                      fh:hasBusinessType ?businessType ;
-                      fh:hasRatingDate ?ratingTime ;
-                      fh:hasRatingValue ?ratingValue .
-                  ?geo geo:isPartOf ?id ;
-                       geo:hasLongitude ?longitude ;
-                       geo:hasLatitude ?latitude .
-                }}
-                """
+                template_file = "get_food_hygiene_rating.sparql"
             else:
-                sparql_query = f"""
-                PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-                SELECT ?id ?longitude ?latitude
-                WHERE {{
-                  ?id geo:isPartOfDomain <{env_data_iri}> .
-                  ?geo geo:isPartOf ?id ;
-                       geo:hasLongitude ?longitude ;
-                       geo:hasLatitude ?latitude .
-                }}
-                """
-
+                template_file = "get_point_generic.sparql"
+            sparql_query = self.load_template(template_file).format(env_data_iri=env_data_iri)
             headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
             resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
             resp.raise_for_status()
@@ -218,31 +186,12 @@ class ExposureUtils:
             self.logger.info(f"[POINT] Extracted DataFrame for {env_data_iri}:")
             self.logger.info(f"First 3 rows:\n{df.head(3)}")
             self.logger.info(f"Last 3 rows:\n{df.tail(3)}")
-
         elif feature_type.upper() == "AREA":
             if dl_lower.startswith("greenspace"):
-                sparql_query = f"""
-                PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
-                PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-                SELECT ?feature ?function ?geometry
-                WHERE {{
-                  ?feature gs:isPartOfDomain <{env_data_iri}> ;
-                           gs:hasFunction ?function .
-                  ?geoPoint gs:isPartOf ?feature ;
-                            geo:hasGeometry ?geometry .
-                }}
-                """
+                template_file = "get_greenspace_area.sparql"
             else:
-                sparql_query = f"""
-                PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-                SELECT ?feature ?geometry
-                WHERE {{
-                  ?feature geo:isPartOfDomain <{env_data_iri}> .
-                  ?geoRef geo:isPartOf ?feature ;
-                          geo:hasGeometry ?geometry .
-                }}
-                """
-
+                template_file = "get_area_generic.sparql"
+            sparql_query = self.load_template(template_file).format(env_data_iri=env_data_iri)
             headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
             resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
             resp.raise_for_status()
@@ -299,7 +248,6 @@ class ExposureUtils:
         else:
             line_lonlat = LineString(coords_ll)
 
-        # 2) SRID Transfioorm：WGS84 -> EPSG:27700
         crs_wgs84 = CRS.from_epsg(4326)
         crs_27700 = CRS.from_epsg(27700)
         transformer = Transformer.from_crs(crs_wgs84, crs_27700, always_xy=True)
@@ -317,7 +265,6 @@ class ExposureUtils:
         buffer_geom = unary_union(buffers)
         self.logger.info(f"[exposure_calculation] Created segmented buffer, area={buffer_geom.area:.2f}, bounds={buffer_geom.bounds}")
 
-        # 4) calculate exposure according to feature type
         point_count, area_count, total_area = 0, 0, 0.0
         if feature_type.upper() == "POINT":
             visited_ids = set()
@@ -350,7 +297,6 @@ class ExposureUtils:
                     continue
             self.logger.info(f"[AREA] Final count={area_count}, total_area={total_area:.2f}")
 
-        # 5) update the original database in postgres, 
         try:
             conn = self.connect_to_database(
                 self.TRAJECTORY_DB_HOST,
@@ -365,6 +311,7 @@ class ExposureUtils:
             area_column = f"{safe_label}_area_count"
             total_area_column = f"{safe_label}_total_area"
             with conn.cursor() as cursor:
+                # UPDATE and ALTER queries remain hardcoded
                 for column, dtype in [(point_column, "INTEGER"), (area_column, "INTEGER"), (total_area_column, "DOUBLE PRECISION")]:
                     cursor.execute(f"""
                     DO $$ BEGIN
@@ -396,21 +343,10 @@ class ExposureUtils:
         }
 
     def fetch_domain_and_data_sources(self, env_data_iri: str) -> List[Dict[str, str]]:
-        sparql_query = f"""
-        PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
-        PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
-        PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
-        
-        SELECT ?domainIRI ?domainName ?dataSourceName
-        WHERE {{
-          ?domainIRI a exposure:Domain ;
-                     exposure:hasDomainName ?domainName ;
-                     exposure:hasDataSource ?dataSourceName .
-          FILTER(?domainIRI = <{env_data_iri}>)
-        }}
-        """
+        template = self.load_template("get_domain_and_data_sources.sparql")
+        query = template.format(env_data_iri=env_data_iri)
         headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
-        resp = requests.post(self.ENV_DATA_ENDPOINT_URL, data=sparql_query, headers=headers, timeout=30)
+        resp = requests.post(self.ENV_DATA_ENDPOINT_URL, data=query, headers=headers, timeout=30)
         resp.raise_for_status()
         res_json = resp.json()
         bindings = res_json.get("results", {}).get("bindings", [])
@@ -424,9 +360,6 @@ class ExposureUtils:
         return results
 
     def calculate_exposure_simplified_util(self, data: dict) -> List[Dict]:
-        """
-        simplefied exposure calculation if trajectory and env features stored in the same stack
-        """
         trajectoryIRIs = data.get("trajectoryIRIs", [])
         exposure_radius = data.get("exposure_radius", 100)
         dataIRIs = data.get("DataIRIs", [])
@@ -467,22 +400,9 @@ class ExposureUtils:
 
                     if feature_type.upper() == "AREA":
                         if dl_lower.startswith("greenspace"):
-                            sql_query = f"""
-                            WITH Trajectory AS (
-                                SELECT ST_Transform(
-                                    ST_Buffer(
-                                        ST_MakeLine("column7"::geometry ORDER BY "time")::geography, 
-                                        {exposure_radius}
-                                    )::geometry, 
-                                    27700
-                                ) AS buffered_trajectory
-                                FROM "{table_name}"
-                            )
-                            SELECT g.ogc_fid, g.function, g."distName1", g."distName2", g.wkb_geometry
-                            FROM public."GB_GreenspaceSite" g, Trajectory t
-                            WHERE ST_Intersects(g.wkb_geometry, t.buffered_trajectory);
-                            """
-                            rows = self.execute_query(conn, sql_query)
+                            sql_template = self.load_template("simplified_get_area_greenspace.sql")
+                            query = sql_template.format(exposure_radius=exposure_radius, table_name=table_name)
+                            rows = self.execute_query(conn, query)
                             row_count = len(rows)
                         else:
                             union_parts = []
@@ -490,27 +410,10 @@ class ExposureUtils:
                                 ds_name = item["dataSourceName"]
                                 union_parts.append(f'SELECT wkb_geometry FROM public."{ds_name}"')
                             union_sql = "\nUNION ALL\n".join(union_parts)
-                            sql_query = f"""
-                            WITH Trajectory AS (
-                                SELECT ST_Transform(
-                                    ST_Buffer(
-                                        ST_MakeLine("column7"::geometry ORDER BY "time")::geography, 
-                                        {exposure_radius}
-                                    )::geometry, 
-                                    27700
-                                ) AS buffered_trajectory
-                                FROM "{table_name}"
-                            ),
-                            combined_area AS (
-                                {union_sql}
-                            )
-                            SELECT ca.wkb_geometry
-                            FROM combined_area ca, Trajectory t
-                            WHERE ST_Intersects(ca.wkb_geometry, t.buffered_trajectory);
-                            """
-                            rows = self.execute_query(conn, sql_query)
+                            sql_template = self.load_template("simplified_get_area_generic.sql")
+                            query = sql_template.format(exposure_radius=exposure_radius, table_name=table_name, union_sql=union_sql)
+                            rows = self.execute_query(conn, query)
                             row_count = len(rows)
-
                     elif feature_type.upper() == "POINT":
                         if dl_lower.startswith("food hygiene rating"):
                             union_parts = []
@@ -521,34 +424,9 @@ class ExposureUtils:
                                     FROM public."{ds_name}"
                                 ''')
                             union_sql = "\nUNION ALL\n".join(union_parts)
-                            sql_query = f"""
-                            WITH BufferedLine AS (
-                                SELECT 
-                                    ST_Buffer(
-                                        ST_MakeLine(gps."column7"::geometry ORDER BY gps."time")::geography, 
-                                        {exposure_radius}
-                                    ) AS buffered_geom
-                                FROM 
-                                    "{table_name}" gps
-                            ),
-                            combined_frs AS (
-                                {union_sql}
-                            )
-                            SELECT 
-                                frs."Name" AS entity_name, 
-                                frs."Address" AS address,
-                                ST_AsText(frs.geom) AS entity_geom,
-                                COUNT(frs."Name") AS no_of_entities
-                            FROM 
-                                BufferedLine bl
-                            JOIN 
-                                combined_frs frs
-                            ON 
-                                ST_Intersects(bl.buffered_geom, frs.geom::geography)
-                            GROUP BY
-                                frs."Name", frs."Address", frs.geom;
-                            """
-                            point_rows = self.execute_query(conn, sql_query)
+                            sql_template = self.load_template("simplified_get_point_food_hygiene.sql")
+                            query = sql_template.format(exposure_radius=exposure_radius, table_name=table_name, union_sql=union_sql)
+                            point_rows = self.execute_query(conn, query)
                             row_count = sum(r[3] for r in point_rows)
                         else:
                             union_parts = []
@@ -556,28 +434,9 @@ class ExposureUtils:
                                 ds_name = item["dataSourceName"]
                                 union_parts.append(f'SELECT geom FROM public."{ds_name}"')
                             union_sql = "\nUNION ALL\n".join(union_parts)
-                            sql_query = f"""
-                            WITH BufferedLine AS (
-                                SELECT 
-                                    ST_Buffer(
-                                        ST_MakeLine(gps."column7"::geometry ORDER BY gps."time")::geography, 
-                                        {exposure_radius}
-                                    ) AS buffered_geom
-                                FROM 
-                                    "{table_name}" gps
-                            ),
-                            combined_pts AS (
-                                {union_sql}
-                            )
-                            SELECT combined_pts.geom
-                            FROM 
-                                BufferedLine bl
-                            JOIN 
-                                combined_pts
-                            ON 
-                                ST_Intersects(bl.buffered_geom, combined_pts.geom::geography);
-                            """
-                            rows = self.execute_query(conn, sql_query)
+                            sql_template = self.load_template("simplified_get_point_generic.sql")
+                            query = sql_template.format(exposure_radius=exposure_radius, table_name=table_name, union_sql=union_sql)
+                            rows = self.execute_query(conn, query)
                             row_count = len(rows)
                     else:
                         final_results.append({
