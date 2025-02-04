@@ -5,7 +5,7 @@ from agent.exposure_calculator.exposure_utilities import ExposureUtils
 exposure_bp = Blueprint('exposure_bp', __name__)
 exposure_util = ExposureUtils()
 
-@exposure_bp.route('/fenland-trajectory-agent/exposure', methods=['POST'])
+@exposure_bp.route('/exposure', methods=['POST'])
 def calculate_exposure():
     data = request.json
     trajectoryIRIs = data.get("trajectoryIRIs", [])
@@ -39,7 +39,7 @@ def calculate_exposure():
 
     return jsonify(final_results)
 
-@exposure_bp.route('/fenland-trajectory-agent/exposure/simplified', methods=['POST'])
+@exposure_bp.route('/exposure/simplified', methods=['POST'])
 def calculate_exposure_simplified():
     """
     workflow is packaged in ExposureUtils.calculate_exposure_simplified_util() 
