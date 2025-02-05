@@ -152,7 +152,7 @@ public class UserAgent extends JPSAgent {
             }
         }
 
-        timelineRdbStoreHelper.registerPhone(requestParams.getString("phoneId"), requestParams.getString("userId"));
+        timelineRdbStoreHelper.registerPhone(phoneId, userId);
         JSONObject result = new JSONObject();
         result.put("Comment", "Phone is registered successfully.");
         LOGGER.info(phoneId + " is registered to " + userId);
