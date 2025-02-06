@@ -111,15 +111,9 @@ The calculation can be triggered via an HTTP request after the agent has started
 The workflow begins by generating a buffer zone around the trajectory geometry, with the buffer extending outward from the trajectory line by a specified exposure radius. Environmental features, such as food retail locations or greenspaces, are then identified and counted based on their intersections with this buffer zone, providing a quantitative measure of exposure. To accommodate different data storage scenarios, the agent provides two routes for exposure calculations:
 
 - **Exposure_count**:  
-This route is used when the environmental data and the Fenland Trajectory Agent are deployed in different stacks. In this case, you need to manually configure the [config.properties] file with the following parameters:
+This route is used when the environmental data and the Fenland Trajectory Agent are deployed in different stacks. In this case, you need to manually configure the [config.properties] file. 
 
-```
-ENV_DATA_ENDPOINT_URL (a SPARQL endpoint)
-TRAJECTORY_DB_HOST
-TRAJECTORY_DB_PASSWORD
-```
-
-When using an Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL` with data such as Food Retail and Greenspace, the matching [OBDA mappings] should be configured in advance by [Stack-data-uploader]. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
+In this project, we use Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL` in the [config.properties] file to handle data such as Food Retail and Greenspace. In this context, the matching [OBDA mappings] should be configured in advance by [Stack-data-uploader]. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
 
 A typical example involves using an Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL`, where this Ontop endpoint can originate from any other stack created by the [Stack Manager]. Food Retail and Greenspace datasets can be used as demonstration cases. When uploading these structured datasets to the stack, the [Stack-data-uploader] should be preconfigured with particular [OBDA mapping] files containing key metadata, such as FeatureType and SourceTableName. These mappings are essential, as the exposure calculation relies on this metadata to trigger the appropriate computation methods.
 
