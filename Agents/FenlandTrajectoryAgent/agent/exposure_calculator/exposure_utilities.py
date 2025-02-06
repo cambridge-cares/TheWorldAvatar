@@ -14,6 +14,8 @@ from shapely.geometry import Point, LineString
 from shapely.ops import unary_union
 from shapely.wkb import loads as wkb_loads
 from pyproj import CRS, Transformer
+from agent.utils.env_configs import DATABASE
+from agent.utils.stack_configs import DB_URL, DB_USER
 
 
 class ExposureUtils:
@@ -35,9 +37,9 @@ class ExposureUtils:
             self.logger.error(f"Config error: {e}")
             sys.exit(1)
 
-        self.DB_PORT = 5432
-        self.DB_USER = "postgres"
-        self.DB_NAME = "postgres"
+        self.DB_PORT = DB_URL.split(':')[-1].split('/')[0]
+        self.DB_USER = DB_USER
+        self.DB_NAME = DATABASE
 
         self.env_data_cache = {}
 
