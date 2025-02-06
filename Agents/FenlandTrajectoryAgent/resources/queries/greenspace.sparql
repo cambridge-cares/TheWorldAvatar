@@ -1,9 +1,0 @@
-PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
-
-SELECT ?feature ?function ?geometry
-WHERE {
-  ?feature gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ;
-           gs:hasFunction ?function .
-  ?geoPoint gs:isPartOf ?feature ;
-            gs:hasGeometry ?geometry .
-}

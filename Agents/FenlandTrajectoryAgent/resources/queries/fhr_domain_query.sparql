@@ -1,8 +1,0 @@
-PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
-
-SELECT ?instance ?property ?value
-WHERE {
-  # Filter for instances within the Food Hygiene Rating domain
-  ?instance fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> .
-  ?instance ?property ?value .
-}
