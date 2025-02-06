@@ -38,6 +38,12 @@
     </distributionManagement>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/be.ugent.rml/rmlmapper -->
+        <dependency>
+            <groupId>be.ugent.rml</groupId>
+            <artifactId>rmlmapper</artifactId>
+            <version>7.3.1</version>
+        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
