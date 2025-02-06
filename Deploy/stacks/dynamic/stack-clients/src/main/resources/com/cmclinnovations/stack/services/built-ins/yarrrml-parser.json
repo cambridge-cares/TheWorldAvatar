@@ -1,0 +1,16 @@
+{
+  "type": "yarrrml-parser",
+  "ServiceSpec": {
+    "Name": "yarrrml-parser",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "rmlio/yarrrml-parser:1.7.2",
+        "Command": [
+          "tail",
+          "-f",
+          "/dev/null"
+        ]
+      }
+    }
+  }
+}
