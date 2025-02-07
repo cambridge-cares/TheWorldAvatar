@@ -3007,8 +3007,8 @@
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamMCI"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamMass"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTF"/>
-        <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTotalWasteMass"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamV"/>
+        <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamW"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamW0"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWC"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWF"/>
@@ -3411,44 +3411,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTotalWasteMass -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTotalWasteMass">
-        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TotalWasteMass"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
-        <rdf:type>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TotalMass"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdf:type>
-        <rdf:type>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-            </owl:Restriction>
-        </rdf:type>
-        <om-2:hasValue rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTotalWasteMassMeasure"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTotalWasteMassMeasure -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamTotalWasteMassMeasure">
-        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <om-2:hasUnit rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/gram"/>
-        <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">900.9</om-2:hasNumericalValue>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamV -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamV">
@@ -3482,6 +3444,34 @@
         <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <om-2:hasUnit rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/gram"/>
         <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">693.0</om-2:hasNumericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamW -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamW">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TotalWasteMass"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdf:type>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TotalMass"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdf:type>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+            </owl:Restriction>
+        </rdf:type>
+        <om-2:hasValue rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWMeasure"/>
     </owl:NamedIndividual>
     
 
@@ -3596,6 +3586,16 @@
         <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <om-2:hasUnit rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/gram"/>
         <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">693.0</om-2:hasNumericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWMeasure -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWMeasure">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <om-2:hasUnit rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/gram"/>
+        <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">900.9</om-2:hasNumericalValue>
     </owl:NamedIndividual>
     
 
