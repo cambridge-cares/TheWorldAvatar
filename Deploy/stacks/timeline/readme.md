@@ -17,6 +17,8 @@ Set value of KC_DB_PASSWORD to match value in postgis_password.
 
 Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
 
+Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN shared folder\_TWA_Shared_Data\Timeline`. Copy the files from the folder to the stack [data folder](test/stack-manager/inputs/data). They are required for user agent since [version 2.0.0](https://github.com/orgs/cambridge-cares/packages/container/package/user-agent).
+
 You may need to change the permissions of the keycloak startup script, i.e.
 
 ```bash
