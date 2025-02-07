@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.cmclinnovations</groupId>
 	<artifactId>vis-backend-agent</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2-form-dependency-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>vis-backend-agent</name>
 	<url/>
