@@ -13,7 +13,7 @@
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
      xmlns:ontomatpassport="http://www.theworldavatar.com/kg/ontomatpassport/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/">
-        <dc:date>25 January 2025</dc:date>
+        <dc:date>07 February 2025</dc:date>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment>OntoMatPassport is an ontology developed for representing material passport of products and components.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
@@ -2156,6 +2156,25 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionTransformedIntoFeedstock -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionTransformedIntoFeedstock">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The fraction of the collected product transformed into feedstock.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>TF</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent">
@@ -2951,11 +2970,13 @@
         </rdf:type>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamCR"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamCU"/>
+        <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamEC"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamFR"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamFU"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamMass"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamV"/>
         <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamW0"/>
+        <hasProperty rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWC"/>
     </owl:NamedIndividual>
     
 
@@ -3034,6 +3055,45 @@
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamCUMeasure">
         <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3</om-2:hasNumericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamEC -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamEC">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForPortionCollectedForRecycling"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdf:type>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/FeedstockFractionFromRecycledProduct"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/FeedstockFractionFromReusedProduct"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForRecycling"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForReuse"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForPortionCollectedForRecycling"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForProducingFeedstock"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdf:type>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+            </owl:Restriction>
+        </rdf:type>
+        <om-2:hasValue rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamECMeasure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamECMeasure -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamECMeasure">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5</om-2:hasNumericalValue>
     </owl:NamedIndividual>
     
 
@@ -3289,6 +3349,44 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWC -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWC">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMassGeneratedInRecyclingCollectedPortion"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdf:type>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TotalMass"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdf:type>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+            </owl:Restriction>
+        </rdf:type>
+        <om-2:hasValue rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWCMeasure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWCMeasure -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CrossBeamWCMeasure">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <om-2:hasUnit rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/gram"/>
+        <om-2:hasNumericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">277.2</om-2:hasNumericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -3343,6 +3441,30 @@
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/w0massvalue">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ecre">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ecreme">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ecrevalue">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ecresubvalue">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/eccrmulvalue">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/wcmass">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/wcmassme">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/wcmassvalue">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ffre">
@@ -3714,6 +3836,348 @@
                         <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"/>
                         <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/w0massme"/>
                         <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/w0massvalue"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment></rdfs:comment>
+        <rdfs:label>WCMeasure</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MaterialPassport"/>
+                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/mp"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                <swrl:classPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Product"/>
+                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/p"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/describes"/>
+                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/mp"/>
+                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/p"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                <swrl:classPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Mass"/>
+                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/m"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/hasProperty"/>
+                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/p"/>
+                                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/m"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                        <rdf:first>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                <swrl:classPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/pme"/>
+                                                            </rdf:Description>
+                                                        </rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                <rdf:first>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                        <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/m"/>
+                                                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/pme"/>
+                                                                    </rdf:Description>
+                                                                </rdf:first>
+                                                                <rdf:rest>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                        <rdf:first>
+                                                                            <rdf:Description>
+                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                                                <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"/>
+                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/pme"/>
+                                                                                <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/matmass"/>
+                                                                            </rdf:Description>
+                                                                        </rdf:first>
+                                                                        <rdf:rest>
+                                                                            <rdf:Description>
+                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                <rdf:first>
+                                                                                    <rdf:Description>
+                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                        <swrl:classPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForRecycling"/>
+                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crre"/>
+                                                                                    </rdf:Description>
+                                                                                </rdf:first>
+                                                                                <rdf:rest>
+                                                                                    <rdf:Description>
+                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                        <rdf:first>
+                                                                                            <rdf:Description>
+                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                                                <swrl:propertyPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/hasProperty"/>
+                                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/p"/>
+                                                                                                <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crre"/>
+                                                                                            </rdf:Description>
+                                                                                        </rdf:first>
+                                                                                        <rdf:rest>
+                                                                                            <rdf:Description>
+                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                <rdf:first>
+                                                                                                    <rdf:Description>
+                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                                        <swrl:classPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+                                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crreme"/>
+                                                                                                    </rdf:Description>
+                                                                                                </rdf:first>
+                                                                                                <rdf:rest>
+                                                                                                    <rdf:Description>
+                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                        <rdf:first>
+                                                                                                            <rdf:Description>
+                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                                                                <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                                                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crre"/>
+                                                                                                                <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crreme"/>
+                                                                                                            </rdf:Description>
+                                                                                                        </rdf:first>
+                                                                                                        <rdf:rest>
+                                                                                                            <rdf:Description>
+                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                <rdf:first>
+                                                                                                                    <rdf:Description>
+                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                                                                                        <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"/>
+                                                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crreme"/>
+                                                                                                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/crrevalue"/>
+                                                                                                                    </rdf:Description>
+                                                                                                                </rdf:first>
+                                                                                                                <rdf:rest>
+                                                                                                                    <rdf:Description>
+                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                        <rdf:first>
+                                                                                                                            <rdf:Description>
+                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                                                                <swrl:classPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForPortionCollectedForRecycling"/>
+                                                                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecre"/>
+                                                                                                                            </rdf:Description>
+                                                                                                                        </rdf:first>
+                                                                                                                        <rdf:rest>
+                                                                                                                            <rdf:Description>
+                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                <rdf:first>
+                                                                                                                                    <rdf:Description>
+                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                                                                                        <swrl:propertyPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/hasProperty"/>
+                                                                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/p"/>
+                                                                                                                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecre"/>
+                                                                                                                                    </rdf:Description>
+                                                                                                                                </rdf:first>
+                                                                                                                                <rdf:rest>
+                                                                                                                                    <rdf:Description>
+                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                        <rdf:first>
+                                                                                                                                            <rdf:Description>
+                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                                                                                <swrl:classPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+                                                                                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecreme"/>
+                                                                                                                                            </rdf:Description>
+                                                                                                                                        </rdf:first>
+                                                                                                                                        <rdf:rest>
+                                                                                                                                            <rdf:Description>
+                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                <rdf:first>
+                                                                                                                                                    <rdf:Description>
+                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                                                                                                        <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                                                                                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecre"/>
+                                                                                                                                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecreme"/>
+                                                                                                                                                    </rdf:Description>
+                                                                                                                                                </rdf:first>
+                                                                                                                                                <rdf:rest>
+                                                                                                                                                    <rdf:Description>
+                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                        <rdf:first>
+                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                                                                                                                                <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"/>
+                                                                                                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecreme"/>
+                                                                                                                                                                <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecrevalue"/>
+                                                                                                                                                            </rdf:Description>
+                                                                                                                                                        </rdf:first>
+                                                                                                                                                        <rdf:rest>
+                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                                <rdf:first>
+                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                                                                                                                                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#subtract"/>
+                                                                                                                                                                        <swrl:arguments>
+                                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                                                                                                                                                <rdf:first rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ecresubvalue"/>
+                                                                                                                                                                                <rdf:rest>
+                                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                                                                                                                                                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rdf:first>
+                                                                                                                                                                                        <rdf:rest rdf:parseType="Collection">
+                                                                                                                                                                                            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ecrevalue"/>
+                                                                                                                                                                                        </rdf:rest>
+                                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                                </rdf:rest>
+                                                                                                                                                                            </rdf:Description>
+                                                                                                                                                                        </swrl:arguments>
+                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                </rdf:first>
+                                                                                                                                                                <rdf:rest>
+                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                                        <rdf:first>
+                                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                                                                                                                                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                                                                                                                                                                                <swrl:arguments rdf:parseType="Collection">
+                                                                                                                                                                                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/eccrmulvalue"/>
+                                                                                                                                                                                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ecresubvalue"/>
+                                                                                                                                                                                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/crrevalue"/>
+                                                                                                                                                                                </swrl:arguments>
+                                                                                                                                                                            </rdf:Description>
+                                                                                                                                                                        </rdf:first>
+                                                                                                                                                                        <rdf:rest>
+                                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                                                <rdf:first>
+                                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                                                                                                                        <swrl:classPredicate rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMassGeneratedInRecyclingCollectedPortion"/>
+                                                                                                                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/wcmass"/>
+                                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                                </rdf:first>
+                                                                                                                                                                                <rdf:rest>
+                                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                                                        <rdf:first>
+                                                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                                                                                                                                <swrl:classPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+                                                                                                                                                                                                <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/wcmassme"/>
+                                                                                                                                                                                            </rdf:Description>
+                                                                                                                                                                                        </rdf:first>
+                                                                                                                                                                                        <rdf:rest>
+                                                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                                                                <rdf:first>
+                                                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                                                                                                                                                        <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                                                                                                                                                                                                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/wcmass"/>
+                                                                                                                                                                                                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/wcmassme"/>
+                                                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                                                </rdf:first>
+                                                                                                                                                                                                <rdf:rest>
+                                                                                                                                                                                                    <rdf:Description>
+                                                                                                                                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                                                                                                                                                        <rdf:first>
+                                                                                                                                                                                                            <rdf:Description>
+                                                                                                                                                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                                                                                                                                                                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                                                                                                                                                                                                                <swrl:arguments rdf:parseType="Collection">
+                                                                                                                                                                                                                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/wcmassvalue"/>
+                                                                                                                                                                                                                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/matmass"/>
+                                                                                                                                                                                                                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/eccrmulvalue"/>
+                                                                                                                                                                                                                </swrl:arguments>
+                                                                                                                                                                                                            </rdf:Description>
+                                                                                                                                                                                                        </rdf:first>
+                                                                                                                                                                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                                                </rdf:rest>
+                                                                                                                                                                                            </rdf:Description>
+                                                                                                                                                                                        </rdf:rest>
+                                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                                </rdf:rest>
+                                                                                                                                                                            </rdf:Description>
+                                                                                                                                                                        </rdf:rest>
+                                                                                                                                                                    </rdf:Description>
+                                                                                                                                                                </rdf:rest>
+                                                                                                                                                            </rdf:Description>
+                                                                                                                                                        </rdf:rest>
+                                                                                                                                                    </rdf:Description>
+                                                                                                                                                </rdf:rest>
+                                                                                                                                            </rdf:Description>
+                                                                                                                                        </rdf:rest>
+                                                                                                                                    </rdf:Description>
+                                                                                                                                </rdf:rest>
+                                                                                                                            </rdf:Description>
+                                                                                                                        </rdf:rest>
+                                                                                                                    </rdf:Description>
+                                                                                                                </rdf:rest>
+                                                                                                            </rdf:Description>
+                                                                                                        </rdf:rest>
+                                                                                                    </rdf:Description>
+                                                                                                </rdf:rest>
+                                                                                            </rdf:Description>
+                                                                                        </rdf:rest>
+                                                                                    </rdf:Description>
+                                                                                </rdf:rest>
+                                                                            </rdf:Description>
+                                                                        </rdf:rest>
+                                                                    </rdf:Description>
+                                                                </rdf:rest>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"/>
+                        <swrl:argument1 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/wcmassme"/>
+                        <swrl:argument2 rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/wcmassvalue"/>
                     </rdf:Description>
                 </rdf:first>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
