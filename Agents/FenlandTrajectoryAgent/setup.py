@@ -32,7 +32,7 @@ setup(
         'cryptography==39.0.0',
         'python-dotenv==0.21.0',
         'docopt==0.6.2',
-        'pandas==1.3.5',
+        'pandas>=1.4.0',
         'JayDeBeApi==1.2.3',
         'twa',
         'requests==2.28.1',
