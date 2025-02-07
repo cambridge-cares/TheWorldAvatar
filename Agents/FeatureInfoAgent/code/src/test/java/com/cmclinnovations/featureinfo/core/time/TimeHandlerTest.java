@@ -2,7 +2,6 @@ package com.cmclinnovations.featureinfo.core.time;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,8 +107,7 @@ public class TimeHandlerTest {
 
         // Attempt to get results
         JSONArray result = spiedHandler.getData(
-            configStore.getConfigEntries().subList(1, 2),
-            TestUtils.mockResponse()
+            configStore.getConfigEntries().subList(1, 2)
         );
 
         JSONArray expected = new JSONArray(
@@ -175,8 +173,7 @@ public class TimeHandlerTest {
 
         // Attempt to get results
         JSONArray result = spiedHandler.getData(
-            configStore.getConfigEntries().subList(1, 2),
-            TestUtils.mockResponse()
+            configStore.getConfigEntries().subList(1, 2)
         );
 
         JSONArray expected = new JSONArray(
@@ -247,8 +244,7 @@ public class TimeHandlerTest {
 
         // Attempt to get results
         JSONArray result = spiedHandler.getData(
-            classMatches,
-            TestUtils.mockResponse()
+            classMatches
         );
 
         JSONArray expected = new JSONArray(

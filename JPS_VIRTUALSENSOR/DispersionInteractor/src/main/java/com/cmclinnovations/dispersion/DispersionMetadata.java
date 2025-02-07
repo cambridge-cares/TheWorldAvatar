@@ -79,6 +79,7 @@ public class DispersionMetadata {
         JSONObject json = new JSONObject();
         json.put("derivationIri", derivationIri);
         json.put("scopeIri", scopeIri);
+        json.put("scopePolygon", scopePolygon);
         Point centroid = scopePolygon.getCentroid();
         JSONArray centroidJson = new JSONArray();
         centroidJson.put(centroid.getX());

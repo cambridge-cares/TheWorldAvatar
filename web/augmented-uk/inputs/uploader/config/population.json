@@ -1,6 +1,5 @@
 {
     "datasetDirectory": "./",
-    "database": "postgres",
     "skip": false,
     "dataSubsets": [
         {
@@ -13,7 +12,7 @@
             },
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "twa:uk-population-style"
+                    "defaultStyle": "population:uk-population-style"
                 }
             }
         }

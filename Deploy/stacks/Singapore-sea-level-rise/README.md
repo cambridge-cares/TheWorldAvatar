@@ -141,8 +141,25 @@ Not run together with data uploader due to the SQL script requiring the city fur
 
 Finally run [company.http] to match entities to the closest buildings.
 
+### CEA data
+CEA data is stored in the `cea` namespace in Blazegraph and the `CEAAgent` database in postgres for timeseries data.
+
+The CEA agent has not been run directly on this stack. Refer to [CEAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CEAAgent) for more details, it requires [AccessAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent) and [OpenMeteoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OpenMeteoAgent). Namespace for OpenMeteoAgent requires Blazegraph's geospatial capabilities to be enabled.
+
+In the visualisation, there is a layer that shows buildings with CEA data, a table containing the IRIs of buildings with CEA data is required for the layer. This table is named `cea`, located in the default `postgres` database, under the `cea` schema.
+
+The contents of this table is generated via the following query on the `cea` namespace:
+```
+SELECT ?s WHERE {?s a <http://www.opengis.net/citygml/building/2.0/Building> .}
+```
+
 ### Update buildings layer
-Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer.
+Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer, note that this also creates another materialised view for buildings with CEA data.
+
+After running the SQL script, the custom cea layer needs to be created manually as twa:cea in GeoServer, with the following SQL view
+```
+SELECT * FROM buildings_with_cea
+```
 
 ### CARES weather station
 Create `caresweather` namespace in Blazegraph. 
@@ -167,9 +184,27 @@ curl -L -X POST "http://localhost:3838/traffic-incident-agent/start"
 ```
 Refer [TrafficIncidentAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TrafficIncidentAgent) for more details.
 
+### Postcode
+Run [postcode_matching.http] to match buildings to a one of the postcode datasets.
+
+There are two sets of postcode data from running the stack data uploader with different ontop mappings:
+
+1) osm
+   - Less comprehensive, outdated
+   - Used by BuildingFloorAgent
+   - Linked to buildings by OSM agent
+
+2) sgpostcode
+   - More comprehensive and updated dataset
+   - Sourced from [https://github.com/isen-ng/singapore-postal-codes-1]
+   - Linked to buildings using building identification agent by running the HTTP request [postcode_matching.http]
+
+### data.json
+Replace http://localhost:3838 to an appropriate URL depending on the deployment settings.
+
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
-Kok Foong Lee
+Kok Foong Lee (kokfoong.lee@cares.cam.ac.uk)
 
 [sea-level.json]: ./stack-manager/inputs/config/sea-level.json
 [landplot_matching.http]: ./http_requests/landplot_matching.http
@@ -181,3 +216,4 @@ Kok Foong Lee
 [client.properties (weather)]: ./cares_weather_config/client.properties
 [cares_weather.http]: ./http_requests/cares_weather.http
 [nginx-2]: ./stack-manager/inputs/config/services/nginx-2.json
+[postcode_matching.http]: ./http_requests/postcode_matching.http

@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
-import com.cmclinnovations.agent.service.GeocodingService;
 import com.cmclinnovations.agent.service.GetService;
+import com.cmclinnovations.agent.service.application.GeocodingService;
 
 @RestController
 public class VisBackendAgent {
@@ -43,6 +44,13 @@ public class VisBackendAgent {
     return new ResponseEntity<>(
         "Agent is ready to receive requests.",
         HttpStatus.OK);
+  }
+
+  @GetMapping("/location")
+  public ResponseEntity<?> getCoordinates(
+      @RequestParam(required = true) String iri) {
+    LOGGER.info("Received request to retrieve coordinates for {}...", iri);
+    return this.geocodingService.getCoordinates(iri);
   }
 
   @GetMapping("/location/geocode")
@@ -111,7 +119,17 @@ public class VisBackendAgent {
   @GetMapping("/{type}/{id}")
   public ResponseEntity<?> getInstance(@PathVariable String type, @PathVariable String id) {
     LOGGER.info("Received request to get a specific instance of {}...", type);
-    return this.getService.getInstance(type, id);
+    return this.getService.getInstance(type, id, false);
+  }
+
+  /**
+   * Retrieve the target instance of the specified type in the knowledge graph
+   * with human readable properties.
+   */
+  @GetMapping("/{type}/label/{id}")
+  public ResponseEntity<?> getInstanceWithLabels(@PathVariable String type, @PathVariable String id) {
+    LOGGER.info("Received request to get a specific instance of {} with human readable data...", type);
+    return this.getService.getInstance(type, id, true);
   }
 
   /**
@@ -166,22 +184,17 @@ public class VisBackendAgent {
    * Instantiates a new instance in the knowledge graph.
    */
   @PostMapping("/{type}")
-  public ResponseEntity<String> addInstance(@PathVariable String type, @RequestBody Map<String, Object> instance) {
+  public ResponseEntity<ApiResponse> addInstance(@PathVariable String type,
+      @RequestBody Map<String, Object> instance) {
     LOGGER.info("Received request to add one {}...", type);
-    ResponseEntity<String> response = this.addService.instantiate(type, instance);
-    if (response.getStatusCode() == HttpStatus.OK) {
-      LOGGER.info("{} has been successfully instantiated!", type);
-      return new ResponseEntity<>(type + " has been successfully instantiated!", HttpStatus.CREATED);
-    } else {
-      return response;
-    }
+    return this.addService.instantiate(type, instance);
   }
 
   /**
    * Removes the specified instance from the knowledge graph.
    */
   @DeleteMapping("/{type}/{id}")
-  public ResponseEntity<String> removeEntity(@PathVariable String type, @PathVariable String id) {
+  public ResponseEntity<ApiResponse> removeEntity(@PathVariable String type, @PathVariable String id) {
     LOGGER.info("Received request to delete {}...", type);
     return this.deleteService.delete(type, id);
   }
@@ -190,15 +203,18 @@ public class VisBackendAgent {
    * Update the target instance in the knowledge graph.
    */
   @PutMapping("/{type}/{id}")
-  public ResponseEntity<String> updateEntity(@PathVariable String type, @PathVariable String id,
+  public ResponseEntity<ApiResponse> updateEntity(@PathVariable String type, @PathVariable String id,
       @RequestBody Map<String, Object> updatedEntity) {
     LOGGER.info("Received request to update {}...", type);
-    ResponseEntity<String> deleteResponse = this.deleteService.delete(type, id);
+    ResponseEntity<ApiResponse> deleteResponse = this.deleteService.delete(type, id);
     if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
-      ResponseEntity<String> addResponse = this.addService.instantiate(type, id, updatedEntity);
-      if (addResponse.getStatusCode() == HttpStatus.OK) {
+      ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(type, id, updatedEntity);
+      if (addResponse.getStatusCode() == HttpStatus.CREATED) {
         LOGGER.info("{} has been successfully updated for {}", type, id);
-        return new ResponseEntity<>(type + " has been successfully updated for " + id, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+            new ApiResponse(type + " has been successfully updated for " + id,
+                addResponse.getBody().getIri()),
+            HttpStatus.CREATED);
       } else {
         return addResponse;
       }

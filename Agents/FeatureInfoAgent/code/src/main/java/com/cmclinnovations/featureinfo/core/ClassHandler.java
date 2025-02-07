@@ -6,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.InternalServerErrorException;
@@ -26,6 +24,7 @@ import com.cmclinnovations.featureinfo.config.StackEndpointType;
 import com.cmclinnovations.featureinfo.objects.Request;
 import com.cmclinnovations.featureinfo.utils.Utils;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -43,7 +42,7 @@ public class ClassHandler {
      * Store of class mappings and endpoints
      */
     private final ConfigStore configStore;
-    
+
     /**
      * Cached connection to KG.
      */
@@ -58,7 +57,7 @@ public class ClassHandler {
      * Initialise a new ClassHandler instance.
      * 
      * @param configStore Store of class mappings and endpoints.
-     * @param kgClient Cached connection to KG.
+     * @param kgClient    Cached connection to KG.
      */
     public ClassHandler(ConfigStore configStore, RemoteStoreClient kgClient) {
         this.configStore = configStore;
@@ -66,55 +65,49 @@ public class ClassHandler {
     }
 
     /**
-     * Runs a class determination query to get the entire class tree of the input 
-     * A-Box IRI, then returns any configuration entries that use a class IRI returned
+     * Runs a class determination query to get the entire class tree of the input
+     * A-Box IRI, then returns any configuration entries that use a class IRI
+     * returned
      * by that query.
      * 
-     * @param iri A-Box IRI of feature.
+     * @param iri              A-Box IRI of feature.
      * @param enforcedEndpoint optional enforced Blazegraph URL.
      * 
      * @return List of configuration entries with a matching class (may be empty).
      * 
-     * @throws IllegalStateException if class determination returns no matches.
-     * @throws InternalServerErrorException if class determination query cannot be executed.
+     * @throws IllegalStateException if class determination returns no
+     *                               matches.
      */
-    public List<ConfigEntry> determineClassMatches(Request request) throws IllegalStateException, InternalServerErrorException {
+    public List<ConfigEntry> determineClassMatches(Request request)
+            throws IllegalStateException {
         // Get the list of class IRIs from the KG
-        List<String> classIRIs = null;
-        try {
-            classIRIs = runClassQuery(request);
-            if(classIRIs == null || classIRIs.isEmpty()) {
-                throw new IllegalStateException("Class determination query has failed to return any results, cannot continue!");
-            }
-        } catch(Exception exception) {
-            LOGGER.error("Running class determination query has thrown an exception!", exception);
-            throw new InternalServerErrorException("Class determination query has thrown an exception, cannot continue!", exception);
+        List<String> classIRIs = runClassQuery(request);
+        if (classIRIs == null || classIRIs.isEmpty()) {
+            throw new IllegalStateException(
+                    "Class determination query has failed to return any results, cannot continue!");
         }
 
         // Find matches, in order returned from KG
-        List<ConfigEntry> matches = new ArrayList<>();
-        classIRIs.forEach(classIRI -> {
-            ConfigEntry match = configStore.getConfigWithClass(classIRI);
-            if(match != null) matches.add(match);
-        });
+        List<ConfigEntry> matches = configStore.getConfigEntries().stream()
+                .filter(c -> classIRIs.contains(c.getClassIRI())).toList();
 
-        if(matches.isEmpty()) {
-            throw new IllegalStateException("Class determination query had results but there were no matching IRIs in the configuration, cannot continue!");
+        if (matches.isEmpty()) {
+            throw new IllegalStateException(
+                    "Class determination query had results but there were no matching IRIs in the configuration, cannot continue!");
         }
         return matches;
     }
 
     /**
-     * Run the class determination query and return the list of class IRIs resulting from it.
+     * Run the class determination query and return the list of class IRIs resulting
+     * from it.
      * 
-     * @param iri A-Box IRI of feature.
+     * @param iri              A-Box IRI of feature.
      * @param enforcedEndpoint optional enforced Blazegraph URL.
      * 
      * @return List of class IRIs.
-     * 
-     * @throws Exception if KG query fails due to connection issues.
      */
-    private List<String> runClassQuery(Request request) throws Exception {
+    private List<String> runClassQuery(Request request) {
         // Read the class determination SPARQL query
         loadQuery();
 
@@ -129,14 +122,19 @@ public class ClassHandler {
         List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
         JSONArray jsonResult = null;
 
-        if(endpoints.size() == 1) {
-            LOGGER.debug("Running non-federated class determination query.");
-            kgClient.setQueryEndpoint(endpoints.get(0));
-            jsonResult = kgClient.executeQuery(queryString);
-
-        } else {
-            LOGGER.debug("Running federated class determination query.");
-            jsonResult = kgClient.executeFederatedQuery(endpoints, queryString);
+        try {
+            if (endpoints.size() == 1) {
+                LOGGER.debug("Running non-federated class determination query.");
+                kgClient.setQueryEndpoint(endpoints.get(0));
+                jsonResult = kgClient.executeQuery(queryString);
+            } else {
+                LOGGER.debug("Running federated class determination query.");
+                jsonResult = kgClient.executeFederatedQuery(endpoints, queryString);
+            }
+        } catch (JPSRuntimeException exception) {
+            LOGGER.error("Running class determination query has thrown an exception!", exception);
+            throw new InternalServerErrorException(
+                    "Class determination query has thrown an exception, cannot continue!", exception);
         }
 
         // Parse and return class IRIs
@@ -147,13 +145,14 @@ public class ClassHandler {
      * Read and cache the class determination query.
      */
     private void loadQuery() {
-        if(this.queryTemplate == null) {
+        if (this.queryTemplate == null) {
 
-            if(FeatureInfoAgent.CONTEXT != null) {
+            if (FeatureInfoAgent.CONTEXT != null) {
                 // Running as a servlet
-                try (InputStream inStream =  FeatureInfoAgent.CONTEXT.getResourceAsStream("WEB-INF/class-query.sparql")) {
+                try (InputStream inStream = FeatureInfoAgent.CONTEXT
+                        .getResourceAsStream("WEB-INF/class-query.sparql")) {
                     this.queryTemplate = FileUtils.readWholeFileAsUTF8(inStream);
-                } catch(Exception exception) {
+                } catch (Exception exception) {
                     LOGGER.error("Could not read the class determination query from its file!", exception);
                 }
             } else {
@@ -161,7 +160,7 @@ public class ClassHandler {
                 try {
                     Path queryFile = Paths.get("WEB-INF/class-query.sparql");
                     this.queryTemplate = Files.readString(queryFile);
-                } catch(IOException ioException) {
+                } catch (IOException ioException) {
                     LOGGER.error("Could not read the class determination query from its file!", ioException);
                 }
             }
@@ -178,15 +177,15 @@ public class ClassHandler {
     private List<String> parseJSON(JSONArray rawResult) {
         List<String> classIRIs = new ArrayList<>();
 
-        for(int i = 0; i < rawResult.length(); i++) {
+        for (int i = 0; i < rawResult.length(); i++) {
             JSONObject entry = rawResult.getJSONObject(i);
-            
-            if(entry.has("class")) {
+
+            if (entry.has("class")) {
                 String classIRI = entry.getString("class");
                 classIRI = classIRI.replaceAll(Pattern.quote("<"), "");
                 classIRI = classIRI.replaceAll(Pattern.quote(">"), "");
 
-                if(classIRI.toLowerCase().startsWith("http")) {
+                if (classIRI.toLowerCase().startsWith("http")) {
                     classIRIs.add(classIRI);
                 }
             }

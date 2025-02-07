@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  dome-interactor:
+    image: ghcr.io/cambridge-cares/dome-interactor:0.1
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    ports:
+      - "8866:8866"
+    volumes:
+      - ./notebook:/home/jovyan/work

@@ -77,6 +77,10 @@ class E(D):
     pass
 
 
+class For_Dev_Mode_Test(BaseClass):
+    rdfs_isDefinedBy = ExampleOntology
+
+
 HasPart = TransitiveProperty.create_from_base('HasPart', ExampleOntology)
 
 
@@ -102,6 +106,29 @@ def init():
     # and 6 rdf:type triples
     # in total 20 triples
     return a1, a2, a3, b, c, d
+
+
+def test_dev_mode():
+    assert not ExampleOntology._dev_mode
+    assert not ExampleOntology.is_dev_mode()
+    ExampleOntology.set_dev_mode()
+    assert ExampleOntology._dev_mode
+    assert ExampleOntology.is_dev_mode()
+    ExampleOntology.set_prod_mode()
+    assert not ExampleOntology._dev_mode
+    assert not ExampleOntology.is_dev_mode()
+    with pytest.raises(ValueError) as e_info:
+        class For_Dev_Mode_Test(BaseClass):
+            rdfs_isDefinedBy = ExampleOntology
+    assert e_info.match('https://example.org/example/For_Dev_Mode_Test')
+    assert e_info.match('already exists in')
+    """
+    E           ValueError: Class with rdf_type https://example.org/example/For_Dev_Mode_Test already exists in
+            <class 'tests.test_base_ontology.ExampleOntology'>: <class 'tests.test_base_ontology.For_Dev_Mode_Test'>.
+    """
+    ExampleOntology.set_dev_mode()
+    class For_Dev_Mode_Test(BaseClass):
+        rdfs_isDefinedBy = ExampleOntology
 
 
 def test_retrieve_cardinality():
@@ -151,8 +178,8 @@ def test_basics():
     a = A(data_property_a={'a'}, rdfs_comment='my comment', rdfs_label='my label')
     assert a.data_property_a == {'a'}
     assert a.rdfs_isDefinedBy.base_url in a.instance_iri
-    assert a.rdfs_comment == 'my comment'
-    assert a.rdfs_label == 'my label'
+    assert a.rdfs_comment == {'my comment'}
+    assert a.rdfs_label == {'my label'}
     # test one can instantiate with a custom instance_iri
     my_random_iri = f'https://{str(uuid.uuid4())}'
     a_with_random_iri = A(data_property_a={'a'}, instance_iri=my_random_iri)
@@ -915,3 +942,172 @@ def test_all_triples_of_nodes():
     assert (URIRef(d.instance_iri), URIRef(ObjectProperty_D_A.predicate_iri), URIRef(a1.instance_iri)) in g
     # in total 6 triples
     assert sum(1 for _ in g.triples((None, None, None))) == 6
+
+
+def test_cls_rdfs_comment_label():
+    comments = ['comment1', 'comment2', 'comment3']
+    labels = ['label1', 'label2']
+
+    class TestRdfsCommentLabel(E):
+        rdfs_comment_clz = comments
+        rdfs_label_clz = labels
+
+    class TestRdfsCommentLabelDataProperty(DatatypeProperty):
+        rdfs_isDefinedBy = ExampleOntology
+        rdfs_comment_clz = comments
+        rdfs_label_clz = labels
+
+    class TestRdfsCommentLabelObjectProperty(ObjectProperty):
+        rdfs_isDefinedBy = ExampleOntology
+        rdfs_comment_clz = comments
+        rdfs_label_clz = labels
+
+    g = Graph()
+    g = TestRdfsCommentLabel._export_to_owl(g)
+    g = TestRdfsCommentLabelDataProperty._export_to_owl(g, set(), set())
+    g = TestRdfsCommentLabelObjectProperty._export_to_owl(g, set(), set())
+    # rdfs:comment triple
+    for comment in comments:
+        assert (URIRef(TestRdfsCommentLabel.rdf_type), URIRef(RDFS.comment), Literal(comment)) in g
+        assert (URIRef(TestRdfsCommentLabelDataProperty.predicate_iri), URIRef(RDFS.comment), Literal(comment)) in g
+        assert (URIRef(TestRdfsCommentLabelObjectProperty.predicate_iri), URIRef(RDFS.comment), Literal(comment)) in g
+    # rdfs:label triple
+    for label in labels:
+        assert (URIRef(TestRdfsCommentLabel.rdf_type), URIRef(RDFS.label), Literal(label)) in g
+        assert (URIRef(TestRdfsCommentLabelDataProperty.predicate_iri), URIRef(RDFS.label), Literal(label)) in g
+        assert (URIRef(TestRdfsCommentLabelObjectProperty.predicate_iri), URIRef(RDFS.label), Literal(label)) in g
+
+
+def test_instances_with_multiple_rdf_type(initialise_sparql_client, recwarn):
+    a1, a2, a3, b, c, d = init()
+    # create data property and classes for this test
+    Data_Property_E_Sub = DatatypeProperty.create_from_base('Data_Property_E_Sub', ExampleOntology, 0, 2)
+    Data_Property_E_Para = DatatypeProperty.create_from_base('Data_Property_Parallel_To_E', ExampleOntology, 0, 2)
+    class E_Sub(E):
+        # this class is used to test the case that the object is pulled from the KG with the correct level of subclass
+        # i.e. if the object is instance of E but pulled using class D, it should NOT be pulled as E_Sub even E_Sub is a subclass of E
+        data_property_e_sub: Data_Property_E_Sub[str]
+    class E_Para(D):
+        data_property_e_para: Data_Property_E_Para[str]
+
+    # create an object e and e_sub and push it to the KG
+    INFO_NOT_LOST_FOR_E_SUB = 'this is to test information not lost for e_sub'
+    INFO_NOT_LOST_FOR_E_PARA = 'this is to test information not lost for parallel_to_e'
+    NEW_INFO_FOR_E_SUB = 'this is to test new information for e_sub'
+    NEW_INFO_FOR_E_PARA = 'this is to test new information for parallel_to_e'
+    e = E(object_property_d_a=[a1], object_property_d_c=[c])
+    e_sub = E_Sub(object_property_d_a=[a1], object_property_d_c=[c], data_property_e_sub=INFO_NOT_LOST_FOR_E_SUB)
+    e_para = E_Para(object_property_d_a=[a1], object_property_d_c=[c], data_property_e_para=INFO_NOT_LOST_FOR_E_PARA)
+    sparql_client = initialise_sparql_client
+    e.push_to_kg(sparql_client, -1)
+    e_sub.push_to_kg(sparql_client, -1)
+    e_para.push_to_kg(sparql_client, -1)
+
+    # now also insert the triples for additional rdf:type of e and e_sub due to subclassing
+    sparql_client.perform_update(f'insert data {{ <{e.instance_iri}> <{RDF.type.toPython()}> <{D.rdf_type}> }}')
+    sparql_client.perform_update(f'insert data {{ <{e_sub.instance_iri}> <{RDF.type.toPython()}> <{D.rdf_type}> }}')
+    sparql_client.perform_update(f'insert data {{ <{e_sub.instance_iri}> <{RDF.type.toPython()}> <{E.rdf_type}> }}')
+    # create addtional triples to make e_para also rdf:type of E_Sub, as well as data property for E_Sub
+    sparql_client.perform_update(f'insert data {{ <{e_para.instance_iri}> <{RDF.type.toPython()}> <{E_Sub.rdf_type}> }}')
+    sparql_client.perform_update(f'insert data {{ <{e_para.instance_iri}> <{Data_Property_E_Sub.predicate_iri}> "{INFO_NOT_LOST_FOR_E_SUB}" }}')
+
+    # after clearing the ontology object lookup, the object should be pulled from the KG again as a fresh object
+    KnowledgeGraph.clear_object_lookup()
+
+    # test 1: pull the object e using D class but it should return as E object
+    e_pulled = D.pull_from_kg([e.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e) != id(e_pulled)
+    # the pulled object should also be instance of E, but not D
+    assert type(e_pulled) is E
+    assert type(e_pulled) is not D
+    assert type(e_pulled) is not E_Sub
+
+    # test 2: pull the object e using E_Sub class which should raise error
+    with pytest.raises(ValueError) as e_info:
+        E_Sub.pull_from_kg([e.instance_iri], sparql_client, -1)
+    assert e_info.match(f"""The instance {e.instance_iri} is of type """)
+    assert e_info.match(f"""{E.rdf_type}""")
+    assert e_info.match(f"""{D.rdf_type}""")
+    assert e_info.match(f"""it doesn't match the rdf:type of class {E_Sub.__name__} \({E_Sub.rdf_type}\)""")
+
+    # test 3: pull the object e_sub using D class which should return as E_Sub object
+    e_sub_pulled = D.pull_from_kg([e_sub.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e_sub) != id(e_sub_pulled)
+    # the pulled object should also be instance of E_Sub, but not D
+    assert type(e_sub_pulled) is E_Sub
+    assert type(e_sub_pulled) is not D
+    assert type(e_sub_pulled) is not E
+    # the information should be preserved
+    assert e_sub_pulled.data_property_e_sub == {INFO_NOT_LOST_FOR_E_SUB}
+
+    # test 4: pull the object e_para using D class should throw an error as there's no subclass relation between E_Sub and E_Para
+    with pytest.raises(ValueError) as e_info:
+        D.pull_from_kg([e_para.instance_iri], sparql_client, -1)
+    assert e_info.match(f"""The instance {e_para.instance_iri} is of type """)
+    assert e_info.match(f"""Amongst the pulling class {D.__name__} \({D.rdf_type}\)""")
+    assert e_info.match(f"""and its subclasses \({D.construct_subclass_dictionary()}\)""")
+    assert e_info.match(f"""{E_Sub.rdf_type}""")
+    assert e_info.match(f"""{E_Para.rdf_type}""")
+    assert e_info.match(f"""there exist classes that are not in the same branch of the inheritance tree""")
+    assert e_info.match(f"""please check the inheritance tree is correctly defined in Python""")
+
+    # test 5: pull the object e_para using E_Sub class should return as E_Sub object
+    e_para_pulled_as_e_sub = E_Sub.pull_from_kg([e_para.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e_para) != id(e_para_pulled_as_e_sub)
+    # the pulled object should also be instance of E_Sub, but not E_Para
+    assert type(e_para_pulled_as_e_sub) is E_Sub
+    assert type(e_para_pulled_as_e_sub) is not E_Para
+    assert type(e_para_pulled_as_e_sub) is not D
+    # the information should be preserved
+    assert e_para_pulled_as_e_sub.data_property_e_sub == {INFO_NOT_LOST_FOR_E_SUB}
+    # if I now change the data property of E_Sub, it should not affect the data property of E_Para which is not pulled as part of e_para_pulled_as_e_sub
+    e_para_pulled_as_e_sub.data_property_e_sub.add(NEW_INFO_FOR_E_SUB)
+    e_para_pulled_as_e_sub.push_to_kg(sparql_client, -1)
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Sub.predicate_iri, NEW_INFO_FOR_E_SUB, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Sub.predicate_iri, INFO_NOT_LOST_FOR_E_SUB, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Para.predicate_iri, INFO_NOT_LOST_FOR_E_PARA, XSD.string.toPython())
+
+    # test 6: pull the object e_para using E_Para class should return as E_Para object
+    e_para_pulled_as_e_para = E_Para.pull_from_kg([e_para.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e_para) != id(e_para_pulled_as_e_para)
+    # the pulled object should also be instance of E_Para, but not E_Sub
+    assert type(e_para_pulled_as_e_para) is E_Para
+    assert type(e_para_pulled_as_e_para) is not E_Sub
+    assert type(e_para_pulled_as_e_para) is not D
+    # the information should be preserved
+    assert e_para_pulled_as_e_para.data_property_e_para == {INFO_NOT_LOST_FOR_E_PARA}
+    # if I now change the data property of E_Para, it should not affect the data property of E_Sub which is not pulled as part of e_para_pulled_as_e_para
+    e_para_pulled_as_e_para.data_property_e_para.add(NEW_INFO_FOR_E_PARA)
+    e_para_pulled_as_e_para.push_to_kg(sparql_client, -1)
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Para.predicate_iri, NEW_INFO_FOR_E_PARA, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Para.predicate_iri, INFO_NOT_LOST_FOR_E_PARA, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Sub.predicate_iri, INFO_NOT_LOST_FOR_E_SUB, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(e_para.instance_iri, Data_Property_E_Sub.predicate_iri, NEW_INFO_FOR_E_SUB, XSD.string.toPython())
+
+    # test 7: create a new class and make it subclass of E_Sub and E_Para, then pulling it with D class should return as the new class object
+    class New_E_Super_Sub(E_Para, E_Sub):
+        pass
+    # make the object e_para also rdf:type of New_E_Super_Sub
+    sparql_client.perform_update(f'insert data {{ <{e_para.instance_iri}> <{RDF.type.toPython()}> <{New_E_Super_Sub.rdf_type}> }}')
+    e_super_sub = D.pull_from_kg([e_para.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e_para) != id(e_super_sub)
+    # the pulled object should also be instance of New_E_Super_Sub, but not E_Sub nor E_Para
+    assert type(e_super_sub) is New_E_Super_Sub
+    assert type(e_super_sub) is not E_Sub
+    assert type(e_super_sub) is not E_Para
+    assert type(e_super_sub) is not D
+    # the information should be preserved
+    assert e_super_sub.data_property_e_para == {INFO_NOT_LOST_FOR_E_PARA, NEW_INFO_FOR_E_PARA}
+    assert e_super_sub.data_property_e_sub == {INFO_NOT_LOST_FOR_E_SUB, NEW_INFO_FOR_E_SUB}
+
+    # final check: all the warning messages when overiwritting the pulled object in the registry
+    assert len(recwarn) == 2
+    warning_message_1 = str(recwarn[0].message)
+    assert f"""An object with the same IRI {e_para.instance_iri} has already been instantiated and registered with type {E_Sub}. Replacing its regiatration now with type {E_Para}.""" in warning_message_1
+    warning_message_2 = str(recwarn[1].message)
+    assert f"""An object with the same IRI {e_para.instance_iri} has already been instantiated and registered with type {E_Para}. Replacing its regiatration now with type {New_E_Super_Sub}.""" in warning_message_2

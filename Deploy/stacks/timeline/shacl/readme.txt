@@ -1,0 +1,1 @@
+This file should be uploaded to the kb namespace on Blazegraph, it is used by the VisBackendAgent to generate the form template for the filter dropdown options.

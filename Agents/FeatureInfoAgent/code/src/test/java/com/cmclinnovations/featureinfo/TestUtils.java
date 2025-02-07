@@ -1,7 +1,4 @@
 package com.cmclinnovations.featureinfo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -20,8 +15,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.mockito.ArgumentMatchers;
@@ -242,19 +235,5 @@ public final class TestUtils {
 
         return spiedConfig;
     }
-
-    /**
-     * Mock a HTTP response object.
-     * 
-     * @return mocked HTTP response.
-     */
-    public static HttpServletResponse mockResponse() throws Exception {
-        HttpServletResponse httpResponse = mock(HttpServletResponse.class);
-        StringWriter strWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(strWriter);
-        when(httpResponse.getWriter()).thenReturn(printWriter);
-        return httpResponse;
-    }
-
 }
 // End of class.

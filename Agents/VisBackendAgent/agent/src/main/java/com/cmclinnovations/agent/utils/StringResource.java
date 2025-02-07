@@ -82,6 +82,15 @@ public class StringResource {
   }
 
   /**
+   * Parses a SPARQL query variable to ensure that any spaces are replaced.
+   * 
+   * @param variable Target variable input.
+   */
+  public static String parseQueryVariable(String variable) {
+    return variable.replaceAll("\\s+", "_");
+  }
+
+  /**
    * Parses the string literal for SPARQL queries ie enclosing it with "".
    * 
    * @param literal Target literal input.
@@ -116,5 +125,18 @@ public class StringResource {
       // If a URISyntaxException is thrown, the string is not a valid IRI
       return false;
     }
+  }
+
+  /**
+   * Retrieve the prefix of the input IRI.
+   * 
+   * @param iri Input.
+   */
+  public static String getPrefix(String iri) {
+    if (isValidIRI(iri)) {
+      int lastSlashIndex = iri.lastIndexOf("/");
+      return iri.substring(0, lastSlashIndex);
+    }
+    throw new IllegalArgumentException("Invalid IRI! Does not conform to RFC2396 specifications.");
   }
 }
