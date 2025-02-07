@@ -49,6 +49,7 @@ FeedstockFractionFromReusedProduct,Class,CircularityProperty,IS-A,,,,The fractio
 LinearFlowIndex,Class,CircularityProperty,IS-A,,,,"The proportion of material that moves from its origin as virgin materials to its final state as non-recyclable waste [Ellen MacArthur Foundation, 2015]",http://www.theworldavatar.com/kg/ontomatpassport,LFI
 MCI,Class,CircularityProperty,IS-A,,,,A measure of how circular the materials of a product are.,http://www.theworldavatar.com/kg/ontomatpassport,MCI
 ProductFractionCollectedForRecycling,Class,CircularityProperty,IS-A,,,,The fraction of a product collected for recycling.,http://www.theworldavatar.com/kg/ontomatpassport,CR
+ProductFractionTransformedIntoFeedstock,Class,CircularityProperty,IS-A,,,,The fraction of the collected product transformed into feedstock.,http://www.theworldavatar.com/kg/ontomatpassport,TF
 ProductFractionCollectedForReuse,Class,CircularityProperty,IS-A,,,,The fraction of a product collected for reuse.,http://www.theworldavatar.com/kg/ontomatpassport,CU
 RecycledContent,Class,CircularityProperty,IS-A,,,,A sustainability property to describe the amount of recycled content used in manufacturing an object.,http://www.theworldavatar.com/kg/ontomatpassport,RecycledContent
 RecyclingEfficiencyForPortionCollectedForRecycling,Class,CircularityProperty,IS-A,,,,The recycling efficiency of a portion collected from a product for recycling.,http://www.theworldavatar.com/kg/ontomatpassport,EC

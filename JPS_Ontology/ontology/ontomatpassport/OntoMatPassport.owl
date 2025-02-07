@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontomatpassport="http://www.theworldavatar.com/kg/ontomatpassport/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/">
-        <dc:date>25 January 2025</dc:date>
+        <dc:date>07 February 2025</dc:date>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment>OntoMatPassport is an ontology developed for representing material passport of products and components.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
@@ -1335,6 +1335,17 @@
         <rdfs:comment>The fraction of a product collected for reuse.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>CU</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionTransformedIntoFeedstock -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionTransformedIntoFeedstock">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
+        <rdfs:comment>The fraction of the collected product transformed into feedstock.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>TF</rdfs:label>
     </owl:Class>
     
 
