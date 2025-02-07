@@ -117,6 +117,14 @@ public class KgClient {
                 throw new RuntimeException("Could not retrieve ontop.obda file.", e);
             }
             OntopClient.getInstance().updateOBDA(obdaFile);
+            LOGGER.info("Uploaded ontop mapping");
+
+            try {
+                LOGGER.info("Waiting for 30 seconds to allow ontop to intialise");
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -160,6 +168,9 @@ public class KgClient {
             if (!timeSeriesRDBClientWithReducedTables.checkDataHasTimeSeries(user.getHeartRateData().getBpmIri(),
                     conn)) {
                 List<String> dataIRI = new ArrayList<>();
+                LOGGER.info(user.getHeartRateData().getBpmIri());
+                LOGGER.info(user.getHeartRateData().getSourceIri());
+
                 dataIRI.add(user.getHeartRateData().getBpmIri());
                 dataIRI.add(user.getHeartRateData().getSourceIri());
 
