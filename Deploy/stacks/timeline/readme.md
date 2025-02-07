@@ -19,6 +19,8 @@ Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depen
 
 Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN shared folder\_TWA_Shared_Data\Timeline`. Copy the files from the folder to the stack [data folder](test/stack-manager/inputs/data). They are required for user agent since [version 2.0.0](https://github.com/orgs/cambridge-cares/packages/container/package/user-agent).
 
+> If the stack is deployed in remote server, please update the `auth-server-url` in [user-agent.json](test/stack-manager/inputs/data/user_agent_keycloak.json) accordingly. `rootUrl` for user-agent client in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data/timeline-realm.json) should be updated as well.
+
 You may need to change the permissions of the keycloak startup script, i.e.
 
 ```bash
