@@ -52,6 +52,19 @@ CONSTRUCT {
       ?subproperty sh:qualifiedValueShape/(sh:and/rdf:first)? ?roleshape .
     }
   }
+
+  # Retrieve group directly if available
+  OPTIONAL {
+    ?subproperty sh:group ?groupobj .
+    ?groupobj rdfs:label ?group;
+		sh:description ?groupdesc;
+		sh:order ?grouporder.
+  }
+  # Else, populate group from the target of sh:node
+  BIND (IF(BOUND(?group), ?group, IF(?property != ?subproperty, ?propname, ?null)) AS ?group)
+  BIND (IF(BOUND(?groupdesc), ?groupdesc, IF(?property != ?subproperty, ?propdesc, ?null)) AS ?groupdesc)
+  BIND (IF(BOUND(?groupobj), ?groupobj, IF(?property != ?subproperty, BNODE(?group), ?null)) AS ?groupobj)
+
   OPTIONAL {
     ?property sh:order ?proporder .
     ?subproperty sh:order ?order .
@@ -92,8 +105,4 @@ CONSTRUCT {
   OPTIONAL {
     ?subproperty sh:pattern ?pattern .
   }
-
-  BIND (IF(?property != ?subproperty, ?propname, ?null) AS ?group)
-  BIND (IF(?property != ?subproperty, ?propdesc, ?null) AS ?groupdesc)
-  BIND (IF(?property != ?subproperty, BNODE(?group), ?null) AS ?groupobj)
 }
