@@ -789,11 +789,9 @@ base:ExampleFormSectionGroup
 
 > [!IMPORTANT] > `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
 
-https://theworldavatar.io/kg/dependentOn
-
 ### 3.1.2 Dependent Form Fields
 
-Users can set up dependencies between form fields by targeting the independent form property (via the corresponding `PropertyShape`) using the `https://theworldavatar.io/kg/dependentOn` relations. A sample SHACL file in TTL is given below:
+Users can set up dependencies between form fields by targeting the independent form property (via the corresponding `PropertyShape`) using the `https://theworldavatar.io/kg/form/dependentOn` relations. A sample SHACL file in TTL is given below:
 
 ```
 base:FormDependencyShape

@@ -1,5 +1,5 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
-PREFIX twa:<https://theworldavatar.io/kg/>
+PREFIX twa:<https://theworldavatar.io/kg/form/>
 
 CONSTRUCT {
   [ rdf:type sh:PropertyShape ;
