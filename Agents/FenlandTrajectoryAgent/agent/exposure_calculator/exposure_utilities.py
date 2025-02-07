@@ -23,7 +23,7 @@ class ExposureUtils:
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(self.__class__.__name__)
 
-        config_file = os.path.join(os.path.dirname(__file__), "config.properties")
+        config_file = os.path.join(os.path.dirname(__file__), "..", "flaskapp", "exposure", "config.properties")
         if not os.path.exists(config_file):
             self.logger.error(f"Config file not found at {config_file}. Please provide one.")
             sys.exit(1)
