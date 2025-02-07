@@ -14,7 +14,7 @@ setup(
         'pytz==2024.1',
         'configobj==5.0.6',
         'APScheduler==3.9.1',
-        'numpy==1.21.6',
+        'numpy>=1.22',
         'tabulate==0.8.10',
         'uuid==1.30',
         'datetime==4.7',
