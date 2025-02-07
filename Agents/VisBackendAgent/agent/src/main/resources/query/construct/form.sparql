@@ -1,4 +1,5 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX twa:<https://theworldavatar.io/kg/>
 
 CONSTRUCT {
   [ rdf:type sh:PropertyShape ;
@@ -9,7 +10,7 @@ CONSTRUCT {
     sh:in ?range ;
     sh:class ?dataclass ;
     sh:nodeKind ?nodeKind;
-    sh:qualifiedValueShape ?roleshape;
+    twa:dependentOn ?dependent ;
     sh:group ?groupobj ;
     sh:minCount ?mincount ;
     sh:maxCount ?maxcount ;
@@ -45,11 +46,12 @@ CONSTRUCT {
   {
     ?subproperty sh:class ?dataclass .
     OPTIONAL {
-      ?subproperty sh:nodeKind ?nodeKind ;
-        sh:class/^sh:targetClass/(sh:and/rdf:first)?/sh:property/sh:qualifiedValueShape/(sh:and/rdf:first)? ?roleshape .
-    }
-    OPTIONAL {
-      ?subproperty sh:qualifiedValueShape/(sh:and/rdf:first)? ?roleshape .
+      ?subproperty twa:dependentOn ?dependentShape .
+      ?dependentShape sh:name ?dependentName.
+      OPTIONAL {
+        ?dependentShape sh:group/rdfs:label ?dependentGroup .
+      }
+      BIND(IF(BOUND(?dependentGroup), CONCAT(?dependentGroup," ",?dependentName), ?dependentName) AS ?dependent)
     }
   }
 
