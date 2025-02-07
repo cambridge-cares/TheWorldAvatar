@@ -1,6 +1,6 @@
 # Vis Backend Agent
 
-The Vis-Backend Agent is a supporting service to The World Avatar's [visualisation platform (ViP)](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform). It is designed to manage all visualisation-related requests from a single point of access to for example, filter map layers, generate dynamic controls, or query, add, delete, and update instances within the registry. By abstracting the backend implementation details (such as which other agents to call), it provides a unified access point to the data within its specific stack. This design allows the ViP to be deployed on a separate stack while retaining the capability to ingest data from multiple stacks seamlessly.
+The Vis-Backend Agent is a supporting service to The World Avatar's [visualisation platform (ViP)](https://github.com/TheWorldAvatar/viz). It is designed to manage all visualisation-related requests from a single point of access to for example, filter map layers, generate dynamic controls, or query, add, delete, and update instances within the registry. By abstracting the backend implementation details (such as which other agents to call), it provides a unified access point to the data within its specific stack. This design allows the ViP to be deployed on a separate stack while retaining the capability to ingest data from multiple stacks seamlessly.
 
 ## Table of Contents
 
@@ -29,6 +29,9 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.6.6 Archive contract route](#266-archive-contract-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
+      - [3.1.1 Property Groups](#311-property-groups)
+      - [3.1.2 Dependent Form Fields](#312-dependent-form-fields)
+      - [3.1.3 Lifecycle-specific Features](#313-lifecycle-specific-feature)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
@@ -627,7 +630,7 @@ A successful request will return `{"message": "Contract has been successfully te
 
 ### 3.1 Form Generation
 
-The query to generate the form template is available at `resources/query/construct/form.sparql`. Please read the documentation available on the [Visualisation Platform](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/doc/form.md) to understand how the form template generated from this agent should look like.
+The query to generate the form template is available at `resources/query/construct/form.sparql`. Please read the documentation available on the [Visualisation Platform](https://github.com/TheWorldAvatar/viz/blob/main/doc/form.md) to understand how the form template generated from this agent should look like.
 
 A sample SHACL format in (TTL) is described below:
 
@@ -726,8 +729,99 @@ base:ExampleClassShape
     sh:datatype xsd:string ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
-  ] ;
+  ] .
 ```
+
+### 3.1.1 Property Groups
+
+Users may group form inputs into one form section either by using Nested Concepts via `sh:node` or `PropertyGroup` via sh:group. A sample SHACL format in (TTL) for `PropertyGroup` is described below.
+
+```
+base:ExampleGroupPropertyShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:ExampleGroupClass ;
+  sh:property [
+    sh:name "id";
+    sh:description "Identifier for the example class instance.";
+    sh:order 0;
+    sh:path (
+      rdfs:label
+      [sh:inversePath rdfs:label]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "name";
+    sh:description "Name of the example group class instance.";
+    sh:order 1;
+    sh:path rdfs:label ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "group string input";
+    sh:description "String input for a form section.";
+    sh:order 2;
+    sh:path ontoexample:hasInput ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "group dropdown";
+    sh:description "A dropdown for a form section.";
+    sh:order 3;
+    sh:path ontoexample:hasDropdownOption ;
+    sh:class ontoexample:DropdownOption ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:ExampleFormSectionGroup
+	a sh:PropertyGroup ;
+	rdfs:label "form section" ;
+  sh:description "An example form section grouping properties through SHACL." ;
+	sh:order "2"^^xsd:integer .
+```
+
+> [!IMPORTANT] > `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
+
+https://theworldavatar.io/kg/dependentOn
+
+### 3.1.2 Dependent Form Fields
+
+Users can set up dependencies between form fields by targeting the independent form property (via the corresponding `PropertyShape`) using the `https://theworldavatar.io/kg/dependentOn` relations. A sample SHACL file in TTL is given below:
+
+```
+base:FormDependencyShape
+  a sh:NodeShape ;
+  sh:targetClass base:Concept ;
+  sh:property base:FormDependencyShape-independent ;
+  sh:property [
+    sh:name "dependent field" ;
+    sh:order 2 ;
+    sh:description "A sample property showing a dependent field" ;
+    sh:path ontoexample:isDependent ;
+    sh:class ontoexample:DependentClass ;
+    twa:dependentOn base:FormDependencyShape-independent;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:FormDependencyShape-independent a sh:PropertyShape ;
+  sh:name "independent field" ;
+  sh:order 1 ;
+  sh:description "A sample property showing an independent field" ;
+  sh:path ontoexample:isIndependent ;
+  sh:class ontoexample:IndependentClass ;
+  sh:minCount 1 ;
+  sh:maxCount 1 .
+```
+
+### 3.1.3 Lifecycle-specific Feature
 
 > [!IMPORTANT]
 > For any lifecycle form, users will be required to configure the event occurrences using `SHACL` restrictions. Typically, `TerminatedServiceEvent`, `IncidentReportEvent`, `ContractRescission`, and `ContractTermination` can only accommodate a remarks property. For the `ServiceDispatchEvent`, users may assign additional dispatch details through defining more `SHACL` properties. Note that an id field must be included for a `ServiceDispatchEvent`. A sample file has been created in `./resources/shacl.ttl`
@@ -770,9 +864,8 @@ base:ConceptShape
 
 2. `sh:hasValue`: Optional parameter to restrict the output of the query to a specific instance. This is useful if the same predicate path points to multiple instances as a subject and cannot be differentiated otherwise. For example: `fibo-fnd-dt-fd:RegularSchedule` has predicates `fibo-fnd-dt-fd:hasRecurrenceInterval` that may target Monday to Sunday as their subject values.
 3. `sh:minCount`: Optional parameter to indicate that the variable is required in the template if set above one.
-4. `sh:qualifiedValueShape`: Optional parameter to indicate that the variable is a parent variable that the instance is dependent on.
-5. `sh:datatype`: Required parameter to generate min-max search criteria based on integer or decimal settings
-6. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary. This must be found in a property shape with `sh:targetClass` to function. Note that if your property is `sh:in` a (sub)class, the agent will automatically retrieve the `rdfs:label` of the associated class concept.
+4. `sh:datatype`: Required parameter to generate min-max search criteria based on integer or decimal settings
+5. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary. This must be found in a property shape with `sh:targetClass` to function. Note that if your property is `sh:in` a (sub)class, the agent will automatically retrieve the `rdfs:label` of the associated class concept.
 
 ## 4. Schemas
 
