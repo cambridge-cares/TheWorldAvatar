@@ -59,7 +59,7 @@ WasteMass,Class,CircularityProperty,IS-A,,,,The mass of waste produced from an e
 WasteMassAfterTakingRecyclable&ReusablePortion,Class,WasteMass,IS-A,,,,The mass of waste that remains after the recyclable and reusable materials have been separated and that cannot be turned into useful materials.,http://www.theworldavatar.com/kg/ontomatpassport,W0
 WasteMassGeneratedInProducingRecylcedFeedstock,Class,WasteMass,IS-A,,,,The mass of waste generated while producing recycled feedstock.,http://www.theworldavatar.com/kg/ontomatpassport,WF
 WasteMassGeneratedInRecyclingCollectedPortion,Class,WasteMass,IS-A,,,,The mass of waste generated while recycling the collected portion of a product.,http://www.theworldavatar.com/kg/ontomatpassport,WC
-TotalWasteMass,Class,WasteMass,IS-A,,,,The total mass of waste generated from both the recycling and reuse processes.,http://www.theworldavatar.com/kg/ontomatpassport,TotalWasteMass
+TotalWasteMass,Class,WasteMass,IS-A,,,,The total mass of waste generated from both the recycling and reuse processes.,http://www.theworldavatar.com/kg/ontomatpassport,W
 TotalMass,Class,CircularityProperty,IS-A,,,,The total mass of a product.,http://www.theworldavatar.com/kg/ontomatpassport,TotalMass
 CarbonFootprint,Class,EnvironmentalProperty,IS-A,,,,The total amount of carbon dioxide (CO2) emitted during the raw material extraction and production process.,http://www.theworldavatar.com/kg/ontomatpassport,CarbonFootprint
 WaterUsage,Class,EnvironmentalProperty,IS-A,,,,The total amount of water consumed during the raw material extraction and production processes.,http://www.theworldavatar.com/kg/ontomatpassport,WaterUsage

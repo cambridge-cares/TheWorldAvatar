@@ -1500,7 +1500,7 @@
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
         <rdfs:comment>The total mass of waste generated from both the recycling and reuse processes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
-        <rdfs:label>TotalWasteMass</rdfs:label>
+        <rdfs:label>W</rdfs:label>
     </owl:Class>
     
 
