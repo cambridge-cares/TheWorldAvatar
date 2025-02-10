@@ -2,7 +2,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX twa:<https://theworldavatar.io/kg/form/>
 
 CONSTRUCT {
-  [ rdf:type sh:PropertyShape ;
+  ?subproperty rdf:type sh:PropertyShape ;
     sh:name ?name ;
     sh:description ?description ;
     sh:order ?order;
@@ -10,7 +10,7 @@ CONSTRUCT {
     sh:in ?range ;
     sh:class ?dataclass ;
     sh:nodeKind ?nodeKind;
-    twa:dependentOn ?dependent ;
+    twa:dependentOn ?dependentShape ;
     sh:group ?groupobj ;
     sh:minCount ?mincount ;
     sh:maxCount ?maxcount ;
@@ -20,8 +20,7 @@ CONSTRUCT {
     sh:maxExclusive ?maxexclusive ;
     sh:minLength ?minlength ;
     sh:maxLength ?maxlength ;
-    sh:pattern ?pattern 
-  ] .
+    sh:pattern ?pattern .
   ?groupobj rdf:type sh:PropertyGroup ;
     rdfs:label ?group ;
     rdfs:comment ?groupdesc ;
@@ -47,11 +46,6 @@ CONSTRUCT {
     ?subproperty sh:class ?dataclass .
     OPTIONAL {
       ?subproperty twa:dependentOn ?dependentShape .
-      ?dependentShape sh:name ?dependentName.
-      OPTIONAL {
-        ?dependentShape sh:group/rdfs:label ?dependentGroup .
-      }
-      BIND(IF(BOUND(?dependentGroup), CONCAT(?dependentGroup," ",?dependentName), ?dependentName) AS ?dependent)
     }
   }
 
