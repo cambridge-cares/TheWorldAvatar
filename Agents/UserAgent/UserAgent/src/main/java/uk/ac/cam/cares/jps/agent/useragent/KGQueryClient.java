@@ -4,7 +4,6 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Node_URI;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,13 +15,13 @@ public class KGQueryClient {
     // Prefixes
     static final String SLA = "https://www.theworldavatar.com/kg/sensorloggerapp/";
     static final String MON = "https://w3id.org/MON/person.owl";
-    final static String str_s = "s";
-    final static Var VAR_S = Var.alloc(str_s);
-    final static String str_o = "o";
-    final static Var VAR_O = Var.alloc(str_o);
+    final Var VAR_S;
+    final Var VAR_O;
 
     public KGQueryClient(RemoteStoreClient storeClient) {
         this.storeClient = storeClient;
+        VAR_S = Var.alloc("s");
+        VAR_O = Var.alloc("o");
     }
 
     public JSONArray getPhoneIds(String userId) {
