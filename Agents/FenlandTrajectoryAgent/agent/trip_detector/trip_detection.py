@@ -1206,12 +1206,12 @@ def build_incident_table(paths, hotspots, visits, gaps, pid):
         gaps = gaps[~gaps["contained"]]
         gaps = gaps[["start_time", "stop_time"]]
         gaps["type"] = "gap"
-        gaps["start_location_id"] = np.NaN
-        gaps["stop_location_id"] = np.NaN
-        gaps["start_x"] = np.NaN
-        gaps["start_y"] = np.NaN
-        gaps["stop_x"] = np.NaN
-        gaps["stop_y"] = np.NaN
+        gaps["start_location_id"] = np.nan
+        gaps["stop_location_id"] = np.nan
+        gaps["start_x"] = np.nan
+        gaps["start_y"] = np.nan
+        gaps["stop_x"] = np.nan
+        gaps["stop_y"] = np.nan
         incidents = pd.concat([paths[incident_columns], visits[incident_columns], gaps[incident_columns]], axis=0)
     else:
         incidents = pd.concat([paths[incident_columns], visits[incident_columns]], axis=0)
