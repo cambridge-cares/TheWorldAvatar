@@ -77,10 +77,10 @@ public class CEAOutputHandler {
 
         result.iris = iris;
 
-        List<String> geometryNames = getGeometryNames(solarPath + FS + "PV_total_buildings.csv");
+        List<String> geometryNames = getGeometryNames(solarPath + FS + "PV_PV1_total_buildings.csv");
 
-        extractArea(solarPath + FS + "PV_total_buildings.csv", result);
-        result.times = extractTimes(solarPath + FS + "PV_total.csv");
+        extractArea(solarPath + FS + "PV_PV1_total_buildings.csv", result);
+        result.times = extractTimes(solarPath + FS + "PV_PV1_total.csv");
         
         initialiseCEAOutputTS(result);
 
