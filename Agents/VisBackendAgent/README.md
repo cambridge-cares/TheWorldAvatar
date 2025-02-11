@@ -682,28 +682,6 @@ base:NameOfConceptShape
     sh:datatype xsd:date ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
-  ] ;
-  sh:property [
-    sh:name "group" ;
-    sh:description "A sample property showing the structure for creating a new property group" ;
-    sh:order 6 ;
-    sh:path ontoexample:hasGroup ;
-    sh:node base:NestedConceptShape ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
-  ] .
-
-base:NestedConceptShape
-  a sh:NodeShape ;
-  sh:targetClass ontoexample:NestedConcept ;
-  sh:property [
-    sh:name "nested input" ;
-    sh:order 1 ;
-    sh:description "A sample property showing the structure for creating a nested property input as part of a group" ;
-    sh:path ontoexample:hasNestedProperty ;
-    sh:datatype xsd:string ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
   ] .
 
 base:ExampleClassShape
@@ -734,7 +712,39 @@ base:ExampleClassShape
 
 ### 3.1.1 Property Groups
 
-Users may group form inputs into one form section either by using Nested Concepts via `sh:node` or `PropertyGroup` via sh:group. A sample SHACL format in (TTL) for `PropertyGroup` is described below.
+Users may group form inputs into one form section either by using Nested Concepts via `sh:node` or `PropertyGroup` via sh:group.
+
+A sample SHACL format in (TTL) for `sh:node` is described below:
+
+```
+base:NameOfConceptShape
+  a sh:NodeShape ;
+  sh:targetClass base:Concept ;
+  sh:property [
+    sh:name "group" ;
+    sh:description "A sample property showing the structure for creating a new property group" ;
+    sh:order 0 ;
+    sh:path ontoexample:hasGroup ;
+    sh:node base:NestedConceptShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:NestedConceptShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:NestedConcept ;
+  sh:property [
+    sh:name "nested input" ;
+    sh:order 1 ;
+    sh:description "A sample property showing the structure for creating a nested property input as part of a group" ;
+    sh:path ontoexample:hasNestedProperty ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+```
+
+A sample SHACL format in (TTL) for `PropertyGroup` is described below:
 
 ```
 base:ExampleGroupPropertyShape
@@ -787,7 +797,8 @@ base:ExampleFormSectionGroup
 	sh:order "2"^^xsd:integer .
 ```
 
-> [!IMPORTANT] > `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
+> [!IMPORTANT] 
+> `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
 
 ### 3.1.2 Dependent Form Fields
 
