@@ -604,8 +604,14 @@ def extract_hotspots(points, x_bounds, y_bounds, kernel_bandwidth, pid,
     # In order to migrate to a newer version, one would need to manually
     # convert the returned coordinates to a boolean array:
     # https://stackoverflow.com/questions/75825151/changes-to-peak-local-max-in-skimage-feature-how-do-i-get-the-boolean-array-sha
-    local_maxi = peak_local_max(result_k_2d, indices=False, footprint=np.ones((3, 3)),
-                                labels=k_bool)
+    # local_maxi = peak_local_max(result_k_2d, indices=False, footprint=np.ones((3, 3)),
+    #                             labels=k_bool)
+
+    # markers = ndi.label(local_maxi, structure=np.ones((3, 3)))[0]
+    local_maxi_coords = peak_local_max(result_k_2d, footprint=np.ones((3, 3)), labels=k_bool)
+    local_maxi = np.zeros_like(result_k_2d, dtype=bool)
+    if local_maxi_coords.size > 0:
+        local_maxi[tuple(local_maxi_coords.T)] = True
 
     markers = ndi.label(local_maxi, structure=np.ones((3, 3)))[0]
 
