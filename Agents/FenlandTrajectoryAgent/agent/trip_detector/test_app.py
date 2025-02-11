@@ -69,38 +69,6 @@ def connect_to_database(host: str, port: int, user: str, password: str, database
         logging.error(f"Database connection failed: {e}")
         raise e
 
-
-# def execute_query(connection, query: str, params: Optional[tuple] = None):
-#     """
-#     Automatically decides whether to fetch rows or not based on the first keyword of the query,
-#     and logs how long each query takes.
-#     """
-#     import time
-#     try:
-#         do_fetch = False
-#         first = query.strip().upper()
-#         # If query starts with 'WITH' or 'SELECT', we assume it returns rows.
-#         if first.startswith("WITH") or first.startswith("SELECT"):
-#             do_fetch = True
-
-#         start_time = time.time()
-#         with connection.cursor() as cursor:
-#             logging.debug(f"Executing query: {query}, params={params}")
-#             cursor.execute(query, params)
-
-#             elapsed = time.time() - start_time
-#             if do_fetch:
-#                 rows = cursor.fetchall()
-#                 logging.info(f"Query returned {len(rows)} rows in {elapsed:.3f}s.")
-#                 return rows
-#             else:
-#                 logging.info(f"Query executed (no fetch) because it's an update or alter operation. Took {elapsed:.3f}s.")
-#                 return None
-
-#     except psycopg2.Error as e:
-#         logging.error(f"Query execution error: {e}")
-#         raise e
-
 def execute_query(connection, query: str, params: Optional[tuple] = None):
     import time
     try:
