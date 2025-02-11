@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.HttpUrl;
+
 /**
  * Network source for constructing, sending and processing trajectory related requests to server
  */
@@ -115,7 +116,7 @@ public class TrajectoryNetworkSource {
                 .addQueryParameter("service", "WFS")
                 .addQueryParameter("version", "1.0.0")
                 .addQueryParameter("request", "GetFeature")
-                .addQueryParameter("typeName", "twa:trajectoryUserId")
+                .addQueryParameter("typeName", "twa:trajectoryUserIdByActivity")
                 .addQueryParameter("outputFormat", "application/json")
                 .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
                 .build().toString();
@@ -128,11 +129,10 @@ public class TrajectoryNetworkSource {
                 LOGGER.debug("Full server response: " + s1);
 
                 JSONObject trajectoryResponse = new JSONObject(s1);
-                if (trajectoryResponse.getInt("totalFeatures") == 0 ||
-                        (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
-                                .getJSONArray("features")
-                                .getJSONObject(0)
-                                .getString("geometry").equals("null"))) {
+                if (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
+                        .getJSONArray("features")
+                        .getJSONObject(0)
+                        .getString("geometry").equals("null")) {
                     onSuccessUpper.onResponse("");
                 } else {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());
