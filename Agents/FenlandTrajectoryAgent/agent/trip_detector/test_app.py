@@ -474,7 +474,7 @@ def trip_detection_route():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    trajectory_df["Timestamp"] = trajectory_df["time"]
+    
 
  
     columns_mapping = {
