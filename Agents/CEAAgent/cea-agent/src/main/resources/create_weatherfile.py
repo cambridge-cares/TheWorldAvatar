@@ -195,11 +195,11 @@ def parse_weather(times, data, offset):
     minute = []
 
     results['year'] = [t['year'] for t in times]
-    results['month'] = [t['month'] for t in times]
-    results['day'] = [t['day'] for t in times]
-    results['hour'] = [t['hour'] for t in times]
-    results['minute'] = [t['minute'] for t in times]
-    
+    results['month'] = [f"{t['month']:02d}" for t in times]
+    results['day'] = [f"{t['day']:02d}" for t in times]
+    results['hour'] = [f"{t['hour']:02d}" for t in times]
+    results['minute'] = [f"{t['minute']:02d}" for t in times]
+
     for key, val in data.items():
         if key in ontoems_concepts:
             results[ontoems_concepts[key]] = val
