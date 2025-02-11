@@ -144,4 +144,17 @@ target      sensorloggerapp:smartphone_{device_id} ontodevice:hasScreenBrightnes
                 om:hasValue sensorloggerapp:brightness_measure_{device_id} .
             sensorloggerapp:brightness_measure_{device_id} a om:Measure .
 source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='RelativeBrightness'
+
+mappingId   activitytype
+target      sensorloggerapp:activity_type_{device_id} rdf:type sensorloggerapp:ActivityType ;
+                sensorloggerapp:hasActivityType "{activity_type}"^^xsd:string .
+source      SELECT device_id, activity_type FROM your_table WHERE activity_type IS NOT NULL;
+
+mappingId   confidencelevel
+target      sensorloggerapp:confidence_level_{device_id} rdf:type sensorloggerapp:ConfidenceLevel ;
+                sensorloggerapp:hasConfidenceLevel "{confidence_level}"^^xsd:string .
+source      SELECT device_id, confidence_level FROM your_table WHERE confidence_level IS NOT NULL;
+
+
+
 ]]
