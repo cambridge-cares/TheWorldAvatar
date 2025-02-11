@@ -24,7 +24,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
@@ -53,8 +55,16 @@ public class TrajectoryManager {
                     return;
                 }
 
-                String colorCode = String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())));
-                paintTrajectory(style, trajectoryStr, colorCode, "default");
+                // String colorCode = String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())));
+                String colorCode = "#FF0000";
+                Map<String, String> activityColors = new HashMap<>();
+                activityColors.put("walking", "#0000FF"); // Blue
+                activityColors.put("running", "#FF0000"); // Red
+                activityColors.put("cycling", "#00FF00"); // Green
+                activityColors.put("driving", "#000000"); //Grey
+                
+                //paintTrajectory(style, trajectoryStr, colorCode, "default");
+                paintTrajectoryByActivity(style, trajectoryStr, activityColors, "default");
 
             });
 
@@ -118,6 +128,63 @@ public class TrajectoryManager {
 
         layerNames.add(mode);
     }
+
+    private void paintTrajectoryByActivity(Style style, String trajectory, Map<String, String> activityColors, String mode) {
+    JSONObject sourceJson = new JSONObject();
+    try {
+        sourceJson.put("type", "geojson");
+        sourceJson.put("data", trajectory);
+    } catch (JSONException e) {
+        throw new RuntimeException(e);
+    }
+
+    Expected<String, None> success = style.addStyleSource(
+        "trajectory_" + mode,
+        Objects.requireNonNull(Value.fromJson(sourceJson.toString()).getValue())
+    );
+    LOGGER.debug("trajectory: source created " + (success.isError() ? success.getError() : "success"));
+
+    JSONObject layerJson = new JSONObject();
+    try {
+        layerJson.put("id", "trajectory_layer_" + mode);
+        layerJson.put("type", "line");
+        layerJson.put("source", "trajectory_" + mode);
+        layerJson.put("line-join", "bevel");
+
+        
+        JSONArray colorExpression = new JSONArray();
+        colorExpression.put("match"); 
+        colorExpression.put(new JSONArray().put("get").put("activity_type")); 
+
+        
+        for (Map.Entry<String, String> entry : activityColors.entrySet()) {
+            if (!entry.getKey().equals("default")) {
+                colorExpression.put(entry.getKey());
+                colorExpression.put(entry.getValue());
+            }
+        }
+
+       
+        colorExpression.put(activityColors.getOrDefault("default", "#9d9d9d"));
+
+        JSONObject paint = new JSONObject();
+        paint.put("line-color", colorExpression);
+        paint.put("line-width", 6);
+        layerJson.put("paint", paint);
+    } catch (JSONException e) {
+        throw new RuntimeException(e);
+    }
+
+    
+    Expected<String, None> layerSuccess = style.addStyleLayer(
+        Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()),
+        new LayerPosition(null, null, null)
+    );
+    LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
+
+    layerNames.add(mode);
+}
+
 
     private Point getBBoxCenter(JSONArray bbox) {
         try {
