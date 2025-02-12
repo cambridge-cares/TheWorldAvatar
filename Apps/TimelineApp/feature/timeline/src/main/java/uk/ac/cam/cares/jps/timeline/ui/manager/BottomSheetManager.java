@@ -21,8 +21,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import uk.ac.cam.cares.jps.login.AccountException;
+import uk.ac.cam.cares.jps.model.ActivitySummary;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
@@ -104,9 +106,36 @@ public class BottomSheetManager {
     }
 
     private void configureTrajectoryRetrieval() {
-        trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
-        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheet::showTrajectoryInfo);
+    trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+
+    trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryJson -> {
+        normalBottomSheet.showTrajectoryInfo(trajectoryJson);
+        normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
+        
+        normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
+            String summary = getSummaryData(activitySummaryList);
+            normalBottomSheet.updateSummary(summary);
+        });
+    });
+}
+
+    private String getSummaryData(List<ActivitySummary> activitySummaryList) {
+        if (activitySummaryList == null || activitySummaryList.isEmpty()) {
+            return "No activity summary available.";
+        }
+
+        StringBuilder summaryBuilder = new StringBuilder();
+        for (ActivitySummary summary : activitySummaryList) {
+            summaryBuilder.append(summary.getActivityType())
+                        .append(": ")
+                        .append(summary.getStartTime())
+                        .append(" - ")
+                        .append(summary.getEndTime())
+                        .append("\n");
+        }
+        return summaryBuilder.toString();
     }
+
 
     private void configureDateSelection() {
         normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view ->

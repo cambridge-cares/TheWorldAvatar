@@ -4,8 +4,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +19,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
+import uk.ac.cam.cares.jps.model.ActivitySummary;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
@@ -24,9 +30,11 @@ public class NormalBottomSheetViewModel extends ViewModel {
     private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
     private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
     private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
+    private MutableLiveData<List<ActivitySummary>> _activitySummaryData = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
+    public LiveData<List<ActivitySummary>> activitySummaryData = _activitySummaryData;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -84,4 +92,33 @@ public class NormalBottomSheetViewModel extends ViewModel {
     public long getSelectedDateLong() {
         return selectedDate.getValue().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
+
+    /**
+     * parses the trajectoryjson to store start and end times for each segment(activity)
+     */
+    public void parseActivitySummary(String trajectoryJson) {
+    List<ActivitySummary> summaries = new ArrayList<>();
+
+    try {
+        JSONObject trajectoryStr = new JSONObject(trajectoryJson);
+        JSONArray features = trajectoryStr.getJSONArray("features");
+
+        for (int i = 0; i < features.length(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject properties = feature.getJSONObject("properties");
+
+            String activityType = properties.optString("activity_type", "unknown");
+            long startTime = properties.optLong("start_time", 0);
+            long endTime = properties.optLong("end_time", 0);
+
+            summaries.add(new ActivitySummary(activityType, startTime, endTime));
+        }
+
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+    _activitySummaryData.postValue(summaries);
+}
+
 }

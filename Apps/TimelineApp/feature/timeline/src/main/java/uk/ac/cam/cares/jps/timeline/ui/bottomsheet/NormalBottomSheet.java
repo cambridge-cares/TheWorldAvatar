@@ -1,3 +1,5 @@
+
+
 package uk.ac.cam.cares.jps.timeline.ui.bottomsheet;
 
 import android.content.Context;
@@ -14,7 +16,6 @@ import uk.ac.cam.cares.jps.timelinemap.R;
  * Bottom sheet to be shown when there is no error
  */
 public class NormalBottomSheet extends BottomSheet {
-
 
     /**
      * Constructor of the class
@@ -46,10 +47,22 @@ public class NormalBottomSheet extends BottomSheet {
     }
 
     public void showTrajectoryInfo(String trajectory) {
+        // Check if the trajectory data is empty
         if (trajectory.isEmpty()) {
             ((TextView) getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_trajectory_found);
+            updateSummary("No summary available as trajectory data is empty.");
             return;
         }
-        ((TextView) getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(R.string.more_information_about_the_trajectory_will_be_shown_here);
+
+        updateSummary("Activity Summary: \n" + trajectory); 
+    }
+
+    /**
+     * Update the activity summary text in the bottom sheet
+     * 
+     * @param summary the summary of activity as text
+     */
+    public void updateSummary(String summary) {
+        ((TextView) getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(summary);
     }
 }

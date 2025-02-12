@@ -1,4 +1,3 @@
-/* Used by timeline app, produces a single line rather than line segments */
 WITH distinct_devices AS (
     SELECT 
         array_agg(device_id::text) AS device_list
@@ -43,8 +42,7 @@ joined_data AS (
         t.session_id, 
         t.user_id, 
         a.activity_type,
-        a.confidence_level,
-        LAG(a.activity_type) OVER (PARTITION BY t.user_id ORDER BY t.time) AS prev_activity_type
+        a.confidence_level
     FROM 
         timeseries t
     LEFT JOIN 
@@ -64,35 +62,88 @@ fixed_activity_data AS (
         bearing,
         session_id,
         user_id,
-        COALESCE(NULLIF(activity_type, 'Others'), prev_activity_type) AS activity_type,
+        COALESCE(activity_type, 'others') AS activity_type,  -- Replace NULL with 'others'
         confidence_level
-    FROM joined_data
-),
+    FROM (
+        SELECT 
+            time,
+            speed,
+            altitude,
+            geom,
+            bearing,
+            session_id,
+            user_id,
+            activity_type,
+            confidence_level,
+            LAG(time) OVER (PARTITION BY user_id ORDER BY time) AS prev_time
+        FROM joined_data
+    ) AS subquery
+    WHERE time <> prev_time  -- Filter out rows with the same time as the previous row
+)
+,
+
 
 change_marked AS (
     SELECT 
         *,
-        CASE 
+        CASE
+            WHEN 
+                LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time) IS NULL
+                THEN 0  -- First row for a user should have change_flag = 0
             WHEN 
                 LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time) IS DISTINCT FROM activity_type 
-                AND activity_type <> 'Others'  -- Ignore "Others" as a change
             THEN 1 
             ELSE 0 
         END AS change_flag
     FROM fixed_activity_data
 ),
 
+change_marked_union AS (
+    SELECT 
+        time,
+        speed,
+        altitude,
+        geom,
+        bearing,
+        session_id,
+        user_id,
+        activity_type,
+        confidence_level,
+        change_flag
+    FROM change_marked
+
+    UNION ALL  -- Add duplicate rows with change_flag = 0
+    SELECT 
+        time,
+        speed,
+        altitude,
+        geom,
+        bearing,
+        session_id,
+        user_id,
+        COALESCE(LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time), 'others') as activity_type,  -- Ensure no NULL values in duplicate row
+        confidence_level,
+        0 AS change_flag  -- Force change_flag to 0 in duplicate row
+    FROM change_marked
+    WHERE change_flag = 1   
+    ORDER BY time, change_flag 
+),
+
 numbered_activity_data AS (
+    
     SELECT 
         *,
         SUM(change_flag) OVER (PARTITION BY user_id ORDER BY time ROWS UNBOUNDED PRECEDING) + 1 AS id
-    FROM change_marked
+    FROM change_marked_union cm
+    ORDER BY cm.time, cm.change_flag
 )
 
 SELECT
+    MIN(na.time) AS start_time,  
+    MAX(na.time) AS end_time,
     na.id,
     na.activity_type,
-    ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)) as geom, 
+    ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)) AS geom, 
     CONCAT('https://w3id.org/MON/person.owl#person_', '%user_id%') AS iri
 FROM
     numbered_activity_data AS na 
@@ -102,7 +153,3 @@ WHERE
     AND ('%upperbound%' = '0' OR time < '%upperbound%'::BIGINT)
 GROUP BY
     na.id, na.activity_type, na.user_id
-
-
-
-
