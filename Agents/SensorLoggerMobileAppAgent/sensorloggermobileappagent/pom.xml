@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>SensorLoggerMobileAppAgent</artifactId>
-    <version>2.0.0</version>
+    <version>5.0.0</version>
     <packaging>war</packaging>
 
     <properties>
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.44.1</jps.base.version>
+        <jps.base.version>1.46.0-dev-modify-existing-timeseries-SNAPSHOT</jps.base.version>
     </properties>
 
 
@@ -107,13 +107,6 @@
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>6.0.5</version>
         </dependency>
 
         <dependency>

@@ -4,83 +4,40 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
-import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
-public class IlluminationProcessor extends SensorDataProcessor {
-    private String illuminationIri = null;
+public class IlluminationProcessor extends SensorDataDownsampledProcessor {
 
-    private final List<Double> illuminationList = new ArrayList<>();
+    private SensorData<Double> illumination;
 
-    public IlluminationProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode);
-        initIRIs();
+    public IlluminationProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("Camera", config, ontopClient, blazegraphClient, smartphoneIRINode, config.getLightValueDSResolution(), config.getLightValueDSType());
+        logger = LogManager.getLogger(IlluminationProcessor.class);
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("lightValue_tsList"));
-        illuminationList.addAll((List<Double>) data.get("lightValueList"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getLightValueTs());
+        illumination.addData(data.getLightValues());
     }
 
     @Override
-    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
-        List<String> dataIRIList = Collections.singletonList(illuminationIri);
-        List<List<?>> valueList = Collections.singletonList(illuminationList);
-
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
-        ts = Downsampling.downsampleTS(ts, config.getLightValueDSResolution(), config.getLightValueDSType());
-
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
-                .collect(Collectors.toList());
-
-        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(illuminationIri));
-
-        clearData();
-        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
+    void initSensorData() {
+        illumination = new SensorData<>(Double.class);
+        sensorData = List.of(illumination);
     }
 
     @Override
-    public void initIRIs() {
-        if (illuminationIri != null) {
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (illuminationIri == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
-    public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIs().size(), Double.class);
-    }
-
-    @Override
-    public List<String> getDataIRIs() {
-        return List.of(illuminationIri);
-    }
-
-    @Override
-    void clearData() {
-        timeList.clear();
-        illuminationList.clear();
-    }
-
-    @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var VAR_O = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
@@ -98,7 +55,7 @@ public class IlluminationProcessor extends SensorDataProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -106,7 +63,7 @@ public class IlluminationProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        illuminationIri = queryResult.getJSONObject(0).optString("o");
+        illumination.setDataIri(queryResult.getJSONObject(0).optString("o"));
     }
 
     @Override
