@@ -1,4 +1,0 @@
-services:
-  postgis:
-    image: ghcr.io/cambridge-cares/cambridge-cares/postgis:15-3.4-3.4.1-extra-bundled-SNAPSHOT
-    build: .
