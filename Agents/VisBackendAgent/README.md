@@ -1,6 +1,6 @@
 # Vis Backend Agent
 
-The Vis-Backend Agent is a supporting service to The World Avatar's [visualisation platform (ViP)](https://github.com/TheWorldAvatar/viz). It is designed to manage all visualisation-related requests from a single point of access to for example, filter map layers, generate dynamic controls, or query, add, delete, and update instances within the registry. By abstracting the backend implementation details (such as which other agents to call), it provides a unified access point to the data within its specific stack. This design allows the ViP to be deployed on a separate stack while retaining the capability to ingest data from multiple stacks seamlessly.
+The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https://github.com/TheWorldAvatar/viz) service. It is designed to manage all visualisation-related requests from a single point of access to for example, filter map layers, generate dynamic controls, or query, add, delete, and update instances within the registry. By abstracting the backend implementation details (such as which other agents to call), it provides a unified access point to the data within its specific stack. This design allows the ViP to be deployed on a separate stack while retaining the capability to ingest data from multiple stacks seamlessly.
 
 ## Table of Contents
 
@@ -630,7 +630,7 @@ A successful request will return `{"message": "Contract has been successfully te
 
 ### 3.1 Form Generation
 
-The query to generate the form template is available at `resources/query/construct/form.sparql`. Please read the documentation available on the [Visualisation Platform](https://github.com/TheWorldAvatar/viz/blob/main/doc/form.md) to understand how the form template generated from this agent should look like.
+The query to generate the form template is available at `resources/query/construct/form.sparql`. Please read the documentation available on the [viz](https://github.com/TheWorldAvatar/viz/blob/main/doc/form.md) repository to understand how the form template generated from this agent should look like.
 
 A sample SHACL format in (TTL) is described below:
 
