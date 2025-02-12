@@ -65,9 +65,11 @@ FROM base AS prod
 WORKDIR /app
 COPY ./agent ./agent
 COPY ./app_entry_point.sh .
+COPY ./example-requests/curl /app/example-requests/curl
 
 # Set permission 
 RUN chmod +x app_entry_point.sh
 # Set the entrypoint
 ENTRYPOINT ./app_entry_point.sh
+RUN find /app/example-requests/curl -type f -name "*.sh" -exec chmod ug+x {} \;
 #==================================================================================================
