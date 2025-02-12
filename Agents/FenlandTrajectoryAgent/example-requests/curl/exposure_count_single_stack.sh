@@ -1,6 +1,6 @@
 #!/bin/bash
 # Copy all the following commands once, paste them into the terminal together, and then press Enter
-curl -X POST http://localhost:3840/fenland-trajectory-agent/exposure/simplified \
+curl -X POST http://174.138.27.240:5007/fenland-trajectory-agent/exposure/simplified \
      -H "Content-Type: application/json" \
      -d '{
            "trajectoryIRIs": [
