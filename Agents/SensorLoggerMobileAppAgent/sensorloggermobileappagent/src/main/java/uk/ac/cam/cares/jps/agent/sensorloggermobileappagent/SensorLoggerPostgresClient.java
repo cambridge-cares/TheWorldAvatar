@@ -113,31 +113,4 @@ public class SensorLoggerPostgresClient {
             }
         }
     }
-
-    void linkDataIriWithTsIriInRdb(String tsIRI, Set<String> dataIRIs, SensorDataProcessor processor) {
-        try (Connection conn = getConnection(); Statement statement = conn.createStatement()) {
-            String tableName = getContext(conn).select(TABLE_NAME_FIELD)
-                    .from(DSL_TABLE_TS_QUANTITIES)
-                    .where(TS_IRI_FIELD.eq(tsIRI))
-                    .fetchOne(0, String.class);
-
-            if (tableName == null || tableName.isEmpty()) {
-                LOGGER.warn("No table name found for tsIRI: " + tsIRI);
-                return;
-            }
-
-            var insert = getContext(conn).insertInto(DSL_TABLE_TS_QUANTITIES,
-                    TS_IRI_FIELD, DATA_IRI_FIELD, COLUMN_NAME_FIELD, TABLE_NAME_FIELD);
-            for (String currentDataIRI : dataIRIs) {
-                insert.values(tsIRI,
-                        currentDataIRI,
-                        String.format("column%d", processor.getDataIRIs().indexOf(currentDataIRI)),
-                        tableName);
-            }
-            insert.onConflictDoNothing().execute();
-        } catch (SQLException e) {
-            LOGGER.error("Error linking dataIRI with tsIRI");
-            LOGGER.error(e.getMessage());
-        }
-    }
 }
