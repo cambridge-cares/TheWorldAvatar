@@ -711,7 +711,7 @@ public class QueryTemplateFactory {
         StringResource.parseIriForQuery(LifecycleResource.HAS_ARGUMENT_RELATIONS), feeVar);
     StringResource.appendTriple(whereBuilder, subjectVar,
         StringResource.parseIriForQuery(LifecycleResource.HAS_ARGUMENT_RELATIONS), feeVar);
-    StringResource.appendTriple(deleteBuilder, subjectVar, anyPredVar, anyObjectVar);
-    StringResource.appendTriple(whereBuilder, subjectVar, anyPredVar, anyObjectVar);
+    StringResource.appendTriple(deleteBuilder, feeVar, anyPredVar, anyObjectVar);
+    StringResource.appendTriple(whereBuilder, feeVar, anyPredVar, anyObjectVar);
   }
 }
