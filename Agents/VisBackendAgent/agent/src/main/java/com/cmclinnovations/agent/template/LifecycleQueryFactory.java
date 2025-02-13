@@ -97,41 +97,19 @@ public class LifecycleQueryFactory {
   }
 
   /**
-   * Retrieves the SPARQL query for retrieving the active service task for the
-   * specified contract and date.
-   * 
-   * @param contract Target contract iri.
-   * @param date     Target date in YYYY-MM-DD format.
-   */
-  public String getActiveServiceTaskQuery(String contract, String date) {
-    return StringResource.QUERY_TEMPLATE_PREFIX
-        + "SELECT DISTINCT ?iri {"
-        + StringResource.parseIriForQuery(contract) + " fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
-        + "?stage fibo-fnd-rel-rel:exemplifies <"
-        + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
-        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?iri."
-        + "?iri fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date;"
-        + LifecycleResource.LIFECYCLE_EVENT_TYPE_PREDICATE_PATH + ShaclResource.WHITE_SPACE
-        + StringResource.parseIriForQuery(LifecycleResource.EVENT_DELIVERY) + ShaclResource.FULL_STOP
-        + "}";
-  }
-
-  /**
    * Retrieves the SPARQL query to get the service tasks for the specified
-   * date or contract.
+   * date and/or contract.
    * 
-   * @param dateOrContract Target date in YYYY-MM-DD format or contract
-   *                       identifier.
-   * @param isDateFilter   If true, filter by date. If false, filter by contract.
+   * @param contract Target contract iri. Optional if null is passed.
+   * @param date     Target date in YYYY-MM-DD format. Optional if null is passed.
    */
-  public String getServiceTasksQuery(String dateOrContract, boolean isDateFilter) {
+  public String getServiceTasksQuery(String contract, String date) {
     String contractVar = ShaclResource.VARIABLE_MARK + LifecycleResource.CONTRACT_KEY;
     String eventDateVar = ShaclResource.VARIABLE_MARK + LifecycleResource.DATE_KEY;
     String eventVar = ShaclResource.VARIABLE_MARK + LifecycleResource.EVENT_KEY;
-    // Targeted filter statement for either date or contract filter
-    String filterStatement = isDateFilter
-        ? "FILTER(xsd:date(" + eventDateVar + ") = \"" + dateOrContract + "\"^^xsd:date)"
-        : "FILTER STRENDS(STR(" + contractVar + "),\"" + dateOrContract + "\")";
+    // Targeted filter statement for date and/or contract filter
+    String eventDateValue = date != null ? "\"" + date + "\"^^xsd:date" : eventDateVar;
+    String filterStatement = contract != null ? "FILTER STRENDS(STR(" + contractVar + "),\"" + contract + "\")" : "";
     return StringResource.QUERY_TEMPLATE_PREFIX
         + "SELECT DISTINCT " + contractVar + " ?iri " + eventDateVar + " " + eventVar
         + " WHERE{" + contractVar + " fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
@@ -140,7 +118,7 @@ public class LifecycleQueryFactory {
         + "<https://www.omg.org/spec/Commons/Collections/comprises> ?order_event."
         + "?order_event fibo-fnd-rel-rel:exemplifies "
         + StringResource.parseIriForQuery(LifecycleResource.EVENT_ORDER_RECEIVED) + ";"
-        + "fibo-fnd-dt-oc:hasEventDate " + eventDateVar + "."
+        + "fibo-fnd-dt-oc:hasEventDate " + eventDateValue + "."
         + "?iri fibo-fnd-rel-rel:exemplifies " + eventVar + ";"
         + "cmns-dt:succeeds* ?order_event."
         + filterStatement

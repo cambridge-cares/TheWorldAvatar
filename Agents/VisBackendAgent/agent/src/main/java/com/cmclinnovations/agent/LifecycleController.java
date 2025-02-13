@@ -197,15 +197,9 @@ public class LifecycleController {
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
         LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
-      // If successfully added, remove the active service occurrence
-      String occurrenceIri = this.lifecycleService
-          .getActiveServiceOccurrence(params.get(LifecycleResource.CONTRACT_KEY).toString(), date);
-      response = this.deleteService.delete(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, occurrenceIri);
-      if (response.getStatusCode() == HttpStatus.OK) {
-        LOGGER.info("Report for an unfulfilled service has been successfully lodged!");
-        return new ResponseEntity<>(new ApiResponse("Report for an unfulfilled service has been successfully lodged!"),
-            HttpStatus.OK);
-      }
+      LOGGER.info("Report for an unfulfilled service has been successfully lodged!");
+      return new ResponseEntity<>(new ApiResponse("Report for an unfulfilled service has been successfully lodged!"),
+          HttpStatus.OK);
     }
     return response;
   }
@@ -237,14 +231,8 @@ public class LifecycleController {
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
         LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
-      // If successfully added, remove the active service occurrence
-      String occurrenceIri = this.lifecycleService
-          .getActiveServiceOccurrence(params.get(LifecycleResource.CONTRACT_KEY).toString(), date);
-      response = this.deleteService.delete(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, occurrenceIri);
-      if (response.getStatusCode() == HttpStatus.OK) {
-        LOGGER.info("Service has been successfully cancelled!");
-        return new ResponseEntity<>(new ApiResponse("Service has been successfully cancelled!"), HttpStatus.OK);
-      }
+      LOGGER.info("Service has been successfully cancelled!");
+      return new ResponseEntity<>(new ApiResponse("Service has been successfully cancelled!"), HttpStatus.OK);
     }
     return response;
   }

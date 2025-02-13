@@ -1,9 +1,11 @@
 package com.cmclinnovations.agent.service.application;
 
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -169,7 +171,7 @@ public class LifecycleService {
    * @param contract The contract identifier.
    */
   public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String contract) {
-    String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(contract, false);
+    String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(contract, null);
     List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
         LifecycleResource.DATE_KEY);
     LOGGER.info("Successfuly retrieved all associated services!");
@@ -185,7 +187,7 @@ public class LifecycleService {
   public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(long timestamp) {
     // Get date from timestamp
     String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
-    String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(targetDate, true);
+    String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(null, targetDate);
     List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
         LifecycleResource.CONTRACT_KEY);
     LOGGER.info("Successfuly retrieved services in progress!");
@@ -224,19 +226,6 @@ public class LifecycleService {
           return fields;
         })
         .toList();
-  }
-
-  /**
-   * Retrieve the specific service occurence in the lifecycle for the specified
-   * contract and date.
-   * 
-   * @param contract Target contract iri.
-   * @param date     Target date in YYYY-MM-DD format.
-   */
-  public String getActiveServiceOccurrence(String contract, String date) {
-    String activeServiceQuery = this.lifecycleQueryFactory.getActiveServiceTaskQuery(contract, date);
-    Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
   }
 
   /**
