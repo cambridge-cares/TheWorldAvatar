@@ -385,16 +385,24 @@ public class TimeHandler {
 
             case LATEST: {
                 TimeSeries<Instant> latest = this.tsClient.getLatestData(measureIRI, connection);
-                Instant boundOne = latest.getTimes().get(0);
-                Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
-                return new ImmutablePair<>(boundOne, boundTwo);
+                if (latest.getTimes().isEmpty()) {
+                    return null;
+                } else {
+                    Instant boundOne = latest.getTimes().get(0);
+                    Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
+                    return new ImmutablePair<>(boundOne, boundTwo);
+                }
             }
 
             case FIRST: {
                 TimeSeries<Instant> first = this.tsClient.getOldestData(measureIRI, connection);
-                Instant boundOne = first.getTimes().get(0);
-                Instant boundTwo = offsetTime(timeLimit, timeUnit, boundOne);
-                return new ImmutablePair<>(boundOne, boundTwo);
+                if (first.getTimes().isEmpty()) {
+                    return null;
+                } else {
+                    Instant boundOne = first.getTimes().get(0);
+                    Instant boundTwo = offsetTime(timeLimit, timeUnit, boundOne);
+                    return new ImmutablePair<>(boundOne, boundTwo);
+                }
             }
 
             case SPECIFIED: {
