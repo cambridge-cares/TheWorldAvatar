@@ -347,13 +347,15 @@ public class LifecycleReportService {
   private ObjectNode genUnitPrice(Map<String, Object> params) {
     ObjectNode unitPriceNode = this.jsonLdService.genInstance(VARIABLE_FEE_PREFIX,
         LifecycleResource.VARIABLE_FEE);
-    unitPriceNode.put(LifecycleResource.HAS_AMOUNT_RELATIONS,
-        Double.parseDouble(params.get(RATE_LABEL).toString()));
-    unitPriceNode.put(LifecycleResource.HAS_LOWER_BOUND_RELATIONS,
-        Double.parseDouble(params.get(LOWER_BOUND_LABEL).toString()));
-    if (params.get(UPPER_BOUND_LABEL) != null) {
-      unitPriceNode.put(LifecycleResource.HAS_UPPER_BOUND_RELATIONS,
-          Double.parseDouble(params.get(UPPER_BOUND_LABEL).toString()));
+    unitPriceNode.set(LifecycleResource.HAS_AMOUNT_RELATIONS,
+        this.jsonLdService.genLiteral(params.get(RATE_LABEL).toString(), ShaclResource.XSD_DECIMAL));
+    unitPriceNode.set(LifecycleResource.HAS_LOWER_BOUND_RELATIONS,
+        this.jsonLdService.genLiteral(params.get(LOWER_BOUND_LABEL).toString(), ShaclResource.XSD_DECIMAL));
+    try {
+      unitPriceNode.set(LifecycleResource.HAS_UPPER_BOUND_RELATIONS,
+          this.jsonLdService.genLiteral(params.get(UPPER_BOUND_LABEL).toString(), ShaclResource.XSD_DECIMAL));
+    } catch (NumberFormatException e) {
+      LOGGER.warn("Detected empty value for the optional upper bound. Please notify the team if this is incorrect!");
     }
     return unitPriceNode;
   }

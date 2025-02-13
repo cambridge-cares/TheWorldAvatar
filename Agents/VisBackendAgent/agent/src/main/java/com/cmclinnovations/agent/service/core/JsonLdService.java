@@ -107,14 +107,14 @@ public class JsonLdService {
    * @param dataType   Indicates the data type for the literal. Defaults to string
    *                   if null.
    */
-  public ObjectNode genLiteral(String literalVal, String dataType) {
+  public ObjectNode genLiteral(String literalVal, String dataType) throws NumberFormatException {
+    if (dataType.equals(ShaclResource.XSD_DECIMAL) && literalVal.isEmpty()) {
+      LOGGER.warn("Numeric value cannot be an empty string!");
+      throw new NumberFormatException("Numeric value cannot be an empty string!");
+    }
     ObjectNode literal = this.objectMapper.createObjectNode()
         .put(ShaclResource.VAL_KEY, literalVal);
-    if (dataType == null) {
-      literal.put(ShaclResource.TYPE_KEY, ShaclResource.XSD_STRING);
-    } else {
-      literal.put(ShaclResource.TYPE_KEY, dataType);
-    }
+    literal.put(ShaclResource.TYPE_KEY, dataType == null ? ShaclResource.XSD_STRING : dataType);
     return literal;
   }
 }
