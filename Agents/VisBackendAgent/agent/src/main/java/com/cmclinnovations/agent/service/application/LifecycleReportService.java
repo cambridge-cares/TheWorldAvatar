@@ -18,6 +18,7 @@ import com.cmclinnovations.agent.service.GetService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.service.core.JsonLdService;
 import com.cmclinnovations.agent.service.core.LoggingService;
+import com.cmclinnovations.agent.template.LifecycleQueryFactory;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
@@ -34,6 +35,7 @@ public class LifecycleReportService {
   private final JsonLdService jsonLdService;
   private final LoggingService loggingService;
   private final ObjectMapper objectMapper;
+  private final LifecycleQueryFactory queryFactory;
 
   private static final String FLAT_FEE_LABEL = "Base Fee";
   private static final String UNIT_PRICE_LABEL = "unit price";
@@ -70,6 +72,7 @@ public class LifecycleReportService {
     this.jsonLdService = jsonLdService;
     this.loggingService = loggingService;
     this.objectMapper = objectMapper;
+    this.queryFactory = new LifecycleQueryFactory();
   }
 
   /**
@@ -104,7 +107,7 @@ public class LifecycleReportService {
     recordInstance.set(LifecycleResource.RECORDS_RELATIONS,
         calculationInstance.get(LifecycleResource.HAS_QTY_VAL_RELATIONS));
     // Retrieve report instance and attach record to report
-    String query = LifecycleResource.genReportQuery(params.get(LifecycleResource.STAGE_KEY).toString());
+    String query = this.queryFactory.getReportQuery(params.get(LifecycleResource.STAGE_KEY).toString());
     String report = this.getService.getInstance(query);
     ObjectNode reportsOnNode = this.objectMapper.createObjectNode()
         .set(LifecycleResource.REPORTS_ON_RELATIONS,
@@ -145,7 +148,7 @@ public class LifecycleReportService {
    */
   public boolean getHasPricingStatus(String contract) {
     LOGGER.debug("Checking for an existing pricing model...");
-    String query = LifecycleResource.genPricingStatusQuery(contract);
+    String query = this.queryFactory.getPricingStatusQuery(contract);
     // If there is a pricing model set, no exception is thrown
     try {
       this.getService.getInstance(query);

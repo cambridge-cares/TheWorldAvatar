@@ -25,6 +25,7 @@ import com.cmclinnovations.agent.service.GetService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.KGService;
+import com.cmclinnovations.agent.template.LifecycleQueryFactory;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
@@ -36,6 +37,7 @@ public class LifecycleService {
   private final GetService getService;
   private final KGService kgService;
   private final FileService fileService;
+  private final LifecycleQueryFactory lifecycleQueryFactory;
 
   private static final String ORDER_INITIALISE_MESSAGE = "Order received and is being processed.";
   private static final String ORDER_DISPATCH_MESSAGE = "Order has been assigned and is awaiting execution.";
@@ -56,6 +58,7 @@ public class LifecycleService {
     this.getService = getService;
     this.kgService = kgService;
     this.fileService = fileService;
+    this.lifecycleQueryFactory = new LifecycleQueryFactory();
   }
 
   /**
@@ -67,7 +70,7 @@ public class LifecycleService {
   public void addStageInstanceToParams(Map<String, Object> params, LifecycleEventType eventType) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding stage parameters for {}...", contractId);
-    String query = LifecycleResource.genStageQuery(contractId, eventType);
+    String query = this.lifecycleQueryFactory.getStageQuery(contractId, eventType);
     String stage = this.getService.getInstance(query);
     params.put(LifecycleResource.STAGE_KEY, stage);
   }
@@ -93,7 +96,7 @@ public class LifecycleService {
   public void addOccurrenceParams(Map<String, Object> params, LifecycleEventType eventType, String date) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding occurrence parameters for {}...", contractId);
-    String query = LifecycleResource.genStageQuery(contractId, eventType);
+    String query = this.lifecycleQueryFactory.getStageQuery(contractId, eventType);
     String stage = this.getService.getInstance(query);
     params.putIfAbsent("id",
         StringResource.getPrefix(stage) + "/" + LifecycleResource.getEventIdentifier(eventType) + "/"
@@ -111,7 +114,7 @@ public class LifecycleService {
    */
   public ResponseEntity<ApiResponse> getContractStatus(String contract) {
     LOGGER.debug("Retrieving the status of the contract...");
-    String query = LifecycleResource.genServiceStatusQuery(contract);
+    String query = this.lifecycleQueryFactory.getServiceStatusQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     SparqlBinding result = this.kgService.getSingleInstance(results);
     LOGGER.info("Successfuly retrieved contract status!");
@@ -128,7 +131,7 @@ public class LifecycleService {
    */
   public ResponseEntity<Map<String, SparqlResponseField>> getSchedule(String contract) {
     LOGGER.debug("Retrieving the schedule details of the contract...");
-    String query = LifecycleResource.genServiceScheduleQuery(contract);
+    String query = this.lifecycleQueryFactory.getServiceScheduleQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     SparqlBinding result = this.kgService.getSingleInstance(results);
     LOGGER.info("Successfuly retrieved schedule!");
@@ -166,7 +169,7 @@ public class LifecycleService {
    * @param contract The contract identifier.
    */
   public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String contract) {
-    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(contract, false);
+    String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(contract, false);
     List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
         LifecycleResource.DATE_KEY);
     LOGGER.info("Successfuly retrieved all associated services!");
@@ -182,7 +185,7 @@ public class LifecycleService {
   public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(long timestamp) {
     // Get date from timestamp
     String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
-    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(targetDate, true);
+    String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(targetDate, true);
     List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
         LifecycleResource.CONTRACT_KEY);
     LOGGER.info("Successfuly retrieved services in progress!");
@@ -231,7 +234,7 @@ public class LifecycleService {
    * @param date     Target date in YYYY-MM-DD format.
    */
   public String getActiveServiceOccurrence(String contract, String date) {
-    String activeServiceQuery = LifecycleResource.genActiveServiceTaskQuery(contract, date);
+    String activeServiceQuery = this.lifecycleQueryFactory.getActiveServiceTaskQuery(contract, date);
     Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
     return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
   }
@@ -246,7 +249,7 @@ public class LifecycleService {
   public boolean genOrderReceivedOccurrences(String contract) {
     LOGGER.info("Generating all orders for the active contract {}...", contract);
     // Retrieve schedule information for the specific contract
-    String query = LifecycleResource.genServiceScheduleQuery(contract);
+    String query = this.lifecycleQueryFactory.getServiceScheduleQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     SparqlBinding bindings = this.kgService.getSingleInstance(results);
     // Extract specific schedule info
@@ -302,7 +305,7 @@ public class LifecycleService {
    */
   public void dischargeExpiredContracts() {
     LOGGER.info("Retrieving all active contracts that are expiring...");
-    String query = LifecycleResource.genExpiredActiveServiceQuery();
+    String query = this.lifecycleQueryFactory.getExpiredActiveContractQuery();
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     Map<String, Object> paramTemplate = new HashMap<>();
     paramTemplate.put(LifecycleResource.REMARKS_KEY, SERVICE_DISCHARGE_MESSAGE);
@@ -419,7 +422,7 @@ public class LifecycleService {
     // Ensure that there is a specific event type target
     String replacementQueryLine = "<https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence>;"
         + "sh:property/sh:hasValue " + StringResource.parseIriForQuery(LifecycleResource.getEventClass(eventType));
-    String query = LifecycleResource.genEventQuery(targetId, eventType);
+    String query = this.lifecycleQueryFactory.getEventQuery(targetId, eventType);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     if (results.size() == 0) {
       return new ResponseEntity<>("No occurrence detected!", HttpStatus.NOT_ACCEPTABLE);

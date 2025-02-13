@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.Map;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -32,6 +32,7 @@ public class QueryTemplateFactory {
   private Map<String, String> queryLines;
   private Map<String, List<Integer>> varSequence;
   private final ObjectMapper objectMapper;
+  private final LifecycleQueryFactory lifecycleQueryFactory;
   private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
   private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
@@ -55,6 +56,7 @@ public class QueryTemplateFactory {
    */
   public QueryTemplateFactory(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+    this.lifecycleQueryFactory = new LifecycleQueryFactory();
   }
 
   /**
@@ -470,17 +472,17 @@ public class QueryTemplateFactory {
    */
   private void appendOptionalLifecycleFilters(StringBuilder query, LifecycleEventType lifecycleEvent) {
     if (lifecycleEvent != null) {
-      query.append(LifecycleResource.genReadableScheduleQuery());
+      query.append(this.lifecycleQueryFactory.getReadableScheduleQuery());
       switch (lifecycleEvent) {
         case LifecycleEventType.APPROVED:
-          LifecycleResource.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
+          this.lifecycleQueryFactory.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
           break;
         case LifecycleEventType.SERVICE_EXECUTION:
-          LifecycleResource.appendFilterExists(query, true, LifecycleResource.EVENT_APPROVAL);
-          LifecycleResource.appendArchivedFilterExists(query, false);
+          this.lifecycleQueryFactory.appendFilterExists(query, true, LifecycleResource.EVENT_APPROVAL);
+          this.lifecycleQueryFactory.appendArchivedFilterExists(query, false);
           break;
         case LifecycleEventType.ARCHIVE_COMPLETION:
-          LifecycleResource.appendArchivedStateQuery(query);
+          this.lifecycleQueryFactory.appendArchivedStateQuery(query);
           break;
         default:
           // Do nothing if it doesnt meet the above events
