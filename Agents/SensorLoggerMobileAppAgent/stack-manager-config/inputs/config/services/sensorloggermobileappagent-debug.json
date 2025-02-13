@@ -3,7 +3,7 @@
         "Name": "sensorloggermobileappagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:4.0.0",
+                "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:5.0.0-activity-data-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "bind",

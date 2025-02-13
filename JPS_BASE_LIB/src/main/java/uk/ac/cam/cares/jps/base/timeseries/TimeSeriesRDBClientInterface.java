@@ -78,7 +78,7 @@ interface TimeSeriesRDBClientInterface<T> {
      * @param dataClasses
      * @param tsIRIs
      * @param srid
-     * @param conn      connection to the RDB
+     * @param conn        connection to the RDB
      * @return
      */
     List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
@@ -378,11 +378,25 @@ interface TimeSeriesRDBClientInterface<T> {
      * Check if all given data IRI is attached to a time series in kb
      * 
      * @param dataIRIs data IRIs provided as list of string
-     * @param conn    connection to the RDB
+     * @param conn     connection to the RDB
      * @return the first dataIRI that exists and is attached to a time series, null
      *         otherwise
      */
     String checkAnyDataHasTimeSeries(List<String> dataIRIs, Connection conn);
+
+    /**
+     * Add columns to an existing time series
+     * 
+     * @param dataIRIs    list of data IRI
+     * @param dataClasses corresponding class of data
+     * @param tsIri       IRI of time series
+     * @param srid        srid for geometry types
+     * @param conn        SQL connection to RDB
+     */
+    void addColumnsToExistingTimeSeries(List<String> dataIRIs, List<Class<?>> dataClasses, String tsIri, Integer srid,
+            Connection conn);
+
+    boolean timeSeriesExists(String tsIRI, Connection conn);
 
     Connection getConnection() throws SQLException;
 }

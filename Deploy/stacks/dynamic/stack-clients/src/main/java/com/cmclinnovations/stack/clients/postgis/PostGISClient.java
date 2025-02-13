@@ -41,20 +41,48 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
     }
 
     public void createDatabase(String database) {
-        try (Connection conn = getDefaultConnection();
-                Statement stmt = conn.createStatement()) {
-            String sql = "CREATE DATABASE \"" + database + "\" WITH TEMPLATE = template_postgis";
-            stmt.executeUpdate(sql);
+        createBareDatabase(database);
+        createDefaultExtensions(database);
+    }
+
+    void createBareDatabase(String database) {
+        try (Connection conn = getDefaultConnection(); Statement stmt = conn.createStatement()) {
+            createBareDatabase(database, stmt);
         } catch (SQLException ex) {
-            if ("42P04".equals(ex.getSQLState())) {
-                // Database already exists error
-            } else {
-                throw new RuntimeException("Failed to create database '" + database
-                        + "' on the server with JDBC URL '" + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
-                        + "'.", ex);
+            throw new RuntimeException(
+                    "Failed to create database '" + database + "' on the server with JDBC URL '"
+                            + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME) + "'.",
+                    ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted sleep.", ex);
+        }
+    }
+
+    void createBareDatabase(String database, Statement stmt) throws InterruptedException, SQLException {
+        String sql = "CREATE DATABASE \"" + database + "\" WITH TEMPLATE = template_postgis";
+
+        SQLException lastEx = new SQLException("Should not throw...");
+        for (int i = 0; i < 10; ++i) {
+            try {
+                stmt.executeUpdate(sql);
+                return;
+            } catch (SQLException ex) {
+                switch (ex.getSQLState()) {
+                    case "42P04":
+                        // Database already exists error
+                        return;
+                    case "55006":
+                        // Object being access by other users error
+                        lastEx = ex;
+                        Thread.sleep(1000);
+                        break;
+                    default:
+                        throw ex;
+                }
             }
         }
-        createDefaultExtensions(database);
+        throw lastEx;
     }
 
     private void createDefaultExtensions(String database) {

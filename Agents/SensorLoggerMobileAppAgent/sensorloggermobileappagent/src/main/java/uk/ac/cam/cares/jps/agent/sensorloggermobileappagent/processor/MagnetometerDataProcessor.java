@@ -5,92 +5,41 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
-import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
-public class MagnetometerDataProcessor extends SensorDataProcessor {
-    private String xIri = null;
-    private String yIri = null;
-    private String zIri = null;
+public class MagnetometerDataProcessor extends SensorDataDownsampledProcessor {
 
-    private final List<Double> xList = new ArrayList<>();
-    private final List<Double> yList = new ArrayList<>();
-    private final List<Double> zList = new ArrayList<>();
-
-    public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode);
-        initIRIs();
+    public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("Magnetometer", config, ontopClient, blazegraphClient, smartphoneIRINode,
+                config.getMagnetometerDSResolution(),
+                config.getMagnetometerDSType());
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("magnetometer_tsList"));
-        xList.addAll((List<Double>) data.get("magnetometerList_x"));
-        yList.addAll((List<Double>) data.get("magnetometerList_y"));
-        zList.addAll((List<Double>) data.get("magnetometerList_z"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getMagnetometerTs());
+        x.addData(data.getMagnetometerXs());
+        y.addData(data.getMagnetometerYs());
+        z.addData(data.getMagnetometerZs());
     }
 
     @Override
-    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
-        List<String> dataIRIList = Arrays.asList(xIri, yIri, zIri);
-        List<List<?>> valueList = Arrays.asList(xList, yList, zList);
-
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
-
-        ts = Downsampling.downsampleTS(ts, config.getMagnetometerDSResolution(), config.getMagnetometerDSType());
-
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
-                .collect(Collectors.toList());
-
-        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
-                ts.getValuesAsDouble(zIri));
-
-        clearData();
-        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
+    void initSensorData() {
+        x = new SensorData<>(Double.class);
+        y = new SensorData<>(Double.class);
+        z = new SensorData<>(Double.class);
+        sensorData = List.of(x, y, z);
     }
 
     @Override
-    public void initIRIs() {
-        if (xIri != null && yIri != null && zIri != null) {
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (xIri == null && yIri == null && zIri == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
-    public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIs().size(), Double.class);
-    }
-
-    @Override
-    public List<String> getDataIRIs() {
-        return List.of(xIri, yIri, zIri);
-    }
-
-    @Override
-    void clearData() {
-        timeList.clear();
-        xList.clear();
-        yList.clear();
-        zList.clear();
-    }
-
-    @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var x = Var.alloc("x");
         Var y = Var.alloc("y");
         Var z = Var.alloc("z");
@@ -116,7 +65,7 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -124,9 +73,9 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        xIri = queryResult.getJSONObject(0).optString("x");
-        yIri = queryResult.getJSONObject(0).optString("y");
-        zIri = queryResult.getJSONObject(0).optString("z");
+        this.x.setDataIri(queryResult.getJSONObject(0).optString("x"));
+        this.y.setDataIri(queryResult.getJSONObject(0).optString("y"));
+        this.z.setDataIri(queryResult.getJSONObject(0).optString("z"));
     }
 
     @Override

@@ -25,7 +25,6 @@ In the commands below placeholders are shown as `<STACK NAME>`, you will need to
 ### Accounts
 
 * A [GitHub account](https://github.com), with an appropriate `read:packages` (or `write:packages` if developing) [access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-* Pulling some images requires access to the Docker registry at CMCL. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
 
 ## Spinning up a Stack
 

@@ -23,7 +23,6 @@ public class FormTemplateFactory {
   private Queue<JsonNode> properties;
   private Map<String, Object> form;
   private Map<String, JsonNode> groups;
-  private Map<String, Queue<Map<String, Object>>> dependentShapes;
 
   private final ObjectMapper objectMapper;
   private static final Logger LOGGER = LogManager.getLogger(FormTemplateFactory.class);
@@ -64,7 +63,6 @@ public class FormTemplateFactory {
   private void reset() {
     this.form = new HashMap<>();
     this.groups = new HashMap<>();
-    this.dependentShapes = new HashMap<>();
     this.properties = new ArrayDeque<>();
   }
 
@@ -87,8 +85,6 @@ public class FormTemplateFactory {
     context.put(ShaclResource.CLASS_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.CLASS_PROPERTY);
     context.put(ShaclResource.DATA_TYPE_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.DATA_TYPE_PROPERTY);
     context.put(ShaclResource.IN_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.IN_PROPERTY);
-    context.put(ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY,
-        ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY);
     this.form.put(ShaclResource.CONTEXT_KEY, context);
   }
 
@@ -104,27 +100,7 @@ public class FormTemplateFactory {
       if (field.has(ShaclResource.TYPE_KEY)) {
         String type = field.path(ShaclResource.TYPE_KEY).get(0).asText();
         if (type.equals(ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_SHAPE)) {
-          // This checker is added as the SPARQL query might provide a response with
-          // multiple duplicate property shapes due to the presence of different nested
-          // value shapes
-          if (field.has(ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY)) {
-            // Check if there is an existing shape with another qualifier name
-            String dependentIdentifier = field
-                .path(ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY).get(0)
-                .path(ShaclResource.VAL_KEY).asText();
-            Map<String, Object> dependentShape = this.parseInputModel(field
-                .path(ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY)
-                .get(0), null);
-            this.dependentShapes.computeIfAbsent(dependentIdentifier, k -> {
-              // When there is no existing shape, add a new property for sorting
-              // as well as a new empty queue
-              this.properties.offer(field);
-              return new ArrayDeque<>();
-            }).offer(dependentShape); // Add a new instance to the associated queue
-          } else {
-            // Otherwise, the simplest use case is to add a new property
             this.properties.offer(field);
-          }
         } else if (type.equals(ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_GROUP)) {
           this.groups.put(field.path(ShaclResource.ID_KEY).asText(), field);
         } else {
@@ -219,13 +195,6 @@ public class FormTemplateFactory {
         Map<String, Object> dataType = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
         inputModel.put(StringResource.getLocalName(shapeField),
             StringResource.getLocalName(dataType.get(ShaclResource.ID_KEY).toString()));
-      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY)) {
-        // For qualified value shape, retrieve the parsed ID and its associated queue
-        // from the mapping. Note that there should be no duplicate shapes
-        String dependentId = input.get(ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY).get(0)
-            .path(ShaclResource.VAL_KEY).asText();
-        Queue<Map<String, Object>> dependentGroup = this.dependentShapes.get(dependentId);
-        inputModel.put(StringResource.getLocalName(shapeField), dependentGroup);
       } else {
         // Every other fields are stored as a nested JSON object of key:value pair
         // within a one item JSON array

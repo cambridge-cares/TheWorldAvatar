@@ -44,9 +44,15 @@ public class JsonLdService {
     String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
     String targetKey = "";
     for (String key : replacements.keySet()) {
-      if (key.contains(replacementId)) {
+      // The loop should only be broken when an exact match is found
+      // This is important for shorter names that may be a subset for larger mappings
+      // eg id and friday
+      if (key.equals(replacementId)) {
         targetKey = key;
         break;
+      }
+      if (key.contains(replacementId)) {
+        targetKey = key;
       }
     }
     // Return the replacement value with the target key for literal

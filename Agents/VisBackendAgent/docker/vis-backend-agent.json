@@ -3,7 +3,7 @@
     "Name": "vis-backend-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cmcl-io/vis-backend-agent:1.2.0",
+        "Image": "ghcr.io/cmcl-io/vis-backend-agent:1.2.2",
         "Env": [
           "NAMESPACE=kb",
           "TASKS_ENABLED=false"
