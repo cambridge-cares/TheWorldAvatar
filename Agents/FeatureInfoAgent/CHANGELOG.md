@@ -1,5 +1,11 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.3.1
+
+### Bug Fixes
+
+* Prevent FIA from throwing an exception when an empty time series is returned.
+
 # 3.3
 
 ### Features
