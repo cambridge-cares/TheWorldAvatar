@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 
 def clean_gps_data(file_path, output_dir=None):
     """
-    This function reads a CSV file, extracts numeric values (removing any units), and returns the cleaned DataFrame.
+    Reads a CSV file, extracts numeric values (removing any units), and returns the cleaned DataFrame.
+    If output_dir is provided, saves the cleaned DataFrame as a temporary file.
     """
     logger.info("Starting cleaning of GPS data from file: %s", file_path)
     try:
@@ -38,7 +39,7 @@ def clean_gps_data(file_path, output_dir=None):
         temp_file = os.path.join(output_dir, f"{name}_cleaned{ext}")
         try:
             cleaned_df.to_csv(temp_file, index=False)
-            logger.info("Cleaned data saved to temporary file: %s", temp_file)
+            logger.info("Cleaned data saved to temporary file.")
         except Exception as e:
             logger.error("Error saving cleaned data to file %s: %s", temp_file, e, exc_info=True)
             raise e

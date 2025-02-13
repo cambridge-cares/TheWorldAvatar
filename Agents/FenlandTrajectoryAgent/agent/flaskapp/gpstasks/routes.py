@@ -28,7 +28,7 @@ def preprocess_files():
     """
     Preprocess CSV files in the specified folder by cleaning them.
     The cleaning function removes units and retains only numeric values.
-    Cleaned files are saved temporarily.
+    The response indicates that data cleaning was successful.
     """
     try:
         folder_path = request.json.get('file_path')
@@ -46,12 +46,12 @@ def preprocess_files():
         results = []
         for csv_file in csv_files:
             logger.info("Cleaning file: %s", csv_file)
-            cleaned_df, temp_file = clean_gps_data(csv_file, output_dir=temp_output_dir)
-            if not temp_file:
-                logger.error("Failed to save cleaned file for: %s", csv_file)
-                results.append({"file": csv_file, "status": "failed"})
-            else:
-                results.append({"file": csv_file, "status": "success", "cleaned_file": temp_file})
+            try:
+                cleaned_df, _ = clean_gps_data(csv_file, output_dir=temp_output_dir)
+                results.append({"file": csv_file, "status": "success", "data_cleaning": True})
+            except Exception as e:
+                logger.error("Failed to clean file: %s", csv_file, exc_info=True)
+                results.append({"file": csv_file, "status": "failed", "error": str(e)})
         return jsonify({"message": "Files preprocessed successfully", "results": results}), 200
     except Exception as e:
         logger.error("Error in preprocess_files: %s", e, exc_info=True)
@@ -60,9 +60,8 @@ def preprocess_files():
 @gps_instantiation_bp.route('/instantiate', methods=['POST'])
 def instantiate_files():
     """
-    Instantiate data by first cleaning CSV files from the specified folder,
-    then processing the cleaned files using TSCLIENT.
-    After processing, the temporary cleaned files are deleted.
+    processing the cleaned files using TSCLIENT.
+    After processing, temporary cleaned files are removed to keep storage usage minimal.
     """
     try:
         folder_path = request.json.get('file_path')
@@ -82,32 +81,33 @@ def instantiate_files():
             os.makedirs(temp_output_dir)
         for csv_file in csv_files:
             logger.info("Cleaning file: %s", csv_file)
-            cleaned_df, temp_file = clean_gps_data(csv_file, output_dir=temp_output_dir)
-            if not temp_file:
-                logger.error("Failed to clean file: %s", csv_file)
-                results.append({"file": csv_file, "status": "failed", "error": "Cleaning failed"})
+            try:
+                _, temp_file = clean_gps_data(csv_file, output_dir=temp_output_dir)
+            except Exception as e:
+                logger.error("Failed to clean file: %s", csv_file, exc_info=True)
+                results.append({"file": csv_file, "status": "failed", "error": "Data cleaning failed: " + str(e)})
                 continue
 
             try:
-                logger.info("Processing cleaned file: %s", temp_file)
+                logger.info("Processing cleaned file.")
                 gps_object = gdi.process_gps_csv_file(temp_file)
                 if not gps_object:
-                    logger.warning("Failed to process cleaned file: %s", temp_file)
+                    logger.warning("Failed to process cleaned file for: %s", csv_file)
                     results.append({"file": csv_file, "status": "failed", "error": "Processing failed"})
                     continue
 
                 kg_client, ts_client, double_class, point_class = gdi.setup_clients()
                 gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class)
-                results.append({"file": csv_file, "status": "success", "cleaned_file": temp_file})
+                results.append({"file": csv_file, "status": "success", "temporary DataFrames": "removed"})
             except Exception as e:
                 logger.error("Error instantiating data for file %s: %s", csv_file, e, exc_info=True)
                 results.append({"file": csv_file, "status": "failed", "error": str(e)})
 
         if os.path.exists(temp_output_dir):
             shutil.rmtree(temp_output_dir)
-            logger.info("Temporary cleaned files deleted: %s", temp_output_dir)
+            logger.info("Temporary DataFrames after cleanning deleted: %s", temp_output_dir)
 
-        return jsonify({"message": "Files processed and instantiated successfully", "results": results}), 200
+        return jsonify({"message": "Files processed and instantiated successfully.", "results": results}), 200
 
     except Exception as e:
         logger.error("Error in instantiate_files: %s", e, exc_info=True)
