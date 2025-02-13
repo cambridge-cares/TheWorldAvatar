@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -40,7 +41,7 @@ public class SparqlBinding {
       JsonNode sparqlField = sparqlCol.getValue();
       String type = StringResource.getNodeString(sparqlField, "type");
       // Defaults to null if it is a URI, else it should be string
-      String dataTypeDefaultOption = type.equals("uri") ? null : "http://www.w3.org/2001/XMLSchema#string";
+      String dataTypeDefaultOption = type.equals("uri") ? null : ShaclResource.XSD_STRING;
       this.bindings.put(sparqlCol.getKey(), new SparqlResponseField(
           type,
           StringResource.getNodeString(sparqlField, "value"),

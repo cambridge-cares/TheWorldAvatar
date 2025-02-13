@@ -244,7 +244,7 @@ public class LifecycleReportService {
     // Set event date time
     occurrence.set("https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/hasEventDate",
         this.jsonLdService.genLiteral(this.dateTimeService.getCurrentDateTime(),
-            "http://www.w3.org/2001/XMLSchema#dateTime"));
+            ShaclResource.XSD_DATE_TIME));
 
     // Set exemplifies relation
     ObjectNode exemplifiesNode = objectMapper.createObjectNode();
@@ -335,7 +335,7 @@ public class LifecycleReportService {
         this.objectMapper.createObjectNode()
             .put(ShaclResource.ID_KEY, scalarQuantityConfig.get(ShaclResource.UNIT_KEY).asText()));
     quantity.set("https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasNumericValue",
-        this.jsonLdService.genLiteral(String.valueOf(value), "http://www.w3.org/2001/XMLSchema#decimal"));
+        this.jsonLdService.genLiteral(String.valueOf(value), ShaclResource.XSD_DECIMAL));
     return quantity;
   }
 
