@@ -16,7 +16,7 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
  * stack client library.
  */
 public class StackInteractor extends ContainerClient {
-    
+
     /**
      * Logger for reporting info/errors.
      */
@@ -42,7 +42,8 @@ public class StackInteractor extends ContainerClient {
     }
 
     /**
-     * Uses the TWA Stack client library to determine all Ontop, PostgreSQL, and Blazegraph
+     * Uses the TWA Stack client library to determine all Ontop, PostgreSQL, and
+     * Blazegraph
      * endpoints within the current stack instance.
      */
     public void discoverEndpoints() {
@@ -61,11 +62,10 @@ public class StackInteractor extends ContainerClient {
 
         OntopEndpointConfig ontopConfig = readEndpointConfig("ontop", OntopEndpointConfig.class);
         ontopEndpoints.add(new StackEndpoint(
-            ontopConfig.getUrl(),
-            ontopConfig.getUsername(),
-            ontopConfig.getPassword(),
-            StackEndpointType.ONTOP
-        ));
+                ontopConfig.getUrl(),
+                null,
+                null,
+                StackEndpointType.ONTOP));
 
         LOGGER.info("Have discovered a local Ontop endpoint: {}", ontopConfig.getUrl());
         return ontopEndpoints;
@@ -81,11 +81,10 @@ public class StackInteractor extends ContainerClient {
 
         RDB_CONFIG = readEndpointConfig("postgis", PostGISEndpointConfig.class);
         postgresEndpoints.add(new StackEndpoint(
-            RDB_CONFIG.getJdbcDriverURL(),
-            RDB_CONFIG.getUsername(),
-            RDB_CONFIG.getPassword(),
-            StackEndpointType.POSTGRES
-        ));
+                RDB_CONFIG.getJdbcDriverURL(),
+                RDB_CONFIG.getUsername(),
+                RDB_CONFIG.getPassword(),
+                StackEndpointType.POSTGRES));
 
         LOGGER.info("Have discovered a local Ontop endpoint: {}", RDB_CONFIG.getJdbcDriverURL());
         return postgresEndpoints;
@@ -103,16 +102,15 @@ public class StackInteractor extends ContainerClient {
         // Rather than asking the stack client library, ask Blazegraph itself to
         // tell use the URL endpoint for each of its namespaces.
         NamespaceGetter getter = new NamespaceGetter(
-            blazeConfig.getServiceUrl(),
-            blazeConfig.getUsername(),
-            blazeConfig.getPassword()
-        );
+                blazeConfig.getServiceUrl(),
+                blazeConfig.getUsername(),
+                blazeConfig.getPassword());
 
         // Run logic to query for namespaces
         try {
             List<StackEndpoint> blazegraphEndpoints = getter.discoverEndpoints();
             return blazegraphEndpoints;
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             LOGGER.error("Could not contact Blazegraph to determine namespace URLs!", exception);
             return new ArrayList<>();
         }
@@ -126,12 +124,11 @@ public class StackInteractor extends ContainerClient {
     public static String generatePostgresURL(String dbName) {
         try {
             return RDB_CONFIG.getJdbcURL(dbName);
-        } catch(RuntimeException exception) {
+        } catch (RuntimeException exception) {
             // Probably not running within a stack
             return "";
         }
     }
-
 
 }
 // End of class.
