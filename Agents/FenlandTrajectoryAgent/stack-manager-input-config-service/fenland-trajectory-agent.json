@@ -11,6 +11,13 @@
                     "GEOSERVER_WORKSPACE=gps_trajectory",
                     "ONTOP_FILE=/app/resources/ontop.obda"
                 ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "${LOCAL_GPS_FOLDER}",
+                        "Target": "/app/agent/raw_data/gps_target_folder"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
