@@ -1339,17 +1339,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionTransformedIntoFeedstock -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionTransformedIntoFeedstock">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularityProperty"/>
-        <rdfs:comment>The fraction of the collected product transformed into feedstock.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
-        <rdfs:label>TF</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent">
