@@ -384,7 +384,7 @@ public class LifecycleController {
    * template
    */
   @GetMapping("/contracts/schedule/{id}")
-  public ResponseEntity<Map<String, SparqlResponseField>> getSchedule(@PathVariable String id) {
+  public ResponseEntity<Map<String, Object>> getSchedule(@PathVariable String id) {
     LOGGER.info("Received request to retrieve the schedule for the contract: {}...", id);
     return this.lifecycleService.getSchedule(id);
   }

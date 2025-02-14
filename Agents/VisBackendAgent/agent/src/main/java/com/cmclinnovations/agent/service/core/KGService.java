@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -32,6 +33,7 @@ import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -410,15 +412,38 @@ public class KGService {
    * @param field   Field name
    */
   public SparqlBinding getSingleInstance(Queue<SparqlBinding> results) {
+    if (results.size() > 1) {
+      // When there is more than one results, verify if they can be grouped
+      // as results might contain an array of different values for the same instance
+      String firstId = results.peek().getFieldValue(LifecycleResource.IRI_KEY);
+      boolean isGroup = results.stream().allMatch(binding -> {
+        String currentId = binding.getFieldValue(LifecycleResource.IRI_KEY);
+        return currentId != null && currentId.equals(firstId);
+      });
+      if (!isGroup) {
+        LOGGER.error("Detected multiple instances: Data model is invalid!");
+        throw new IllegalStateException("Detected multiple instances: Data model is invalid!");
+      }
+      // Removes the first instance from results as the core instance
+      SparqlBinding firstInstance = results.poll();
+      Set<String> fields = firstInstance.getFields();
+      // Iterate over each result binding and their field to generate arrays if required
+      results.stream().forEach(binding -> fields.stream().forEach(field -> {
+        String value = binding.getFieldValue(field);
+        firstInstance.addFieldValueIfNew(field, value);
+      }));
+      return firstInstance;
+    }
     if (results.size() == 1) {
       return results.poll();
-    } else if (results.isEmpty()) {
+    }
+    if (results.isEmpty()) {
       LOGGER.error("No valid instance found!");
       throw new NullPointerException("No valid instance found!");
-    } else {
-      LOGGER.error("Detected multiple instances: Data model is invalid!");
-      throw new IllegalStateException("Detected multiple instances: Data model is invalid!");
     }
+    LOGGER.error("Data model is invalid!");
+    throw new IllegalStateException("Data model is invalid!");
+
   }
 
   /**

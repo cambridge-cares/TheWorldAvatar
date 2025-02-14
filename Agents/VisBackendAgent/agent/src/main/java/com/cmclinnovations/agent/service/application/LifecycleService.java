@@ -1,11 +1,9 @@
 package com.cmclinnovations.agent.service.application;
 
 import java.util.ArrayDeque;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
-import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
@@ -131,7 +128,7 @@ public class LifecycleService {
    * 
    * @param contract The target contract id.
    */
-  public ResponseEntity<Map<String, SparqlResponseField>> getSchedule(String contract) {
+  public ResponseEntity<Map<String, Object>> getSchedule(String contract) {
     LOGGER.debug("Retrieving the schedule details of the contract...");
     String query = this.lifecycleQueryFactory.getServiceScheduleQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
@@ -170,9 +167,9 @@ public class LifecycleService {
    * 
    * @param contract The contract identifier.
    */
-  public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String contract) {
+  public ResponseEntity<List<Map<String, Object>>> getOccurrences(String contract) {
     String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(contract, null);
-    List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
+    List<Map<String, Object>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
         LifecycleResource.DATE_KEY);
     LOGGER.info("Successfuly retrieved all associated services!");
     return new ResponseEntity<>(occurrences, HttpStatus.OK);
@@ -184,11 +181,11 @@ public class LifecycleService {
    * 
    * @param timestamp Timestamp in UNIX format.
    */
-  public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(long timestamp) {
+  public ResponseEntity<List<Map<String, Object>>> getOccurrences(long timestamp) {
     // Get date from timestamp
     String targetDate = this.dateTimeService.getDateFromTimestamp(timestamp);
     String activeServiceQuery = this.lifecycleQueryFactory.getServiceTasksQuery(null, targetDate);
-    List<Map<String, SparqlResponseField>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
+    List<Map<String, Object>> occurrences = this.executeOccurrenceQuery(activeServiceQuery,
         LifecycleResource.CONTRACT_KEY);
     LOGGER.info("Successfuly retrieved services in progress!");
     return new ResponseEntity<>(occurrences, HttpStatus.OK);
@@ -200,7 +197,7 @@ public class LifecycleService {
    * @param timestamp Timestamp in UNIX format.
    * @param groupVar  The variable name that should be grouped by.
    */
-  private List<Map<String, SparqlResponseField>> executeOccurrenceQuery(String query, String groupVar) {
+  private List<Map<String, Object>> executeOccurrenceQuery(String query, String groupVar) {
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     Map<String, SparqlBinding> resultMapping = results.stream()
         .collect(Collectors.toMap(
@@ -213,13 +210,13 @@ public class LifecycleService {
                     : replacement));
     return resultMapping.values().stream()
         .map(binding -> {
-          Map<String, SparqlResponseField> fields = binding.get();
+          Map<String, Object> fields = binding.get();
           String occurrenceId = binding.getFieldValue(LifecycleResource.IRI_KEY);
           // Extract and add dispatch details if available
           ResponseEntity<?> response = this.getOccurrenceDetails(LifecycleEventType.SERVICE_ORDER_DISPATCHED,
               occurrenceId, true);
           if (response.getStatusCode() == HttpStatus.OK) {
-            Map<String, SparqlResponseField> dispatch = (Map<String, SparqlResponseField>) response.getBody();
+            Map<String, Object> dispatch = (Map<String, Object>) response.getBody();
             dispatch.remove("id"); // remove unneeded id key
             fields.putAll(dispatch);
           }
