@@ -108,7 +108,7 @@ public class LifecycleReportService {
         calculationInstance.get(LifecycleResource.HAS_QTY_VAL_RELATIONS));
     // Retrieve report instance and attach record to report
     String query = this.queryFactory.getReportQuery(params.get(LifecycleResource.STAGE_KEY).toString());
-    String report = this.getService.getInstance(query);
+    String report = this.getService.getInstance(query).getFieldValue(LifecycleResource.IRI_KEY);
     ObjectNode reportsOnNode = this.objectMapper.createObjectNode()
         .set(LifecycleResource.REPORTS_ON_RELATIONS,
             this.objectMapper.createObjectNode().put(ShaclResource.ID_KEY, report));
@@ -142,24 +142,21 @@ public class LifecycleReportService {
   }
 
   /**
-   * Verifies if the contract has a pricing model set.
+   * Retrieves the pricing model set for the target contract if it exist.
    * 
    * @param contract The ID of the target contract.
    */
-  public boolean getHasPricingStatus(String contract) {
+  public SparqlBinding getPricingModel(String contract) {
     LOGGER.debug("Checking for an existing pricing model...");
-    String query = this.queryFactory.getPricingStatusQuery(contract);
-    // If there is a pricing model set, no exception is thrown
+    String query = this.queryFactory.getPricingModelQuery(contract);
     try {
-      this.getService.getInstance(query);
-      return true;
-    } catch (IllegalStateException e) {
-      // There are multiple results returned for the same contract
-      // ie at least one pricing model is available
-      return true;
-    } catch (NullPointerException e) {
-      // No results indicate that no pricing model has been set
-      return false;
+      // If there is a pricing model set, no exception is thrown
+      return this.getService.getInstance(query);
+    } catch (IllegalStateException | NullPointerException e) {
+      // When unset, an error is returned but it should be ignored and return an empty
+      // object
+      LOGGER.error("Invalid pricing model state! Read error message for more details:", e);
+      return new SparqlBinding(this.objectMapper.createObjectNode());
     }
   }
 

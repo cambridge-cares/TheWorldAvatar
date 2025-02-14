@@ -426,12 +426,8 @@ public class KGService {
       }
       // Removes the first instance from results as the core instance
       SparqlBinding firstInstance = results.poll();
-      Set<String> fields = firstInstance.getFields();
-      // Iterate over each result binding and their field to generate arrays if required
-      results.stream().forEach(binding -> fields.stream().forEach(field -> {
-        String value = binding.getFieldValue(field);
-        firstInstance.addFieldValueIfNew(field, value);
-      }));
+      // Iterate over each result binding to append arrays if required
+      results.stream().forEach(binding -> firstInstance.addFieldArray(binding));
       return firstInstance;
     }
     if (results.size() == 1) {

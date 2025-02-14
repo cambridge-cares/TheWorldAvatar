@@ -176,16 +176,24 @@ public class LifecycleQueryFactory {
   }
 
   /**
-   * Retrieves the SPARQL query to get the current pricing status of the contract.
+   * Retrieves the SPARQL query to get the current pricing model of the contract.
    * 
    * @param contract the target contract id.
    */
-  public String getPricingStatusQuery(String contract) {
+  public String getPricingModelQuery(String contract) {
     return StringResource.QUERY_TEMPLATE_PREFIX
-        + "SELECT DISTINCT ?iri WHERE {"
-        + "?iri fibo-fnd-rel-rel:confers ?payment."
-        + "?payment a " + StringResource.parseIriForQuery(LifecycleResource.PAYMENT_OBLIGATION)
-        + ShaclResource.FULL_STOP
+        + "SELECT ?iri ?base_fee ?rate ?lowerBound ?upperBound WHERE{"
+        + "?iri fibo-fnd-rel-rel:confers/fibo-fnd-rel-rel:mandates ?pricing."
+        + "?pricing rdf:type <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/PricingModel>;"
+        + "cmns-qtu:hasArgument ?base_fee_arg."
+        + "?base_fee_arg a fibo-fnd-acc-cur:MonetaryPrice;"
+        + "fibo-fnd-acc-cur:hasAmount ?base_fee."
+        + "OPTIONAL{?pricing cmns-qtu:hasArgument ?var_fee."
+        + "?var_fee a ontoservice:VariableFee;"
+        + "fibo-fnd-acc-cur:hasAmount ?rate;"
+        + "cmns-qtu:hasLowerBound ?lowerBound."
+        + "OPTIONAL{?var_fee cmns-qtu:hasUpperBound ?upperBound.}"
+        + "}"
         + "FILTER STRENDS(STR(?iri),\"" + contract + "\")"
         + "}";
   }

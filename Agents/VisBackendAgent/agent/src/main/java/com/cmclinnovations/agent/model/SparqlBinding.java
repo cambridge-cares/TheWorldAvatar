@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.Set;
 
 import com.cmclinnovations.agent.utils.ShaclResource;
@@ -104,20 +106,72 @@ public class SparqlBinding {
   }
 
   /**
-   * Add field value only if there are distinct values.
+   * Add fields as an array only if there are distinct values.
    * 
-   * @param field The field of interest.
-   * @param value The value for checking.
+   * @param field      The field of interest.
+   * @param secBinding The secondary binding for checking.
    */
-  public void addFieldValueIfNew(String field, String value) {
-    SparqlResponseField currentValue = this.bindings.get(field);
-    // Condition that there are distinct value
-    if (!currentValue.value().equals(value)) {
-      List<SparqlResponseField> fields = this.bindingList.putIfAbsent(field, List.of(currentValue));
-      SparqlResponseField newFieldVal = new SparqlResponseField(currentValue.type(), value, currentValue.dataType(),
-          currentValue.lang());
-      fields.add(newFieldVal);
+  public void addFieldArray(SparqlBinding secBinding) {
+    // Check for the complete list of fields between the two to iterate over
+    Set<String> existingFields = this.getFields();
+    Set<String> fieldsForIteration = secBinding.getFields();
+    if (!existingFields.equals(fieldsForIteration) && existingFields.size() > fieldsForIteration.size()) {
+      fieldsForIteration = existingFields;
     }
+
+    // Longest existing field array before iteration
+    int longestArraySize = this.getLongestFieldArray();
+    fieldsForIteration.stream().forEach((field) -> {
+      // Create placeholder fields
+      SparqlResponseField existingField;
+      SparqlResponseField newField;
+      // When both bindings contain the field
+      if (this.bindings.containsKey(field) && secBinding.containsField(field)) {
+        // If the values are duplicates, skip the function
+        if (this.bindings.get(field).value().equals(secBinding.getFieldValue(field))) {
+          return;
+        }
+        // If the values are distinct,the fields should be added as they are
+        existingField = this.bindings.get(field);
+        newField = secBinding.getFieldResponse(field);
+      } else if (this.bindings.containsKey(field)) {
+        // Execute only if the primary/first binding contains the field
+        existingField = this.bindings.get(field);
+        // New field is empty value
+        newField = new SparqlResponseField(existingField.type(), "", existingField.dataType(), existingField.lang());
+      } else {
+        // Execute only if the secondary binding contains the field
+        newField = secBinding.getFieldResponse(field);
+        // Existing value should be empty
+        existingField = new SparqlResponseField(newField.type(), "", newField.dataType(), newField.lang());
+      }
+
+      List<SparqlResponseField> fields = this.bindingList.computeIfAbsent(field, k -> {
+        List<SparqlResponseField> initFields = new ArrayList<>();
+        // Do not move this outside the compute function to prevent duplicates
+        initFields.add(existingField);
+        // If null values are appended for the existing field, check if there should be
+        // more empty fields appended to the array
+        if (existingField.value().isEmpty()) {
+          // Prepend empty fields when there are least two array items in the max
+          for (int i = 1; i < longestArraySize; i++) {
+            initFields.add(existingField);
+          }
+        }
+        return initFields;
+      });
+      fields.add(newField);
+    });
+
+  }
+
+  /**
+   * Retrieve the SPARQL field response.
+   * 
+   * @param field Field of interest
+   */
+  public SparqlResponseField getFieldResponse(String field) {
+    return this.bindings.get(field);
   }
 
   /**
@@ -140,5 +194,19 @@ public class SparqlBinding {
    */
   public boolean containsField(String field) {
     return this.bindings.containsKey(field);
+  }
+
+  /**
+   * Retrieve the longest field array size.
+   */
+  private int getLongestFieldArray() {
+    if (this.bindingList.isEmpty()) {
+      return 0;
+    }
+    OptionalInt maxSize = this.bindingList.values().stream()
+        .filter(Objects::nonNull) // Filter out null lists
+        .mapToInt(List::size) // Map each list to its size
+        .max();
+    return maxSize.orElse(0);
   }
 }

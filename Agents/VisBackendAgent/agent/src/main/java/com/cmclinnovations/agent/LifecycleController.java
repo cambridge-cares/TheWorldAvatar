@@ -505,14 +505,13 @@ public class LifecycleController {
   }
 
   /**
-   * Retrieves a status to indicate if the pricing model has been instantiated for
-   * the specified contract.
+   * Retrieves the pricing model for the specified contract if available.
    */
   @GetMapping("/contracts/pricing/{id}")
-  public ResponseEntity<Boolean> getPricingStatus(@PathVariable String id) {
-    LOGGER.info("Received request to get pricing status for the contract {}...", id);
+  public ResponseEntity<Map<String, Object>> getPricingModel(@PathVariable String id) {
+    LOGGER.info("Received request to get pricing model for the contract {}...", id);
     return new ResponseEntity<>(
-        this.lifecycleReportService.getHasPricingStatus(id),
+        this.lifecycleReportService.getPricingModel(id).get(),
         HttpStatus.OK);
   }
 

@@ -70,7 +70,7 @@ public class LifecycleService {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding stage parameters for {}...", contractId);
     String query = this.lifecycleQueryFactory.getStageQuery(contractId, eventType);
-    String stage = this.getService.getInstance(query);
+    String stage = this.getService.getInstance(query).getFieldValue(LifecycleResource.IRI_KEY);
     params.put(LifecycleResource.STAGE_KEY, stage);
   }
 
@@ -96,7 +96,7 @@ public class LifecycleService {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     LOGGER.debug("Adding occurrence parameters for {}...", contractId);
     String query = this.lifecycleQueryFactory.getStageQuery(contractId, eventType);
-    String stage = this.getService.getInstance(query);
+    String stage = this.getService.getInstance(query).getFieldValue(LifecycleResource.IRI_KEY);
     params.putIfAbsent("id",
         StringResource.getPrefix(stage) + "/" + LifecycleResource.getEventIdentifier(eventType) + "/"
             + UUID.randomUUID());

@@ -148,10 +148,10 @@ public class GetService {
    * 
    * @param query Query for execution.
    */
-  public String getInstance(String query) {
+  public SparqlBinding getInstance(String query) {
     LOGGER.debug("Retrieving an instance...");
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
+    return this.kgService.getSingleInstance(results);
   }
 
   /**
