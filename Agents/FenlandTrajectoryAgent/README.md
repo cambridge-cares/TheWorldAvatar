@@ -104,7 +104,7 @@ Additionally, services above can be triggered using CURL from a bash terminal. A
 ## 4.2 Count-Based Exposure Calculation
 
 The agent is configured to calculate exposure by listening to trajectory IRIs and environmental feature IRIs along with a specified exposure radius. 
-The calculation can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. 
+The calculation can be triggered via an HTTP request after the agent has started, and its principles and operational procedures are outlined as follows. 
 
 ### Functionality Description
 
