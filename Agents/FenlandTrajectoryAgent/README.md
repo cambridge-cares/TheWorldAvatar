@@ -82,17 +82,17 @@ To spin up the stack, create `postgis_password` and `geoserver_password` files i
 
 ## 4.1 Data Ingestion
 
-The agent will automatically register a task upon startup to assimilate the data from the target GPS folder into the Knowledge Graph (KG). This background task can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. Please replace {Port} with the numerical value of the port on which your stack is running. 
+The agent automatically registers a task at startup to ingest data from the target GPS folder into the Knowledge Graph. This background task is designed to be triggered via HTTP requests after the agent has started. 
 
 ### Functionality Description
 
-The operation of this agent is streamlined into two key steps: **Preprocess** and **Instantiate**. Here is a brief description of each:
+The operation of data ingestion is streamlined into two key steps: **Preprocess** and **Instantiate**. Here is a brief description of each:
 
 - **Preprocess**:  This initial step involves loading and examining the GPS trajectory files in batch to ensure efficient processing. Each file is checked for essential columns (UTC Date, UTC Time, Speed, Heading, Height, Distance, Latitude, and Longitude). Any missing data or misformatted columns, particularly those related to time, are corrected to conform with the [ISO 8601] standard. During this phase, data is extracted into a  temporary dataframe, allowing for necessary restructuring and corrections without altering the original files.
 
 - **Instantiate**: This further step involves creating geometry classes for the trajectories, generating IRIs, and structuring the data into lists categorized as time-series and non-time-series. These lists serve as inputs for the [TimeSeriesClient] and the [KGClient], respectively. This organized data is then instantiated in both the knowledge graph and the relational database to facilitate queries and analytics.
 
-Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organized, making it ready for use in the knowledge graph and the relational database.
+Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organised, making it ready for use in the knowledge graph and the relational database. Note that in the HTTP request templates, {Port} in the URL prefix http://localhost:{Port}/fenland-trajectory-agent/ should be replaced with the numerical value of the port on which your stack is running.
 
 In addition to the core functionality, this agent offers a route task called layer_generator that creates GeoServer layers from PostGIS tables for visualisation. Given a table name (formed by UUID) and latitude/longitude column names, the agent deploys the [SQL commands for virtual-table generation], creates vector objects, and communicates with the GeoServer REST API to publish the layer. Please note that this functionality is specialized and typically requires manual examination of SQL commands and layer metadata (such as EPSG) to ensure compatibility with specific requirements. This functionality will be further updated and refined after the AI for Public Health (Fenland) project's visualisation is switched to [TWA-VF] 5.4.0.
 
