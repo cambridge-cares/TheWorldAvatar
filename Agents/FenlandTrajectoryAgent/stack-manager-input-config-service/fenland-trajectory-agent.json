@@ -14,7 +14,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/home/caresuser/TheWorldAvatar/Agents/FenlandTrajectoryAgent/Input",
+                        "Source": "/Your_Absolute_Path_To//TheWorldAvatar/Agents/FenlandTrajectoryAgent/Input",
                         "Target": "/app/agent/raw_data/gps_target_folder"
                     }
                 ],
