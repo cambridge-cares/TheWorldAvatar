@@ -1,0 +1,23 @@
+{
+    "ignorePatterns": [
+        {
+            "pattern": "http://localhost(:\\d+)?(/[^ ]*)?"
+        },
+        {
+            "pattern": "http://HOST:PORT?(/[^ ]*)?"
+        },
+        {
+            "pattern": "https://www.cmegroup.com?(/[^ ]*)?"
+        },
+        {
+            "pattern": "https?://(www\\.)?theworldavatar.com(/[^ ]*)?"
+        },
+        {
+            "pattern": "https://abc.xyz?(/[^ ]*)?"
+        },
+        {
+            "pattern": "https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/?"
+        }
+      ],
+    "aliveStatusCodes": [200, 403, 0]
+}

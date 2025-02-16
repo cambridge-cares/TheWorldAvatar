@@ -13,7 +13,7 @@ A curated list of recommended external, non TWA-VF tutorials is shown below.
 <br/>
 
 **Mapbox:**
-* [Add custom markers to a map with Mapbox GL JS](https://docs.mapbox.com/help/tutorials/custom-markers-gl-js-video/)
+* [Add custom markers to a map with Mapbox GL JS](https://docs.mapbox.com/help/tutorials/custom-markers-gl-js/)
 * [Get started with Mapbox GL JS expressions](https://docs.mapbox.com/help/tutorials/mapbox-gl-js-expressions/)
 * [Create interactive hover effects with Mapbox GL JS](https://docs.mapbox.com/help/tutorials/create-interactive-hover-effects-with-mapbox-gl-js/)
 

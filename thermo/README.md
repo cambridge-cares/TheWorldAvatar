@@ -32,19 +32,18 @@ Repository Name: thermochemistry
 * OpenBabel:
   This is a headache.
   The project JOpenBabel (v2.3.1 or v2.4.1) does not seem to exist in any maven repository any more.
-  The maven repository at the Chemistry Department (https://maven.ch.cam.ac.uk/m2repo) also does not exist any more.
+  The maven repository at the Chemistry Department also does not exist any more.
   Therefore, both have been commented out in all pom.xml files.
   For the CoMoThermodynamics project, this seems to be without consequence, as there does not appear to be a genuine dependency.
   The CoMoOpenBabel project still builds, but in order to run the tests, one needs the babel command-line executable as well as the DLL/shared object library (but no jar apparently).
   NB The name of the DLL/shared object library is hard-coded in CoMoOpenBabel/src/main/.../openbabel/util/OpenBabelUtil.java, currently as openbabel_java (works for Windows only).
   The CoMoTools project is the only project with a genuine OpenBabel dependency, through the source file CoMoTools/src/main/.../tools/structure/util/OpenBabelCompoundConverter.java, but it does not appear to be used by anything in the repository so it has been excluded from the build (by renaming the file).
   References:
-  http://openbabel.org/wiki/Main_Page
+  https://openbabel.org/docs/index.html
   https://sourceforge.net/projects/openbabel/ (NB This does install a .jar file.)
   sudo yum install {openbabel,openbabel-devel} (NB This installs babel command-line executable and shared library libopenbabel.so, but no jars.)
-  Note perhaps also: http://dev.cyfronet.pl/mvnrepo/openbabel/openbabel/
-  http://openbabel.org/docs/current/UseTheLibrary/Java.html#macosx-and-linux
-  https://openbabel.org/docs/dev/Installation/install.html
+  Note perhaps also: https://openbabel.org/docs/UseTheLibrary/Java.html#macosx-and-linux
+  https://openbabel.org/docs/Installation/install.html
 
 * Jmol/JSmol:
   https://sourceforge.net/projects/jmol/files/ (https://sourceforge.net/projects/jsmol/ is deprecated)

@@ -27,8 +27,8 @@ The namespace for this ontology is:
 ## 2. Legend
 Prefix | Namespace
 --- | ---
-[ontoplot](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplot) | `https://www.theworldavatar.com/kg/ontoplot/`
-[opr](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplanningregulation) | `https://www.theworldavatar.com/kg/ontoplanningregulation/`
+[ontoplot](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontoplot) | `https://www.theworldavatar.com/kg/ontoplot/`
+[opr](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontoplanningregulation) | `https://www.theworldavatar.com/kg/ontoplanningregulation/`
 
 ## 3. Modelling Decisions
 >LandUseType

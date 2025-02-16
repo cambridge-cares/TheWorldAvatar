@@ -7,10 +7,10 @@ As part of TheWorldAvatar(TWA), this ontology has a modular design that can be e
 
 | Ontology                                                                                                                  | Incorporated data                                            |
 |---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| [OntoBuildingEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) | Building properties, uses, values, and location              |
+| [OntoBuildingEnvironment](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontobuiltenv) | Building properties, uses, values, and location              |
 | [OntoPlot](https://www.theworldavatar.com/kg/ontoplot/)                      | Attributes of land plots |
 | [Routable tiles ontology](https://w3id.org/openstreetmap/terms#)                | OpenStreetMap road tags and their semantics                            |
 
 ## 1.2 Related Agents
 This ontology is used in the following agent:
-1) [SeaLevelImpactAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1808-dev-sealevelimpactagent) 
+1) [SeaLevelImpactAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/SeaLevelImpactAgent) 

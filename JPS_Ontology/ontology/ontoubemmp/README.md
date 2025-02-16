@@ -7,10 +7,10 @@ As part of TheWorldAvatar(TWA), this ontology has a modular design that can be e
 
 | Ontology                                                                                                                  | Incorporated data                                            |
 |---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| [OntoBuildingEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) | Building properties, uses, values, and location              |
-| [OntoBIM](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim)                      | Topological relationships between a building and its elements |
-| [OntoBuildingStructure](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuildingstructure)                | Wall and roof facades to receive solar irradiation                          |
-| [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice)                | Device properties for solar devices                          |
+| [OntoBuildingEnvironment](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontobuiltenv) | Building properties, uses, values, and location              |
+| [OntoBIM](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontobim)                      | Topological relationships between a building and its elements |
+| [OntoBuildingStructure](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontobuildingstructure)                | Wall and roof facades to receive solar irradiation                          |
+| [OntoDevice](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontodevice)                | Device properties for solar devices                          |
 
 ### 1.2 Related Agents
 This ontology is used in the following agent:

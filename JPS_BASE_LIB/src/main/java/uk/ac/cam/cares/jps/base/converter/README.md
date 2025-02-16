@@ -167,7 +167,7 @@ Suppose you followed the instructions for filling out the template in the TBox M
 |OntoKin,TBox,http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
 |OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo, , , , , , |
 |OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms,http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
-|OntoKin,TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl,http://www.w3.org/2002/07/owl#imports, , , , , , |
+|OntoKin,TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl, http://www.w3.org/2002/07/owl#imports, , , , , , |
 |ReactionMechanism,Class, , , , , ,A reaction mechanism refers to a set of elementary reactions., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism|
 |Phase,Class, , , , , ,A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase|
 |GasPhase,Class,Phase,IS-A, , , ,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Gas Phase|

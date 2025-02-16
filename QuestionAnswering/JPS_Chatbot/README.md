@@ -5,7 +5,7 @@ Before making any changes to it, please consult the application's developer (Xia
 
 ### In a Docker stack
 
-The JPS Chatbot (and it's associated LDF server) have been added to the 'agent' Docker stack (see the [deployment readme](../Deploy/README.md) for more info).
+The JPS Chatbot (and it's associated LDF server) have been added to the 'agent' Docker stack (see the [deployment readme](../../Deploy/README.md) for more info).
 
 ### In isolation (for development and local testing)
 The instructions below are intended for isolated development and testing only.

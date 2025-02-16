@@ -18,10 +18,10 @@ OntoApplication is developed to represent assets and its related information (e.
 | [fibo-organizations](https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/` |
 | [fibo-formalorganizations](https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/` |
 | [fibo-people](https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/` |
-| [p2p-doc](https://purl.org/p2p-o/document)                      | `https://purl.org/p2p-o/document#` |
+<!-- markdown-link-check-disable -->| [p2p-doc](https://purl.org/p2p-o/document)                      | `https://purl.org/p2p-o/document#` |
 | [p2p-docline](https://purl.org/p2p-o/documentline)                      | `https://purl.org/p2p-o/documentline#` |
 | [p2p-invoice](https://purl.org/p2p-o/invoice)                      | `https://purl.org/p2p-o/invoice#` |
-| [p2p-item](https://purl.org/p2p-o/item)                      | `https://purl.org/p2p-o/item#` |
+| [p2p-item](https://purl.org/p2p-o/item)                      | `https://purl.org/p2p-o/item#` |<!-- markdown-link-check-enable -->
 | [ontobim](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim)                      | `https://www.theworldavatar.com/kg/ontobim/` |
 | [ontocape_technical_system](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocape/upper_level/technical_system.owl) | `http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#`     |
 

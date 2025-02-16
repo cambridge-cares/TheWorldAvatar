@@ -12,7 +12,7 @@ Once displayed, a number of standard interaction handlers are also added. These 
 
 ## Mapping providers
 
-At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [Cesium](https://cesium.com/platform/Cesium/). The core differences between providers is as follows:
+At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [Cesium](https://cesium.com/platform/). The core differences between providers is as follows:
 
 * Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). Unlike Cesium (see below), Mapbox can display 2D vector data (including use of SVGs for icons, under certain conditions) if the data is hosted using the [Mapbox Vector Tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) format. It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
 
@@ -164,13 +164,13 @@ It's worth noting that these credential files should **not** be committed; to th
 
 Display of meta and timeseries data is also a feature offered by the TWA-VF (regardless of the chosen mapping provider). However, the processing of getting this system setup can be quite lengthy.
 
-To query for dynamic data, each selectable feature of your data also needs to contain `iri` and `endpoint` properties. Once selected, these are sent to a remote agent ([FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent)) running in a stack. Data is queried from the knowledge graph and/or relational database, then returned for display in the visualisation's side panel.
+To query for dynamic data, each selectable feature of your data also needs to contain `iri` and `endpoint` properties. Once selected, these are sent to a remote agent ([FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent)) running in a stack. Data is queried from the knowledge graph and/or relational database, then returned for display in the visualisation's side panel.
 
 A breakdown of the requirements to use this system are below, for more information check out the FeatureInfoAgent's documentation.
 
 * A stack instance needs to be running (at some location, can be remote), containing:
   * A Blazegraph instance holding metadata on the visualised features.
-  * An instance of the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent) with a mapping of the possible feature classes to pre-written SPARQL queries. These queries must return data in a specific tabular format.
+  * An instance of the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) with a mapping of the possible feature classes to pre-written SPARQL queries. These queries must return data in a specific tabular format.
   * If applicable, a PostgreSQL instance containing time series data.
 * Geospatial data needs to contain `iri`, and `endpoint` fields for each feature (regardless of how the data is served, i.e. locally or via WMS).
   * The `iri` field needs to contain the full IRI of the feature as represented in the knowledge graph.

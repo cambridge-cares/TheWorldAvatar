@@ -21,7 +21,7 @@ The SeaLevelImpactAgent is an agent that
 ## 2. Prerequisites
 This agent is developed as part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise). 
 
-Data in the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise) needs to be uploaded by stack-data-uploader before running this agent.
+Data in the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore-sea-level-rise) needs to be uploaded by stack-data-uploader before running this agent.
 
 ### 2.1. Stack Set Up
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
