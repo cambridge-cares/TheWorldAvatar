@@ -22,6 +22,7 @@ GEOSERVER_WORKSPACE   # Name of the Workspace in Geoserver
 ONTOP_FILE            # Path to ontop mapping file (default: `/app/resources/ontop.obda`)
 
 ```
+Additionally, please define the `LOCAL_GPS_FOLDER` variable in the environment file ([target_gps_folder.env]) used by Docker Compose. It is recommended to set `LOCAL_GPS_FOLDER` to the [Input] folder located in the same directory as the agent. You may choose a different location if desired, but it is crucial to use an absolute path so that Docker can correctly bind-mount the folder into the agent. This ensures that any new or updated data in the local folder is automatically available to the agent.
 
 ## 2.2 Access to GitHub's Container Registry
 
@@ -44,7 +45,7 @@ However, occasionally commands executed within the Docker environment may not su
 
 ## 3.1 Placing the GPS Data
 
-The GPS trajectory data is structured and stored in tables (in .csv format). Each table consists of a series of record points, with each point containing eight essential pieces of information for instantiation, including UTC Date, UTC Time, Longitude (degrees), Latitude (degrees), Speed (km/h), Heading (degrees), Height (meters), and Distance (meters). Please place GPS files in the [gps_target_folder]. Below is an example of the columns and values in GPS trajectory tables for instantiation:
+The GPS trajectory data is structured and stored in tables (in .csv format). Each table consists of a series of record points, with each point containing eight essential pieces of information for instantiation, including UTC Date, UTC Time, Longitude (degrees), Latitude (degrees), Speed (km/h), Heading (degrees), Height (meters), and Distance (meters). Below is an example of the columns and values in GPS trajectory tables for instantiation:
 
 | UTC DATE   | UTC TIME | LATITUDE  | LONGITUDE | SPEED  | HEADING | HEIGHT | DISTANCE |
 |------------|----------|-----------|-----------|--------|---------|--------|----------|
@@ -66,7 +67,7 @@ In case of time out issues in automatically building the StackClients resource i
 ## 3.3 Deploying the Agent
 ### 1) Configuration and Adding Services
 
-Please place [FenlandTrajectoryAgent.json] in [stack manager configuration service directory]. Afterward, ensure that the 'fenland-trajectory-agent service' is included in your stack configuration files normally placed in [stack manager configuration directory]
+Please place [FenlandTrajectoryAgent.json] in the [stack manager configuration service directory]. Afterward, ensure that the `fenland-trajectory-agent service` is included in your stack configuration files normally placed in [stack manager configuration directory]. Also, when placing your [FenlandTrajectoryAgent.json] in the stack manager configuration service directory, please ensure that the `Source` field in the `Mounts` section is updated to reflect the same absolute path specified for the `LOCAL_GPS_FOLDER` variable. As a result, when adding or removing data, you only need to update the files within your local directory. There is no need to rebuild the image or restart the entire stack.
 
 ### 2) Starting with the Stack Manager
 To spin up the stack, both a `postgis_password` and `geoserver_password` file need to be created in the `Deploy/stacks/dynamic/stack-manager/inputs/secrets/` directory (see detailed guidance in the [Stack Manager README]).
@@ -187,3 +188,5 @@ Jiying Chen (jc2341@cam.ac.uk), Jan 2025
 [exposure_count]: ./example-requests/SendHTTP/exposure_count.http
 [exposure_count_single_stack]: ./example-requests/SendHTTP/exposure_count_single_stack.http
 [OBDA mapping]: ./resources/ontop.obda
+[Input]: ./Input/
+[target_gps_folder.env]:./target_gps_folder.env
