@@ -4,94 +4,44 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
-import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
-public class GravityDataProcessor extends SensorDataProcessor {
+public class GravityDataProcessor extends SensorDataDownsampledProcessor {
 
-    private String xIri = null;
-    private String yIri = null;
-    private String zIri = null;
-
-    private final List<Double> xList = new ArrayList<>();
-    private final List<Double> yList = new ArrayList<>();
-    private final List<Double> zList = new ArrayList<>();
-
-    public GravityDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
-        super(config, storeClient, smartphoneIRINode);
-        initIRIs();
+    public GravityDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+        super("GravitySensor", config, ontopClient, blazegraphClient, smartphoneIRINode,
+                config.getGravityDSResolution(),
+                config.getGravityDSType());
+        logger = LogManager.getLogger(GravityDataProcessor.class);
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("gravity_tsList"));
-        xList.addAll((List<Double>) data.get("gravityList_x"));
-        yList.addAll((List<Double>) data.get("gravityList_y"));
-        zList.addAll((List<Double>) data.get("gravityList_z"));
+    void initSensorData() {
+        x = new SensorData<>(Double.class);
+        y = new SensorData<>(Double.class);
+        z = new SensorData<>(Double.class);
+        sensorData = List.of(x, y, z);
     }
 
     @Override
-    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
-        List<String> dataIRIList = Arrays.asList(xIri, yIri, zIri);
-        List<List<?>> dataValues = Arrays.asList(xList, yList, zList);
-
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, dataValues);
-        ts = Downsampling.downsampleTS(ts, config.getGravityDSResolution(), config.getGravityDSType());
-
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
-                .collect(Collectors.toList());
-
-        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
-                ts.getValuesAsDouble(zIri));
-
-        clearData();
-        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
+    public void addData(Payload data) {
+        timeList.addAll(data.getGravityTs());
+        x.addData(data.getGravityXs());
+        y.addData(data.getGravityYs());
+        z.addData(data.getGravityZs());
     }
 
     @Override
-    public void initIRIs() {
-        if (xIri != null && yIri != null && zIri != null) {
-            // instantiated in previous call
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (xIri == null && yIri == null && zIri == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
-    public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIs().size(), Double.class);
-    }
-
-    @Override
-    public List<String> getDataIRIs() {
-        return List.of(xIri, yIri, zIri);
-    }
-
-    @Override
-    void clearData() {
-        timeList.clear();
-        xList.clear();
-        yList.clear();
-        zList.clear();
-    }
-
-    @Override
-    void getIrisFromKg() {
+    void getDataIrisFromKg() {
         Var x = Var.alloc("x");
         Var y = Var.alloc("y");
         Var z = Var.alloc("z");
@@ -117,7 +67,7 @@ public class GravityDataProcessor extends SensorDataProcessor {
 
         JSONArray queryResult;
         try {
-            queryResult = storeClient.executeQuery(sb.buildString());
+            queryResult = ontopClient.executeQuery(sb.buildString());
         } catch (Exception e) {
             // ontop does not accept queries before any mapping is added
             return;
@@ -125,9 +75,9 @@ public class GravityDataProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        xIri = queryResult.getJSONObject(0).optString("x");
-        yIri = queryResult.getJSONObject(0).optString("y");
-        zIri = queryResult.getJSONObject(0).optString("z");
+        this.x.setDataIri(queryResult.getJSONObject(0).optString("x"));
+        this.y.setDataIri(queryResult.getJSONObject(0).optString("y"));
+        this.z.setDataIri(queryResult.getJSONObject(0).optString("z"));
     }
 
     @Override

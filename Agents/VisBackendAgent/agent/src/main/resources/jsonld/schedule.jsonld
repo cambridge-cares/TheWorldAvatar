@@ -1,0 +1,78 @@
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "@type": "iri",
+    "prefix": "https://www.theworldavatar.io/kg/agreement/schedule/"
+  },
+  "@type": "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule",
+  "@reverse": {
+    "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasSchedule": {
+      "@id": {
+        "@replace": "stage",
+        "@type": "iri"
+      }
+    }
+  },
+  "https://www.omg.org/spec/Commons/DatesAndTimes/hasStartDate": {
+    "@id": {
+      "@replace": "id",
+      "@type": "iri",
+      "prefix": "https://www.theworldavatar.io/kg/lifecycle/date/start/"
+    }
+  },
+  "https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod": {
+    "@id": {
+      "@replace": "id",
+      "@type": "iri",
+      "prefix": "https://www.theworldavatar.io/kg/agreement/schedule/slot/"
+    },
+    "@type": "https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitTimePeriod",
+    "https://www.omg.org/spec/Commons/DatesAndTimes/hasStart": {
+      "@id": {
+        "@replace": "id",
+        "@type": "iri",
+        "prefix": "https://www.theworldavatar.io/kg/agreement/schedule/slot/start/"
+      },
+      "@type": "https://www.omg.org/spec/Commons/DatesAndTimes/TimeOfDay",
+      "https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue": {
+        "@replace": "time slot start",
+        "@type": "literal",
+        "datatype": "http://www.w3.org/2001/XMLSchema#time"
+      }
+    },
+    "https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime": {
+      "@id": {
+        "@replace": "id",
+        "@type": "iri",
+        "prefix": "https://www.theworldavatar.io/kg/agreement/schedule/slot/end/"
+      },
+      "@type": "https://www.omg.org/spec/Commons/DatesAndTimes/TimeOfDay",
+      "https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue": {
+        "@replace": "time slot end",
+        "@type": "literal",
+        "datatype": "http://www.w3.org/2001/XMLSchema#time"
+      }
+    }
+  },
+  "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasRecurrenceInterval": [
+    {
+      "@id": {
+        "@replace": "id",
+        "@type": "iri",
+        "prefix": "https://www.theworldavatar.io/kg/agreement/schedule/recurrence/"
+      },
+      "@type": "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/ExplicitRecurrenceInterval",
+      "https://www.omg.org/spec/Commons/DatesAndTimes/hasDurationValue": {
+        "@replace": "recurrence",
+        "@type": "literal"
+      }
+    },
+    {
+      "@replace": "schedule",
+      "@type": "schedule"
+    }
+  ]
+}

@@ -6,6 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.model.response.ApiResponse;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.KGService;
+import com.cmclinnovations.agent.utils.LifecycleResource;
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -33,22 +38,32 @@ public class DeleteService {
    * @param resourceID The target resource identifier for the instance.
    * @param targetId   The target instance IRI.
    */
-  public ResponseEntity<String> delete(String resourceID, String targetId) {
+  public ResponseEntity<ApiResponse> delete(String resourceID, String targetId) {
     LOGGER.debug("Deleting {} instance of {} ...", resourceID, targetId);
-    ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
-    // Return the BAD REQUEST response directly if the file is invalid
-    if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-      return fileNameResponse;
+    String filePath = LifecycleResource.getLifecycleResourceFilePath(resourceID);
+    // Default to the file name in application-service if it not a lifecycle route
+    if (filePath == null) {
+      ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
+      // Return the BAD REQUEST response directly if the file is invalid
+      if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+        return new ResponseEntity<>(
+            new ApiResponse(fileNameResponse),
+            fileNameResponse.getStatusCode());
+      }
+      filePath = FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld";
     }
     // Retrieve the instantiation JSON schema
-    JsonNode addJsonSchema = this.fileService.getJsonContents(
-        FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld");
+    JsonNode addJsonSchema = this.fileService.getJsonContents(filePath);
     if (!addJsonSchema.isObject()) {
       LOGGER.info("Invalid JSON-LD format! Please ensure the file starts with an JSON object.");
       return new ResponseEntity<>(
-          "Invalid JSON-LD format! Please contact your technical team for assistance.",
+          new ApiResponse("Invalid JSON-LD format! Please contact your technical team for assistance."),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return this.kgService.delete((ObjectNode) addJsonSchema, targetId);
+    String instanceIri = addJsonSchema.path(ShaclResource.ID_KEY).asText();
+    ResponseEntity<String> response = this.kgService.delete((ObjectNode) addJsonSchema, targetId);
+    return new ResponseEntity<>(
+        new ApiResponse(response.getBody(), instanceIri),
+        response.getStatusCode());
   }
 }

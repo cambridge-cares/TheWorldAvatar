@@ -1,6 +1,5 @@
 package com.cmclinnovations.agent.service;
 
-import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,8 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.model.response.ApiResponse;
+import com.cmclinnovations.agent.service.application.LifecycleReportService;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.JsonLdService;
+import com.cmclinnovations.agent.service.core.KGService;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
-import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -24,6 +28,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class AddService {
   private final KGService kgService;
   private final FileService fileService;
+  private final JsonLdService jsonLdService;
+  private final LifecycleReportService lifecycleReportService;
   private final ObjectMapper objectMapper;
 
   private static final Logger LOGGER = LogManager.getLogger(AddService.class);
@@ -31,13 +37,19 @@ public class AddService {
   /**
    * Constructs a new service with the following dependencies.
    * 
-   * @param kgService    KG service for performing the query.
-   * @param fileService  File service for accessing file resources.
-   * @param objectMapper The JSON object mapper.
+   * @param kgService              KG service for performing the query.
+   * @param fileService            File service for accessing file resources.
+   * @param jsonLdService          A service for interactions with JSON LD.
+   * @param lifecycleReportService A service for reporting lifecycle matters such
+   *                               as calculation instances.
+   * @param objectMapper           The JSON object mapper.
    */
-  public AddService(KGService kgService, FileService fileService, ObjectMapper objectMapper) {
+  public AddService(KGService kgService, FileService fileService, JsonLdService jsonLdService,
+      LifecycleReportService lifecycleReportService, ObjectMapper objectMapper) {
     this.kgService = kgService;
     this.fileService = fileService;
+    this.jsonLdService = jsonLdService;
+    this.lifecycleReportService = lifecycleReportService;
     this.objectMapper = objectMapper;
   }
 
@@ -49,7 +61,7 @@ public class AddService {
    * @param resourceID The target resource identifier for the instance.
    * @param param      Request parameters.
    */
-  public ResponseEntity<String> instantiate(String resourceID, Map<String, Object> param) {
+  public ResponseEntity<ApiResponse> instantiate(String resourceID, Map<String, Object> param) {
     String id = param.getOrDefault("id", UUID.randomUUID()).toString();
     return instantiate(resourceID, id, param);
   }
@@ -62,30 +74,59 @@ public class AddService {
    * @param targetId   The target instance IRI.
    * @param param      Request parameters.
    */
-  public ResponseEntity<String> instantiate(String resourceID, String targetId, Map<String, Object> param) {
+  public ResponseEntity<ApiResponse> instantiate(String resourceID, String targetId,
+      Map<String, Object> param) {
     LOGGER.info("Instantiating an instance of {} ...", resourceID);
-    ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
-    // Return the BAD REQUEST response directly if the file is invalid
-    if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-      return fileNameResponse;
+    String filePath = LifecycleResource.getLifecycleResourceFilePath(resourceID);
+    // Default to the file name in application-service if it not a lifecycle route
+    if (filePath == null) {
+      ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
+      // Return the BAD REQUEST response directly if the file is invalid
+      if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+        return new ResponseEntity<>(
+            new ApiResponse(fileNameResponse),
+            fileNameResponse.getStatusCode());
+      }
+      filePath = FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld";
     }
     // Update ID value to target ID
     param.put("id", targetId);
     // Retrieve the instantiation JSON schema
-    JsonNode addJsonSchema = this.fileService.getJsonContents(
-        FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld");
+    JsonNode addJsonSchema = this.fileService.getJsonContents(filePath);
     // Attempt to replace all placeholders in the JSON schema
     if (addJsonSchema.isObject()) {
       this.recursiveReplacePlaceholders((ObjectNode) addJsonSchema, null, null, param);
     } else {
       LOGGER.info("Invalid JSON-LD format for replacement!");
       return new ResponseEntity<>(
-          "Invalid JSON-LD format for replacement! Please contact your technical team for assistance.",
+          new ApiResponse("Invalid JSON-LD format for replacement! Please contact your technical team for assistance."),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    return this.instantiateJsonLd(addJsonSchema, resourceID + " has been successfully instantiated!");
+  }
+
+  /**
+   * Instantiate an instance based on a jsonLD object.
+   * 
+   * @param jsonLdSchema The target json LD object to instantiate.
+   * @param message      Successful message.
+   */
+  public ResponseEntity<ApiResponse> instantiateJsonLd(JsonNode jsonLdSchema, String message) {
     LOGGER.debug("Adding instance to endpoint...");
-    String jsonString = addJsonSchema.toString();
-    return this.kgService.add(jsonString);
+    String instanceIri = jsonLdSchema.path(ShaclResource.ID_KEY).asText();
+    String jsonString = jsonLdSchema.toString();
+    ResponseEntity<String> response = this.kgService.add(jsonString);
+    if (response.getStatusCode() == HttpStatus.OK) {
+      LOGGER.info(message);
+      return new ResponseEntity<>(
+          new ApiResponse(message, instanceIri),
+          HttpStatus.CREATED);
+    } else {
+      return new ResponseEntity<>(
+          new ApiResponse(response),
+          response.getStatusCode());
+    }
   }
 
   /**
@@ -109,15 +150,26 @@ public class AddService {
         // Add a different interaction for schedule types
         if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("schedule")) {
           this.replaceDayOfWeekSchedule(parentNode, parentField, replacements);
+          // Add a different interaction for calculations
+        } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("calculation")) {
+          this.lifecycleReportService.appendCalculationRecord(parentNode, currentNode, replacements);
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
-          ObjectNode literalNode = this.objectMapper.createObjectNode()
-              .put(ShaclResource.VAL_KEY, this.getReplacementValue(currentNode, replacements))
-              .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
+          ObjectNode literalNode = this.jsonLdService.genLiteral(
+              this.jsonLdService.getReplacementValue(currentNode, replacements),
+              currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
           parentNode.set(parentField, literalNode);
+          // IRIs that are not assigned to @id or @type should belong within a nested @id
+          // object
+        } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
+            && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
+          ObjectNode newIriNode = this.objectMapper.createObjectNode();
+          newIriNode.put(ShaclResource.ID_KEY, this.jsonLdService.getReplacementValue(currentNode, replacements));
+          parentNode.set(parentField, newIriNode);
         } else {
-          parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
+          // For IRIs and literal with no other pattern, simply replace the value
+          parentNode.put(parentField, this.jsonLdService.getReplacementValue(currentNode, replacements));
         }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
@@ -141,44 +193,6 @@ public class AddService {
           }
         }
       }
-    }
-  }
-
-  /**
-   * Retrieve the required replacement value.
-   * 
-   * @param replacementNode Node containing metadata for replacement..
-   * @param replacements    Mappings of the replacement value with their
-   *                        corresponding node.
-   */
-  private String getReplacementValue(ObjectNode replacementNode, Map<String, Object> replacements) {
-    String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
-    // Iterate through the replacements and find the relevant key for replacement
-    String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
-    String targetKey = "";
-    for (String key : replacements.keySet()) {
-      if (key.contains(replacementId)) {
-        targetKey = key;
-        break;
-      }
-    }
-    // Return the replacement value with the target key for literal
-    if (replacementType.equals("literal")) {
-      return replacements.get(targetKey).toString();
-    } else if (replacementType.equals("iri")) {
-      JsonNode prefixNode = replacementNode.path("prefix");
-      // Return the replacement value with the target key for any iris without a
-      // prefix
-      if (prefixNode.isMissingNode()) {
-        return replacements.get(targetKey).toString();
-      } else {
-        // If a prefix is present, extract the identifer and append the prefix
-        return prefixNode.asText() + StringResource.getLocalName(replacements.get(targetKey).toString());
-      }
-    } else {
-      LOGGER.error("Invalid replacement type {} for {}!", replacementType, replacementId);
-      throw new IllegalArgumentException(
-          MessageFormat.format("Invalid replacement type {0} for {1}!", replacementType, replacementId));
     }
   }
 
@@ -223,7 +237,7 @@ public class AddService {
     while (!daysOfWeek.isEmpty()) {
       String currentDay = daysOfWeek.poll();
       // Parameter name is in lowercase based on the frontend
-      if ((boolean) replacements.get(currentDay.toLowerCase())) {
+      if (replacements.containsKey(currentDay.toLowerCase()) && (boolean) replacements.get(currentDay.toLowerCase())) {
         // Only include the selected day if it has been selected on the frontend
         ObjectNode currentDayNode = this.objectMapper.createObjectNode();
         currentDayNode.put(ShaclResource.ID_KEY,
