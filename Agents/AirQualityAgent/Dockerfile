@@ -2,7 +2,7 @@
 #==================================================================================================
 
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.40.1 as stackclients
 
 #------------------------------------------------------
 # Base image to be reused
