@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.NoSuchElementException;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -109,7 +108,7 @@ public final class OntopService extends ContainerService {
     }
 
     @Override
-    public void doPostStartUpConfiguration() throws NoSuchElementException {
+    public void doPostStartUpConfiguration() {
         DockerClient dockerClient = DockerClient.getInstance();
         String containerId = dockerClient.getContainerId(containerName);
         dockerClient.createComplexCommand(containerId, "chown", "ontop:ontop", String.join(" ", configDirs))

@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.apache.jena.rdf.model.Model;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ConstructQuery;
@@ -53,7 +52,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         writeTurtleToFile(model);
     }
 
-    public void updateOBDA(Path newMappingFilePath) throws NoSuchElementException {
+    public void updateOBDA(Path newMappingFilePath) {
         String containerId = getContainerId(getContainerName());
         Path ontopMappingFilePath = getFilePath(containerId, ONTOP_MAPPING_FILE);
 
@@ -90,7 +89,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         }
     }
 
-    public void uploadRules(List<Path> ruleFiles) throws NoSuchElementException {
+    public void uploadRules(List<Path> ruleFiles) {
         String containerId = getContainerId(getContainerName());
         Path sparqlRulesFilePath = getFilePath(containerId, ONTOP_SPARQL_RULES_FILE);
         SparqlRulesFile sparqlRules = new SparqlRulesFile(ruleFiles);
@@ -104,7 +103,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         }
     }
 
-    private void writeTurtleToFile(Model model) throws NoSuchElementException {
+    private void writeTurtleToFile(Model model) {
         String containerId = getContainerId(getContainerName());
         Path ontopOntologyFilePath = getFilePath(containerId, ONTOP_ONTOLOGY_FILE);
 

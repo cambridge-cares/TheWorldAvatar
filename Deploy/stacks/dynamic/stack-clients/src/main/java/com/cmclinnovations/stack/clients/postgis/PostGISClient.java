@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +148,7 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
     }
 
     public void addProjectionsToPostgis(String database, String proj4String,
-            String wktString, String authName, String srid) throws NoSuchElementException {
+            String wktString, String authName, String srid) {
         String execId;
 
         String postGISContainerId = getContainerId("postgis");

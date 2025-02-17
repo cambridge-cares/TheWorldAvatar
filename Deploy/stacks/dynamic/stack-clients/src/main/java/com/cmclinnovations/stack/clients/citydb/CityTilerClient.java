@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.NoSuchElementException;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class CityTilerClient extends ContainerClient {
      *                 details.
      * @param options  Command line options to pass to the CityTiler tool.
      */
-    public void generateTiles(String database, String schema, CityTilerOptions options, boolean parallelTiling) throws NoSuchElementException {
+    public void generateTiles(String database, String schema, CityTilerOptions options, boolean parallelTiling) {
 
         String containerId = getContainerId("citytiler");
 

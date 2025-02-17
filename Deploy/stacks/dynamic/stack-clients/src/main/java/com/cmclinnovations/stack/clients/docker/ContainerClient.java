@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 
@@ -93,7 +92,7 @@ public class ContainerClient extends BaseClient {
         return DockerClient.getInstance().isContainerUp(containerName);
     }
 
-    protected final String getContainerId(String containerName) throws NoSuchElementException {
+    protected final String getContainerId(String containerName) {
         return DockerClient.getInstance().getContainerId(containerName);
     }
 
