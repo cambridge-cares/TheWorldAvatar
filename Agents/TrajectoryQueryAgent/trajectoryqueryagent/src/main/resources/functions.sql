@@ -159,26 +159,89 @@ RETURNS TABLE (
 ) AS $$
 DECLARE
     query TEXT := '';
+    device_id TEXT;
 BEGIN  
-    FOR i in 1..array_length(device_id_array, 1) LOOP
+    DROP TABLE IF EXISTS temp_activity_data;
+    CREATE TEMP TABLE temp_activity_data (
+        time bigint,
+        activity_type VARCHAR,
+        confidence_level smallint,
+        session_id character varying,
+        device_id TEXT,
+        user_id TEXT,
+        index INT
+    );
+
+  
+    FOR i IN 1..array_length(device_id_array, 1) LOOP
         IF i > 1 THEN
             query := query || ' UNION ALL ';
         END IF;
 
-        query := query|| format(
+        device_id := device_id_array[i];
+
+
+        query := query || format(
             'SELECT time, %I AS activity_type, %I AS confidence_level, %I AS session_id, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri = %L',
-            get_column_name(get_activity_type_iri(device_id_array[i])),
-            get_column_name(get_confidence_level_iri(device_id_array[i])),
-            get_column_name(get_session_iri(device_id_array[i])),
-            device_id_array[i],
-            get_user_id(device_id_array[i]),
-            get_table_name(get_activity_type_iri(device_id_array[i])),
-            get_time_series(get_activity_type_iri(device_id_array[i]))
+            get_column_name(get_activity_type_iri(device_id)),
+            get_column_name(get_confidence_level_iri(device_id)),
+            get_column_name(get_session_iri(device_id)),
+            device_id,
+            get_user_id(device_id),
+            get_table_name(get_activity_type_iri(device_id)),
+            get_time_series(get_activity_type_iri(device_id))
         );
     END LOOP;
+    
 
-    RETURN QUERY EXECUTE query;
+    EXECUTE 'INSERT INTO temp_activity_data
+             WITH activity_data AS (' || query || ')
+             SELECT time, activity_type, confidence_level, session_id, device_id, user_id,
+             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY time) AS index
+             FROM activity_data;';
+    
+ 
+    EXECUTE '
+    WITH filled_backward AS (
+        SELECT *,
+               COALESCE(NULLIF(activity_type, ''others''), 
+                        LAG(activity_type) OVER (PARTITION BY user_id ORDER BY index)) AS activity_type_filled
+        FROM temp_activity_data
+    )
+    UPDATE temp_activity_data t
+    SET activity_type = f.activity_type_filled
+    FROM filled_backward f
+    WHERE t.index = f.index;';
+
+
+    EXECUTE '
+    WITH filled_forward AS (
+        SELECT *,
+               COALESCE(NULLIF(activity_type, ''others''), 
+                        FIRST_VALUE(activity_type) OVER (PARTITION BY user_id ORDER BY index ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)) AS activity_type_filled
+        FROM temp_activity_data
+    )
+    UPDATE temp_activity_data t
+    SET activity_type = f.activity_type_filled
+    FROM filled_forward f
+    WHERE t.index = f.index;';
+
+
+    RETURN QUERY
+SELECT 
+    t.time, 
+    t.activity_type, 
+    t.confidence_level, 
+    t.session_id, 
+    t.device_id, 
+    t.user_id
+FROM 
+    temp_activity_data AS t
+ORDER BY 
+    t.user_id, t.time;
+
 END $$ LANGUAGE plpgsql;
+
 
 -- used by timeline app only
 CREATE OR REPLACE FUNCTION get_device_ids(id VARCHAR)

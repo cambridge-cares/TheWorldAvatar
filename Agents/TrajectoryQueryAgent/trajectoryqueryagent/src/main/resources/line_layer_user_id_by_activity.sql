@@ -45,7 +45,7 @@ joined_data AS (
         a.confidence_level
     FROM 
         timeseries t
-    LEFT JOIN 
+    JOIN 
         activity_data a 
     ON 
         t.user_id = a.user_id 
@@ -62,7 +62,7 @@ fixed_activity_data AS (
         bearing,
         session_id,
         user_id,
-        COALESCE(activity_type, 'others') AS activity_type,  -- Replace NULL with 'others'
+        activity_type,
         confidence_level
     FROM (
         SELECT 
@@ -78,10 +78,8 @@ fixed_activity_data AS (
             LAG(time) OVER (PARTITION BY user_id ORDER BY time) AS prev_time
         FROM joined_data
     ) AS subquery
-    WHERE time <> prev_time  -- Filter out rows with the same time as the previous row
-)
-,
-
+    WHERE time <> prev_time  
+),
 
 change_marked AS (
     SELECT 
@@ -89,7 +87,7 @@ change_marked AS (
         CASE
             WHEN 
                 LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time) IS NULL
-                THEN 0  -- First row for a user should have change_flag = 0
+                THEN 0  
             WHEN 
                 LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time) IS DISTINCT FROM activity_type 
             THEN 1 
@@ -112,7 +110,7 @@ change_marked_union AS (
         change_flag
     FROM change_marked
 
-    UNION ALL  -- Add duplicate rows with change_flag = 0
+    UNION ALL  
     SELECT 
         time,
         speed,
@@ -121,35 +119,45 @@ change_marked_union AS (
         bearing,
         session_id,
         user_id,
-        COALESCE(LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time), 'others') as activity_type,  -- Ensure no NULL values in duplicate row
+        COALESCE(LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time), 'others') as activity_type,  
         confidence_level,
-        0 AS change_flag  -- Force change_flag to 0 in duplicate row
+        0 AS change_flag  
     FROM change_marked
     WHERE change_flag = 1   
     ORDER BY time, change_flag 
 ),
 
 numbered_activity_data AS (
-    
     SELECT 
         *,
         SUM(change_flag) OVER (PARTITION BY user_id ORDER BY time ROWS UNBOUNDED PRECEDING) + 1 AS id
     FROM change_marked_union cm
     ORDER BY cm.time, cm.change_flag
+),
+
+filled_activity_data AS (
+    SELECT 
+        *,
+        COALESCE(
+            NULLIF(activity_type, 'others'),
+            LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time),
+            FIRST_VALUE(activity_type) OVER (PARTITION BY user_id ORDER BY time ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)
+        ) AS filled_activity_type
+    FROM numbered_activity_data
 )
 
 SELECT
     MIN(na.time) AS start_time,  
     MAX(na.time) AS end_time,
     na.id,
-    na.activity_type,
+    na.filled_activity_type AS activity_type,
     ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)) AS geom, 
-    CONCAT('https://w3id.org/MON/person.owl#person_', '%user_id%') AS iri
+    CONCAT('https://w3id.org/MON/person.owl#person_', na.user_id) AS iri
 FROM
-    numbered_activity_data AS na 
+    filled_activity_data AS na 
 WHERE  
-    ('%user_id%' = '' OR user_id = '%user_id%')
-    AND ('%lowerbound%' = '0' OR time > '%lowerbound%'::BIGINT)
-    AND ('%upperbound%' = '0' OR time < '%upperbound%'::BIGINT)
+    ('%user_id%' = '' OR na.user_id = '%user_id%')
+    AND ('%lowerbound%' = '0' OR na.time > '%lowerbound%'::BIGINT)
+    AND ('%upperbound%' = '0' OR na.time < '%upperbound%'::BIGINT)
 GROUP BY
-    na.id, na.activity_type, na.user_id
+    na.id, na.filled_activity_type, na.user_id
