@@ -13,7 +13,7 @@
 - script: data-initializer
   parameters:
     scenario: scenario_path
-    databases-path: SG
+    databases-path: CH
 - script: archetypes-mapper
   parameters:
     scenario: scenario_path
