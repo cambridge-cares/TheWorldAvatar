@@ -1,8 +1,4 @@
 #!/bin/bash
-# Load environment variables from target_gps_folder.env if it exists
-if [ -f target_gps_folder.env ]; then
-  export $(grep -v '^#' target_gps_folder.env | xargs)
-fi
 
 COMMAND=$1
 shift

@@ -1,8 +1,6 @@
 services:
   fenland-trajectory-agent:
     image: ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0
-    env_file:
-      - target_gps_folder.env
     environment:
       - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace
@@ -19,7 +17,6 @@ services:
     volumes:
       # Link container output directory to local directory to access output files
       # (i.e. only required for creation of output geojson files)
-      - ${LOCAL_GPS_FOLDER}:/app/agent/raw_data/gps_target_folder
       - ./output:/app/output
       - logs:/root/.jps
     configs:

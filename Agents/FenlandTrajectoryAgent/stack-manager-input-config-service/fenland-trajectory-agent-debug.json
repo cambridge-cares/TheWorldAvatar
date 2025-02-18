@@ -14,8 +14,8 @@
                         "Target": "/app"
                     },
                     {
-                        "Type": "bind",
-                        "Source": "/Your_Absolute_Path_To//TheWorldAvatar/Agents/FenlandTrajectoryAgent/Input",
+                        "Type": "volume",
+                        "Source": "fta-input",
                         "Target": "/app/agent/raw_data/gps_target_folder"
                     }
                 ],
