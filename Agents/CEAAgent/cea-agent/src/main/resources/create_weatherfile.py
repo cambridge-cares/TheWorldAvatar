@@ -126,6 +126,15 @@ def create_epw(times, data, weather_file, latitude, longitude, elevation, offset
         else:
             df[k] = default_epw[k]
 
+            if k in mi_ma.keys():
+                mask = (df['month'] == '02') & (df['day'] == '29')
+                df[k] = df[k]
+                indices = df.index[mask].tolist()
+                df.loc[indices[-1]+1: , k] = df.loc[indices[0]: len(df)-len(indices)-1, k].values
+                for i in range(len(indices)):
+                    mask = (df['month'] == '02') & (df['day'] != '29') & (df['hour'] == f"{i:02d}")
+                    df.loc[indices[i], k] = df.loc[mask, k].mean()
+
         # ensure that the weather values are within the allowed range for EPW parameters
         if k in mi_ma:
             df = fix(df, k)
