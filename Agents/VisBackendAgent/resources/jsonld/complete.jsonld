@@ -25,7 +25,7 @@
   },
   "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds": {
     "@id": {
-      "@replace": "dispatch",
+      "@replace": "order",
       "@type": "iri"
     }
   },
