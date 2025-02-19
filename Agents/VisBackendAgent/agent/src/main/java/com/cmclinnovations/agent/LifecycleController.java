@@ -155,7 +155,7 @@ public class LifecycleController {
           HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to assign the dispatch details for a service order...");
-    return this.lifecycleService.genDispatchOccurrence(params);
+    return this.lifecycleService.genDispatchOrDeliveryOccurrence(params, LifecycleEventType.SERVICE_ORDER_DISPATCHED);
   }
 
   /**
@@ -179,7 +179,7 @@ public class LifecycleController {
     // End completion request early
     if (type.equals("complete")) {
       LOGGER.info("Received request to complete a service order with completion details...");
-      return this.lifecycleService.genDeliveryOccurrence(params);
+      return this.lifecycleService.genDispatchOrDeliveryOccurrence(params, LifecycleEventType.SERVICE_EXECUTION);
     }
     // Is either cancellation request or incident report
     boolean isCancellationRequest = type.equals("cancel");

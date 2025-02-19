@@ -313,51 +313,53 @@ public class LifecycleService {
   }
 
   /**
-   * Generate an occurrence for the order dispatch event of a specified contract.
+   * Generate an occurrence for the order dispatch or delivery event of a
+   * specified contract.
    * 
-   * @param params Required parameters with configurable parameters to instantiate
-   *               the occurrence.
+   * @param params    Required parameters with configurable parameters to
+   *                  instantiate the occurrence.
+   * @param eventType Target event type.
    */
-  public ResponseEntity<ApiResponse> genDispatchOccurrence(Map<String, Object> params) {
-    params.put(LifecycleResource.REMARKS_KEY, ORDER_DISPATCH_MESSAGE);
-    this.addOccurrenceParams(params, LifecycleEventType.SERVICE_ORDER_DISPATCHED);
-    // Attempt to delete any existing dispatch occurrence before any updates
-    ResponseEntity<ApiResponse> response = this.deleteService.delete(
-        LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED), params.get("id").toString());
-    // Request will return ok even if no related occurrence exists
-    if (response.getStatusCode().equals(HttpStatus.OK)) {
-      // Ensure that the event identifier mapped directly to the jsonLd file name
-      response = this.addService.instantiate(
-          LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED), params);
-      if (response.getStatusCode() != HttpStatus.CREATED) {
-        LOGGER.error(
-            "Error encountered while dispatching details for the order: {}! Read error message for more details: {}",
-            params.get(LifecycleResource.ORDER_KEY), response.getBody().getMessage());
-      }
+  public ResponseEntity<ApiResponse> genDispatchOrDeliveryOccurrence(Map<String, Object> params,
+      LifecycleEventType eventType) {
+    String remarksMsg;
+    String createErrorMsg;
+    String successMsg;
+    switch (eventType) {
+      case LifecycleEventType.SERVICE_EXECUTION:
+        remarksMsg = ORDER_COMPLETE_MESSAGE;
+        createErrorMsg = "Error encountered while completing the order : {}! Read error message for more details: {}";
+        successMsg = "Service has been completed successfully!";
+        break;
+      case LifecycleEventType.SERVICE_ORDER_DISPATCHED:
+        remarksMsg = ORDER_DISPATCH_MESSAGE;
+        createErrorMsg = "Error encountered while dispatching details for the order: {}! Read error message for more details: {}";
+        successMsg = "Assigment of dispatch details is successful!";
+        break;
+      default:
+        return new ResponseEntity<>(
+            new ApiResponse("Invalid event type invocation!"),
+            HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    LOGGER.info("Assigment of dispatch details is successful!");
-    return response;
-  }
+    params.put(LifecycleResource.REMARKS_KEY, remarksMsg);
+    this.addOccurrenceParams(params, eventType);
 
-  /**
-   * Generate an occurrence for the order delivery event of a specified contract.
-   * 
-   * @param params Required parameters with configurable parameters to instantiate
-   *               the occurrence.
-   */
-  public ResponseEntity<ApiResponse> genDeliveryOccurrence(Map<String, Object> params) {
-    params.put(LifecycleResource.REMARKS_KEY, ORDER_COMPLETE_MESSAGE);
-    this.addOccurrenceParams(params, LifecycleEventType.SERVICE_EXECUTION);
+    if (eventType.equals(LifecycleEventType.SERVICE_ORDER_DISPATCHED)) {
+      // Attempt to delete any existing dispatch occurrence before any updates
+      ResponseEntity<ApiResponse> response = this.deleteService.delete(
+          LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_ORDER_DISPATCHED),
+          params.get("id").toString());
+      // Log responses
+      LOGGER.info(response.getBody().getMessage());
+    }
+
     // Ensure that the event identifier mapped directly to the jsonLd file name
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.getEventIdentifier(LifecycleEventType.SERVICE_EXECUTION), params);
+        LifecycleResource.getEventIdentifier(eventType), params);
     if (response.getStatusCode() != HttpStatus.CREATED) {
-      LOGGER.error(
-          "Error encountered while completing the order on {} from the contract: {}! Read error message for more details: {}",
-          params.get(LifecycleResource.DATE_KEY), params.get(LifecycleResource.CONTRACT_KEY),
-          response.getBody().getMessage());
+      LOGGER.error(createErrorMsg, params.get(LifecycleResource.ORDER_KEY), response.getBody().getMessage());
     }
-    LOGGER.info("Service has been completed successfully!");
+    LOGGER.info(successMsg);
     return response;
   }
 
