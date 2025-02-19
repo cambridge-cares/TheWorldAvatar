@@ -214,7 +214,7 @@ public class LifecycleController {
       successMsg = "Report for an unfulfilled service has been successfully lodged!";
     }
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
+        LifecycleResource.OCCURRENCE_LINK_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
       LOGGER.info(successMsg);
       return new ResponseEntity<>(new ApiResponse(successMsg),

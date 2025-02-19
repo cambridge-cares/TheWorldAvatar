@@ -10,6 +10,7 @@ public class LifecycleResource {
   public static final String LIFECYCLE_RESOURCE = "lifecycle";
   public static final String SCHEDULE_RESOURCE = "schedule";
   public static final String OCCURRENCE_INSTANT_RESOURCE = "occurrence instant";
+  public static final String OCCURRENCE_LINK_RESOURCE = "occurrence link";
   public static final String PRICING_RESOURCE = "pricing";
 
   public static final String IRI_KEY = "iri";
@@ -224,6 +225,8 @@ public class LifecycleResource {
         return FileService.LIFECYCLE_JSON_LD_RESOURCE;
       case LifecycleResource.OCCURRENCE_INSTANT_RESOURCE:
         return FileService.OCCURRENCE_INSTANT_JSON_LD_RESOURCE;
+      case LifecycleResource.OCCURRENCE_LINK_RESOURCE:
+        return FileService.OCCURRENCE_LINK_JSON_LD_RESOURCE;
       case LifecycleResource.SCHEDULE_RESOURCE:
         return FileService.SCHEDULE_JSON_LD_RESOURCE;
       case LifecycleResource.PRICING_RESOURCE:

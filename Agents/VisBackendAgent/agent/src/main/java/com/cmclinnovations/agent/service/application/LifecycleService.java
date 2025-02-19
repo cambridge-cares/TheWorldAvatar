@@ -104,6 +104,7 @@ public class LifecycleService {
     params.put(LifecycleResource.EVENT_KEY, LifecycleResource.getEventClass(eventType));
     // Only update the date field if there is no pre-existing field
     params.putIfAbsent(LifecycleResource.DATE_KEY, date);
+    params.putIfAbsent(LifecycleResource.DATE_TIME_KEY, this.dateTimeService.getCurrentDateTime());
   }
 
   /**
@@ -346,7 +347,6 @@ public class LifecycleService {
    */
   public ResponseEntity<ApiResponse> genDeliveryOccurrence(Map<String, Object> params) {
     params.put(LifecycleResource.REMARKS_KEY, ORDER_COMPLETE_MESSAGE);
-    params.putIfAbsent(LifecycleResource.DATE_TIME_KEY, this.dateTimeService.getCurrentDateTime());
     this.addOccurrenceParams(params, LifecycleEventType.SERVICE_EXECUTION);
     // Ensure that the event identifier mapped directly to the jsonLd file name
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
