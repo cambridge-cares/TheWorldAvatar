@@ -1,9 +1,8 @@
 # 1. Description
 
-The `Fenland Trajectory Agent` is a specialized tool for batch instantiation of structured time-series GPS trajectory data. This agent is capable of receiving HTTP POST requests or CURL commands to load GPS trajectory files, which it subsequently instantiates into triples before uploading them into the knowledge graph.
+The `Fenland Trajectory Agent` is a specialised tool designed to both instantiate structured time-series GPS trajectory data into a knowledge graph and perform quantitative exposure calculations between these trajectories and environmental features. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]. The agent receives [HTTP POST] requests or Client URL ([CURL]) commands to perform specified tasks. These include loading GPS trajectory files, mapping them into RDF triples, and uploading them to the stack. Additionally, for an exposure radius of interest, the agent can interpret environmental features and perform corresponding exposure calculations automatically. Examples of these calculations include determining the number of food retail locations or greenspace objects within the defined radius.
 
-Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]
-
+Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example gps data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. In terms of environmental features from the Fenland Study, the raw data is stored in Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/Data/Raw data/. Uploading and instantiating environmental data requires the [Stack-data-uploader] tool, and configuration files can be found in the [AI-for-Public-Health] folder. 
 
 # 2. Agent Setup
 
@@ -43,9 +42,9 @@ However, occasionally commands executed within the Docker environment may not su
 
 # 3. Spinning Up the Agent
 
-## 3.1 Placing the GPS Data
+## 3.1 Preparing the GPS Data
 
-The GPS trajectory data is structured and stored in tables (in .csv format). Each table consists of a series of record points, with each point containing eight essential pieces of information for instantiation, including UTC Date, UTC Time, Longitude (degrees), Latitude (degrees), Speed (km/h), Heading (degrees), Height (meters), and Distance (meters). Please place GPS files in the [gps_target_folder]. Below is an example of the columns and values in GPS trajectory tables for instantiation:
+The GPS trajectory data is structured and stored in tables (in .csv format). Each table consists of a series of record points, with each point containing eight essential pieces of information for instantiation, including UTC Date, UTC Time, Longitude (degrees), Latitude (degrees), Speed (km/h), Heading (degrees), Height (meters), and Distance (meters). Below is an example of the columns and values in GPS trajectory tables for instantiation:
 
 | UTC DATE   | UTC TIME | LATITUDE  | LONGITUDE | SPEED  | HEADING | HEIGHT | DISTANCE |
 |------------|----------|-----------|-----------|--------|---------|--------|----------|
@@ -67,7 +66,21 @@ In case of time out issues in automatically building the StackClients resource i
 ## 3.3 Deploying the Agent
 ### 1) Configuration and Adding Services
 
-Please place [FenlandTrajectoryAgent.json] in [stack manager configuration service directory]. Afterward, ensure that the 'fenland-trajectory-agent service' is included in your stack configuration files normally placed in [stack manager configuration directory]
+Please place [FenlandTrajectoryAgent.json] in the [stack manager configuration service directory]. Additionally, create a folder named `fta-input` under the stack manager’s [data directory] to store all your GPS trajectory data. This operation ensures that any new or updated data in the fta-input folder is automatically available to the agent. Then, ensure that the fenland-trajectory-agent service is included in your stack configuration files normally located in the [stack manager configuration directory] by adding the following to your stack configuration JSON file:
+
+```
+{
+    "services": {
+        "includes": [
+            "fenland-trajectory-agent"
+        ]
+    },
+    "volumes": {
+        "fta-input": "fta-input"
+    }
+}
+
+```
 
 ### 2) Starting with the Stack Manager
 To spin up the stack, both a `postgis_password` and `geoserver_password` file need to be created in the `Deploy/stacks/dynamic/stack-manager/inputs/secrets/` directory (see detailed guidance in the [Stack Manager README]).
@@ -81,29 +94,52 @@ To spin up the stack, create `postgis_password` and `geoserver_password` files i
 
 # 4. Using the Agent
 
-The agent will automatically register a task upon startup to assimilate the data from the target GPS folder into the Knowledge Graph (KG). This background task can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. Please replace {Port} with the numerical value of the port on which your stack is running.
+## 4.1 Data Ingestion
 
-## Functionality Description
+The agent automatically registers a task at startup to ingest data from the target GPS folder into the Knowledge Graph. This background task is designed to be triggered via HTTP requests after the agent has started. 
 
-The operation of this agent is streamlined into two key steps: **Preprocess** and **Instantiate**. Here is a brief description of each:
+### Functionality Description
+
+The operation of data ingestion is streamlined into two key steps: **Preprocess** and **Instantiate**. Here is a brief description of each:
 
 - **Preprocess**:  This initial step involves loading and examining the GPS trajectory files in batch to ensure efficient processing. Each file is checked for essential columns (UTC Date, UTC Time, Speed, Heading, Height, Distance, Latitude, and Longitude). Any missing data or misformatted columns, particularly those related to time, are corrected to conform with the [ISO 8601] standard. During this phase, data is extracted into a  temporary dataframe, allowing for necessary restructuring and corrections without altering the original files.
 
 - **Instantiate**: This further step involves creating geometry classes for the trajectories, generating IRIs, and structuring the data into lists categorized as time-series and non-time-series. These lists serve as inputs for the [TimeSeriesClient] and the [KGClient], respectively. This organized data is then instantiated in both the knowledge graph and the relational database to facilitate queries and analytics.
 
-Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organized, making it ready for use in the knowledge graph and the relational database.
+Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organised, making it ready for use in the knowledge graph and the relational database. Note that in the HTTP request templates, {Port} in the URL prefix http://localhost:{Port}/fenland-trajectory-agent/ should be replaced with the numerical value of the port on which your stack is running.
 
 In addition to the core functionality, this agent offers a route task called layer_generator that creates GeoServer layers from PostGIS tables for visualisation. Given a table name (formed by UUID) and latitude/longitude column names, the agent deploys the [SQL commands for virtual-table generation], creates vector objects, and communicates with the GeoServer REST API to publish the layer. Please note that this functionality is specialized and typically requires manual examination of SQL commands and layer metadata (such as EPSG) to ensure compatibility with specific requirements. This functionality will be further updated and refined after the AI for Public Health (Fenland) project's visualisation is switched to [TWA-VF] 5.4.0.
 
-## Example HTTP Requests
-Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file, the [instantiate] file, and the [layer_generator] file. 
+### Example HTTP Requests
+Example requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file, the [instantiate] file, and the [layer_generator] file. 
 
-Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
+Additionally, services above can be triggered using CURL from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
+## 4.2 Count-Based Exposure Calculation
+
+The agent is configured to calculate exposure by listening to trajectory IRIs and environmental feature IRIs along with a specified exposure radius. 
+The calculation can be triggered via an HTTP request after the agent has started, and its principles and operational procedures are outlined as follows. 
+
+### Functionality Description
+
+The workflow begins by generating a buffer zone around the trajectory geometry, with the buffer extending outward from the trajectory line by a specified exposure radius. Environmental features, such as food retail locations or greenspaces, are then identified and counted based on their intersections with this buffer zone, providing a quantitative measure of exposure. To accommodate different data storage scenarios, the agent provides two routes for exposure calculations:
+
+- **Exposure_count**:  
+This route is used when the environmental data and the Fenland Trajectory Agent are deployed in different stacks. In this case, you need to manually configure the [config.properties] file. 
+
+In this project, we use Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL` in the [config.properties] file to handle data such as Food Retail and Greenspace. In this context, the matching [OBDA mappings] should be configured in advance by [Stack-data-uploader]. Once these settings are complete, the agent will fetch the geometry data for both environmental features and trajectories from the specified endpoint and database, temporarily store the data in a dataframe, and perform the calculations within the agent.
+
+A typical example involves using an Ontop SPARQL endpoint as `ENV_DATA_ENDPOINT_URL`, where this Ontop endpoint can originate from any other stack created by the [Stack Manager]. Food Retail and Greenspace datasets can be used as demonstration cases. When uploading these structured datasets to the stack, the [Stack-data-uploader] should be preconfigured with particular [OBDA mapping] files containing key metadata, such as FeatureType and SourceTableName. These mappings are essential, as the exposure calculation relies on this metadata to trigger the appropriate computation methods.
+
+- **Exposure_count_single_stack**: If the environmental data and the Fenland Trajectory Agent are deployed in the same stack.
+This route is used when the environmental data and the Fenland Trajectory Agent are deployed in the same stack. In this case, the agent will query the Ontop SPARQL endpoint deployed within the same stack to fetch the datasource table name corresponding to the trajectory IRI. The agent will then populate an query and execute the calculation internally within the stack.
+
+### Example HTTP Requests
+Example requests are available in detailed HTTP files. You can access these examples at the [exposure_count] file and the [exposure_count_single_stack] file. Services can also be triggered using CURL from a bash terminal. Examples are displayed in [CURL commands folder]. 
 
 &nbsp;
 # Authors
-Jiying Chen (jc2341@cam.ac.uk), May 2024
+Jiying Chen (jc2341@cam.ac.uk), Jan 2025
  
 
 <!-- Links -->
@@ -140,6 +176,10 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [ISO 8601]: https://www.iso.org/iso-8601-date-and-time-format.html
 [knowledge graph operations guidance]: https://cambridge-cares.github.io/TheWorldAvatar/examples/sparql/
 [TWA-VF]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
+[Stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+[AI-for-Public-Health]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/AI4PublicHealth
+[HTTP POST]: https://www.w3schools.com/tags/ref_httpmethods.asp
+[CURL]: https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-web-client-urls
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
@@ -150,6 +190,7 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [FenlandTrajectoryAgent.json]: ./stack-manager-input-config-service/
 [stack manager configuration service directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
 [stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
+[data directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data
 [CURL commands folder]: ./example-requests/curl
 [SendHTTP]: ./example-requests/SendHTTP
 [preprocess]: ./example-requests/SendHTTP/gps_preprocess.http
@@ -157,3 +198,9 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [layer_generator]: ./example-requests/SendHTTP/layer_generator.http
 [KGClient]: ./agent/kgutils/kgclient.py
 [SQL commands for virtual-table generation]: ./agent/layergenerator/virtual_table.sql
+[config.properties]:./agent/flaskapp/exposure/config.properties
+[exposure_count]: ./example-requests/SendHTTP/exposure_count.http
+[exposure_count_single_stack]: ./example-requests/SendHTTP/exposure_count_single_stack.http
+[OBDA mapping]: ./resources/ontop.obda
+[Input]: ./Input/
+[target_gps_folder.env]:./target_gps_folder.env
