@@ -42,7 +42,7 @@ However, occasionally commands executed within the Docker environment may not su
 
 # 3. Spinning Up the Agent
 
-## 3.1 Placing the GPS Data
+## 3.1 Preparing the GPS Data
 
 The GPS trajectory data is structured and stored in tables (in .csv format). Each table consists of a series of record points, with each point containing eight essential pieces of information for instantiation, including UTC Date, UTC Time, Longitude (degrees), Latitude (degrees), Speed (km/h), Heading (degrees), Height (meters), and Distance (meters). Below is an example of the columns and values in GPS trajectory tables for instantiation:
 
