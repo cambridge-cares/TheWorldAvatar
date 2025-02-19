@@ -204,7 +204,7 @@ public class GeometryHandler {
             Geometry temp = toGeometry(wkt);
 
             try {
-                result.add(transformGeometry(temp, originalCRS, EPSG_4326));
+                result.add(extractExterior((Polygon) transformGeometry(temp, originalCRS, EPSG_4326)));
 
                 return result;
             }
@@ -266,7 +266,7 @@ public class GeometryHandler {
             List<Geometry> geometries = new ArrayList<>();
 
             if (geoType.equals("Polygon")) {
-                geometries.add(extractExterior((Polygon) bufferPolygon(merged, crs, -1 * distance)));
+                geometries.add(bufferPolygon(extractExterior((Polygon) merged), crs, -1 * distance));
             }
             else {
                 for (int i = 0; i < merged.getNumGeometries(); i++) {

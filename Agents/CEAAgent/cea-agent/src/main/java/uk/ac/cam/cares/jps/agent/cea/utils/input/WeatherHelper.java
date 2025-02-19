@@ -441,6 +441,7 @@ public class WeatherHelper extends JPSAgent {
         Map<String, List<Double>> weather = new HashMap<>();
 
         boolean getTimes = true;
+        int hours = 8760;
 
         for (Map.Entry<String, List<String>> entry : weatherMap.entrySet()) {
             List<String> value = entry.getValue();
@@ -455,7 +456,10 @@ public class WeatherHelper extends JPSAgent {
             }
 
             if (getTimes) {
-                List<Instant> times = weatherTS.getTimes().subList(0, 8760);
+                if(isLeapYear(weatherTS.getTimes().get(24).atZone(ZoneId.of("UTC")).getYear())) {
+                    hours = 8784;
+                }
+                List<Instant> times = weatherTS.getTimes().subList(0, hours);
                 Double offset = getStationOffset(latitude, longitude, times.get(0), times.get(times.size()-1));
                 // parse times to OffsetDateTime with the correct offset
                 List<OffsetDateTime> weatherTimes = parseWeatherTimes(times, offset.intValue());
@@ -464,7 +468,7 @@ public class WeatherHelper extends JPSAgent {
                 getTimes = false;
             }
 
-            weather.put(entry.getKey(),  weatherTS.getValuesAsDouble(weatherIRI).subList(0, 8760));
+            weather.put(entry.getKey(),  weatherTS.getValuesAsDouble(weatherIRI).subList(0, hours));
         }
 
         result.add(weather);
@@ -487,6 +491,12 @@ public class WeatherHelper extends JPSAgent {
         }
 
         return result;
+    }
+
+    public  boolean isLeapYear(int year) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
     }
 
     /**
