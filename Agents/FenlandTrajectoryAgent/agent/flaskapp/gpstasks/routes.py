@@ -18,6 +18,7 @@ from agent.datainstantiation.cleaning_tool import clean_gps_data
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+INTERNAL_DATA_PATH = "/app/agent/raw_data/gps_target_folder"
 
 # Blueprint configuration
 gps_instantiation_bp = Blueprint('gps_instantiation_bp', __name__)
@@ -26,21 +27,14 @@ gps_instantiation_bp = Blueprint('gps_instantiation_bp', __name__)
 @gps_instantiation_bp.route('/preprocess', methods=['POST'])
 def preprocess_files():
     """
-    Preprocess CSV files in the specified folder by cleaning them.
-    The cleaning function removes units and retains only numeric values.
-    The response indicates that data cleaning was successful.
+    Preprocess CSV files in the internal data folder by cleaning them.
     """
     try:
-        folder_path = request.json.get('file_path')
-        if not folder_path:
-            logger.error("File path is missing in the request.")
-            return jsonify({"error": "File path is missing in the request."}), 400
-
-        logger.info("Received request to preprocess files in folder: %s", folder_path)
+        folder_path = INTERNAL_DATA_PATH
         csv_files = glob.glob(os.path.join(folder_path, '*.csv'))
         if not csv_files:
-            logger.error("No CSV files found in the specified folder: %s", folder_path)
-            return jsonify({"error": "No CSV files found in the specified folder."}), 400
+            logger.error("No CSV files found in the data folder of the Stack Manager: %s", folder_path)
+            return jsonify({"error": "No CSV files found in the data folder of the Stack Manager."}), 400
 
         temp_output_dir = os.path.join(folder_path, "temp_cleaned")
         results = []
@@ -60,20 +54,17 @@ def preprocess_files():
 @gps_instantiation_bp.route('/instantiate', methods=['POST'])
 def instantiate_files():
     """
-    processing the cleaned files using TSCLIENT.
+    Process cleaned files using TSCLIENT.
     After processing, temporary cleaned files are removed to keep storage usage minimal.
     """
     try:
-        folder_path = request.json.get('file_path')
-        if not folder_path:
-            logger.error("File path is missing in the request.")
-            return jsonify({"error": "File path is missing in the request."}), 400
-
-        logger.info("Received request to instantiate files from folder: %s", folder_path)
+        # Use the constant internal data path instead of reading from the request.
+        folder_path = INTERNAL_DATA_PATH
+        logger.info("Using internal data folder: %s", folder_path)
         csv_files = glob.glob(os.path.join(folder_path, '*.csv'))
         if not csv_files:
-            logger.error("No CSV files found in the specified folder: %s", folder_path)
-            return jsonify({"error": "No CSV files found in the specified folder."}), 400
+            logger.error("No CSV files found in the data folder of the Stack Manager: %s", folder_path)
+            return jsonify({"error": "No CSV files found in the data folder of the Stack Manager"}), 400
 
         results = []
         temp_output_dir = os.path.join(folder_path, "temp_cleaned")
@@ -98,14 +89,14 @@ def instantiate_files():
 
                 kg_client, ts_client, double_class, point_class = gdi.setup_clients()
                 gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class)
-                results.append({"file": csv_file, "status": "success", "temporary DataFrames": "removed"})
+                results.append({"file": csv_file, "status": "success"})
             except Exception as e:
                 logger.error("Error instantiating data for file %s: %s", csv_file, e, exc_info=True)
                 results.append({"file": csv_file, "status": "failed", "error": str(e)})
 
         if os.path.exists(temp_output_dir):
             shutil.rmtree(temp_output_dir)
-            logger.info("Temporary DataFrames after cleanning deleted: %s", temp_output_dir)
+            logger.info("Temporary DataFrames after cleaning deleted: %s", temp_output_dir)
 
         return jsonify({"message": "Files processed and instantiated successfully.", "results": results}), 200
 
