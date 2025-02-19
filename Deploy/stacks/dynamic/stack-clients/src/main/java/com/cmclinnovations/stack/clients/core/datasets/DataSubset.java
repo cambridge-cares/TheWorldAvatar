@@ -17,7 +17,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }),
         @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv" }),
         @Type(value = CityDB.class, names = { "CityDB", "citydb" }),
-        @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }) })
+        @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }),
+        @Type(value = RmlDataSubset.class, names = { "rml", "RML" }) })
 public abstract class DataSubset extends AbstractDataObject {
     protected final Optional<String> name = Optional.empty();
     @JsonProperty
