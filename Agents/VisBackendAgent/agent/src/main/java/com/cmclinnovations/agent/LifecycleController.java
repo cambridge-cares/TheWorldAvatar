@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +38,7 @@ public class LifecycleController {
 
   private static final String MISSING_FIELD_MSG_TEMPLATE = "Missing `{0}` field in request parameters!";
   private static final String SOME_ORDER_GEN_FAIL_MSG = "Some orders have failed to be generated. Please read logs for more information.";
+  private static final List<String> VALID_CONTRACT_SERVICE_TYPES = List.of("COMPLETE", "REPORT", "CANCEL");
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
@@ -157,28 +159,34 @@ public class LifecycleController {
   }
 
   /**
-   * Completes a specific service order
+   * Performs a service action for a specific service action. Valid types include:
+   * 1) complete: Completes a specific service order
+   * 2) report: Reports any unfulfilled service delivery
+   * 3) cancel: Cancel any upcoming service
    */
-  @PostMapping("/contracts/service/complete")
-  public ResponseEntity<ApiResponse> completeServiceOrder(@RequestBody Map<String, Object> params) {
+  @PostMapping("/contracts/service/{type}")
+  public ResponseEntity<ApiResponse> performServiceAction(@PathVariable String type,
+      @RequestBody Map<String, Object> params) {
+    // Case-insensitive check
+    if (!VALID_CONTRACT_SERVICE_TYPES.contains(type.toUpperCase())) {
+      return new ResponseEntity<>(new ApiResponse("Invalid route"), HttpStatus.BAD_REQUEST);
+    }
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
           new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
           HttpStatus.BAD_REQUEST);
     }
-    LOGGER.info("Received request to complete a service order with completion details...");
-    return this.lifecycleService.genDeliveryOccurrence(params);
-  }
-
-  /**
-   * Reports any unfulfilled service delivery.
-   */
-  @PostMapping("/contracts/service/report")
-  public ResponseEntity<ApiResponse> reportService(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
-      return new ResponseEntity<>(
-          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
-          HttpStatus.BAD_REQUEST);
+    // End completion request early
+    if (type.equals("complete")) {
+      LOGGER.info("Received request to complete a service order with completion details...");
+      return this.lifecycleService.genDeliveryOccurrence(params);
+    }
+    // Is either cancellation request or incident report
+    boolean isCancellationRequest = type.equals("cancel");
+    if (isCancellationRequest) {
+      LOGGER.info("Received request to cancel the upcoming service...");
+    } else {
+      LOGGER.info("Received request to report an unfulfilled service...");
     }
     if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
       return new ResponseEntity<>(
@@ -186,53 +194,31 @@ public class LifecycleController {
           HttpStatus.BAD_REQUEST);
     }
     String date = params.get(LifecycleResource.DATE_KEY).toString();
-    // Invalidate request if the report is being lodged for future dates
-    if (LifecycleResource.checkDate(date, false)) {
-      String errorMsg = "Invalid Date: Reports cannot be lodged for future dates. Please select today's date or any date in the past.";
+    // Invalidate request if the report is being lodged for future dates or
+    // if the cancellation is targeted at past services
+    if (LifecycleResource.checkDate(date, isCancellationRequest)) {
+      String errorMsg = !isCancellationRequest
+          ? "Invalid Date: Reports cannot be lodged for future dates. Please select today's date or any date in the past."
+          : "Invalid Date: Services can only be cancelled for today or future dates. Cancellation of past services is not allowed.";
       LOGGER.error(errorMsg);
       return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
     }
-    LOGGER.info("Received request to report an unfulfilled service...");
-    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_INCIDENT_REPORT);
+    String successMsg;
+    if (isCancellationRequest) {
+      LOGGER.info("Received request to cancel the upcoming service...");
+      this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_CANCELLATION);
+      successMsg = "Service has been successfully cancelled!";
+    } else {
+      LOGGER.info("Received request to report an unfulfilled service...");
+      this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_INCIDENT_REPORT);
+      successMsg = "Report for an unfulfilled service has been successfully lodged!";
+    }
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
         LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
-      LOGGER.info("Report for an unfulfilled service has been successfully lodged!");
-      return new ResponseEntity<>(new ApiResponse("Report for an unfulfilled service has been successfully lodged!"),
+      LOGGER.info(successMsg);
+      return new ResponseEntity<>(new ApiResponse(successMsg),
           HttpStatus.OK);
-    }
-    return response;
-  }
-
-  /**
-   * Cancel any upcoming service.
-   */
-  @PostMapping("/contracts/service/cancel")
-  public ResponseEntity<ApiResponse> cancelService(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
-      return new ResponseEntity<>(
-          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
-          HttpStatus.BAD_REQUEST);
-    }
-    if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
-      return new ResponseEntity<>(
-          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
-          HttpStatus.BAD_REQUEST);
-    }
-    // Invalidate request if the cancellation is targeted at past services
-    String date = params.get(LifecycleResource.DATE_KEY).toString();
-    if (LifecycleResource.checkDate(date, true)) {
-      String errorMsg = "Invalid Date: Services can only be cancelled for today or future dates. Cancellation of past services is not allowed.";
-      LOGGER.error(errorMsg);
-      return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
-    }
-    LOGGER.info("Received request to cancel the upcoming service...");
-    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_CANCELLATION);
-    ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
-    if (response.getStatusCode() == HttpStatus.CREATED) {
-      LOGGER.info("Service has been successfully cancelled!");
-      return new ResponseEntity<>(new ApiResponse("Service has been successfully cancelled!"), HttpStatus.OK);
     }
     return response;
   }
