@@ -27,6 +27,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
       - [2.6.4 Service commencement route](#264-service-commencement-route)
       - [2.6.5 Service order route](#265-service-order-route)
       - [2.6.6 Archive contract route](#266-archive-contract-route)
+      - [2.6.7 Pricing route](#267-pricing-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
       - [3.1.1 Property Groups](#311-property-groups)
@@ -533,7 +534,7 @@ For tasks associated with a contract, users can send a `GET` request to the `<ba
 
 Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch/{id}` endpoint to retrieve the form template associated with the dispatch event, where `id` is either the identifier of the occurrence of interest, which may be a dispatch or subsequent succeeding instance, or `form` for an empty form template. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceDispatchOccurrenceShape` is defined in `./resources/shacl.ttl`, which can be extended for your specific requirements.
 
-Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch` endpoint to assign dispatch details for a target order. The details are configurable using the `ServiceDispatchOccurrenceShape` and an additional `dispatch.jsonld` file with the corresponding identifier as `dispatch` in the `application-service.json`. A sample file is defined in `./resources/dispatch.jsonld`, with line 1 - 32 being required. It is recommended that the id field comes with a prefix, following the frontend actions. Note that this route does require the following `JSON` request parameters:
+Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch` endpoint to assign dispatch details for a target order. The details are configurable using the `ServiceDispatchOccurrenceShape` and an additional `dispatch.jsonld` file with the corresponding identifier as `dispatch` in the `application-service.json`. A sample file is defined in `./resources/jsonld/dispatch.jsonld`, with line 1 - 32 being required. It is recommended that the id field comes with a prefix, following the frontend actions. Note that this route does require the following `JSON` request parameters:
 
 ```json
 {
@@ -623,6 +624,30 @@ Users must send a `POST` request to terminate an ongoing contract at the `<baseU
 ```
 
 A successful request will return `{"message": "Contract has been successfully terminated!", "iri" : "root iri that is instantiated"}`.
+
+#### 2.6.7 Pricing route
+
+The `<baseURL>/vis-backend-agent/contracts/pricing` endpoint serves to handle any pricing model related transactions. 
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/pricing/{id}` endpoint to retrieve the pricing model for the specific contract, , where `{id}`is the identifier of the target contract.
+
+Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pricing` endpoint to set a new pricing model. Note that this will override any pricing model that was previously set. This route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "base fee": "The base fee in the decimal format ie 1.00",
+  "unit price": [{
+    "rate": "The rate charged per service metric in the decimal format",
+    "lowerBound": "The minimum value within the range of a service metric where the specified rate applies",
+    "upperBound": "The maximum value within the range of a service metric where the specified rate applies"
+  },...]
+}
+```
+
+> [!IMPORTANT]
+> The `unit price` parameter is optional and can hold an array of the same JSON object. The final `upperBound` field can be left empty or null to indicate that the rate applies for any excess of the `lowerBound` service metric.
 
 ## 3. SHACL Restrictions
 
@@ -901,15 +926,21 @@ It is expected that we should create a new ID and name for the person instance. 
 }
 ```
 
-A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted.
+
+> [!CAUTION]
+> Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+> [!NOTE]
+> There are additional `@replace` options such as `schedule` and `pricing` that will be used by default in the agent, but it is not intended for users and should be ignored.
 
 #### 4.1.1 Service lifecycle
 
 > [!IMPORTANT]
-> Users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`. This event should assign dispatch details before the service executes. A sample file has been created in `./resources/dispatch.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service dispatch` section [over here](#265-service-order-route).
+> Users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`. This event should assign dispatch details before the service executes. A sample file has been created in `./resources/jsonld/dispatch.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service dispatch` section [over here](#265-service-order-route).
 
 > [!IMPORTANT]
-> Users will be required to add a `JSON-LD` for the `ServiceDeliveryEvent`. This event should execute upon completion of the service order, and can contain additional properties/details following the user's input. A sample file has been created in `./resources/complete.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service completion` section [over here](#265-service-order-route). Users can also define a special replacement `JSON` object for performing any calculation based upon the completion logs as follows:
+> Users will be required to add a `JSON-LD` for the `ServiceDeliveryEvent`. This event should execute upon completion of the service order, and can contain additional properties/details following the user's input. A sample file has been created in `./resources/jsonld/complete.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service completion` section [over here](#265-service-order-route). Users can also define a special replacement `JSON` object for performing any calculation based upon the completion logs as follows:
 
 ```json
 {

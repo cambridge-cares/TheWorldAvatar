@@ -40,6 +40,10 @@ public class ShaclResource {
   public static final String REPLACEMENT_ENDPOINT = "[endpoint]";
   public static final String WHITE_SPACE = " ";
   public static final String UNION_OPERATOR = "} UNION {";
+  // Data types
+  public static final String XSD_DATE_TIME = XSD_PREFIX + "dateTime";
+  public static final String XSD_DECIMAL = XSD_PREFIX + "decimal";
+  public static final String XSD_STRING = XSD_PREFIX + "string";
 
   private ShaclResource() {
   }

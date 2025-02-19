@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class JsonLdService {
   private final ObjectMapper objectMapper;
 
+  private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
   private static final Logger LOGGER = LogManager.getLogger(JsonLdService.class);
 
   /**
@@ -75,6 +76,18 @@ public class JsonLdService {
   }
 
   /**
+   * Generates a instance object node with a readable label.
+   * 
+   * @param prefix  IRI prefix.
+   * @param concept The ontology concept class/type for the instance.
+   * @param label   The label for the instance.
+   */
+  public ObjectNode genInstance(String prefix, String concept, String label) {
+    return this.genInstance(prefix, concept)
+        .put(RDFS_LABEL, label);
+  }
+
+  /**
    * Generates a instance object node.
    * 
    * @param prefix  IRI prefix.
@@ -93,14 +106,14 @@ public class JsonLdService {
    * @param dataType   Indicates the data type for the literal. Defaults to string
    *                   if null.
    */
-  public ObjectNode genLiteral(String literalVal, String dataType) {
+  public ObjectNode genLiteral(String literalVal, String dataType) throws NumberFormatException {
+    if (dataType.equals(ShaclResource.XSD_DECIMAL) && literalVal.isEmpty()) {
+      LOGGER.warn("Numeric value cannot be an empty string!");
+      throw new NumberFormatException("Numeric value cannot be an empty string!");
+    }
     ObjectNode literal = this.objectMapper.createObjectNode()
         .put(ShaclResource.VAL_KEY, literalVal);
-    if (dataType == null) {
-      literal.put(ShaclResource.TYPE_KEY, "http://www.w3.org/2001/XMLSchema#string");
-    } else {
-      literal.put(ShaclResource.TYPE_KEY, dataType);
-    }
+    literal.put(ShaclResource.TYPE_KEY, dataType == null ? ShaclResource.XSD_STRING : dataType);
     return literal;
   }
 }
