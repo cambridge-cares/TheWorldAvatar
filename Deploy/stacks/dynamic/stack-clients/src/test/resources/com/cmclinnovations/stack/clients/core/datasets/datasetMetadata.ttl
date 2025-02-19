@@ -1,2 +1,0 @@
-?dataset <http://a> <http://b> .
-<http://b> <http://c> <http://d>

@@ -1,5 +1,0 @@
-rules = [
-    """CONSTRUCT{ ?a ?b ?c }
-    WHERE {?a ?b ?c}
-    """
-]

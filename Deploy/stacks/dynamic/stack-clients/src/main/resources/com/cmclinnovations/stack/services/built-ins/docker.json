@@ -1,6 +1,0 @@
-{
-    "type": "docker",
-    "endpoints": {
-        "dockerHost": {}
-    }
-}

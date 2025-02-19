@@ -1,6 +1,0 @@
-{
-    "type": "podman",
-    "endpoints": {
-        "dockerHost": {}
-    }
-}

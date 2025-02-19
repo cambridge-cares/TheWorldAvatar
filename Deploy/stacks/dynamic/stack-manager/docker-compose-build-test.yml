@@ -1,4 +1,0 @@
-services:
-  stack-manager:
-    build:
-      target: test

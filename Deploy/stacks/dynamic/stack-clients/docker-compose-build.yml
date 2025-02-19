@@ -1,4 +1,0 @@
-services:
-  stack-client:
-    build:
-      context: .

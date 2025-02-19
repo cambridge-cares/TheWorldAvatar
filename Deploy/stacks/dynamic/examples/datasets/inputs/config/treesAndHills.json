@@ -1,7 +1,0 @@
-{
-    "name": "treesAndHills",
-    "externalDatasets": [
-        "elevation",
-        "forestry"
-    ]
-}

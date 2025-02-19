@@ -1,9 +1,0 @@
-{
-    "name": "nonTrivialWithOntology",
-    "externalDatasets": [
-        "nonTrivialExternal"
-    ],
-    "ontologyDatasets": [
-        "ontology"
-    ]
-}

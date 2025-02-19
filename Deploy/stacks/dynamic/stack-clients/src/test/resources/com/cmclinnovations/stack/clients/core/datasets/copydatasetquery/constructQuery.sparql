@@ -1,6 +1,0 @@
-CONSTRUCT { ?subject ?predicate ?object . }
-WHERE { ?service <http://www.w3.org/ns/dcat#servesDataset> / <http://purl.org/dc/terms/title> ?ontologyDataset ;
-    a <https://theworldavatar.io/kg/service#Blazegraph> ;
-    <http://www.w3.org/ns/dcat#endpointURL> ?serviceUrl .
-SERVICE ?serviceUrl {?subject ?predicate ?object .}
- VALUES ( ?ontologyDataset )   { ("datasetA") ("datasetB") }  }

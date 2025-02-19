@@ -1,1 +1,0 @@
-Add 132kV poles and towers ShapeFile files here from https://ukpowernetworks.opendatasoft.com/explore/dataset/132kv-poles-towers.
