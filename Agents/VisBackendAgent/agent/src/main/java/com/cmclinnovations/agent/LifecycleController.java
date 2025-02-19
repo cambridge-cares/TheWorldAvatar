@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +28,7 @@ import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RestController
+@RequestMapping("/contracts")
 public class LifecycleController {
   private final AddService addService;
   private final DateTimeService dateTimeService;
@@ -53,7 +55,7 @@ public class LifecycleController {
    * Create a contract lifecycle (stages and events) for the specified contract,
    * and set it in draft state ie awaiting approval.
    */
-  @PostMapping("/contracts/draft")
+  @PostMapping("/draft")
   public ResponseEntity<ApiResponse> genContractLifecycle(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
@@ -85,7 +87,7 @@ public class LifecycleController {
   /**
    * Create an upcoming schedule for the specified contract.
    */
-  @PostMapping("/contracts/schedule")
+  @PostMapping("/schedule")
   public ResponseEntity<ApiResponse> genContractSchedule(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
@@ -109,7 +111,7 @@ public class LifecycleController {
   /**
    * Signal the commencement of the services for the specified contract.
    */
-  @PostMapping("/contracts/service/commence")
+  @PostMapping("/service/commence")
   public ResponseEntity<?> commenceContract(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
@@ -145,7 +147,7 @@ public class LifecycleController {
   /**
    * Assign dispatch details for the specified event
    */
-  @PutMapping("/contracts/service/dispatch")
+  @PutMapping("/service/dispatch")
   public ResponseEntity<ApiResponse> assignDispatchDetails(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
@@ -162,7 +164,7 @@ public class LifecycleController {
    * 2) report: Reports any unfulfilled service delivery
    * 3) cancel: Cancel any upcoming service
    */
-  @PostMapping("/contracts/service/{type}")
+  @PostMapping("/service/{type}")
   public ResponseEntity<ApiResponse> performServiceAction(@PathVariable String type,
       @RequestBody Map<String, Object> params) {
     // Case-insensitive check
@@ -224,7 +226,7 @@ public class LifecycleController {
   /**
    * Rescind the ongoing contract specified.
    */
-  @PostMapping("/contracts/archive/rescind")
+  @PostMapping("/archive/rescind")
   public ResponseEntity<ApiResponse> rescindContract(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
@@ -246,7 +248,7 @@ public class LifecycleController {
   /**
    * Terminate the ongoing contract specified.
    */
-  @PostMapping("/contracts/archive/terminate")
+  @PostMapping("/archive/terminate")
   public ResponseEntity<ApiResponse> terminateContract(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
@@ -268,7 +270,7 @@ public class LifecycleController {
   /**
    * Update the draft contract's lifecycle details in the knowledge graph.
    */
-  @PutMapping("/contracts/draft")
+  @PutMapping("/draft")
   public ResponseEntity<ApiResponse> updateDraftContract(@RequestBody Map<String, Object> params) {
     LOGGER.info("Received request to update draft contract...");
     String targetId = params.get("id").toString();
@@ -301,7 +303,7 @@ public class LifecycleController {
   /**
    * Update the draft schedule details in the knowledge graph.
    */
-  @PutMapping("/contracts/schedule")
+  @PutMapping("/schedule")
   public ResponseEntity<ApiResponse> updateContractSchedule(@RequestBody Map<String, Object> params) {
     LOGGER.info("Received request to update a draft schedule...");
     this.lifecycleService.addStageInstanceToParams(params, LifecycleEventType.SERVICE_EXECUTION);
@@ -327,7 +329,7 @@ public class LifecycleController {
   /**
    * Update the pricing model for the target contract in the knowledge graph.
    */
-  @PutMapping("/contracts/pricing")
+  @PutMapping("/pricing")
   public ResponseEntity<ApiResponse> updatePricingModel(@RequestBody Map<String, Object> params) {
     LOGGER.info("Received request to set the pricing model...");
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
@@ -357,7 +359,7 @@ public class LifecycleController {
   /**
    * Retrieve the status of the contract
    */
-  @GetMapping("/contracts/status/{id}")
+  @GetMapping("/status/{id}")
   public ResponseEntity<ApiResponse> getContractStatus(@PathVariable String id) {
     LOGGER.info("Received request to retrieve the status for the contract: {}...", id);
     return this.lifecycleService.getContractStatus(id);
@@ -367,7 +369,7 @@ public class LifecycleController {
    * Retrieve the schedule details for the specified contract to populate the form
    * template
    */
-  @GetMapping("/contracts/schedule/{id}")
+  @GetMapping("/schedule/{id}")
   public ResponseEntity<Map<String, Object>> getSchedule(@PathVariable String id) {
     LOGGER.info("Received request to retrieve the schedule for the contract: {}...", id);
     return this.lifecycleService.getSchedule(id);
@@ -376,7 +378,7 @@ public class LifecycleController {
   /**
    * Retrieve all draft contracts ie awaiting approval.
    */
-  @GetMapping("/contracts/draft")
+  @GetMapping("/draft")
   public ResponseEntity<?> getDraftContracts(
       @RequestParam(required = true) String type,
       @RequestParam(defaultValue = "false") boolean label) {
@@ -387,7 +389,7 @@ public class LifecycleController {
   /**
    * Retrieve all contracts that are currently in progress.
    */
-  @GetMapping("/contracts/service")
+  @GetMapping("/service")
   public ResponseEntity<?> getInProgressContracts(
       @RequestParam(required = true) String type,
       @RequestParam(defaultValue = "false") boolean label) {
@@ -398,7 +400,7 @@ public class LifecycleController {
   /**
    * Retrieve all archived contracts.
    */
-  @GetMapping("/contracts/archive")
+  @GetMapping("/archive")
   public ResponseEntity<?> getArchivedContracts(
       @RequestParam(required = true) String type,
       @RequestParam(defaultValue = "false") boolean label) {
@@ -409,7 +411,7 @@ public class LifecycleController {
   /**
    * Retrieve all tasks for the specified contract or date in UNIX timestamp.
    */
-  @GetMapping("/contracts/service/{task}")
+  @GetMapping("/service/{task}")
   public ResponseEntity<?> getAllTasksOnTimestamp(
       @PathVariable(name = "task") String input) {
     // Attempt to parse the input into a long, indicating this is a timestamp
@@ -427,7 +429,7 @@ public class LifecycleController {
   /**
    * Retrieves the form template for the dispatch order from the knowledge graph.
    */
-  @GetMapping("/contracts/service/dispatch/form")
+  @GetMapping("/service/dispatch/form")
   public ResponseEntity<?> getDispatchForm() {
     LOGGER.info("Received request to get form template for order dispatch...");
     return this.lifecycleService.getForm(LifecycleEventType.SERVICE_ORDER_DISPATCHED, null);
@@ -436,7 +438,7 @@ public class LifecycleController {
   /**
    * Retrieve dispatch details for the specified event
    */
-  @GetMapping("/contracts/service/dispatch/{id}")
+  @GetMapping("/service/dispatch/{id}")
   public ResponseEntity<?> getDispatchDetails(@PathVariable String id) {
     LOGGER.info("Received request to get form template with order dispatch details...");
     return this.lifecycleService.getForm(LifecycleEventType.SERVICE_ORDER_DISPATCHED, id);
@@ -445,7 +447,7 @@ public class LifecycleController {
   /**
    * Retrieves the form template to complete an order from the knowledge graph.
    */
-  @GetMapping("/contracts/service/complete/form")
+  @GetMapping("/service/complete/form")
   public ResponseEntity<?> getOrderCompleteForm() {
     LOGGER.info("Received request to get form template for order completion...");
     return this.lifecycleService.getForm(LifecycleEventType.SERVICE_EXECUTION, null);
@@ -454,7 +456,7 @@ public class LifecycleController {
   /**
    * Retrieves the form template to report the order from the knowledge graph.
    */
-  @GetMapping("/contracts/service/report/form")
+  @GetMapping("/service/report/form")
   public ResponseEntity<?> getOrderReportForm() {
     LOGGER.info("Received request to get form template to report the order...");
     return this.lifecycleService.getForm(LifecycleEventType.SERVICE_INCIDENT_REPORT, null);
@@ -463,7 +465,7 @@ public class LifecycleController {
   /**
    * Retrieves the form template to cancel the order from the knowledge graph.
    */
-  @GetMapping("/contracts/service/cancel/form")
+  @GetMapping("/service/cancel/form")
   public ResponseEntity<?> getOrderCancellationForm() {
     LOGGER.info("Received request to get form template to cancel the order...");
     return this.lifecycleService.getForm(LifecycleEventType.SERVICE_CANCELLATION, null);
@@ -472,7 +474,7 @@ public class LifecycleController {
   /**
    * Retrieves the form template to rescind the contract from the knowledge graph.
    */
-  @GetMapping("/contracts/archive/rescind/form")
+  @GetMapping("/archive/rescind/form")
   public ResponseEntity<?> getContractRescissionForm() {
     LOGGER.info("Received request to get form template to rescind the contract...");
     return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_RESCINDMENT, null);
@@ -482,7 +484,7 @@ public class LifecycleController {
    * Retrieves the form template to terminate the contract from the knowledge
    * graph.
    */
-  @GetMapping("/contracts/archive/terminate/form")
+  @GetMapping("/archive/terminate/form")
   public ResponseEntity<?> getContractTerminationForm() {
     LOGGER.info("Received request to get form template to terminate the contract...");
     return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_TERMINATION, null);
@@ -491,7 +493,7 @@ public class LifecycleController {
   /**
    * Retrieves the pricing model for the specified contract if available.
    */
-  @GetMapping("/contracts/pricing/{id}")
+  @GetMapping("/pricing/{id}")
   public ResponseEntity<Map<String, Object>> getPricingModel(@PathVariable String id) {
     LOGGER.info("Received request to get pricing model for the contract {}...", id);
     return new ResponseEntity<>(
