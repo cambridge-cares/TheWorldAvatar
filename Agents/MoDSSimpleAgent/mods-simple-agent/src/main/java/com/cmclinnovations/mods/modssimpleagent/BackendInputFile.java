@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -153,6 +155,19 @@ public final class BackendInputFile implements FileGenerator {
         addModel(model);
     }
 
+    public void addModel(String name, String type, String executable_name, String args) {
+        Model model = objectFactory.createModsModelsModel();
+
+        model.setName(name);
+        Details details = objectFactory.createDetails();
+        addDetail(details, "model_type", type);
+        addDetail(details, "executable_name", executable_name);
+        addDetail(details, "args", args);
+        model.setDetails(details);
+
+        addModel(model);
+    }
+
     private void addModel(Model model) {
         Models models = modsObject.getModels();
         if (null == models) {
@@ -183,6 +198,18 @@ public final class BackendInputFile implements FileGenerator {
         files.getFile().add(file);
     }
 
+    public void addInputParams() {
+        Files.File file = objectFactory.createModsFilesFile();
+
+        file.setFileName("InputParams.xml");
+        Details details = objectFactory.createDetails();
+        addDetail(details, "file_type", "XML");
+        addDetail(details, "XML_namespace", "http://como.cheng.cam.ac.uk/srm");
+        file.setDetails(details);
+
+        addFile(file);
+    }
+
     public void addParameter(String name, String subtype, String type,
             List<String> caseNames, List<String> modelNames,
             double lowerBound, double upperBound) {
@@ -199,6 +226,54 @@ public final class BackendInputFile implements FileGenerator {
         Parameter.Files.InitialRead initialRead = createInitialRead(name, lowerBound, upperBound);
         Parameter.Files files = objectFactory.createModsParametersParameterFiles();
         files.setInitialRead(initialRead);
+        param.setFiles(files);
+
+        addParameter(param);
+    }
+
+    public void addParameter(String name, String subtype, String type,
+            List<String> caseNames, List<String> modelNames,
+            double lowerBound, double upperBound, String path) {
+        Parameter param = objectFactory.createModsParametersParameter();
+
+        param.setName(name);
+        param.setType("active_" + type);
+        param.setSubtype(subtype);
+        param.setScaling("linear");
+
+        addParameterCases(param, caseNames);
+        addParameterModels(param, modelNames);
+
+        Parameter.Files.InitialRead initialRead = createInitialRead(name, lowerBound, upperBound);
+        Parameter.Files.WorkingWrite workingWrite = createWorkingWrite(path);
+        Parameter.Files files = objectFactory.createModsParametersParameterFiles();
+        files.setInitialRead(initialRead);
+        files.setWorkingWrite(workingWrite);
+        param.setFiles(files);
+
+        addParameter(param);
+    }
+
+    public void addParameter(String name, String subtype, String type,
+            List<String> caseNames, List<String> modelNames, Integer NParams,
+            Map<String,String> initialReadDetail, Map<String,String> workingReadDetail) {
+        Parameter param = objectFactory.createModsParametersParameter();
+
+        param.setName(name);
+        param.setType("active_" + type);
+        param.setSubtype(subtype);
+        param.setScaling("linear");
+        param.setDetailSep(",");
+        param.setNParamsPerCase(String.valueOf(NParams));
+
+        addParameterCases(param, caseNames);
+        addParameterModels(param, modelNames);
+
+        Parameter.Files.InitialRead initialRead = createInitialRead(initialReadDetail);
+        Parameter.Files.WorkingRead workingRead = createWorkingRead(initialReadDetail.get("file_name"),workingReadDetail);
+        Parameter.Files files = objectFactory.createModsParametersParameterFiles();
+        files.setInitialRead(initialRead);
+        files.setWorkingRead(workingRead);
         param.setFiles(files);
 
         addParameter(param);
@@ -229,6 +304,41 @@ public final class BackendInputFile implements FileGenerator {
         addDetail(initialDetails, "ub_abs", upperBound);
         initialRead.setDetails(initialDetails);
         return initialRead;
+    }
+
+    private Parameter.Files.InitialRead createInitialRead(Map<String,String> initialReadDetail) {
+        Parameter.Files.InitialRead initialRead = objectFactory
+                .createModsParametersParameterFilesInitialRead();
+        initialRead.setFileName(Simulation.INITIAL_FILE_NAME);
+        Details initialDetails = objectFactory.createDetails();
+        for (Map.Entry<String,String> entry : initialReadDetail.entrySet()) {
+            addDetail(initialDetails, entry.getKey(), entry.getValue());
+        }
+        initialRead.setDetails(initialDetails);
+        return initialRead;
+    }
+
+    private Parameter.Files.WorkingRead createWorkingRead(String filename, Map<String,String> workingReadDetail) {
+        Parameter.Files.WorkingRead workingRead = objectFactory
+                .createModsParametersParameterFilesWorkingRead();
+        workingRead.setFileName(filename);
+        Details initialDetails = objectFactory.createDetails();
+        for (Map.Entry<String,String> entry : workingReadDetail.entrySet()) {
+            addDetail(initialDetails, entry.getKey(), entry.getValue());
+        }
+        workingRead.setDetails(initialDetails);
+        return workingRead;
+    }
+
+    private Parameter.Files.WorkingWrite createWorkingWrite(String path) {
+        Parameter.Files.WorkingWrite workingWrite = objectFactory
+                .createModsParametersParameterFilesWorkingWrite();
+        workingWrite.setFileName("InputParams.xml");
+        Details initialDetails = objectFactory.createDetails();
+        addDetail(initialDetails, "path", path);
+        addDetail(initialDetails, "write_function", "Set_XML_double");
+        workingWrite.setDetails(initialDetails);
+        return workingWrite;
     }
 
     private void addParameter(Parameter param) {
