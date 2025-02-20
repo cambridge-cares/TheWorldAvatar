@@ -105,36 +105,48 @@ public class BottomSheetManager {
         configureDateSelection();
     }
 
-    private void configureTrajectoryRetrieval() {
+
+    // public void configureTrajectoryRetrieval() {
+    //     // Observe fetching state and show progress bar in NormalBottomSheet
+    //     trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+
+    //     // Observe trajectory data and pass it to the ViewModel to parse it
+    //     trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryJson -> {
+    //         normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
+    //     });
+
+        
+    //     normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
+    //         normalBottomSheet.updateActivitySummaryList(activitySummaryList);
+    //     });
+    // }
+
+public void configureTrajectoryRetrieval() {
+    // Observe fetching state and show progress bar in NormalBottomSheet
     trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
 
+    // Observe trajectory data and pass it to the ViewModel to parse it
     trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryJson -> {
-        normalBottomSheet.showTrajectoryInfo(trajectoryJson);
-        normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
+        boolean trajectoryExists = normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
         
-        normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
-            String summary = getSummaryData(activitySummaryList);
-            normalBottomSheet.updateSummary(summary);
-        });
+        // If no data found, we should immediately show empty state
+        if (!trajectoryExists) {
+            normalBottomSheet.showEmptyState();
+        }
+    });
+
+    // Observe parsed activity summary data
+    normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
+        if (activitySummaryList.isEmpty()) {
+            // Show empty state if no data is available
+            normalBottomSheet.showEmptyState();
+        } else {
+            // Update the activity summary list if data is available
+            normalBottomSheet.updateActivitySummaryList(activitySummaryList);
+        }
     });
 }
 
-    private String getSummaryData(List<ActivitySummary> activitySummaryList) {
-        if (activitySummaryList == null || activitySummaryList.isEmpty()) {
-            return "No activity summary available.";
-        }
-
-        StringBuilder summaryBuilder = new StringBuilder();
-        for (ActivitySummary summary : activitySummaryList) {
-            summaryBuilder.append(summary.getActivityType())
-                        .append(": ")
-                        .append(summary.getStartTime())
-                        .append(" - ")
-                        .append(summary.getEndTime())
-                        .append("\n");
-        }
-        return summaryBuilder.toString();
-    }
 
 
     private void configureDateSelection() {

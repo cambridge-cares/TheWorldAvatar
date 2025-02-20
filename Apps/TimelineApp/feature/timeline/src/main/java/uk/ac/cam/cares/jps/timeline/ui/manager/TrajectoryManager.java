@@ -59,10 +59,9 @@ public class TrajectoryManager {
                 String colorCode = "#FF0000";
                 Map<String, String> activityColors = new HashMap<>();
                 activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())))); // Blue
-                activityColors.put("still", String.format("#%06X", (0x00FFFF & getColor(fragment.requireContext())))); //Orange
-                activityColors.put("running", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
-                activityColors.put("cycling", String.format("#%06X", (0xFF00FF & getColor(fragment.requireContext())))); // Magenta
-                activityColors.put("driving", String.format("#%06X", (0xFF0000 & getColor(fragment.requireContext())))); // Red
+                activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); //Yellow
+                activityColors.put("vehicle", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
+                activityColors.put("bike", String.format("#%06X", (0xFF00FF & getColor(fragment.requireContext())))); // Magenta
                 
                 //paintTrajectory(style, trajectoryStr, colorCode, "default");
                 paintTrajectoryByActivity(style, trajectoryStr, activityColors, "default");

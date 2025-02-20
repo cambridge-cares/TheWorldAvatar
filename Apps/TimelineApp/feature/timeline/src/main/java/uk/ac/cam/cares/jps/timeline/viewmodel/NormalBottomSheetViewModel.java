@@ -18,8 +18,10 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
+import uk.ac.cam.cares.jps.model.ActivityItem;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
 import uk.ac.cam.cares.jps.model.ActivitySummary;
+import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
@@ -30,11 +32,11 @@ public class NormalBottomSheetViewModel extends ViewModel {
     private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
     private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
     private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
-    private MutableLiveData<List<ActivitySummary>> _activitySummaryData = new MutableLiveData<>();
+    private MutableLiveData<List<ActivityItem>> _activitySummaryData = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
-    public LiveData<List<ActivitySummary>> activitySummaryData = _activitySummaryData;
+    public LiveData<List<ActivityItem>> activitySummaryData = _activitySummaryData;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -67,6 +69,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
         _selectedDate.setValue(date);
     }
 
+
     /**
      * Get dates which has trajectory data from server
      * @param timezone current timezone
@@ -96,8 +99,8 @@ public class NormalBottomSheetViewModel extends ViewModel {
     /**
      * parses the trajectoryjson to store start and end times for each segment(activity)
      */
-    public void parseActivitySummary(String trajectoryJson) {
-    List<ActivitySummary> summaries = new ArrayList<>();
+    public boolean parseActivitySummary(String trajectoryJson) {
+    List<ActivityItem> summaries = new ArrayList<>();
 
     try {
         JSONObject trajectoryStr = new JSONObject(trajectoryJson);
@@ -108,10 +111,14 @@ public class NormalBottomSheetViewModel extends ViewModel {
             JSONObject properties = feature.getJSONObject("properties");
 
             String activityType = properties.optString("activity_type", "unknown");
+            int activityImage = R.drawable.baseline_man_24;
+            if(activityType.equals("walking")) activityImage = R.drawable.baseline_directions_walk_24;
+            if(activityType.equals("vehicle")) activityImage = R.drawable.baseline_directions_car_24;
+            if(activityType.equals("bike")) activityImage = R.drawable.baseline_directions_bike_24;
             long startTime = properties.optLong("start_time", 0);
             long endTime = properties.optLong("end_time", 0);
 
-            summaries.add(new ActivitySummary(activityType, startTime, endTime));
+            summaries.add(new ActivityItem(activityImage, startTime, endTime));
         }
 
     } catch (JSONException e) {
@@ -119,6 +126,9 @@ public class NormalBottomSheetViewModel extends ViewModel {
     }
 
     _activitySummaryData.postValue(summaries);
+
+    return !summaries.isEmpty();
+
 }
 
 }
