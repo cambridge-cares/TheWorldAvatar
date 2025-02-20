@@ -66,6 +66,9 @@ CONSTRUCT {
     ?subproperty sh:order ?order .
     BIND (IF(?property != ?subproperty, ?proporder, 0) AS ?grouporder)
   }
+  OPTIONAL {
+    ?property sh:order ?order .
+  }
   BIND (IF(BOUND(?order), ?order, 0) AS ?order)
   BIND (IF(BOUND(?grouporder), ?grouporder, 0) AS ?grouporder)
   
