@@ -1,6 +1,5 @@
-package uk.ac.cam.cares.jps.timeline.ui.bottomsheet;
+package uk.ac.cam.cares.jps.timeline.ui.adapter;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +13,15 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.model.ActivityItem;
 import uk.ac.cam.cares.jps.timelinemap.R;
-
+/**
+ * Adapter class for recyclerview to view activity summary information.
+ */
 public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummaryAdapter.ActivitySummaryViewHolder> {
     private List<ActivityItem> activityList;
 
-   public ActivitySummaryAdapter() {
-       activityList = new ArrayList<>();
-   }
+    public ActivitySummaryAdapter() {
+        activityList = new ArrayList<>();
+    }
 
     public void setActivityList(List<ActivityItem> activities) {
         activityList = activities;

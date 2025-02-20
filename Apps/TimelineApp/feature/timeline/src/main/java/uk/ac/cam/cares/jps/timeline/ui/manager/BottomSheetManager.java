@@ -21,10 +21,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import uk.ac.cam.cares.jps.login.AccountException;
-import uk.ac.cam.cares.jps.model.ActivitySummary;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
@@ -105,45 +103,15 @@ public class BottomSheetManager {
         configureDateSelection();
     }
 
-
-    // public void configureTrajectoryRetrieval() {
-    //     // Observe fetching state and show progress bar in NormalBottomSheet
-    //     trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
-
-    //     // Observe trajectory data and pass it to the ViewModel to parse it
-    //     trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryJson -> {
-    //         normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
-    //     });
-
-        
-    //     normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
-    //         normalBottomSheet.updateActivitySummaryList(activitySummaryList);
-    //     });
-    // }
-
 public void configureTrajectoryRetrieval() {
-    // Observe fetching state and show progress bar in NormalBottomSheet
     trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
 
-    // Observe trajectory data and pass it to the ViewModel to parse it
     trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryJson -> {
-        boolean trajectoryExists = normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
-        
-        // If no data found, we should immediately show empty state
-        if (!trajectoryExists) {
-            normalBottomSheet.showEmptyState();
-        }
+        normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
     });
 
-    // Observe parsed activity summary data
     normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
-        if (activitySummaryList.isEmpty()) {
-            // Show empty state if no data is available
-            normalBottomSheet.showEmptyState();
-        } else {
-            // Update the activity summary list if data is available
             normalBottomSheet.updateActivitySummaryList(activitySummaryList);
-        }
     });
 }
 

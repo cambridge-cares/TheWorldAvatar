@@ -15,7 +15,6 @@ import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.Style;
-import com.mapbox.maps.StyleObjectInfo;
 import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 
 import org.apache.log4j.Logger;
@@ -54,16 +53,12 @@ public class TrajectoryManager {
                 if (trajectoryStr.isEmpty()) {
                     return;
                 }
-
-                // String colorCode = String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())));
-                String colorCode = "#FF0000";
                 Map<String, String> activityColors = new HashMap<>();
                 activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())))); // Blue
-                activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); //Yellow
+                activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); //Black
                 activityColors.put("vehicle", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
                 activityColors.put("bike", String.format("#%06X", (0xFF00FF & getColor(fragment.requireContext())))); // Magenta
                 
-                //paintTrajectory(style, trajectoryStr, colorCode, "default");
                 paintTrajectoryByActivity(style, trajectoryStr, activityColors, "default");
 
             });
@@ -96,37 +91,6 @@ public class TrajectoryManager {
         int colorPrimary = typedArray.getColor(0, Color.BLACK);
         typedArray.recycle();
         return colorPrimary;
-    }
-
-    private void paintTrajectory(Style style, String trajectory, String colorCode, String mode) {
-        JSONObject sourceJson = new JSONObject();
-        try {
-            sourceJson.put("type", "geojson");
-            sourceJson.put("data", trajectory);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        Expected<String, None> success = style.addStyleSource("trajectory_" + mode, Objects.requireNonNull(Value.fromJson(sourceJson.toString()).getValue()));
-        LOGGER.debug("trajectory: source created " + (success.isError() ? success.getError() : "success"));
-
-        JSONObject layerJson = new JSONObject();
-        try {
-            layerJson.put("id", "trajectory_layer_" + mode);
-            layerJson.put("type", "line");
-            layerJson.put("source", "trajectory_" + mode);
-            layerJson.put("line-join", "bevel");
-
-            JSONObject paint = new JSONObject();
-            paint.put("line-color", colorCode);
-            paint.put("line-width", 8);
-            layerJson.put("paint", paint);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, null, null));
-        LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
-
-        layerNames.add(mode);
     }
 
     private void paintTrajectoryByActivity(Style style, String trajectory, Map<String, String> activityColors, String mode) {

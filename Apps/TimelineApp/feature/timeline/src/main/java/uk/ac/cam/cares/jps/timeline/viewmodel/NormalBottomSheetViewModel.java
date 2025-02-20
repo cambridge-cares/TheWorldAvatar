@@ -20,7 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.ActivityItem;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
-import uk.ac.cam.cares.jps.model.ActivitySummary;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
@@ -97,9 +96,9 @@ public class NormalBottomSheetViewModel extends ViewModel {
     }
 
     /**
-     * parses the trajectoryjson to store start and end times for each segment(activity)
+     * parses the trajectoryJson to store start and end times for each segment(activity)
      */
-    public boolean parseActivitySummary(String trajectoryJson) {
+    public void parseActivitySummary(String trajectoryJson) {
     List<ActivityItem> summaries = new ArrayList<>();
 
     try {
@@ -126,8 +125,6 @@ public class NormalBottomSheetViewModel extends ViewModel {
     }
 
     _activitySummaryData.postValue(summaries);
-
-    return !summaries.isEmpty();
 
 }
 
