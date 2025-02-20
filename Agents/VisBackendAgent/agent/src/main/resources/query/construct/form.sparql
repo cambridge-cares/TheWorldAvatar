@@ -28,7 +28,7 @@ CONSTRUCT {
 } WHERE {
   ?shape rdf:type sh:NodeShape ;
     sh:targetClass [target] ;
-    (sh:and/rdf:first)?/sh:property ?property .
+    (sh:and/rdf:rest*/rdf:first)?/sh:property ?property .
   ?property sh:name ?propname ;
     sh:description ?propdesc ;
     (sh:node/sh:and?/sh:property)* ?subproperty .
