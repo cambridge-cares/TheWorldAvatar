@@ -26,6 +26,15 @@ def clean_gps_data(file_path, output_dir=None):
     except Exception as e:
         logger.error("Error loading CSV file %s: %s", file_path, e, exc_info=True)
         raise e
+    
+    #### Some column names in the raw data of Fenland Study (e.g., " Distance") may have extra spaces at the beginning or end.
+    #### Here we remove only the leading and trailing spaces, keeping the normal spacing between words intact.
+
+    df.columns = [col.strip() for col in df.columns]
+    logger.info("Normalized columns: %s", df.columns.tolist())
+
+    def norm_col(col):
+        return col.strip()
 
     # Define column names (to facilitate modifications if needed, if the dataset has different column name, only change once here can make this tool also work)
     utc_date_column_name = "UTC DATE"
@@ -55,6 +64,7 @@ def clean_gps_data(file_path, output_dir=None):
 
     def extract_numeric(value):
         if isinstance(value, str):
+            value = value.strip()
             matches = num_pattern.findall(value)
             if matches:
                 try:
