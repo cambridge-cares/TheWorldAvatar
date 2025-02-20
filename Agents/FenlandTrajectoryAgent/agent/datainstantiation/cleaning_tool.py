@@ -12,12 +12,13 @@ def clean_gps_data(file_path, output_dir=None):
          Other columns in the raw data from Fenland Study remain unchanged.
       2. For the LATITUDE and LONGITUDE columns:
          - First, check if the cell contains an isolated uppercase direction letter (N or S for latitude; E or W for longitude).
-           If such a letter exists, use it to determine the sign.
-         - Then, extract the numerical value from the cell using a regular expression that supports scientific notation (specifically: e/E/d/D).
+           If such a letter exists, use it to determine the sign. But for data in Fenland study, this pre-check is unnecessary. We just add this pre-check for general applicability consideration
+         - Then, extract the numerical value from the cell using a regular expression that supports scientific notation.
          - If no direction letter is found in the cell, check the optional additional direction columns (N/S for latitude, E/W for longitude)
-           to determine the direction.
-         - Adjust the numerical value's sign based on the determined direction
-      3. For the other columns, directly extract the numerical value using the regular expression, we don't need to check N/S E/W in speed, distance column..
+           to determine the direction. 
+         - Adjust the numerical value's sign based on the determined direction. For data in fenland study, the direction indicated by direction columns (N/S for latitude, E/W for longitude) hold a dominant position to determine the direction
+         Even if there is any single letters like N or S in cell of lat or lon, the function we defined here still use the infomation indicated by N/S and E/W)
+      3. For the other columns, directly extract the numerical value using the regular expression (which also that supports scientific notation)
     """
     logger.info("Starting cleaning of GPS data from file: %s", file_path)
     try:
@@ -26,17 +27,15 @@ def clean_gps_data(file_path, output_dir=None):
     except Exception as e:
         logger.error("Error loading CSV file %s: %s", file_path, e, exc_info=True)
         raise e
-    
-    #### Some column names in the raw data of Fenland Study (e.g., " Distance") may have extra spaces at the beginning or end.
-    #### Here we remove only the leading and trailing spaces, keeping the normal spacing between words intact.
 
+    # Remove leading and trailing spaces from column names
     df.columns = [col.strip() for col in df.columns]
     logger.info("Normalized columns: %s", df.columns.tolist())
 
     def norm_col(col):
         return col.strip()
 
-    # Define column names (to facilitate modifications if needed, if the dataset has different column name, only change once here can make this tool also work)
+    # Define column names
     utc_date_column_name = "UTC DATE"
     utc_time_column_name = "UTC TIME"
     latitude_column_name  = "LATITUDE"
@@ -45,8 +44,8 @@ def clean_gps_data(file_path, output_dir=None):
     heading_column_name   = "HEADING"
     height_column_name    = "HEIGHT"
     distance_column_name  = "DISTANCE"
-    ns_column_name        = "N/S"  # Optional additional direction column for latitude, available in data from Fenland study, for dataset doesn't have such column, code will check the signs in cell
-    ew_column_name        = "E/W"  # Optional additional direction column for latitude, available in data from Fenland study, for dataset doesn't have such column, code will check the signs in cell
+    ns_column_name        = "N/S"  # Optional additional direction column for latitude
+    ew_column_name        = "E/W"  # Optional additional direction column for longitude
 
     columns_to_clean = [
         utc_date_column_name,
@@ -74,33 +73,31 @@ def clean_gps_data(file_path, output_dir=None):
             return None
         return value
 
+    # Updated process_coord function
     def process_coord(val, row, is_latitude):
         """
-        Process a coordinate cell using the following steps:
-          1. If the cell contains an isolated uppercase direction letter (N or S for latitude; E or W for longitude),
-             use it to determine the direction.
-          2. Extract the numerical value from the cell using a regular expression (supporting scientific notation).
-          3. If no direction letter is found in the cell, check the optional additional direction column to determine the direction.
-          4. Adjust the numerical value's sign based on the determined direction.
+        As mentioned at the beginning of def clean_gps_data, the workflow for this process function using following steps:
+          1. Check for an isolated uppercase direction letter in the cell. If it is N/S or E/W, set a provisional direction
+          2. Extract the numeric value using a regular expression.
+          3. Check the optional additional direction column (N/S or E/W) and override the direction if available. 
+          4. Adjust the numeric value's sign based on the final direction.
         """
-        if not isinstance(val, str):
-            return val
-
+        # Step 1: Convert val to string.
+        val_str = str(val)
+        
         direction = None
-        # Step 1: Check for an isolated uppercase direction letter in the cell.
+        # Step 2: Check for a direction letter in the cell.
         if is_latitude:
-            # Look for an isolated 'N' or 'S'
-            match = re.search(r'(?<![A-Z])(N|S)(?![A-Z])', val)
+            match = re.search(r'(?<![A-Z])(N|S)(?![A-Z])', val_str)
             if match:
                 direction = match.group(1)
         else:
-            # For longitude, look for an isolated 'E' or 'W'
-            match = re.search(r'(?<![A-Z])(E|W)(?![A-Z])', val)
+            match = re.search(r'(?<![A-Z])(E|W)(?![A-Z])', val_str)
             if match:
                 direction = match.group(1)
-
-        # Step 2: Extract the numeric value using the regular expression.
-        matches = num_pattern.findall(val)
+        
+        # Step 3: Extract the numeric value.
+        matches = num_pattern.findall(val_str)
         numeric_val = None
         if matches:
             try:
@@ -108,45 +105,36 @@ def clean_gps_data(file_path, output_dir=None):
             except ValueError:
                 numeric_val = None
 
-        # Step 3: If no direction letter was found in the cell, check the optional additional direction column.
-        if direction is None:
-            if is_latitude and ns_column_name in row.index:
-                ns_val = row[ns_column_name]
-                if isinstance(ns_val, str):
-                    ns_val = ns_val.strip().upper()
-                    if ns_val in ['N', 'S']:
-                        direction = ns_val
-            elif (not is_latitude) and ew_column_name in row.index:
-                ew_val = row[ew_column_name]
-                if isinstance(ew_val, str):
-                    ew_val = ew_val.strip().upper()
-                    if ew_val in ['E', 'W']:
-                        direction = ew_val
+        # Step 4: Check the optional additional direction column and override.
+        if is_latitude and ns_column_name in row.index:
+            ns_val = row[ns_column_name]
+            if isinstance(ns_val, str):
+                ns_val = ns_val.strip().upper()
+                if ns_val in ['N', 'S']:
+                    direction = ns_val
+        elif (not is_latitude) and ew_column_name in row.index:
+            ew_val = row[ew_column_name]
+            if isinstance(ew_val, str):
+                ew_val = ew_val.strip().upper()
+                if ew_val in ['E', 'W']:
+                    direction = ew_val
 
-        # Step 4: Adjust the numeric value's sign based on the determined direction.
+        # Step 5: Adjust the numeric value based on the final direction.
         if numeric_val is not None and direction is not None:
             if is_latitude:
-                if direction == 'S':
-                    numeric_val = -abs(numeric_val)
-                elif direction == 'N':
-                    numeric_val = abs(numeric_val)
+                numeric_val = -abs(numeric_val) if direction == 'S' else abs(numeric_val)
             else:
-                if direction == 'W':
-                    numeric_val = -abs(numeric_val)
-                elif direction == 'E':
-                    numeric_val = abs(numeric_val)
+                numeric_val = -abs(numeric_val) if direction == 'W' else abs(numeric_val)
         return numeric_val
 
     for col in columns_to_clean:
         if col in cleaned_df.columns:
             if col == latitude_column_name or col == longitude_column_name:
-                # Process coordinate columns row by row using the process_coord function.
                 cleaned_df[col] = cleaned_df.apply(
                     lambda row: process_coord(row[col], row, is_latitude=(col == latitude_column_name)),
                     axis=1
                 )
             else:
-                # For non-coordinate columns, directly extract the numeric value.
                 cleaned_df[col] = cleaned_df[col].apply(extract_numeric)
 
     cleaned_df.columns = [col.strip() for col in cleaned_df.columns]
