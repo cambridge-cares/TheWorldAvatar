@@ -45,6 +45,7 @@ public class NormalBottomSheet extends BottomSheet {
     public void showFetchingAnimation(boolean isFetching) {
     if (isFetching) {
         getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.VISIBLE);
+        getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         
         adapter.setActivityList(new ArrayList<>());
