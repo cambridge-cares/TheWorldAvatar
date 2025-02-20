@@ -9,7 +9,7 @@ CONSTRUCT {
     sh:datatype ?type ;
     sh:in ?range ;
     sh:class ?dataclass ;
-    sh:nodeKind ?nodeKind;
+    twa:belongsTo ?node;
     twa:dependentOn ?dependentShape ;
     sh:group ?groupobj ;
     sh:minCount ?mincount ;
@@ -25,10 +25,20 @@ CONSTRUCT {
     rdfs:label ?group ;
     rdfs:comment ?groupdesc ;
     sh:order ?grouporder.
+  ?node rdf:type sh:NodeShape ;
+    rdfs:label ?nodename ;
+    rdfs:comment ?nodedesc .
 } WHERE {
   ?shape rdf:type sh:NodeShape ;
-    sh:targetClass [target] ;
-    (sh:and/rdf:rest*/rdf:first)?/sh:property ?property .
+    sh:targetClass [target] .
+  {
+    ?shape (sh:and/rdf:rest*/rdf:first)?/sh:property ?property .
+   } UNION {
+    ?shape sh:or/rdf:rest*/rdf:first ?node.
+    ?node sh:name ?nodename ;
+    	sh:description ?nodedesc ;
+      sh:property ?property .
+  }
   ?property sh:name ?propname ;
     sh:description ?propdesc ;
     (sh:node/sh:and?/sh:property)* ?subproperty .
