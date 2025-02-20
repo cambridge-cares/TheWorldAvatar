@@ -49,7 +49,7 @@ CONSTRUCT {
   }
   UNION
   {
-    ?subproperty sh:in ?range .
+    ?subproperty sh:in/(rdf:rest*/rdf:first)? ?range .
   }
   UNION
   {
