@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -182,8 +183,6 @@ public class FormTemplateFactory {
           .getOrDefault(ShaclResource.PROPERTY_PROPERTY, new ArrayList<>());
       // Add new property
       groupProperties.add(parseInputModel(property, defaultVals));
-      // Sort the properties based on order
-      groupProperties.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
       // Update the results
       group.put(ShaclResource.PROPERTY_PROPERTY, groupProperties);
       resultMappings.put(groupId, group);
@@ -266,10 +265,17 @@ public class FormTemplateFactory {
    * @param properties target properties.
    */
   private List<Map<String, Object>> genOutputs(Map<String, Map<String, Object>> properties) {
-    List<Map<String, Object>> results = new ArrayList<>();
-    properties.forEach((key, value) -> {
-      results.add(value);
-    });
+    List<Map<String, Object>> results = properties.values().stream().map(propOrGroup -> {
+      // For a property group which has `property` relations,
+      // sort the properties before appending the group
+      if (propOrGroup.containsKey(ShaclResource.PROPERTY_PROPERTY)) {
+        List<Map<String, Object>> groupProperties = (List<Map<String, Object>>) propOrGroup
+            .get(ShaclResource.PROPERTY_PROPERTY);
+        groupProperties.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
+        propOrGroup.put(ShaclResource.PROPERTY_PROPERTY, groupProperties);
+      }
+      return propOrGroup;
+    }).collect(Collectors.toList());
     // Sort the results based on order
     results.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
     return results;
