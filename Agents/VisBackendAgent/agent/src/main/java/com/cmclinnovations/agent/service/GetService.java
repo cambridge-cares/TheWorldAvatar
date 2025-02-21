@@ -15,7 +15,7 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.KGService;
-import com.cmclinnovations.agent.utils.LifecycleResource;
+import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class GetService {
@@ -192,17 +192,11 @@ public class GetService {
    * Retrieve the metadata (IRI, label, and description) of the concept associated
    * with the target resource. This will return their current or sub-classes.
    * 
-   * @param resourceID The target resource identifier for the instance class.
+   * @param conceptClass The target class details to retrieved.
    */
-  public ResponseEntity<?> getConceptMetadata(String resourceID) {
-    LOGGER.debug("Retrieving the instances for {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
-    // Return the BAD REQUEST response directly if IRI is invalid
-    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-      return iriResponse;
-    }
-    String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE,
-        iriResponse.getBody());
+  public ResponseEntity<?> getConceptMetadata(String conceptClass) {
+    LOGGER.debug("Retrieving the instances for {} ...", conceptClass);
+    String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE, StringResource.parseIriForQuery(conceptClass));
     // Note that all concept metadata will never be stored in Ontop and will require
     // the special property paths
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);

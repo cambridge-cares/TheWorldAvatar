@@ -173,10 +173,10 @@ public class VisBackendAgent {
    * Retrieve the metadata (IRI, label, and description) of the concept associated
    * with the specified type in the knowledge graph.
    */
-  @GetMapping("/type/{type}")
-  public ResponseEntity<?> getConceptMetadata(@PathVariable(name = "type") String type) {
-    LOGGER.info("Received request to get the metadata for the concept: {}...", type);
-    return this.getService.getConceptMetadata(type);
+  @GetMapping("/type")
+  public ResponseEntity<?> getConceptMetadata(@RequestParam(name = "uri") String uri) {
+    LOGGER.info("Received request to get the metadata for the concept: {}...", uri);
+    return this.getService.getConceptMetadata(uri);
   }
 
   /**
