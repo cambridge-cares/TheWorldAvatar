@@ -14,7 +14,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
       - [2.2.1 Geocoding route](#221-geocoding-route)
       - [2.2.2 Address search route](#222-address-search-route)
     - [2.3 Form Route](#23-form-route-baseurlvis-backend-agentformtype)
-    - [2.4 Concept Metadata Route](#24-concept-metadata-route-baseurlvis-backend-agenttypetype)
+    - [2.4 Concept Metadata Route](#24-concept-metadata-route-baseurlvis-backend-agenttype)
     - [2.5 Instance Route](#25-instance-route)
       - [2.5.1 Add route](#251-add-route)
       - [2.5.2 Delete route](#252-delete-route)
@@ -238,9 +238,9 @@ If successful, the response will return a form template in the following (minima
 }
 ```
 
-### 2.4 Concept Metadata Route: `<baseURL>/vis-backend-agent/type/{type}`
+### 2.4 Concept Metadata Route: `<baseURL>/vis-backend-agent/type`
 
-This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<baseURL>/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<baseURL>/vis-backend-agent/type` with the `uri` query parameter and value of the required ontology class.
 
 If successful, the response will return an array of objects in the following format:
 
@@ -627,7 +627,7 @@ A successful request will return `{"message": "Contract has been successfully te
 
 #### 2.6.7 Pricing route
 
-The `<baseURL>/vis-backend-agent/contracts/pricing` endpoint serves to handle any pricing model related transactions. 
+The `<baseURL>/vis-backend-agent/contracts/pricing` endpoint serves to handle any pricing model related transactions.
 
 Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/pricing/{id}` endpoint to retrieve the pricing model for the specific contract, , where `{id}`is the identifier of the target contract.
 
@@ -673,8 +673,17 @@ base:NameOfConceptShape
     sh:maxCount 1 ;
   ] ;
   sh:property [
-    sh:name "instance dropdown" ;
+    sh:name "list of subclasses dropdown" ;
     sh:order 2 ;
+    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from a list of at least one target class and its subclasses" ;
+    sh:path ontoexample:hasDropdownOptions ;
+    sh:in (ontoexample:DropdownOptionOne ontoexample:DropdownOptionTwo) ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "instance dropdown" ;
+    sh:order 3 ;
     sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from instances associated with the target class" ;
     sh:path ontoexample:hasDropdownForInstances ;
     sh:class ontoexample:ExampleClass ;
@@ -684,7 +693,7 @@ base:NameOfConceptShape
   sh:property [
     sh:name "text input";
     sh:description "A sample property showing the structure for creating a new text input field" ;
-    sh:order 3 ;
+    sh:order 4 ;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
@@ -693,7 +702,7 @@ base:NameOfConceptShape
   sh:property [
     sh:name "number input";
     sh:description "A sample property showing the structure for creating a new numerical input field" ;
-    sh:order 4 ;
+    sh:order 5 ;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:decimal ;
     sh:minCount 1 ;
@@ -702,7 +711,7 @@ base:NameOfConceptShape
   sh:property [
     sh:name "date input";
     sh:description "A sample property showing the structure for creating a new date input field" ;
-    sh:order 5 ;
+    sh:order 6 ;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:date ;
     sh:minCount 1 ;
@@ -822,7 +831,7 @@ base:ExampleFormSectionGroup
 	sh:order "2"^^xsd:integer .
 ```
 
-> [!IMPORTANT] 
+> [!IMPORTANT]
 > `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
 
 ### 3.1.2 Dependent Form Fields
