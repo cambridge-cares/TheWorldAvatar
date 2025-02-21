@@ -30,9 +30,10 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
       - [2.6.7 Pricing route](#267-pricing-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
-      - [3.1.1 Property Groups](#311-property-groups)
-      - [3.1.2 Dependent Form Fields](#312-dependent-form-fields)
-      - [3.1.3 Lifecycle-specific Features](#313-lifecycle-specific-feature)
+      - [3.1.1 Branching Form](#311-branching-form)
+      - [3.1.2 Property Groups](#312-property-groups)
+      - [3.1.3 Dependent Form Fields](#313-dependent-form-fields)
+      - [3.1.4 Lifecycle-specific Features](#314-lifecycle-specific-feature)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
@@ -744,7 +745,57 @@ base:ExampleClassShape
   ] .
 ```
 
-### 3.1.1 Property Groups
+### 3.1.1 Branching Form
+
+Users can generate branching forms using the `sh:or` logical constraint. This generates a form with a category dropdown. Selecting a category displays a different set of form fields. Each branch requires a separate node shape without a `sh:targetClass` property, but with `sh:name` and `sh:description` properties. These properties populate the category dropdown."
+
+A sample SHACL format in (TTL) for `sh:or` is described below:
+
+```
+base:CoreShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:ExampleClass ;
+  sh:property [
+    sh:name "common field";
+    sh:description "A common field that will be rendered for all branches.";
+    sh:path rdfs:label ;
+    sh:datatype xsd:string .
+  ] ;
+  sh:or (
+    base:BranchOneShape
+    base:BranchTwoShape
+  ) .
+
+base:BranchOneShape
+  a sh:NodeShape ;
+  sh:name "branch one" ;
+  sh:description "The first branch or set of form rendered" ;
+  sh:property [
+    sh:name "field one";
+    sh:description "A field specific to branch one.";
+    sh:path ontoexample:hasInput ;
+    sh:datatype xsd:string .
+  ] .
+
+base:BranchTwoShape
+  a sh:NodeShape ;
+  sh:name "branch two" ;
+  sh:description "The second branch or set of form rendered" ;
+  sh:property [
+    sh:name "field two";
+    sh:description "A field specific to branch two.";
+    sh:path ontoexample:hasSecondInput ;
+    sh:datatype xsd:string .
+  ] ;
+  sh:property [
+    sh:name "extra field";
+    sh:description "An extra field rendered when branch two is selected.";
+    sh:path ontoexample:hasExtraInput ;
+    sh:datatype xsd:string .
+  ] .
+```
+
+### 3.1.2 Property Groups
 
 Users may group form inputs into one form section either by using Nested Concepts via `sh:node` or `PropertyGroup` via sh:group.
 
@@ -831,10 +882,9 @@ base:ExampleFormSectionGroup
 	sh:order "2"^^xsd:integer .
 ```
 
-> [!IMPORTANT]
-> `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
+> [!IMPORTANT] > `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
 
-### 3.1.2 Dependent Form Fields
+### 3.1.3 Dependent Form Fields
 
 Users can set up dependencies between form fields by targeting the independent form property (via the corresponding `PropertyShape`) using the `https://theworldavatar.io/kg/form/dependentOn` relations. A sample SHACL file in TTL is given below:
 
@@ -864,7 +914,7 @@ base:FormDependencyShape-independent a sh:PropertyShape ;
   sh:maxCount 1 .
 ```
 
-### 3.1.3 Lifecycle-specific Feature
+### 3.1.4 Lifecycle-specific Feature
 
 > [!IMPORTANT]
 > For any lifecycle form, users will be required to configure the event occurrences using `SHACL` restrictions. Typically, `TerminatedServiceEvent`, `IncidentReportEvent`, `ContractRescission`, and `ContractTermination` can only accommodate a remarks property. For the `ServiceDispatchEvent`, users may assign additional dispatch details through defining more `SHACL` properties. Note that an id field must be included for a `ServiceDispatchEvent`. A sample file has been created in `./resources/shacl.ttl`
