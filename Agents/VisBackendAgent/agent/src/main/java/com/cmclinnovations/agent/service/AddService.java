@@ -1,8 +1,10 @@
 package com.cmclinnovations.agent.service;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -148,6 +150,10 @@ public class AddService {
         } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("pricing")) {
           ObjectNode pricingModel = this.lifecycleReportService.genPricingModel(replacements);
           parentNode.set(parentField, pricingModel);
+          // When parsing an array for an object node
+        } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("array")) {
+          ArrayNode resultArray = this.genFieldArray(currentNode, replacements);
+          parentNode.set(parentField, resultArray);
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
@@ -199,9 +205,30 @@ public class AddService {
           } else if (childNode.isArray()) {
             // If the child node contains an array, recursively parse through each object
             ArrayNode childrenNodes = (ArrayNode) childNode;
+            Deque<Integer> removableIndexes = new ArrayDeque<>();
+            Queue<JsonNode> additionalNodes = new ArrayDeque<>();
             for (int i = 0; i < childrenNodes.size(); i++) {
-              // Assumes that the nodes in the array are object node
-              recursiveReplacePlaceholders((ObjectNode) childrenNodes.get(i), currentNode, fieldName, replacements);
+              ObjectNode currentChildNode = this.jsonLdService.getObjectNode(childrenNodes.get(i));
+              // If child node is an array field
+              if (currentChildNode.path(ShaclResource.TYPE_KEY).asText().equals("array")) {
+                ArrayNode resultArray = this.genFieldArray(currentChildNode, replacements);
+                // Store the results and removable index
+                for (JsonNode element : resultArray) {
+                  additionalNodes.offer(element);
+                }
+                removableIndexes.addFirst(i);
+              } else {
+                // Assumes that the nodes in the array are object node
+                this.recursiveReplacePlaceholders(currentChildNode, currentNode, fieldName, replacements);
+              }
+            }
+            // Remove the array fields that should be removed
+            while (!removableIndexes.isEmpty()) {
+              childrenNodes.remove(removableIndexes.removeFirst());
+            }
+            // Add all additional nodes
+            while (!additionalNodes.isEmpty()) {
+              childrenNodes.add(additionalNodes.poll());
             }
           }
         }
@@ -267,6 +294,30 @@ public class AddService {
         }
       }
     }
+  }
+
+  /**
+   * Generates a field array node from the replacement node of array type.
+   * 
+   * @param replacementNode Input contents to perform operation on.
+   * @param replacements    Mappings of the replacement value with their
+   *                        corresponding node.
+   */
+  private ArrayNode genFieldArray(ObjectNode replacementNode, Map<String, Object> replacements) {
+    ArrayNode resultArray = this.jsonLdService.genArrayNode();
+    ObjectNode arrayTemplate = this.jsonLdService.getObjectNode(replacementNode.path(ShaclResource.CONTENTS_KEY));
+
+    String arrayFieldName = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
+    List<Map<String, Object>> arrayFields = (List<Map<String, Object>>) replacements.get(arrayFieldName);
+    arrayFields.stream().forEach(arrayField -> {
+      // Copy the template to prevent any modification
+      ObjectNode currentArrayItem = arrayTemplate.deepCopy();
+      arrayField.putAll(replacements);// place existing replacements into the array mappings
+      arrayField.put("id", UUID.randomUUID()); // generate a new ID key for each item in the array
+      this.recursiveReplacePlaceholders(currentArrayItem, null, null, arrayField);
+      resultArray.add(currentArrayItem);
+    });
+    return resultArray;
   }
 
   /**
