@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
@@ -86,6 +86,7 @@ public class CEAAgent extends JPSAgent {
     private String ceaRoute;
     private String openmeteoagentUrl;
     private String ontopUrl;
+    private List<String> ceaDb;
 
     public CEAAgent() {
         readConfig();
@@ -169,9 +170,20 @@ public class CEAAgent extends JPSAgent {
                     ceaMetaData = new CEAMetaData(surrounding, null, null, null, terrain);
                 }
 
-                // Manually set thread number to 0 - multiple threads not working so needs investigating
-                // Potentially issue is CEA is already multi-threaded
-                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs);
+                String ceaDatabase = ceaDb.get(0);
+
+                try {
+                    String tempS = GeometryHandler.getCountry(buildingData.get(0).getGeometry().getFootprint().get(0).getCoordinate());
+                    tempS = tempS.toUpperCase();
+
+                    if (ceaDb.contains(tempS)) {
+                        ceaDatabase = tempS;
+                    }
+                }
+                catch (Exception e) {
+                }
+
+                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase);
             }
             else if (requestUrl.contains(URI_UPDATE)) {
                 // parse times
@@ -419,6 +431,7 @@ public class CEAAgent extends JPSAgent {
             defaultTerrainDb = config.getProperty("terrain.database");
             defaultTerrainTable = config.getProperty("terrain.table");
             tsDb = config.getProperty("cea.database");
+            ceaDb = Arrays.asList(config.getProperty("cea.defined.databases").split(","));
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -437,9 +450,9 @@ public class CEAAgent extends JPSAgent {
      * @param threadNumber int tracking thread that is running
      * @param crs coordinate reference system
      */
-    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs) {
+    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase) {
         try {
-            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs, ceaDatabase);
             CEAExecutor.execute(task);
         }
         catch(URISyntaxException e){
