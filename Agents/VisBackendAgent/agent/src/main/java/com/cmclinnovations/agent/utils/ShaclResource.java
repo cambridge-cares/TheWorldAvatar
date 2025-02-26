@@ -9,6 +9,7 @@ public class ShaclResource {
   public static final String TYPE_KEY = "@type";
   public static final String VAL_KEY = "@value";
   public static final String REPLACE_KEY = "@replace";
+  public static final String BRANCH_KEY = "@branch";
   public static final String REVERSE_KEY = "@reverse";
   public static final String UNIT_KEY = "unit";
   public static final String VARIABLE_KEY = "variable";

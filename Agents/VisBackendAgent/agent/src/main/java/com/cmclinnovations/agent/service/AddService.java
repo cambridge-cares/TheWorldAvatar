@@ -1,9 +1,11 @@
 package com.cmclinnovations.agent.service;
 
 import java.util.ArrayDeque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -185,16 +187,94 @@ public class AddService {
       while (fieldNames.hasNext()) {
         String fieldName = fieldNames.next();
         JsonNode childNode = currentNode.get(fieldName);
-        // If the child node is an object, recurse deeper
-        if (childNode.isObject()) {
-          recursiveReplacePlaceholders((ObjectNode) childNode, currentNode, fieldName, replacements);
-        } else if (childNode.isArray()) {
-          // If the child node contains an array, recursively parse through each object
-          ArrayNode childrenNodes = (ArrayNode) childNode;
-          for (int i = 0; i < childrenNodes.size(); i++) {
-            // Assumes that the nodes in the array are object node
-            recursiveReplacePlaceholders((ObjectNode) childrenNodes.get(i), currentNode, fieldName, replacements);
+        // For any form branch configuration field
+        if (fieldName.equals(ShaclResource.BRANCH_KEY)) {
+          ObjectNode matchedOption = this.findMatchingOption(
+              this.jsonLdService.getArrayNode(currentNode.path(ShaclResource.BRANCH_KEY)),
+              replacements.keySet());
+          // Iterate and append each property in the target node to the current node
+          Iterator<String> matchedOptionFieldNames = matchedOption.fieldNames();
+          while (matchedOptionFieldNames.hasNext()) {
+            String currentOptionField = matchedOptionFieldNames.next();
+            this.recursiveReplacePlaceholders(matchedOption, currentNode, currentOptionField,
+                replacements);
+            // Append matched option field node to the current node
+            currentNode.set(currentOptionField, matchedOption.path(currentOptionField));
           }
+          currentNode.remove(ShaclResource.BRANCH_KEY); // Always remove the branch field once parsed
+          // For all other fields
+        } else {
+          // If the child node is an object, recurse deeper
+          if (childNode.isObject()) {
+            recursiveReplacePlaceholders((ObjectNode) childNode, currentNode, fieldName, replacements);
+          } else if (childNode.isArray()) {
+            // If the child node contains an array, recursively parse through each object
+            ArrayNode childrenNodes = (ArrayNode) childNode;
+            for (int i = 0; i < childrenNodes.size(); i++) {
+              // Assumes that the nodes in the array are object node
+              recursiveReplacePlaceholders((ObjectNode) childrenNodes.get(i), currentNode, fieldName, replacements);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Search for the option that matches most of the replacement fields in the
+   * array.
+   * 
+   * @param options        List of options to filter.
+   * @param matchingFields A list containing the fields for matching.
+   */
+  private ObjectNode findMatchingOption(ArrayNode options, Set<String> matchingFields) {
+    // Remove irrelevant parameters
+    matchingFields.remove("entity");
+    ObjectNode bestMatchNode = this.jsonLdService.genObjectNode();
+    int maxMatches = -1;
+    for (JsonNode currentOption : options) {
+      Set<String> availableFields = new HashSet<>();
+      this.recursiveFindReplaceFields(currentOption, availableFields);
+      // Only continue parsing when there are less fields than matching fields
+      // When there are more available fields than matching fields, multiple
+      // options may matched and cannot be discerned
+      if (availableFields.size() <= matchingFields.size()) {
+        // Verify if there are more matched fields than the current maximum
+        Set<String> intersection = new HashSet<>(availableFields);
+        intersection.retainAll(matchingFields);
+        if (intersection.size() > maxMatches) {
+          maxMatches = intersection.size();
+          bestMatchNode = this.jsonLdService.getObjectNode(currentOption);
+        }
+      }
+    }
+    return bestMatchNode;
+  }
+
+  /**
+   * Recursively iterate through the current node to find all replacement fields.
+   * 
+   * @param currentNode The current object node for iteration.
+   * @param foundFields A list storing the fields that have already been found.
+   */
+  private void recursiveFindReplaceFields(JsonNode currentNode, Set<String> foundFields) {
+    // For an replacement object
+    if (currentNode.has(ShaclResource.REPLACE_KEY)) {
+      String replaceValue = currentNode.path(ShaclResource.REPLACE_KEY).asText();
+      // Add the replace value if it has yet to be found
+      if (!foundFields.contains(replaceValue)) {
+        foundFields.add(replaceValue);
+      }
+    } else {
+      Iterator<String> fields = currentNode.fieldNames();
+      while (fields.hasNext()) {
+        String currentField = fields.next();
+        if (currentNode.path(currentField).isArray()) {
+          for (JsonNode arrayItemNode : currentNode.path(currentField)) {
+            this.recursiveFindReplaceFields(arrayItemNode, foundFields);
+          }
+        } else {
+          this.recursiveFindReplaceFields(currentNode.path(currentField), foundFields);
         }
       }
     }

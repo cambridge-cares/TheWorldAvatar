@@ -12,6 +12,7 @@ import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
@@ -115,5 +116,42 @@ public class JsonLdService {
         .put(ShaclResource.VAL_KEY, literalVal);
     literal.put(ShaclResource.TYPE_KEY, dataType == null ? ShaclResource.XSD_STRING : dataType);
     return literal;
+  }
+
+  /**
+   * Creates an empty object node.
+   */
+  public ObjectNode genObjectNode() {
+    return this.objectMapper.createObjectNode();
+  }
+
+  /**
+   * Retrieves an object node from a JSON node.
+   * 
+   * @param input The JSON node.
+   */
+  public ObjectNode getObjectNode(JsonNode input) {
+    if (input.isObject()) {
+      return (ObjectNode) input;
+    } else {
+      String inputString = input.toPrettyString();
+      LOGGER.error("Invalid object input: {}", inputString);
+      throw new IllegalArgumentException(MessageFormat.format("Invalid object input: {}", inputString));
+    }
+  }
+
+  /**
+   * Retrieves an object node from a JSON node.
+   * 
+   * @param input The JSON node.
+   */
+  public ArrayNode getArrayNode(JsonNode input) {
+    if (input.isArray()) {
+      return (ArrayNode) input;
+    } else {
+      String inputString = input.toPrettyString();
+      LOGGER.error("Invalid array input: {}", inputString);
+      throw new IllegalArgumentException(MessageFormat.format("Invalid array input: {}", inputString));
+    }
   }
 }
