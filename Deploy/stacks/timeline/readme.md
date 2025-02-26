@@ -23,7 +23,7 @@ Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN 
 
 > If the stack is deployed in remote server, please update 
 > - `auth-server-url` in [user_agent_keycloak.json](test/stack-manager/inputs/data) accordingly
-> - `rootUrl` for **user-agent client** in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data)
+> - `rootUrl` for user-agent client from `localhost:58085` to the server address in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data)
 
 You may need to change the permissions of the keycloak startup script, i.e.
 
