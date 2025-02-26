@@ -184,9 +184,9 @@ public class QueryTemplateFactory {
    */
   public String genDeleteQueryTemplate(ObjectNode rootNode, String targetId) {
     StringBuilder deleteBuilder = new StringBuilder();
-    StringBuilder whereBuilder = new StringBuilder();
-    this.recursiveParseNode(deleteBuilder, whereBuilder, rootNode, targetId);
-    return "DELETE {" + deleteBuilder.toString() + "} WHERE {" + whereBuilder.toString() + "}";
+    this.recursiveParseNode(deleteBuilder, rootNode, targetId);
+    String deleteContents = deleteBuilder.toString();
+    return "DELETE {" + deleteContents + "} WHERE {" + deleteContents + "}";
   }
 
   /**
@@ -534,11 +534,10 @@ public class QueryTemplateFactory {
    * available.
    * 
    * @param deleteBuilder A query builder for the DELETE clause.
-   * @param whereBuilder  A query builder for the WHERE clause.
    * @param currentNode   Input contents to perform operation on.
    * @param targetId      The target instance IRI.
    */
-  private void recursiveParseNode(StringBuilder deleteBuilder, StringBuilder whereBuilder, ObjectNode currentNode,
+  private void recursiveParseNode(StringBuilder deleteBuilder, ObjectNode currentNode,
       String targetId) {
     // First retrieve the ID value as a subject of the triple
     String idTripleSubject = this.getFormattedQueryVariable(currentNode.path(ShaclResource.ID_KEY),
@@ -551,7 +550,6 @@ public class QueryTemplateFactory {
       if (field.getKey().equals(ShaclResource.TYPE_KEY)) {
         String typeTripleObject = this.getFormattedQueryVariable(fieldNode, targetId);
         StringResource.appendTriple(deleteBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
-        StringResource.appendTriple(whereBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
         // For all @reverse fields
       } else if (field.getKey().equals(ShaclResource.REVERSE_KEY)) {
         if (fieldNode.isArray()) {
@@ -566,14 +564,14 @@ public class QueryTemplateFactory {
           while (fieldIterator.hasNext()) {
             String reversePredicate = fieldIterator.next();
             this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
-                reversePredicate, deleteBuilder, whereBuilder, targetId, true);
+                reversePredicate, deleteBuilder, targetId, true);
           }
         }
         // The @id and @context field should be ignored but continue parsing for
         // everything else
       } else if (!field.getKey().equals(ShaclResource.ID_KEY) && !field.getKey().equals(ShaclResource.CONTEXT_KEY)) {
         this.parseFieldNode(currentNode.path(ShaclResource.ID_KEY), fieldNode, idTripleSubject, field.getKey(),
-            deleteBuilder, whereBuilder, targetId);
+            deleteBuilder, targetId);
       }
     }
   }
@@ -611,11 +609,10 @@ public class QueryTemplateFactory {
    * @param subject       The node acting as the subject of the triple.
    * @param predicate     The predicate path of the triple.
    * @param deleteBuilder A query builder for the DELETE clause.
-   * @param whereBuilder  A query builder for the WHERE clause.
    * @param targetId      The target instance IRI.
    */
   private void parseFieldNode(JsonNode idNode, JsonNode fieldNode, String subject, String predicate,
-      StringBuilder deleteBuilder, StringBuilder whereBuilder, String targetId) {
+      StringBuilder deleteBuilder, String targetId) {
     // For object field node
     if (fieldNode.isObject()) {
       JsonNode targetTripleObjectNode = fieldNode.has(ShaclResource.REPLACE_KEY)
@@ -624,24 +621,23 @@ public class QueryTemplateFactory {
       String formattedPredicate = StringResource.parseIriForQuery(predicate);
       String formattedObjVar = this.getFormattedQueryVariable(targetTripleObjectNode, targetId);
       StringResource.appendTriple(deleteBuilder, subject, formattedPredicate, formattedObjVar);
-      StringResource.appendTriple(whereBuilder, subject, formattedPredicate, formattedObjVar);
       // Further processing for only pricing replacement object
       if (fieldNode.has(ShaclResource.REPLACE_KEY)
           && fieldNode.path(ShaclResource.REPLACE_KEY).asText().equals("pricing")) {
-        this.appendPricingModelStatements(formattedObjVar, deleteBuilder, whereBuilder);
+        this.appendPricingModelStatements(formattedObjVar, deleteBuilder);
       }
       // No further processing required for objects intended for replacement, @value,
       if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY) &&
       // or a one line instance link to a TextNode eg: "@id" : "instanceIri"
           !(fieldNode.has(ShaclResource.ID_KEY) && fieldNode.size() == 1
               && fieldNode.path(ShaclResource.ID_KEY).isTextual())) {
-        this.recursiveParseNode(deleteBuilder, whereBuilder, (ObjectNode) fieldNode, targetId);
+        this.recursiveParseNode(deleteBuilder, (ObjectNode) fieldNode, targetId);
       }
       // For arrays,iterate through each object and parse the nested node
     } else if (fieldNode.isArray()) {
       ArrayNode fieldArray = (ArrayNode) fieldNode;
       for (JsonNode tripleObjNode : fieldArray) {
-        this.parseNestedNode(idNode, tripleObjNode, predicate, deleteBuilder, whereBuilder, targetId, false);
+        this.parseNestedNode(idNode, tripleObjNode, predicate, deleteBuilder, targetId, false);
       }
     }
   }
@@ -653,12 +649,11 @@ public class QueryTemplateFactory {
    * @param objectNode    The node acting as the object of the triple.
    * @param predicatePath The predicate path of the triple.
    * @param deleteBuilder A query builder for the DELETE clause.
-   * @param whereBuilder  A query builder for the WHERE clause.
    * @param targetId      The target instance IRI.
    * @param isReverse     Indicates if the variable should be inverse or not.
    */
   private void parseNestedNode(JsonNode idNode, JsonNode objectNode, String predicatePath, StringBuilder deleteBuilder,
-      StringBuilder whereBuilder, String targetId, boolean isReverse) {
+      String targetId, boolean isReverse) {
     if (isReverse) {
       if (objectNode.isObject()) {
         // A reverse node indicates that the replacement object should now be the
@@ -666,21 +661,20 @@ public class QueryTemplateFactory {
         if (objectNode.has(ShaclResource.REPLACE_KEY)) {
           String replacementVar = this.getFormattedQueryVariable(objectNode, null);
           this.parseFieldNode(null, idNode, replacementVar, predicatePath,
-              deleteBuilder, whereBuilder, targetId);
+              deleteBuilder, targetId);
         } else {
           // A reverse node indicates that the original object should now be the subject
           // And the Id Node should become the object
           ObjectNode nestedReverseNode = (ObjectNode) objectNode;
           nestedReverseNode.set(predicatePath, idNode);
-          this.recursiveParseNode(deleteBuilder, whereBuilder, nestedReverseNode, targetId);
+          this.recursiveParseNode(deleteBuilder, nestedReverseNode, targetId);
         }
       } else if (objectNode.isArray()) {
         // For reverse arrays, iterate and recursively parse each object as a reverse
         // node
         ArrayNode objArray = (ArrayNode) objectNode;
         for (JsonNode nestedReverseObjNode : objArray) {
-          this.parseNestedNode(idNode, nestedReverseObjNode, predicatePath, deleteBuilder, whereBuilder,
-              targetId, true);
+          this.parseNestedNode(idNode, nestedReverseObjNode, predicatePath, deleteBuilder, targetId, true);
         }
       }
     } else {
@@ -689,7 +683,7 @@ public class QueryTemplateFactory {
       ObjectNode nestedNode = this.objectMapper.createObjectNode();
       nestedNode.set(ShaclResource.ID_KEY, idNode);
       nestedNode.set(predicatePath, objectNode);
-      this.recursiveParseNode(deleteBuilder, whereBuilder, nestedNode, targetId);
+      this.recursiveParseNode(deleteBuilder, nestedNode, targetId);
     }
   }
 
@@ -698,22 +692,15 @@ public class QueryTemplateFactory {
    * 
    * @param subjectVar    The subject of the pricing model as a variable.
    * @param deleteBuilder A query builder for the DELETE clause.
-   * @param whereBuilder  A query builder for the WHERE clause.
    */
-  private void appendPricingModelStatements(String subjectVar, StringBuilder deleteBuilder,
-      StringBuilder whereBuilder) {
+  private void appendPricingModelStatements(String subjectVar, StringBuilder deleteBuilder) {
     String feeVar = ShaclResource.VARIABLE_MARK + "fee";
     String anyPredVar = ShaclResource.VARIABLE_MARK + "anypred";
     String anyObjectVar = ShaclResource.VARIABLE_MARK + "object";
     StringResource.appendTriple(deleteBuilder, subjectVar, RDF_TYPE,
         StringResource.parseIriForQuery(LifecycleResource.PRICING_MODEL));
-    StringResource.appendTriple(whereBuilder, subjectVar, RDF_TYPE,
-        StringResource.parseIriForQuery(LifecycleResource.PRICING_MODEL));
     StringResource.appendTriple(deleteBuilder, subjectVar,
         StringResource.parseIriForQuery(LifecycleResource.HAS_ARGUMENT_RELATIONS), feeVar);
-    StringResource.appendTriple(whereBuilder, subjectVar,
-        StringResource.parseIriForQuery(LifecycleResource.HAS_ARGUMENT_RELATIONS), feeVar);
     StringResource.appendTriple(deleteBuilder, feeVar, anyPredVar, anyObjectVar);
-    StringResource.appendTriple(whereBuilder, feeVar, anyPredVar, anyObjectVar);
   }
 }
