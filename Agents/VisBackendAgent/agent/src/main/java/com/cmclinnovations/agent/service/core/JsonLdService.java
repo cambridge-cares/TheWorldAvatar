@@ -141,6 +141,13 @@ public class JsonLdService {
   }
 
   /**
+   * Creates an empty array node.
+   */
+  public ArrayNode genArrayNode() {
+    return this.objectMapper.createArrayNode();
+  }
+
+  /**
    * Retrieves an object node from a JSON node.
    * 
    * @param input The JSON node.

@@ -22,7 +22,6 @@ import com.cmclinnovations.agent.service.core.KGService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -32,7 +31,6 @@ public class AddService {
   private final FileService fileService;
   private final JsonLdService jsonLdService;
   private final LifecycleReportService lifecycleReportService;
-  private final ObjectMapper objectMapper;
 
   private static final Logger LOGGER = LogManager.getLogger(AddService.class);
 
@@ -44,15 +42,13 @@ public class AddService {
    * @param jsonLdService          A service for interactions with JSON LD.
    * @param lifecycleReportService A service for reporting lifecycle matters such
    *                               as calculation instances.
-   * @param objectMapper           The JSON object mapper.
    */
   public AddService(KGService kgService, FileService fileService, JsonLdService jsonLdService,
-      LifecycleReportService lifecycleReportService, ObjectMapper objectMapper) {
+      LifecycleReportService lifecycleReportService) {
     this.kgService = kgService;
     this.fileService = fileService;
     this.jsonLdService = jsonLdService;
     this.lifecycleReportService = lifecycleReportService;
-    this.objectMapper = objectMapper;
   }
 
   /**
@@ -94,17 +90,10 @@ public class AddService {
     // Update ID value to target ID
     param.put("id", targetId);
     // Retrieve the instantiation JSON schema
-    JsonNode addJsonSchema = this.fileService.getJsonContents(filePath);
+    ObjectNode addJsonSchema = this.jsonLdService.getObjectNode(
+        this.fileService.getJsonContents(filePath));
     // Attempt to replace all placeholders in the JSON schema
-    if (addJsonSchema.isObject()) {
-      this.recursiveReplacePlaceholders((ObjectNode) addJsonSchema, null, null, param);
-    } else {
-      LOGGER.info("Invalid JSON-LD format for replacement!");
-      return new ResponseEntity<>(
-          new ApiResponse("Invalid JSON-LD format for replacement! Please contact your technical team for assistance."),
-          HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
+    this.recursiveReplacePlaceholders(addJsonSchema, null, null, param);
     return this.instantiateJsonLd(addJsonSchema, resourceID + " has been successfully instantiated!");
   }
 
@@ -170,7 +159,7 @@ public class AddService {
           // object
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
             && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
-          ObjectNode newIriNode = this.objectMapper.createObjectNode();
+          ObjectNode newIriNode = this.jsonLdService.genObjectNode();
           newIriNode.put(ShaclResource.ID_KEY, this.jsonLdService.getReplacementValue(currentNode, replacements));
           parentNode.set(parentField, newIriNode);
         } else {
@@ -293,17 +282,14 @@ public class AddService {
   private void replaceDayOfWeekSchedule(ObjectNode parentNode, String parentField, Map<String, Object> replacements) {
     // Note that this method assumes that the explicit recurrence interval will
     // always contain an array of items
-    ArrayNode results = this.objectMapper.createArrayNode(); // Empty array to store values
+    ArrayNode results = this.jsonLdService.genArrayNode(); // Empty array to store values
     // First iterate through the schedule array and retrieve all items that are not
     // the replacement object
-    JsonNode scheduleNode = parentNode.path(parentField);
-    if (scheduleNode.isArray()) {
-      ArrayNode nodes = (ArrayNode) scheduleNode;
-      for (int i = 0; i < nodes.size(); i++) {
-        JsonNode currentScheduleNode = nodes.get(i);
-        if (currentScheduleNode.isObject() && !((ObjectNode) currentScheduleNode).has(ShaclResource.REPLACE_KEY)) {
-          results.add(currentScheduleNode);
-        }
+    ArrayNode nodes = this.jsonLdService.getArrayNode(parentNode.path(parentField));
+    for (int i = 0; i < nodes.size(); i++) {
+      JsonNode currentScheduleNode = nodes.get(i);
+      if (currentScheduleNode.isObject() && !currentScheduleNode.has(ShaclResource.REPLACE_KEY)) {
+        results.add(currentScheduleNode);
       }
     }
 
@@ -323,7 +309,7 @@ public class AddService {
       // Parameter name is in lowercase based on the frontend
       if (replacements.containsKey(currentDay.toLowerCase()) && (boolean) replacements.get(currentDay.toLowerCase())) {
         // Only include the selected day if it has been selected on the frontend
-        ObjectNode currentDayNode = this.objectMapper.createObjectNode();
+        ObjectNode currentDayNode = this.jsonLdService.genObjectNode();
         currentDayNode.put(ShaclResource.ID_KEY,
             "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/"
                 + currentDay + "");
