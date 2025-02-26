@@ -157,20 +157,34 @@ public class AddService {
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
-          ObjectNode literalNode = this.jsonLdService.genLiteral(
-              this.jsonLdService.getReplacementValue(currentNode, replacements),
-              currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
-          parentNode.set(parentField, literalNode);
+          String replacement = this.jsonLdService.getReplacementValue(currentNode, replacements);
+          if (replacement.isEmpty()) { // Remove empty replacements
+            parentNode.remove(parentField);
+          } else {
+            ObjectNode literalNode = this.jsonLdService.genLiteral(replacement,
+                currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
+            parentNode.set(parentField, literalNode);
+          }
           // IRIs that are not assigned to @id or @type should belong within a nested @id
           // object
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
             && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
-          ObjectNode newIriNode = this.jsonLdService.genObjectNode();
-          newIriNode.put(ShaclResource.ID_KEY, this.jsonLdService.getReplacementValue(currentNode, replacements));
-          parentNode.set(parentField, newIriNode);
+          String replacement = this.jsonLdService.getReplacementValue(currentNode, replacements);
+          if (replacement.isEmpty()) { // Remove empty replacements
+            parentNode.remove(parentField);
+          } else {
+            ObjectNode newIriNode = this.jsonLdService.genObjectNode();
+            newIriNode.put(ShaclResource.ID_KEY, replacement);
+            parentNode.set(parentField, newIriNode);
+          }
         } else {
           // For IRIs and literal with no other pattern, simply replace the value
-          parentNode.put(parentField, this.jsonLdService.getReplacementValue(currentNode, replacements));
+          String replacement = this.jsonLdService.getReplacementValue(currentNode, replacements);
+          if (replacement.isEmpty()) { // Remove empty replacements
+            parentNode.remove(parentField);
+          } else {
+            parentNode.put(parentField, replacement);
+          }
         }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
