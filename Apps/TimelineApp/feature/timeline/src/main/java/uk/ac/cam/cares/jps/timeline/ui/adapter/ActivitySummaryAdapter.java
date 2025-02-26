@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.model.ActivityItem;
@@ -17,14 +16,10 @@ import uk.ac.cam.cares.jps.timelinemap.R;
  * Adapter class for recyclerview to view activity summary information.
  */
 public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummaryAdapter.ActivitySummaryViewHolder> {
-    private List<ActivityItem> activityList;
+    private final List<ActivityItem> activityList;
 
-    public ActivitySummaryAdapter() {
-        activityList = new ArrayList<>();
-    }
-
-    public void setActivityList(List<ActivityItem> activities) {
-        activityList = activities;
+    public ActivitySummaryAdapter(List<ActivityItem> activityList) {
+        this.activityList = activityList;
     }
 
     @NonNull

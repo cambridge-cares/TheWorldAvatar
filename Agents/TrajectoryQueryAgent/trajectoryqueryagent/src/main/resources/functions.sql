@@ -123,29 +123,6 @@ BEGIN
     RETURN QUERY EXECUTE query;
 END $$ LANGUAGE plpgsql;
 
--- used by timeline app only
-CREATE OR REPLACE FUNCTION get_device_ids(id VARCHAR)
-RETURNS TEXT AS
-$$
-DECLARE
-    phone_id_list TEXT[];
-BEGIN
-    -- Aggregate phone_id values into an array, but only if phone_id exists in the devices table
-    SELECT array_agg(phone_id)
-    INTO phone_id_list
-    FROM timeline."smartPhone" sp
-    WHERE sp.user_id = id
-    AND EXISTS (
-        SELECT 1 
-        FROM devices d
-        WHERE d.device_id = sp.phone_id
-    );
-
-    RETURN phone_id_list;
-END;
-$$
-LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION get_activity_table(
     device_id_array TEXT[]
 )

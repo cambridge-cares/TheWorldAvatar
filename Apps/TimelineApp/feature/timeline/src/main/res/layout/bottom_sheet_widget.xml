@@ -9,14 +9,12 @@
     android:paddingHorizontal="@dimen/component_margin"
     android:paddingTop="@dimen/component_margin_xs">
 
-    <!-- Drag Handle -->
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/drag_handle"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_marginTop="@dimen/component_margin_small" />
 
-    <!-- Date Navigation Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,7 +62,7 @@
             android:background="@drawable/baseline_keyboard_arrow_right_24"
             android:contentDescription="@string/next_date_button" />
     </LinearLayout>
-    
+
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

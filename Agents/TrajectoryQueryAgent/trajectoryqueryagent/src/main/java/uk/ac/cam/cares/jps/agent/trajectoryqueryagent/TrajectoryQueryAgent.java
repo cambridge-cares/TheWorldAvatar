@@ -108,7 +108,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             response.put("message", "Succeed");
             response.put("result", result);
         } else {
-            response.put("message", "Faile");
+            response.put("message", "Failed");
         }
 
         return response;

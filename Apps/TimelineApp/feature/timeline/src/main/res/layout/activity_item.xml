@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="45dp"
     android:paddingVertical="10dp"
     android:gravity="left">
 
@@ -28,8 +28,8 @@
         android:layout_toEndOf="@+id/activityType"
         android:gravity="center"
         android:text="00:00 - 00:00"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:textColor="#121212"
+        android:textSize="18sp" />
 
 </RelativeLayout>
 

@@ -151,6 +151,7 @@ SELECT
     MAX(na.time) AS end_time,
     na.id,
     na.filled_activity_type AS activity_type,
+    na.session_id,
     ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)) AS geom, 
     CONCAT('https://w3id.org/MON/person.owl#person_', na.user_id) AS iri
 FROM
@@ -160,4 +161,4 @@ WHERE
     AND ('%lowerbound%' = '0' OR na.time > '%lowerbound%'::BIGINT)
     AND ('%upperbound%' = '0' OR na.time < '%upperbound%'::BIGINT)
 GROUP BY
-    na.id, na.filled_activity_type, na.user_id
+    na.id, na.filled_activity_type, na.user_id, na.session_id

@@ -84,7 +84,10 @@ public class TrajectoryManager {
             }
 
         });
+
+        
     }
+
 
     private int getColor(Context context) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{com.google.android.material.R.attr.colorPrimary});

@@ -11,11 +11,10 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.model.ActivityItem;
-import uk.ac.cam.cares.jps.timeline.ui.adapter.ActivitySummaryAdapter;
+import uk.ac.cam.cares.jps.model.UniqueSessions;
+import uk.ac.cam.cares.jps.timeline.ui.adapter.UniqueSessionsAdapter;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 /**
@@ -24,7 +23,7 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 public class NormalBottomSheet extends BottomSheet {
 
     private RecyclerView recyclerView;
-    private ActivitySummaryAdapter adapter;
+    private UniqueSessionsAdapter adapter;
 
     public NormalBottomSheet(Context context) {
         super(context);
@@ -37,28 +36,30 @@ public class NormalBottomSheet extends BottomSheet {
 
         recyclerView = bottomSheet.findViewById(R.id.recycler_view);
 
-        adapter = new ActivitySummaryAdapter();
+        adapter = new UniqueSessionsAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
     public void showFetchingAnimation(boolean isFetching) {
-    if (isFetching) {
-        getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.VISIBLE);
-        getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
+        if (isFetching) {
+            adapter = new UniqueSessionsAdapter();
+            recyclerView.setAdapter(adapter);
+            
+            getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.VISIBLE);
+            getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            
         
-        adapter.setActivityList(new ArrayList<>());
-        adapter.notifyDataSetChanged();
-    } else {
-        getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
+        } else {
+            getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
     }
-}
 
-    public void updateActivitySummaryList(List<ActivityItem> activitySummaryList) {
-        if (activitySummaryList != null && !activitySummaryList.isEmpty()) {
-            adapter.setActivityList(activitySummaryList);
+    public void updateUniqueSessionsList(List<UniqueSessions> uniqueSessionsList) {
+        if (uniqueSessionsList != null && !uniqueSessionsList.isEmpty()) {
+            adapter.setUniqueSessionsList(uniqueSessionsList);
             adapter.notifyDataSetChanged();
             
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);

@@ -106,12 +106,11 @@ public class BottomSheetManager {
 public void configureTrajectoryRetrieval() {
     trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
 
-    trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryJson -> {
-        normalBottomSheetViewModel.parseActivitySummary(trajectoryJson);
-    });
+    trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseUniqueSessions);
 
-    normalBottomSheetViewModel.activitySummaryData.observe(lifecycleOwner, activitySummaryList -> {
-            normalBottomSheet.updateActivitySummaryList(activitySummaryList);
+    normalBottomSheetViewModel.uniqueSessions.observe(lifecycleOwner, uniqueSessionsList -> {
+        normalBottomSheet.updateUniqueSessionsList(uniqueSessionsList);
+        
     });
 }
 
@@ -193,3 +192,4 @@ public void configureTrajectoryRetrieval() {
     }
 
 }
+
