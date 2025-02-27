@@ -965,6 +965,9 @@ base:ExampleContactGroup
 > [!IMPORTANT]
 > For any lifecycle form, users will be required to configure the event occurrences using `SHACL` restrictions. Typically, `TerminatedServiceEvent`, `IncidentReportEvent`, `ContractRescission`, and `ContractTermination` can only accommodate a remarks property. For the `ServiceDispatchEvent`, users may assign additional dispatch details through defining more `SHACL` properties. Note that an id field must be included for a `ServiceDispatchEvent`. A sample file has been created in `./resources/shacl.ttl`
 
+> [!IMPORTANT]
+> Users can configure a pricing model for the agreement following the sample SHACL in `./resources/pricing.ttl`. This will have to be used alongside the corresponding `JSON-LD` at `./resources/jsonld/pricing.jsonld`. Users must update the possible list of classes in line 80 of the SHACL constraints. No modifications are required for the `JSON-LD` file.
+
 ### 3.2 Automated Data Retrieval
 
 This agent can dynamically query fields for different instances based on the `SHACL` restrictions in three steps:
