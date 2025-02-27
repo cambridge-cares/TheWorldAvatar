@@ -47,9 +47,9 @@ public class UniqueSessionsAdapter extends RecyclerView.Adapter<UniqueSessionsAd
         );
         layoutManager.setInitialPrefetchItemCount(session.getShownList().size());
 
-        ActivitySummaryAdapter activitySummaryAdapter = new ActivitySummaryAdapter(session.getShownList());
+        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getShownList());
         holder.activitySummaryRecyclerView.setLayoutManager(layoutManager);
-        holder.activitySummaryRecyclerView.setAdapter(activitySummaryAdapter);
+        holder.activitySummaryRecyclerView.setAdapter(activityItemAdapter);
         holder.activitySummaryRecyclerView.setRecycledViewPool(activitySummaryViewPool);
 
         holder.dropdownLayout.setOnClickListener(view -> {

@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import uk.ac.cam.cares.jps.model.SummaryActivityItem;
 import uk.ac.cam.cares.jps.model.UniqueSessions;
+import uk.ac.cam.cares.jps.timeline.ui.adapter.ActivitySummaryAdapter;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.UniqueSessionsAdapter;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
@@ -22,8 +24,10 @@ import uk.ac.cam.cares.jps.timelinemap.R;
  */
 public class NormalBottomSheet extends BottomSheet {
 
-    private RecyclerView recyclerView;
-    private UniqueSessionsAdapter adapter;
+    private RecyclerView summaryRecyclerView;
+    private ActivitySummaryAdapter summaryAdapter;
+    private RecyclerView sessionsRecyclerView;
+    private UniqueSessionsAdapter sessionsAdapter;
 
     public NormalBottomSheet(Context context) {
         super(context);
@@ -34,33 +38,49 @@ public class NormalBottomSheet extends BottomSheet {
     void init(Context context) {
         bottomSheet = (LinearLayoutCompat) LayoutInflater.from(context).inflate(R.layout.bottom_sheet_widget, null);
 
-        recyclerView = bottomSheet.findViewById(R.id.recycler_view);
+        sessionsRecyclerView = bottomSheet.findViewById(R.id.sessions_recycler_view);
 
-        adapter = new UniqueSessionsAdapter();
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        sessionsAdapter = new UniqueSessionsAdapter();
+        sessionsRecyclerView.setAdapter(sessionsAdapter);
+        sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
+
+        summaryAdapter = new ActivitySummaryAdapter();
+        summaryRecyclerView.setHasFixedSize(true);
+        summaryRecyclerView.setNestedScrollingEnabled(true);
+        summaryRecyclerView.setVerticalScrollBarEnabled(false);
+        summaryRecyclerView.setHorizontalScrollBarEnabled(true);
+        summaryRecyclerView.setScrollbarFadingEnabled(false);
+        summaryRecyclerView.setAdapter(summaryAdapter);
+        summaryRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     }
 
     public void showFetchingAnimation(boolean isFetching) {
         if (isFetching) {
-            adapter = new UniqueSessionsAdapter();
-            recyclerView.setAdapter(adapter);
-            
+            sessionsAdapter = new UniqueSessionsAdapter();
+            sessionsRecyclerView.setAdapter(sessionsAdapter);
+
+            summaryAdapter = new ActivitySummaryAdapter();
+            summaryRecyclerView.setAdapter(summaryAdapter);
+
             getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.VISIBLE);
             getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
-            recyclerView.setVisibility(View.GONE);
+            sessionsRecyclerView.setVisibility(View.GONE);
+            summaryRecyclerView.setVisibility(View.GONE);
             
         
         } else {
             getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+            summaryRecyclerView.setVisibility(View.VISIBLE);
+            sessionsRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 
     public void updateUniqueSessionsList(List<UniqueSessions> uniqueSessionsList) {
         if (uniqueSessionsList != null && !uniqueSessionsList.isEmpty()) {
-            adapter.setUniqueSessionsList(uniqueSessionsList);
-            adapter.notifyDataSetChanged();
+            sessionsAdapter.setUniqueSessionsList(uniqueSessionsList);
+            sessionsAdapter.notifyDataSetChanged();
             
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
             if (trajectoryTextView != null) {
@@ -71,7 +91,24 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
+    public void updateSummaryView(List<SummaryActivityItem> summaryActivityItemList) {
+        if (summaryActivityItemList != null && !summaryActivityItemList.isEmpty()) {
+            summaryAdapter.setActivityItemList(summaryActivityItemList);
+            summaryAdapter.notifyDataSetChanged();
+
+            TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
+            if (trajectoryTextView != null) {
+                trajectoryTextView.setVisibility(View.GONE);
+            }
+        }
+    }
+
     private void showEmptyState() {
+
+        bottomSheet.findViewById(R.id.summary_separator).setVisibility(View.GONE);
+        sessionsRecyclerView.setVisibility(View.GONE);
+        summaryRecyclerView.setVisibility(View.GONE);
+
         TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
         if (trajectoryTextView != null) {
             trajectoryTextView.setText(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_trajectory_found);

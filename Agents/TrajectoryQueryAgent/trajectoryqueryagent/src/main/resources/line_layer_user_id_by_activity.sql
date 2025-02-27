@@ -153,6 +153,7 @@ SELECT
     na.filled_activity_type AS activity_type,
     na.session_id,
     ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)) AS geom, 
+    ST_Length(ST_Transform(ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)), 3857))::INTEGER AS distance_traveled,
     CONCAT('https://w3id.org/MON/person.owl#person_', na.user_id) AS iri
 FROM
     filled_activity_data AS na 

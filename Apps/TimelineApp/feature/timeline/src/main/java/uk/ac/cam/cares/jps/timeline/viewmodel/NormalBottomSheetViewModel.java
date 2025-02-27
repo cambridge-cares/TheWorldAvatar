@@ -8,11 +8,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.ActivityItem;
+import uk.ac.cam.cares.jps.model.SummaryActivityItem;
 import uk.ac.cam.cares.jps.model.UniqueSessions;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
 import uk.ac.cam.cares.jps.timelinemap.R;
@@ -34,15 +38,15 @@ public class NormalBottomSheetViewModel extends ViewModel {
     private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
     private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
     private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
-    private MutableLiveData<List<ActivityItem>> _activitySummaryData = new MutableLiveData<>();
+    private MutableLiveData<List<ActivityItem>> _activityItemData = new MutableLiveData<>();
     private MutableLiveData<List<UniqueSessions>> _uniqueSessions = new MutableLiveData<>();
+    private MutableLiveData<List<SummaryActivityItem>> _activityItemSummaryData = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
-    public LiveData<List<ActivityItem>> activitySummaryData = _activitySummaryData;
+    public LiveData<List<ActivityItem>> activityItemData = _activityItemData;
     public LiveData<List<UniqueSessions>> uniqueSessions = _uniqueSessions;
-
-    private String cachedTrajectoryJson;
+    public LiveData<List<SummaryActivityItem>> activityItemSummaryData = _activityItemSummaryData;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -75,14 +79,6 @@ public class NormalBottomSheetViewModel extends ViewModel {
         _selectedDate.setValue(date);
     }
 
-    /**
-     * Set the selected session
-     * @param sessionId selected session
-//     */
-//    public void setSession(String sessionId) {
-//        _selectedSession.setValue(sessionId);
-//    }
-
 
     /**
      * Get dates which has trajectory data from server
@@ -113,8 +109,6 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     public void parseUniqueSessions(String trajectoryJson) {
 
-        cachedTrajectoryJson = trajectoryJson; 
-
         List<String> uniqueSessionNames = new ArrayList<>();
 
         try {
@@ -140,7 +134,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
         List<UniqueSessions> finalResult = new ArrayList<>();
         for(int i = 1; i <= uniqueSessionNames.size(); i++) {
-            List<ActivityItem> activities = parseActivitySummaryBySession(trajectoryJson, uniqueSessionNames.get(i-1));
+            List<ActivityItem> activities = parseActivityItemsBySession(trajectoryJson, uniqueSessionNames.get(i-1));
             UniqueSessions uniqueSession = new UniqueSessions(uniqueSessionNames.get(i-1), activities, "Trip " + i);
             finalResult.add(uniqueSession);
          }
@@ -148,7 +142,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
     }
 
 
-    public List<ActivityItem> parseActivitySummaryBySession(String trajectoryJson, String sessionId) {
+    public List<ActivityItem> parseActivityItemsBySession(String trajectoryJson, String sessionId) {
 
         List<ActivityItem> summaries = new ArrayList<>();
         try {
@@ -180,5 +174,66 @@ public class NormalBottomSheetViewModel extends ViewModel {
         return summaries;
     }
 
+
+    public void parseActivitySummary(String trajectoryJson) {
+        List<SummaryActivityItem> summaries = new ArrayList<>();
+
+        try {
+            JSONObject trajectoryStr = new JSONObject(trajectoryJson);
+            JSONArray features = trajectoryStr.getJSONArray("features");
+
+            Map<String, List<Integer>> distancePerActivityType = new HashMap<>();
+            Map<String, List<Long>> timePerActivityType = new HashMap<>();
+
+            for (int i = 0; i < features.length(); i++) {
+                JSONObject feature = features.getJSONObject(i);
+                JSONObject properties = feature.getJSONObject("properties");
+
+                String activityType = properties.optString("activity_type", "unknown");
+                long startTime = properties.optLong("start_time", 0);
+                long endTime = properties.optLong("end_time", 0);
+                int distance = properties.optInt("distance_traveled", 0);
+
+                long minutes = (endTime > startTime) ? differenceInTime(startTime, endTime) : 0;
+
+                timePerActivityType.putIfAbsent(activityType, new ArrayList<>());
+                timePerActivityType.get(activityType).add(minutes);
+
+                distancePerActivityType.putIfAbsent(activityType, new ArrayList<>());
+                distancePerActivityType.get(activityType).add(distance);
+            }
+
+            for (String activity : distancePerActivityType.keySet()) {
+                int totalDistance = activity.equals("still") ? 0 : addTogether(distancePerActivityType.get(activity));
+                long totalTime = addTogetherLong(timePerActivityType.get(activity));
+
+                int activityImage = R.drawable.baseline_man_24;
+                if (activity.equals("walking")) activityImage = R.drawable.baseline_directions_walk_24;
+                else if (activity.equals("vehicle")) activityImage = R.drawable.baseline_directions_car_24;
+                else if (activity.equals("bike")) activityImage = R.drawable.baseline_directions_bike_24;
+
+                summaries.add(new SummaryActivityItem(activityImage, totalDistance, totalTime));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        _activityItemSummaryData.postValue(summaries);
+    }
+
+    private long addTogetherLong(List<Long> longs) {
+        return longs.stream().mapToLong(Long::longValue).sum();
+    }
+
+    private int addTogether(List<Integer> integers) {
+        return integers.stream().mapToInt(Integer::intValue).sum();
+    }
+
+    private long differenceInTime(long startTime, long endTime) {
+        return ChronoUnit.MINUTES.between(
+            Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+            Instant.ofEpochMilli(endTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        );
+    }
 
 }

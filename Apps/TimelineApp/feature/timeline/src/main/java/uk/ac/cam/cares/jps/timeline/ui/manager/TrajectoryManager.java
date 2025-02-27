@@ -57,7 +57,6 @@ public class TrajectoryManager {
                 activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())))); // Blue
                 activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); //Black
                 activityColors.put("vehicle", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
-//                activityColors.put("bike", String.format("#%06X", (0xFF00FF & getColor(fragment.requireContext())))); // Magenta
                 activityColors.put("bike", "#585C7E");
                 paintTrajectoryByActivity(style, trajectoryStr, activityColors, "default");
 

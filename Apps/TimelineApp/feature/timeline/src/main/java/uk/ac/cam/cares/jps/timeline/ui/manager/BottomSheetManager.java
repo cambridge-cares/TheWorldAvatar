@@ -101,20 +101,32 @@ public class BottomSheetManager {
         normalBottomSheet = new NormalBottomSheet(context);
         configureTrajectoryRetrieval();
         configureDateSelection();
+        configureSummary();
+        configureSessions();
     }
 
-public void configureTrajectoryRetrieval() {
-    trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+    public void configureTrajectoryRetrieval() {
+        trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+    }
 
-    trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseUniqueSessions);
+    public void configureSummary() {
 
-    normalBottomSheetViewModel.uniqueSessions.observe(lifecycleOwner, uniqueSessionsList -> {
-        normalBottomSheet.updateUniqueSessionsList(uniqueSessionsList);
-        
-    });
-}
+        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseActivitySummary);
 
+        normalBottomSheetViewModel.activityItemSummaryData.observe(lifecycleOwner, activityItemSummaryList -> {
+            normalBottomSheet.updateSummaryView(activityItemSummaryList);
+            
+        });
+    }
 
+    public void configureSessions() {
+        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseUniqueSessions);
+
+        normalBottomSheetViewModel.uniqueSessions.observe(lifecycleOwner, uniqueSessionsList -> {
+            normalBottomSheet.updateUniqueSessionsList(uniqueSessionsList);
+            
+        });
+    }
 
     private void configureDateSelection() {
         normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view ->
