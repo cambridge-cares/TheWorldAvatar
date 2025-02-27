@@ -11,7 +11,6 @@ public class LifecycleResource {
   public static final String SCHEDULE_RESOURCE = "schedule";
   public static final String OCCURRENCE_INSTANT_RESOURCE = "occurrence instant";
   public static final String OCCURRENCE_LINK_RESOURCE = "occurrence link";
-  public static final String PRICING_RESOURCE = "pricing";
 
   public static final String IRI_KEY = "iri";
   public static final String CONTRACT_KEY = "contract";
@@ -63,9 +62,6 @@ public class LifecycleResource {
   public static final String LIFECYCLE_RECORD = "https://www.omg.org/spec/Commons/Documents/Record";
   public static final String LIFECYCLE_REPORT = "https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/Report";
   public static final String PAYMENT_OBLIGATION = "https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation";
-  public static final String PRICING_MODEL = "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/PricingModel";
-  public static final String MONETARY_PRICE = "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryPrice";
-  public static final String VARIABLE_FEE = "https://www.theworldavatar.com/kg/ontoservice/VariableFee";
 
   // Private constructor to prevent instantiation
   private LifecycleResource() {
@@ -229,8 +225,6 @@ public class LifecycleResource {
         return FileService.OCCURRENCE_LINK_JSON_LD_RESOURCE;
       case LifecycleResource.SCHEDULE_RESOURCE:
         return FileService.SCHEDULE_JSON_LD_RESOURCE;
-      case LifecycleResource.PRICING_RESOURCE:
-        return FileService.PRICING_JSON_LD_RESOURCE;
       default:
         return null;
     }

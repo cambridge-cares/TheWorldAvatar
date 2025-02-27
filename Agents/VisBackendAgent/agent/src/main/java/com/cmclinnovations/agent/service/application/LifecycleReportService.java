@@ -1,13 +1,11 @@
 package com.cmclinnovations.agent.service.application;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.CalculationType;
 import com.cmclinnovations.agent.service.GetService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
@@ -32,15 +30,6 @@ public class LifecycleReportService {
   private final ObjectMapper objectMapper;
   private final LifecycleQueryFactory queryFactory;
 
-  private static final String FLAT_FEE_LABEL = "Base Fee";
-  private static final String UNIT_PRICE_LABEL = "unit price";
-  private static final String RATE_LABEL = "rate";
-  private static final String LOWER_BOUND_LABEL = "lowerBound";
-  private static final String UPPER_BOUND_LABEL = "upperBound";
-
-  private static final String PRICING_MODEL_PREFIX = "https://www.theworldavatar.io/kg/agreement/pricing/";
-  private static final String MONETARY_PRICE_PREFIX = "https://www.theworldavatar.io/kg/agreement/money/";
-  private static final String VARIABLE_FEE_PREFIX = "https://www.theworldavatar.io/kg/agreement/variable/money/";
   private static final String LIFECYCLE_REPORT_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/report/";
   private static final String LIFECYCLE_RECORD_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/record/";
 
@@ -110,49 +99,6 @@ public class LifecycleReportService {
     recordInstance.set(ShaclResource.REVERSE_KEY, reportsOnNode);
     // Parent node should be a reverse node
     parentNode.set(LifecycleResource.IS_ABOUT_RELATIONS, recordInstance);
-  }
-
-  /**
-   * Generates a pricing model JSON node.
-   * 
-   * @param params Mappings of the parameters and their values.
-   */
-  public ObjectNode genPricingModel(Map<String, Object> params) {
-    ArrayNode arguments = this.objectMapper.createArrayNode();
-    ObjectNode pricingModel = this.jsonLdService.genInstance(PRICING_MODEL_PREFIX, LifecycleResource.PRICING_MODEL);
-    ObjectNode flatFee = this.jsonLdService.genInstance(MONETARY_PRICE_PREFIX, LifecycleResource.MONETARY_PRICE,
-        FLAT_FEE_LABEL);
-    flatFee.put(LifecycleResource.HAS_AMOUNT_RELATIONS,
-        Double.parseDouble(params.get(FLAT_FEE_LABEL.toLowerCase()).toString()));
-    arguments.add(flatFee);
-    if (params.containsKey(UNIT_PRICE_LABEL)) {
-      List<Map<String, Object>> unitPrices = (List<Map<String, Object>>) params.get(UNIT_PRICE_LABEL);
-      for (Map<String, Object> unitPrice : unitPrices) {
-        ObjectNode currentNode = this.genUnitPrice(unitPrice);
-        arguments.add(currentNode);
-      }
-    }
-    pricingModel.set(LifecycleResource.HAS_ARGUMENT_RELATIONS, arguments);
-    return pricingModel;
-  }
-
-  /**
-   * Retrieves the pricing model set for the target contract if it exist.
-   * 
-   * @param contract The ID of the target contract.
-   */
-  public SparqlBinding getPricingModel(String contract) {
-    LOGGER.debug("Checking for an existing pricing model...");
-    String query = this.queryFactory.getPricingModelQuery(contract);
-    try {
-      // If there is a pricing model set, no exception is thrown
-      return this.getService.getInstance(query);
-    } catch (IllegalStateException | NullPointerException e) {
-      // When unset, an error is returned but it should be ignored and return an empty
-      // object
-      LOGGER.error("Invalid pricing model state! Read error message for more details:", e);
-      return new SparqlBinding(this.objectMapper.createObjectNode());
-    }
   }
 
   /**
@@ -332,26 +278,5 @@ public class LifecycleReportService {
     quantity.set("https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasNumericValue",
         this.jsonLdService.genLiteral(String.valueOf(value), ShaclResource.XSD_DECIMAL));
     return quantity;
-  }
-
-  /**
-   * Generates a unit price instance based on the input parameters.
-   *
-   * @param params Mappings of the required parameters and their values.
-   */
-  private ObjectNode genUnitPrice(Map<String, Object> params) {
-    ObjectNode unitPriceNode = this.jsonLdService.genInstance(VARIABLE_FEE_PREFIX,
-        LifecycleResource.VARIABLE_FEE);
-    unitPriceNode.set(LifecycleResource.HAS_AMOUNT_RELATIONS,
-        this.jsonLdService.genLiteral(params.get(RATE_LABEL).toString(), ShaclResource.XSD_DECIMAL));
-    unitPriceNode.set(LifecycleResource.HAS_LOWER_BOUND_RELATIONS,
-        this.jsonLdService.genLiteral(params.get(LOWER_BOUND_LABEL).toString(), ShaclResource.XSD_DECIMAL));
-    try {
-      unitPriceNode.set(LifecycleResource.HAS_UPPER_BOUND_RELATIONS,
-          this.jsonLdService.genLiteral(params.get(UPPER_BOUND_LABEL).toString(), ShaclResource.XSD_DECIMAL));
-    } catch (NumberFormatException e) {
-      LOGGER.warn("Detected empty value for the optional upper bound. Please notify the team if this is incorrect!");
-    }
-    return unitPriceNode;
   }
 }

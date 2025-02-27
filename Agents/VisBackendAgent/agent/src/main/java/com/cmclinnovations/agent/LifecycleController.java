@@ -327,36 +327,6 @@ public class LifecycleController {
   }
 
   /**
-   * Update the pricing model for the target contract in the knowledge graph.
-   */
-  @PutMapping("/pricing")
-  public ResponseEntity<ApiResponse> updatePricingModel(@RequestBody Map<String, Object> params) {
-    LOGGER.info("Received request to set the pricing model...");
-    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
-      return new ResponseEntity<>(
-          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
-          HttpStatus.BAD_REQUEST);
-    }
-    String targetId = params.get("id").toString();
-    ResponseEntity<ApiResponse> deleteResponse = this.deleteService.delete(LifecycleResource.PRICING_RESOURCE,
-        targetId);
-    if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
-      ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(LifecycleResource.PRICING_RESOURCE,
-          targetId, params);
-      if (addResponse.getStatusCode() == HttpStatus.CREATED) {
-        LOGGER.info("Pricing model has been successfully set!");
-        return new ResponseEntity<>(
-            new ApiResponse("Pricing model has been successfully set!", addResponse.getBody().getIri()),
-            HttpStatus.OK);
-      } else {
-        return addResponse;
-      }
-    } else {
-      return deleteResponse;
-    }
-  }
-
-  /**
    * Retrieve the status of the contract
    */
   @GetMapping("/status/{id}")
@@ -488,17 +458,6 @@ public class LifecycleController {
   public ResponseEntity<?> getContractTerminationForm() {
     LOGGER.info("Received request to get form template to terminate the contract...");
     return this.lifecycleService.getForm(LifecycleEventType.ARCHIVE_TERMINATION, null);
-  }
-
-  /**
-   * Retrieves the pricing model for the specified contract if available.
-   */
-  @GetMapping("/pricing/{id}")
-  public ResponseEntity<Map<String, Object>> getPricingModel(@PathVariable String id) {
-    LOGGER.info("Received request to get pricing model for the contract {}...", id);
-    return new ResponseEntity<>(
-        this.lifecycleReportService.getPricingModel(id).get(),
-        HttpStatus.OK);
   }
 
   /**

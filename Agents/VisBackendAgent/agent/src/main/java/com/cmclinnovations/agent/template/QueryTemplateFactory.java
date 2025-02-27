@@ -646,11 +646,6 @@ public class QueryTemplateFactory {
             this.jsonLdService.getObjectNode(fieldNode.path(ShaclResource.CONTENTS_KEY)),
             formattedObjVar, false);
       }
-      // Further processing for only pricing replacement object
-      if (fieldNode.has(ShaclResource.REPLACE_KEY)
-          && fieldNode.path(ShaclResource.REPLACE_KEY).asText().equals("pricing")) {
-        this.appendPricingModelStatements(formattedObjVar, deleteBuilder);
-      }
       // No further processing required for objects intended for replacement, @value,
       if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY) &&
       // or a one line instance link to a TextNode eg: "@id" : "instanceIri"
@@ -713,23 +708,6 @@ public class QueryTemplateFactory {
       nestedNode.set(predicatePath, objectNode);
       this.recursiveParseNode(deleteBuilder, nestedNode, targetId, isIdRequired);
     }
-  }
-
-  /**
-   * Append pricing model statements for the DELETE builder.
-   * 
-   * @param subjectVar    The subject of the pricing model as a variable.
-   * @param deleteBuilder A query builder for the DELETE clause.
-   */
-  private void appendPricingModelStatements(String subjectVar, StringBuilder deleteBuilder) {
-    String feeVar = ShaclResource.VARIABLE_MARK + "fee";
-    String anyPredVar = ShaclResource.VARIABLE_MARK + "anypred";
-    String anyObjectVar = ShaclResource.VARIABLE_MARK + "object";
-    StringResource.appendTriple(deleteBuilder, subjectVar, RDF_TYPE,
-        StringResource.parseIriForQuery(LifecycleResource.PRICING_MODEL));
-    StringResource.appendTriple(deleteBuilder, subjectVar,
-        StringResource.parseIriForQuery(LifecycleResource.HAS_ARGUMENT_RELATIONS), feeVar);
-    StringResource.appendTriple(deleteBuilder, feeVar, anyPredVar, anyObjectVar);
   }
 
   /**

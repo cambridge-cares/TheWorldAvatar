@@ -27,7 +27,6 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
       - [2.6.4 Service commencement route](#264-service-commencement-route)
       - [2.6.5 Service order route](#265-service-order-route)
       - [2.6.6 Archive contract route](#266-archive-contract-route)
-      - [2.6.7 Pricing route](#267-pricing-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
       - [3.1.1 Branching Form](#311-branching-form)
@@ -629,30 +628,6 @@ Users must send a `POST` request to terminate an ongoing contract at the `<baseU
 
 A successful request will return `{"message": "Contract has been successfully terminated!", "iri" : "root iri that is instantiated"}`.
 
-#### 2.6.7 Pricing route
-
-The `<baseURL>/vis-backend-agent/contracts/pricing` endpoint serves to handle any pricing model related transactions.
-
-Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/pricing/{id}` endpoint to retrieve the pricing model for the specific contract, , where `{id}`is the identifier of the target contract.
-
-Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/pricing` endpoint to set a new pricing model. Note that this will override any pricing model that was previously set. This route does require the following `JSON` request parameters:
-
-```json
-{
-  /* parameters */
-  "contract": "The target contract IRI",
-  "base fee": "The base fee in the decimal format ie 1.00",
-  "unit price": [{
-    "rate": "The rate charged per service metric in the decimal format",
-    "lowerBound": "The minimum value within the range of a service metric where the specified rate applies",
-    "upperBound": "The maximum value within the range of a service metric where the specified rate applies"
-  },...]
-}
-```
-
-> [!IMPORTANT]
-> The `unit price` parameter is optional and can hold an array of the same JSON object. The final `upperBound` field can be left empty or null to indicate that the rate applies for any excess of the `lowerBound` service metric.
-
 ## 3. SHACL Restrictions
 
 [SHACL](https://www.w3.org/TR/shacl/) is generally a language for validating RDF graphs against a set of conditions. The World Avatar incorporates these restrictions into our workflow to populate form structure and fields, as well as enabling automated data retrieval.
@@ -1062,7 +1037,7 @@ A sample file can be found at `./resources/example.jsonld`. It is recommended fo
 > Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
 
 > [!NOTE]
-> There are additional `@replace` options such as `schedule` and `pricing` that will be used by default in the agent, but it is not intended for users and should be ignored.
+> There are additional `@replace` options such as `schedule` that will be used by default in the agent, but it is not intended for users and should be ignored.
 
 #### 4.1.1 Array
 
