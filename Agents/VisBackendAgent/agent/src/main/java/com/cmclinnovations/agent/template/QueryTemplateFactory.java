@@ -189,7 +189,7 @@ public class QueryTemplateFactory {
     this.recursiveParseNode(deleteBuilder, rootNode, targetId);
     StringBuilder deleteTemplate = new StringBuilder(this.genDeleteTemplate(deleteBuilder));
     while (!this.deleteBranchBuilders.isEmpty()) {
-      deleteTemplate.append(this.genDeleteTemplate(this.deleteBranchBuilders.poll()));
+      deleteTemplate.append(";").append(this.genDeleteTemplate(this.deleteBranchBuilders.poll()));
     }
     return deleteTemplate.toString();
   }
@@ -562,7 +562,10 @@ public class QueryTemplateFactory {
         for (JsonNode branch : branches) {
           // Generate the required delete template and store the template
           StringBuilder deleteBranchBuilder = new StringBuilder();
-          this.recursiveParseNode(deleteBranchBuilder, this.jsonLdService.getObjectNode(branch), targetId);
+          ObjectNode branchNode = this.jsonLdService.getObjectNode(branch);
+          // Retain the current ID value
+          branchNode.set(ShaclResource.ID_KEY, currentNode.path(ShaclResource.ID_KEY));
+          this.recursiveParseNode(deleteBranchBuilder, branchNode, targetId);
           this.deleteBranchBuilders.offer(deleteBranchBuilder);
         }
         // For all @reverse fields
