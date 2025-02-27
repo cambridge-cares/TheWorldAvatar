@@ -7,7 +7,7 @@ import os
 import yaml
 
 
-def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, noWeather, noTerrain):
+def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, noWeather, noTerrain, database):
     """
     :param workflow_file: input workflow file to be modified
 
@@ -48,11 +48,13 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
         data.insert(3, dic)
 
     for i in data:
-        for j in i:
-            if j == "parameters":
-                for key in i[j]:
-                    if isinstance(i[j][key], str):
-                        i[j][key] = find_and_replace.get(i[j][key], i[j][key])
+        if 'parameters' in i.keys():
+            for key in i['parameters']:
+                if isinstance(i['parameters'][key], str):
+                    i['parameters'][key] = find_and_replace.get(i['parameters'][key], i['parameters'][key])
+        if 'script' in i.keys():
+            if i['script'] == 'data-initializer':
+                i['parameters']['databases-path'] = database
 
     with open(output_yaml, 'wb') as stream:
         yaml.safe_dump(data, stream, default_flow_style=False,
@@ -60,9 +62,8 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
 
 
 def main(argv):
-
     try:
-        write_workflow_file(argv.workflow_file, argv.workflow_name, argv.cea_file_path, argv.noSurroundings, argv.noWeather, argv.noTerrain)
+        write_workflow_file(argv.workflow_file, argv.workflow_name, argv.cea_file_path, argv.noSurroundings, argv.noWeather, argv.noTerrain, argv.database)
     except IOError:
         print('Error while processing file: ' + argv.worflow_file)
 
@@ -77,6 +78,7 @@ if __name__ == '__main__':
     parser.add_argument("noSurroundings")
     parser.add_argument("noWeather")
     parser.add_argument("noTerrain")
+    parser.add_argument("database")
 
     # parse the arguments
     args = parser.parse_args()

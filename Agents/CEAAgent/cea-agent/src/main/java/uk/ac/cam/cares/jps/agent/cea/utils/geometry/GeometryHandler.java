@@ -20,10 +20,15 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class GeometryHandler {
     public static final String EPSG_4326 = "EPSG:4326";
@@ -386,5 +391,39 @@ public class GeometryHandler {
         result.addAll(geometries);
 
         return result;
+    }
+
+    public static String getCountry(Coordinate coordinate) throws Exception {
+        String urlString = String.format(
+                "https://nominatim.openstreetmap.org/reverse?lat=%f&lon=%f&format=json",
+                coordinate.getY(), coordinate.getX()
+        );
+
+
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        conn.setRequestProperty("User-Agent", "CEA agent");
+
+        // Read the response
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        reader.close();
+
+        JSONObject j = new JSONObject(response.toString());
+
+        if (j.has("address")) {
+            if (j.getJSONObject("address").has("country_code")) {
+                return j.getJSONObject("address").getString("country_code");
+            }
+        }
+
+        return "CH";
     }
 }
