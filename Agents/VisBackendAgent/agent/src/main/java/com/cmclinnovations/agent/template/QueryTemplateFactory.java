@@ -187,11 +187,7 @@ public class QueryTemplateFactory {
     StringBuilder deleteBuilder = new StringBuilder();
     this.deleteBranchBuilders = new ArrayDeque<>();
     this.recursiveParseNode(deleteBuilder, rootNode, targetId, true);
-    StringBuilder deleteTemplate = new StringBuilder(this.genDeleteTemplate(deleteBuilder));
-    while (!this.deleteBranchBuilders.isEmpty()) {
-      deleteTemplate.append(";").append(this.genDeleteTemplate(this.deleteBranchBuilders.poll()));
-    }
-    return deleteTemplate.toString();
+    return this.genDeleteTemplate(deleteBuilder, this.deleteBranchBuilders);
   }
 
   /**
@@ -544,7 +540,8 @@ public class QueryTemplateFactory {
    */
   private void recursiveParseNode(StringBuilder deleteBuilder, ObjectNode currentNode,
       String targetId, boolean isIdRequired) {
-    // First retrieve the ID value as a subject of the triple if required, else default to target it
+    // First retrieve the ID value as a subject of the triple if required, else
+    // default to target it
     String idTripleSubject = isIdRequired ? this.getFormattedQueryVariable(currentNode.path(ShaclResource.ID_KEY),
         targetId) : targetId;
     Iterator<Map.Entry<String, JsonNode>> iterator = currentNode.fields();
@@ -736,12 +733,19 @@ public class QueryTemplateFactory {
   }
 
   /**
-   * Generates a delete template from the delete builder contents
+   * Generates a delete template from the delete builder contents.
    * 
-   * @param deleteBuilder A query builder for the DELETE clause.
+   * @param deleteBuilder  A query builder for the DELETE clause.
+   * @param branchBuilders A query builders for any form branches.
    */
-  private String genDeleteTemplate(StringBuilder deleteBuilder) {
-    String deleteContents = deleteBuilder.toString();
-    return "DELETE {" + deleteContents + "} WHERE {" + deleteContents + "}";
+  private String genDeleteTemplate(StringBuilder deleteBuilder, Queue<StringBuilder> branchBuilders) {
+    StringBuilder whereBuilder = new StringBuilder(deleteBuilder);
+    while (!branchBuilders.isEmpty()) {
+      String deleteBranchContents = branchBuilders.poll().toString();
+      deleteBuilder.append(deleteBranchContents);
+      // These should be optional
+      whereBuilder.append("OPTIONAL{").append(deleteBranchContents).append("}");
+    }
+    return "DELETE {" + deleteBuilder.toString() + "} WHERE {" + whereBuilder.toString() + "}";
   }
 }
