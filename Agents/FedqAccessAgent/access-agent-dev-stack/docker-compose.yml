@@ -1,0 +1,53 @@
+services:
+  # access-agent
+  # access-agent:
+  #   image: ghcr.io/cambridge-cares/fed-access-agent:1.7.0
+  #  container_name: access-agent
+  #   environment:
+  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+  #  pull_policy: if_not_present
+  #  ports:
+  #    - 48888:8080
+  #  networks:
+  #    - default
+      
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph-access-agent"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    volumes:
+      - blazegraph_data:/data
+    ports:
+      - 48889:8080
+    networks:
+      - default
+
+  dragonfly:
+    image: ghcr.io/dragonflydb/dragonfly:v1.26.2-ubuntu
+    container_name: "dragonfly-access-agent"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - default
+    healthcheck:
+        test: [ "CMD", "redis-cli", "--raw", "incr", "healthcheck", "--dir", "/data", "--dbfilename", "dump.rdb", "--notify-keyspace-events", "KEA" ]
+        interval: 1s
+        timeout: 5s
+        retries: 10
+    volumes:
+      - dragonfly-data:/data
+      
+# Volumes
+volumes:
+  blazegraph_data:
+  dragonfly-data:
+  
+networks:
+  default:
+    name: access_agent_network
