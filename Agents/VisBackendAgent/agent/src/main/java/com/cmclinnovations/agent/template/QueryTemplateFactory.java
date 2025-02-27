@@ -22,7 +22,6 @@ import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -33,7 +32,6 @@ public class QueryTemplateFactory {
   private Queue<StringBuilder> deleteBranchBuilders;
   private Map<String, String> queryLines;
   private Map<String, List<Integer>> varSequence;
-  private final ObjectMapper objectMapper;
   private final LifecycleQueryFactory lifecycleQueryFactory;
   private final JsonLdService jsonLdService;
   private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
@@ -57,8 +55,7 @@ public class QueryTemplateFactory {
    * Constructs a new query template factory.
    * 
    */
-  public QueryTemplateFactory(ObjectMapper objectMapper, JsonLdService jsonLdService) {
-    this.objectMapper = objectMapper;
+  public QueryTemplateFactory(JsonLdService jsonLdService) {
     this.lifecycleQueryFactory = new LifecycleQueryFactory();
     this.jsonLdService = jsonLdService;
   }
@@ -698,7 +695,7 @@ public class QueryTemplateFactory {
     } else {
       // This aspect is used for parsing arrays without any reversion
       // Creating a new node where the ID node is the parent is sufficient
-      ObjectNode nestedNode = this.objectMapper.createObjectNode();
+      ObjectNode nestedNode = this.jsonLdService.genObjectNode();
       nestedNode.set(ShaclResource.ID_KEY, idNode);
       nestedNode.set(predicatePath, objectNode);
       this.recursiveParseNode(deleteBuilder, nestedNode, targetId);

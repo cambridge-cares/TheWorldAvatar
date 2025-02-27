@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -52,7 +51,6 @@ public class KGService {
   private final ObjectMapper objectMapper;
   private final FormTemplateFactory formTemplateFactory;
   private final QueryTemplateFactory queryTemplateFactory;
-  private final JsonLdService jsonLdService;
   private final FileService fileService;
 
   private static final String DEFAULT_NAMESPACE = "kb";
@@ -75,9 +73,8 @@ public class KGService {
   public KGService(FileService fileService, JsonLdService jsonLdService) {
     this.client = RestClient.create();
     this.objectMapper = new ObjectMapper();
-    this.jsonLdService = jsonLdService;
     this.formTemplateFactory = new FormTemplateFactory();
-    this.queryTemplateFactory = new QueryTemplateFactory(this.objectMapper, jsonLdService);
+    this.queryTemplateFactory = new QueryTemplateFactory(jsonLdService);
     this.fileService = fileService;
   }
 
