@@ -186,7 +186,7 @@ public class QueryTemplateFactory {
   public String genDeleteQueryTemplate(ObjectNode rootNode, String targetId) {
     StringBuilder deleteBuilder = new StringBuilder();
     this.deleteBranchBuilders = new ArrayDeque<>();
-    this.recursiveParseNode(deleteBuilder, rootNode, targetId);
+    this.recursiveParseNode(deleteBuilder, rootNode, targetId, true);
     StringBuilder deleteTemplate = new StringBuilder(this.genDeleteTemplate(deleteBuilder));
     while (!this.deleteBranchBuilders.isEmpty()) {
       deleteTemplate.append(";").append(this.genDeleteTemplate(this.deleteBranchBuilders.poll()));
@@ -534,19 +534,19 @@ public class QueryTemplateFactory {
   }
 
   /**
-   * Replace the placeholders in the current node and recursively for its children
-   * nodes based on the corresponding value in the replacement mappings if
-   * available.
+   * Recursively parses the node to generate the DELETE query contents.
    * 
    * @param deleteBuilder A query builder for the DELETE clause.
    * @param currentNode   Input contents to perform operation on.
    * @param targetId      The target instance IRI.
+   * @param isIdRequired  Indicator to generate an instance ID or an ID variable
+   *                      following targetId.
    */
   private void recursiveParseNode(StringBuilder deleteBuilder, ObjectNode currentNode,
-      String targetId) {
-    // First retrieve the ID value as a subject of the triple
-    String idTripleSubject = this.getFormattedQueryVariable(currentNode.path(ShaclResource.ID_KEY),
-        targetId);
+      String targetId, boolean isIdRequired) {
+    // First retrieve the ID value as a subject of the triple if required, else default to target it
+    String idTripleSubject = isIdRequired ? this.getFormattedQueryVariable(currentNode.path(ShaclResource.ID_KEY),
+        targetId) : targetId;
     Iterator<Map.Entry<String, JsonNode>> iterator = currentNode.fields();
     while (iterator.hasNext()) {
       Map.Entry<String, JsonNode> field = iterator.next();
@@ -565,7 +565,7 @@ public class QueryTemplateFactory {
           ObjectNode branchNode = this.jsonLdService.getObjectNode(branch);
           // Retain the current ID value
           branchNode.set(ShaclResource.ID_KEY, currentNode.path(ShaclResource.ID_KEY));
-          this.recursiveParseNode(deleteBranchBuilder, branchNode, targetId);
+          this.recursiveParseNode(deleteBranchBuilder, branchNode, targetId, isIdRequired);
           this.deleteBranchBuilders.offer(deleteBranchBuilder);
         }
         // For all @reverse fields
@@ -582,14 +582,14 @@ public class QueryTemplateFactory {
           while (fieldIterator.hasNext()) {
             String reversePredicate = fieldIterator.next();
             this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
-                reversePredicate, deleteBuilder, targetId, true);
+                reversePredicate, deleteBuilder, targetId, true, isIdRequired);
           }
         }
         // The @id and @context field should be ignored but continue parsing for
         // everything else
       } else if (!field.getKey().equals(ShaclResource.ID_KEY) && !field.getKey().equals(ShaclResource.CONTEXT_KEY)) {
         this.parseFieldNode(currentNode.path(ShaclResource.ID_KEY), fieldNode, idTripleSubject, field.getKey(),
-            deleteBuilder, targetId);
+            deleteBuilder, targetId, isIdRequired);
       }
     }
   }
@@ -628,9 +628,11 @@ public class QueryTemplateFactory {
    * @param predicate     The predicate path of the triple.
    * @param deleteBuilder A query builder for the DELETE clause.
    * @param targetId      The target instance IRI.
+   * @param isIdRequired  Indicator to generate an instance ID or an ID variable
+   *                      following targetId.
    */
   private void parseFieldNode(JsonNode idNode, JsonNode fieldNode, String subject, String predicate,
-      StringBuilder deleteBuilder, String targetId) {
+      StringBuilder deleteBuilder, String targetId, boolean isIdRequired) {
     // For object field node
     if (fieldNode.isObject()) {
       JsonNode targetTripleObjectNode = fieldNode.has(ShaclResource.REPLACE_KEY)
@@ -639,6 +641,14 @@ public class QueryTemplateFactory {
       String formattedPredicate = StringResource.parseIriForQuery(predicate);
       String formattedObjVar = this.getFormattedQueryVariable(targetTripleObjectNode, targetId);
       StringResource.appendTriple(deleteBuilder, subject, formattedPredicate, formattedObjVar);
+      // Further processing for array type
+      if (fieldNode.has(ShaclResource.REPLACE_KEY) && fieldNode.path(ShaclResource.TYPE_KEY).asText().equals("array")
+          && fieldNode.has(ShaclResource.CONTENTS_KEY)) {
+        // This should generate a DELETE query with a variable whenever IDs are detected
+        this.recursiveParseNode(deleteBuilder,
+            this.jsonLdService.getObjectNode(fieldNode.path(ShaclResource.CONTENTS_KEY)),
+            formattedObjVar, false);
+      }
       // Further processing for only pricing replacement object
       if (fieldNode.has(ShaclResource.REPLACE_KEY)
           && fieldNode.path(ShaclResource.REPLACE_KEY).asText().equals("pricing")) {
@@ -649,13 +659,13 @@ public class QueryTemplateFactory {
       // or a one line instance link to a TextNode eg: "@id" : "instanceIri"
           !(fieldNode.has(ShaclResource.ID_KEY) && fieldNode.size() == 1
               && fieldNode.path(ShaclResource.ID_KEY).isTextual())) {
-        this.recursiveParseNode(deleteBuilder, (ObjectNode) fieldNode, targetId);
+        this.recursiveParseNode(deleteBuilder, (ObjectNode) fieldNode, targetId, isIdRequired);
       }
       // For arrays,iterate through each object and parse the nested node
     } else if (fieldNode.isArray()) {
       ArrayNode fieldArray = (ArrayNode) fieldNode;
       for (JsonNode tripleObjNode : fieldArray) {
-        this.parseNestedNode(idNode, tripleObjNode, predicate, deleteBuilder, targetId, false);
+        this.parseNestedNode(idNode, tripleObjNode, predicate, deleteBuilder, targetId, false, isIdRequired);
       }
     }
   }
@@ -669,9 +679,11 @@ public class QueryTemplateFactory {
    * @param deleteBuilder A query builder for the DELETE clause.
    * @param targetId      The target instance IRI.
    * @param isReverse     Indicates if the variable should be inverse or not.
+   * @param isIdRequired  Indicator to generate an instance ID or an ID variable
+   *                      following targetId.
    */
   private void parseNestedNode(JsonNode idNode, JsonNode objectNode, String predicatePath, StringBuilder deleteBuilder,
-      String targetId, boolean isReverse) {
+      String targetId, boolean isReverse, boolean isIdRequired) {
     if (isReverse) {
       if (objectNode.isObject()) {
         // A reverse node indicates that the replacement object should now be the
@@ -679,20 +691,21 @@ public class QueryTemplateFactory {
         if (objectNode.has(ShaclResource.REPLACE_KEY)) {
           String replacementVar = this.getFormattedQueryVariable(objectNode, null);
           this.parseFieldNode(null, idNode, replacementVar, predicatePath,
-              deleteBuilder, targetId);
+              deleteBuilder, targetId, isIdRequired);
         } else {
           // A reverse node indicates that the original object should now be the subject
           // And the Id Node should become the object
           ObjectNode nestedReverseNode = (ObjectNode) objectNode;
           nestedReverseNode.set(predicatePath, idNode);
-          this.recursiveParseNode(deleteBuilder, nestedReverseNode, targetId);
+          this.recursiveParseNode(deleteBuilder, nestedReverseNode, targetId, isIdRequired);
         }
       } else if (objectNode.isArray()) {
         // For reverse arrays, iterate and recursively parse each object as a reverse
         // node
         ArrayNode objArray = (ArrayNode) objectNode;
         for (JsonNode nestedReverseObjNode : objArray) {
-          this.parseNestedNode(idNode, nestedReverseObjNode, predicatePath, deleteBuilder, targetId, true);
+          this.parseNestedNode(idNode, nestedReverseObjNode, predicatePath, deleteBuilder, targetId, true,
+              isIdRequired);
         }
       }
     } else {
@@ -701,7 +714,7 @@ public class QueryTemplateFactory {
       ObjectNode nestedNode = this.jsonLdService.genObjectNode();
       nestedNode.set(ShaclResource.ID_KEY, idNode);
       nestedNode.set(predicatePath, objectNode);
-      this.recursiveParseNode(deleteBuilder, nestedNode, targetId);
+      this.recursiveParseNode(deleteBuilder, nestedNode, targetId, isIdRequired);
     }
   }
 
