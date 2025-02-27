@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
+import com.cmclinnovations.agent.service.core.JsonLdService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
@@ -29,10 +30,12 @@ import com.fasterxml.jackson.databind.node.TextNode;
 public class QueryTemplateFactory {
   private String parentField;
   private List<String> sortedVars;
+  private Queue<StringBuilder> deleteBranchBuilders;
   private Map<String, String> queryLines;
   private Map<String, List<Integer>> varSequence;
   private final ObjectMapper objectMapper;
   private final LifecycleQueryFactory lifecycleQueryFactory;
+  private final JsonLdService jsonLdService;
   private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
   private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
@@ -54,9 +57,10 @@ public class QueryTemplateFactory {
    * Constructs a new query template factory.
    * 
    */
-  public QueryTemplateFactory(ObjectMapper objectMapper) {
+  public QueryTemplateFactory(ObjectMapper objectMapper, JsonLdService jsonLdService) {
     this.objectMapper = objectMapper;
     this.lifecycleQueryFactory = new LifecycleQueryFactory();
+    this.jsonLdService = jsonLdService;
   }
 
   /**
@@ -184,9 +188,13 @@ public class QueryTemplateFactory {
    */
   public String genDeleteQueryTemplate(ObjectNode rootNode, String targetId) {
     StringBuilder deleteBuilder = new StringBuilder();
+    this.deleteBranchBuilders = new ArrayDeque<>();
     this.recursiveParseNode(deleteBuilder, rootNode, targetId);
-    String deleteContents = deleteBuilder.toString();
-    return "DELETE {" + deleteContents + "} WHERE {" + deleteContents + "}";
+    StringBuilder deleteTemplate = new StringBuilder(this.genDeleteTemplate(deleteBuilder));
+    while (!this.deleteBranchBuilders.isEmpty()) {
+      deleteTemplate.append(this.genDeleteTemplate(this.deleteBranchBuilders.poll()));
+    }
+    return deleteTemplate.toString();
   }
 
   /**
@@ -550,6 +558,16 @@ public class QueryTemplateFactory {
       if (field.getKey().equals(ShaclResource.TYPE_KEY)) {
         String typeTripleObject = this.getFormattedQueryVariable(fieldNode, targetId);
         StringResource.appendTriple(deleteBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
+        // For any @branch field
+      } else if (field.getKey().equals(ShaclResource.BRANCH_KEY)) {
+        // Iterate over all possible branches
+        ArrayNode branches = this.jsonLdService.getArrayNode(fieldNode);
+        for (JsonNode branch : branches) {
+          // Generate the required delete template and store the template
+          StringBuilder deleteBranchBuilder = new StringBuilder();
+          this.recursiveParseNode(deleteBranchBuilder, this.jsonLdService.getObjectNode(branch), targetId);
+          this.deleteBranchBuilders.offer(deleteBranchBuilder);
+        }
         // For all @reverse fields
       } else if (field.getKey().equals(ShaclResource.REVERSE_KEY)) {
         if (fieldNode.isArray()) {
@@ -702,5 +720,15 @@ public class QueryTemplateFactory {
     StringResource.appendTriple(deleteBuilder, subjectVar,
         StringResource.parseIriForQuery(LifecycleResource.HAS_ARGUMENT_RELATIONS), feeVar);
     StringResource.appendTriple(deleteBuilder, feeVar, anyPredVar, anyObjectVar);
+  }
+
+  /**
+   * Generates a delete template from the delete builder contents
+   * 
+   * @param deleteBuilder A query builder for the DELETE clause.
+   */
+  private String genDeleteTemplate(StringBuilder deleteBuilder) {
+    String deleteContents = deleteBuilder.toString();
+    return "DELETE {" + deleteContents + "} WHERE {" + deleteContents + "}";
   }
 }

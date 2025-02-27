@@ -52,6 +52,7 @@ public class KGService {
   private final ObjectMapper objectMapper;
   private final FormTemplateFactory formTemplateFactory;
   private final QueryTemplateFactory queryTemplateFactory;
+  private final JsonLdService jsonLdService;
   private final FileService fileService;
 
   private static final String DEFAULT_NAMESPACE = "kb";
@@ -71,11 +72,12 @@ public class KGService {
    * 
    * @param fileService File service for accessing file resources.
    */
-  public KGService(FileService fileService) {
+  public KGService(FileService fileService, JsonLdService jsonLdService) {
     this.client = RestClient.create();
     this.objectMapper = new ObjectMapper();
+    this.jsonLdService = jsonLdService;
     this.formTemplateFactory = new FormTemplateFactory();
-    this.queryTemplateFactory = new QueryTemplateFactory(this.objectMapper);
+    this.queryTemplateFactory = new QueryTemplateFactory(this.objectMapper, jsonLdService);
     this.fileService = fileService;
   }
 
