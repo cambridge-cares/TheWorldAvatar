@@ -689,7 +689,7 @@ public class QueryTemplateFactory {
         // A reverse node indicates that the replacement object should now be the
         // subject and the Id Node should become the object
         if (objectNode.has(ShaclResource.REPLACE_KEY)) {
-          String replacementVar = this.getFormattedQueryVariable(objectNode, null);
+          String replacementVar = this.getFormattedQueryVariable(objectNode, targetId);
           this.parseFieldNode(null, idNode, replacementVar, predicatePath,
               deleteBuilder, targetId, isIdRequired);
         } else {
