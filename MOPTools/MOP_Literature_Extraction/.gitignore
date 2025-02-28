@@ -1,0 +1,4 @@
+# ignore backup files if there are any by accident
+*.ttl
+# ignore parameter files containing secrets
+secret*
