@@ -1,4 +1,0 @@
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-<http://example.com/a> a <http://example.com/A>.
-<http://example.com/A> rdfs:subClassOf <http://example.com/B>.
