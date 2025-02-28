@@ -4,20 +4,10 @@ import utils
 PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
-from processing.rework_ontomops import update_kg as KG
 import upload_utils as uputils
 def query_characterisation(doi:str):
-# initialize KG class
-    script_dir                          = os.path.dirname(os.path.abspath(__file__))
-    # make file path dependent on script location
-    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
-    # instantiate class
-    updater = KG.UpdateKG(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD
-    )
+    # read variables for query from environment file
+    updater                             = utils.get_client("OntoSynthesisConnection")
     query                               = f"""
 PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -89,33 +79,28 @@ WHERE {{
 
 GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
       """        
-    species_labels                        = updater.sparql_client.performQuery(query) 
+    species_labels                        = updater.performQuery(query) 
     print("species: ", species_labels)
     return species_labels
 
 def get_literature(doi:str) -> dict:
     print("DOI: ", doi)
-    # initialize KG class
-    script_dir                          = os.path.dirname(os.path.abspath(__file__))
-    # make file path dependent on script location
-    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoMOPConnection.env"))
-    # instantiate class
-    updater = KG.UpdateKG(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD
-    )
+    # instantiate PySparqlClient
+    updater                             = utils.get_client("OntoMOPConnection")
     #where_lit                   = """   ?Provenance	om:hasReferenceDOI      ?DOI     . """
     #select_variables            = """ DISTINCT  ?DOI"""
     #literature_dois             = sparql_point.query_triple(where_lit, select_variables)
     #lit_doi                     = literature_dois[0]
-    where_mops                          = f"""  ?MOPIRI         om:hasProvenance            ?ProvenanceIRI                  ;
-                                                                om:hasCCDCNumber            ?CCDCNum                        ;
-                                                                om:hasMOPFormula            ?Formula                        .
-                                            ?ProvenanceIRI	    om:hasReferenceDOI          "{doi}"                . """
-    select_mops                         = """?Formula ?CCDCNum """
-    mop_cbu                             = updater.query_triple(where_mops, select_mops)
+    query                               = f"""  
+                                        PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
+                                        SELECT ?Formula ?CCDCNum
+                                        WHERE
+                                                ?MOPIRI         mop:hasProvenance            ?ProvenanceIRI                  ;
+                                                                mop:hasCCDCNumber            ?CCDCNum                        ;
+                                                                mop:hasMOPFormula            ?Formula                        .
+                                                ?ProvenanceIRI	mop:hasReferenceDOI          "{doi}"                . """
+    
+    mop_cbu                             = updater.performQuery(query) 
     print("mop query ouptu: ", mop_cbu)
     return mop_cbu
 
