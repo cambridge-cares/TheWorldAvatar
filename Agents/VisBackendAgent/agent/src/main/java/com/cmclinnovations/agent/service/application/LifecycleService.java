@@ -157,7 +157,7 @@ public class LifecycleService {
         : FileService.SHACL_PATH_QUERY_RESOURCE;
 
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
-    Queue<SparqlBinding> results = this.kgService.queryInstances(query, null, false, eventType);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, eventType);
     LOGGER.info("Successfuly retrieved contracts!");
     return new ResponseEntity<>(results.stream().map(SparqlBinding::get).toList(), HttpStatus.OK);
   }

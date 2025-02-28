@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.cmclinnovations.agent.model.ParentField;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
@@ -27,7 +28,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 public class QueryTemplateFactory {
-  private String parentField;
   private List<String> sortedVars;
   private Queue<StringBuilder> deleteBranchBuilders;
   private Map<String, String> queryLines;
@@ -41,12 +41,11 @@ public class QueryTemplateFactory {
   private static final String INSTANCE_CLASS_VAR = "instance_clazz";
   private static final String ORDER_VAR = "order";
   private static final String IS_OPTIONAL_VAR = "isoptional";
-  private static final String IS_PARENT_VAR = "isparent";
   private static final String IS_CLASS_VAR = "isclass";
   private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
   private static final String MULTIPATH_VAR = "multipath";
-  private static final String NODE_NAME_VAR = "nodename";
+  public static final String NODE_GROUP_VAR = "nodegroup";
   private static final String MULTI_NAME_PATH_VAR = "name_multipath";
   private static final String RDF_TYPE = "rdf:type";
   private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
@@ -74,20 +73,14 @@ public class QueryTemplateFactory {
    *                       should be in the template.
    * @param filterId       An optional field to target the query at a specific
    *                       instance.
-   * @param hasParent      Indicates if the query needs to filter out parent
-   *                       entities.
+   * @param parentField    An optional parent field details if instances must be
+   *                       associated.
    * @param lifecycleEvent Optional parameter to dictate the filter for a relevant
    *                       lifecycle event.
    */
-  public Queue<String> genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent,
+  public Queue<String> genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, ParentField parentField,
       LifecycleEventType lifecycleEvent) {
-    // Validate inputs
-    if (hasParent && filterId == null) {
-      LOGGER.error("Detected a parent without a valid filter ID!");
-      throw new IllegalArgumentException("Detected a parent without a valid filter ID!");
-    }
     // Reset from previous iterations
-    this.parentField = "";
     this.queryLines = new HashMap<>();
     this.varSequence = new HashMap<>();
     this.sortedVars = new ArrayList<>();
@@ -97,7 +90,7 @@ public class QueryTemplateFactory {
     StringBuilder whereBuilder = new StringBuilder();
     // Extract the first binding class but it should not be removed from the queue
     String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
-    this.sortBindings(bindings, hasParent);
+    this.sortBindings(bindings);
 
     // Retrieve all variables if no sequence of variable is present
     if (this.varSequence.isEmpty()) {
@@ -123,7 +116,7 @@ public class QueryTemplateFactory {
 
     }
     this.queryLines.values().forEach(whereBuilder::append);
-    this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
+    this.appendOptionalIdFilters(whereBuilder, filterId, parentField);
     this.appendOptionalLifecycleFilters(whereBuilder, lifecycleEvent);
     return this.genFederatedQuery(selectVariableBuilder.toString(), whereBuilder.toString(), targetClass);
   }
@@ -146,7 +139,6 @@ public class QueryTemplateFactory {
    */
   public Queue<String> genSearchTemplate(Queue<Queue<SparqlBinding>> bindings, Map<String, String> criterias) {
     // Reset from previous iterations
-    this.parentField = "";
     this.queryLines = new HashMap<>();
     this.varSequence = new HashMap<>();
     this.sortedVars = new ArrayList<>();
@@ -156,7 +148,7 @@ public class QueryTemplateFactory {
     StringBuilder filters = new StringBuilder();
     // Extract the first binding class but it should not be removed from the queue
     String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
-    this.sortBindings(bindings, false);
+    this.sortBindings(bindings);
 
     this.queryLines.entrySet().forEach(currentLine -> {
       String variable = currentLine.getKey();
@@ -223,30 +215,25 @@ public class QueryTemplateFactory {
    * processing.
    * 
    * @param nestedBindings The bindings queried from SHACL restrictions that
-   *                       should
-   *                       be queried in template.
-   * @param hasParent      Indicates if the query needs to filter out parent
-   *                       entities.
+   *                       should be queried in template.
    */
-  private void sortBindings(Queue<Queue<SparqlBinding>> nestedBindings, boolean hasParent) {
+  private void sortBindings(Queue<Queue<SparqlBinding>> nestedBindings) {
     Map<String, SparqlQueryLine> queryLineMappings = new HashMap<>();
     while (!nestedBindings.isEmpty()) {
       Queue<SparqlBinding> bindings = nestedBindings.poll();
-      Queue<String> parents = new ArrayDeque<>();
+      Queue<String> nodeGroups = new ArrayDeque<>();
       while (!bindings.isEmpty()) {
         SparqlBinding binding = bindings.poll();
         String multiPartPredicate = this.getPredicate(binding, MULTIPATH_VAR);
         String multiPartLabelPredicate = this.getPredicate(binding, MULTI_NAME_PATH_VAR);
-        String parent = this.genQueryLine(binding, multiPartPredicate, multiPartLabelPredicate, hasParent,
-            queryLineMappings);
-        if (parent != null) {
-          parents.offer(parent);
-        }
+        this.genQueryLine(binding, multiPartPredicate, multiPartLabelPredicate, nodeGroups, queryLineMappings);
       }
-      while (!parents.isEmpty()) {
-        String parentField = parents.poll();
-        queryLineMappings.remove(parentField);
-        this.varSequence.remove(parentField);
+      // If there are any node group, these should be removed from the mappings
+      // The previous method will parse them
+      while (!nodeGroups.isEmpty()) {
+        String nodeGroup = nodeGroups.poll();
+        queryLineMappings.remove(nodeGroup);
+        this.varSequence.remove(nodeGroup);
       }
     }
     this.parseQueryLines(queryLineMappings);
@@ -294,23 +281,20 @@ public class QueryTemplateFactory {
    *                                property.
    * @param multiPartLabelPredicate The current predicate part value to reach the
    *                                label of the property.
-   * @param hasParent               Indicates if there is supposed to be a parent
-   *                                field.
+   * @param nodeGroups              Stores any node group property.
    * @param queryLineMappings       The target mappings storing the generated
-   *                                query
-   *                                lines.
+   *                                query lines.
    */
-  private String genQueryLine(SparqlBinding binding, String multiPartPredicate, String multiPartLabelPredicate,
-      boolean hasParent, Map<String, SparqlQueryLine> queryLineMappings) {
-    String parentNode = binding.getFieldValue(NODE_NAME_VAR);
+  private void genQueryLine(SparqlBinding binding, String multiPartPredicate, String multiPartLabelPredicate,
+      Queue<String> nodeGroups, Map<String, SparqlQueryLine> queryLineMappings) {
+    String shNodeGroupName = binding.getFieldValue(NODE_GROUP_VAR);
     String propertyName = binding.getFieldValue(NAME_VAR);
-    // Filter out any nested id properties
-    if (parentNode != null && propertyName.equals("id")) {
-      return null;
+    // Any nested id properties in sh:node should be ignored
+    if (shNodeGroupName != null && propertyName.equals("id")) {
+      return;
     }
-    // Parse the isclass variable if it exists, or else defaults to false
-    String isClassVal = binding.getFieldValue(IS_CLASS_VAR);
-    boolean isClassVar = isClassVal != null ? Boolean.parseBoolean(isClassVal) : false;
+
+    boolean isClassVar = Boolean.parseBoolean(binding.getFieldValue(IS_CLASS_VAR));
     String instanceClass = binding.getFieldValue(INSTANCE_CLASS_VAR);
     // For existing mappings,
     if (queryLineMappings.containsKey(propertyName)) {
@@ -330,27 +314,18 @@ public class QueryTemplateFactory {
       if (binding.containsField(ORDER_VAR)) {
         int order = Integer.parseInt(binding.getFieldValue(ORDER_VAR));
         List<Integer> orders = new ArrayList<>();
-        // If there is an existing parent node, append the order in front
-        if (parentNode != null && this.varSequence.containsKey(parentNode)) {
-          orders.addAll(this.varSequence.get(parentNode));
-        }
         orders.add(order);
         this.varSequence.put(propertyName, orders);
       }
-      // If the field is a parent field, and the template requires a parent, store the
-      // parent field
-      if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
-        this.parentField = StringResource.parseQueryVariable(propertyName);
-      }
-      if (parentNode != null) {
-        SparqlQueryLine parentLine = queryLineMappings.get(parentNode);
-        multiPartPredicate = parsePredicate(parentLine.predicate(), multiPartPredicate);
+      if (shNodeGroupName != null) {
+        SparqlQueryLine nestedNodeLine = queryLineMappings.get(shNodeGroupName);
+        multiPartPredicate = parsePredicate(nestedNodeLine.predicate(), multiPartPredicate);
+        nodeGroups.offer(shNodeGroupName);
       }
       queryLineMappings.put(propertyName,
           new SparqlQueryLine(propertyName, instanceClass, multiPartPredicate, multiPartLabelPredicate, subjectVar,
               isOptional, isClassVar));
     }
-    return parentNode;
   }
 
   /**
@@ -441,23 +416,21 @@ public class QueryTemplateFactory {
   /**
    * Appends optional filters related to IDs to the query if required.
    * 
-   * @param query     Builder for the query template.
-   * @param filterId  An optional field to target the query at a specific
-   *                  instance.
-   * @param hasParent Indicates if the query needs to filter out parent entities.
+   * @param query       Builder for the query template.
+   * @param filterId    An optional field to target the query at a specific
+   *                    instance.
+   * @param parentField An optional parent field to target the query with specific
+   *                    parents.
    */
-  private void appendOptionalIdFilters(StringBuilder query, String filterId, boolean hasParent) {
-    if (hasParent) {
-      if (this.parentField == null) {
-        LOGGER.error("Detected a parent but no valid parent fields are available!");
-        throw new IllegalArgumentException("Detected a parent but no valid parent fields are available!");
-      }
+  private void appendOptionalIdFilters(StringBuilder query, String filterId, ParentField parentField) {
+    // Add filter clause for a parent field instead if available
+    if (parentField != null) {
       query.append("FILTER STRENDS(STR(?")
-          .append(this.parentField)
+          .append(StringResource.parseQueryVariable(parentField.name()))
           .append("), \"")
-          .append(filterId)
+          .append(parentField.id())
           .append("\")");
-    } else if (filterId != null) {
+    } else if (!filterId.isEmpty()) {
       // Add filter clause if there is a valid filter ID
       query.append("FILTER STRENDS(STR(?id), \"")
           .append(filterId)

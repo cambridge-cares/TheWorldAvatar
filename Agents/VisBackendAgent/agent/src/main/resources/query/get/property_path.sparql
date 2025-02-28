@@ -1,7 +1,7 @@
 PREFIX sh:             <http://www.w3.org/ns/shacl#>
 PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
 
-SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodename ?subject ?isparent ?isoptional ?isnumber ?multipath ?multipath_proppath
+SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodegroup ?subject ?isoptional ?isnumber ?multipath ?multipath_proppath
 WHERE{
   ?shape rdf:type sh:NodeShape ;
          sh:targetClass ?clazz ;
@@ -13,10 +13,7 @@ WHERE{
     ?property sh:hasValue ?parentSubjectValue .
   }
   OPTIONAL{
-    ?property sh:qualifiedValueShape ?parent  .
-  }
-  OPTIONAL{
-    ?property sh:minCount ?minCount  .
+    ?property sh:minCount ?minCount .
   }
   # Verify numerical value
   OPTIONAL{
@@ -35,8 +32,6 @@ WHERE{
     FILTER(BOUND(?multipath))
   }
 
-  # If there is a parent indicator, the property should be a parent
-  BIND(BOUND(?parent) AS ?isparent)
   # Retrieve sub target value first; Else, attempt to retrieve from parent or return null 
   BIND(IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null) AS ?subject)
   # Check if the path has a min count property to determine if it is optional
@@ -48,6 +43,6 @@ WHERE{
   OPTIONAL{?property sh:class ?instance_clazz}
   FILTER(!BOUND(?instance_clazz) || ?instance_clazz != fibo-fnd-dt-fd:RegularSchedule)
 
-  # Only retrieve results if there is either a multipath
+  # Only retrieve results if there is a multipath
   FILTER(BOUND(?multipath))
 }

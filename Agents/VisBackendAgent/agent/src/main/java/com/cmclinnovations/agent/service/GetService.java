@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.model.ParentField;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.core.FileService;
@@ -42,11 +43,11 @@ public class GetService {
    * 
    * @param resourceID       The target resource identifier for the instance
    *                         class.
-   * @param parentInstanceId Optional parent instance identifier.
+   * @param parentField      Optional parent field containing its id and name.
    * @param requireLabel     Indicates if labels should be returned for all the
    *                         fields that are IRIs.
    */
-  public ResponseEntity<?> getAllInstances(String resourceID, String parentInstanceId, boolean requireLabel) {
+  public ResponseEntity<?> getAllInstances(String resourceID, ParentField parentField, boolean requireLabel) {
     LOGGER.debug("Retrieving all instances of {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
@@ -54,19 +55,15 @@ public class GetService {
       return iriResponse;
     }
     String queryPath = FileService.SHACL_PATH_QUERY_RESOURCE;
-    String parentId = parentInstanceId;
-    // If no parent instance ID is supplied, hasParent should be true
-    boolean hasParent = parentInstanceId != null;
     if (requireLabel) {
       // Only use the label query if required due to the associated slower query
       // performance
       queryPath = FileService.SHACL_PATH_LABEL_QUERY_RESOURCE;
       // Parent related parameters should be disabled
-      parentId = null;
-      hasParent = false;
+      parentField = null;
     }
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
-    Queue<SparqlBinding> results = this.kgService.queryInstances(query, parentId, hasParent);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, parentField);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
@@ -126,7 +123,7 @@ public class GetService {
     String queryPath = requireLabel ? FileService.SHACL_PATH_LABEL_QUERY_RESOURCE
         : FileService.SHACL_PATH_QUERY_RESOURCE;
     String query = this.fileService.getContentsWithReplacement(queryPath, replacement);
-    Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId);
     if (results.size() == 1) {
       return new ResponseEntity<>(
           results.poll().get(),

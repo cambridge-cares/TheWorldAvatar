@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cmclinnovations.agent.model.ParentField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
@@ -100,8 +101,9 @@ public class VisBackendAgent {
   }
 
   /**
-   * Retrieves all instances belonging to the specified type in the knowledge
-   * graph.
+   * Retrieves all instances belonging to the specified type and associated with a
+   * parent in the knowledge graph. Assumes the field name is the same as the
+   * parent resource identifier.
    */
   @GetMapping("/{parent}/{id}/{type}")
   public ResponseEntity<?> getAllInstancesWithParent(@PathVariable(name = "parent") String parent,
@@ -109,7 +111,7 @@ public class VisBackendAgent {
       @PathVariable(name = "type") String type) {
     LOGGER.info("Received request to get all instances of target {} associated with the parent type {}...", type,
         parent);
-    return this.getService.getAllInstances(type, id, false);
+    return this.getService.getAllInstances(type, new ParentField(id, parent), false);
   }
 
   /**

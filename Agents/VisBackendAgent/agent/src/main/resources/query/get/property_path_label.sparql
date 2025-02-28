@@ -1,7 +1,7 @@
 PREFIX sh:             <http://www.w3.org/ns/shacl#>
 PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
 
-SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodename ?order ?subject ?isparent ?isoptional ?isclass
+SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodegroup ?order ?subject ?isoptional ?isclass
  ?multipath ?multipath_proppath ?name_multipath ?name_multipath_proppath
 WHERE {
   ?shape rdf:type sh:NodeShape ;
@@ -13,9 +13,6 @@ WHERE {
             sh:order ?order .
   OPTIONAL{
     ?property sh:hasValue ?parentSubjectValue .
-  }
-  OPTIONAL{
-    ?property sh:qualifiedValueShape ?parent  .
   }
   OPTIONAL{
     ?property sh:minCount ?minCount  .
@@ -57,8 +54,6 @@ WHERE {
     FILTER (BOUND(?multipath))
   }
 
-  # If there is a parent indicator, the property should be a parent
-  BIND(BOUND(?parent) AS ?isparent)
   # Retrieve parent target value if available or return null 
   BIND(IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null) AS ?subject)
   # Check if the path has a min count property to determine if it is optional
