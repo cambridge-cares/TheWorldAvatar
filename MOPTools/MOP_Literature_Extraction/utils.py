@@ -95,7 +95,8 @@ def config_a_box_updates(env_file: str = None) -> AboxUpdateConfig:
     return config_generic(AboxUpdateConfig, env_file)
 
 def get_client(name):
-    a_box_updates_config                        = config_a_box_updates(f"../{name}.env")
+    a_box_updates_config                        = config_a_box_updates(f"secrets/{name}.env")
+    print("read in: ", a_box_updates_config)
     return                                        PySparqlClient(
         query_endpoint                          = a_box_updates_config.SPARQL_QUERY_ENDPOINT            ,
         update_endpoint                         = a_box_updates_config.SPARQL_UPDATE_ENDPOINT           ,
