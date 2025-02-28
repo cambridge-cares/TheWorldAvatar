@@ -34,18 +34,19 @@ public class QueryTemplateFactory {
   private Map<String, List<Integer>> varSequence;
   private final LifecycleQueryFactory lifecycleQueryFactory;
   private final JsonLdService jsonLdService;
+  public static final String NODE_GROUP_VAR = "nodegroup";
   private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
   private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
   private static final String INSTANCE_CLASS_VAR = "instance_clazz";
   private static final String ORDER_VAR = "order";
+  private static final String BRANCH_VAR = "branch";
   private static final String IS_OPTIONAL_VAR = "isoptional";
   private static final String IS_CLASS_VAR = "isclass";
   private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
   private static final String MULTIPATH_VAR = "multipath";
-  public static final String NODE_GROUP_VAR = "nodegroup";
   private static final String MULTI_NAME_PATH_VAR = "name_multipath";
   private static final String RDF_TYPE = "rdf:type";
   private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
@@ -304,7 +305,7 @@ public class QueryTemplateFactory {
           new SparqlQueryLine(propertyName, instanceClass,
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
-              currentQueryLine.subjectFilter(), currentQueryLine.isOptional(), isClassVar));
+              currentQueryLine.subjectFilter(), currentQueryLine.branch(), currentQueryLine.isOptional(), isClassVar));
     } else {
       // When initialising a new query line
       String subjectVar = binding.containsField(SUBJECT_VAR) ? binding.getFieldValue(SUBJECT_VAR) : "";
@@ -324,7 +325,7 @@ public class QueryTemplateFactory {
       }
       queryLineMappings.put(propertyName,
           new SparqlQueryLine(propertyName, instanceClass, multiPartPredicate, multiPartLabelPredicate, subjectVar,
-              isOptional, isClassVar));
+              binding.getFieldValue(BRANCH_VAR), isOptional, isClassVar));
     }
   }
 
@@ -352,6 +353,7 @@ public class QueryTemplateFactory {
    * @param queryLineMappings The input unparsed query lines
    */
   private void parseQueryLines(Map<String, SparqlQueryLine> queryLineMappings) {
+    Map<String, String> branchQueryLines = new HashMap<>();
     queryLineMappings.values().forEach(queryLine -> {
       // Parse and generate a query line for the current line
       StringBuilder currentLine = new StringBuilder();
@@ -377,6 +379,7 @@ public class QueryTemplateFactory {
             ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()),
             inverseLabelPred + RDF_TYPE, StringResource.parseIriForQuery(queryLine.instanceClass()));
       }
+      String lineOutput;
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {
         // If the value must conform to a specific subject variable,
@@ -386,13 +389,40 @@ public class QueryTemplateFactory {
           searchCriteria.put(queryLine.property(), queryLine.subjectFilter());
           currentLine.append(genSearchCriteria(queryLine.property(), searchCriteria));
         }
-        String optionalLine = StringResource.genOptionalClause(currentLine.toString());
-        this.queryLines.put(queryLine.property(), optionalLine);
+        lineOutput = StringResource.genOptionalClause(currentLine.toString());
       } else {
         // Non-optional lines does not require special effects
-        this.queryLines.put(queryLine.property(), currentLine.toString());
+        lineOutput = currentLine.toString();
+      }
+
+      // Branches should be added as a separate bunch
+      if (queryLine.branch() != null) {
+        branchQueryLines.compute(queryLine.branch(), (k, previousLine) -> {
+          // Add the line output as a new key value pair as key is absent
+          if (previousLine == null) {
+            return lineOutput;
+          } else {
+            // Append the line output to previous output as there is an existing key
+            return previousLine + lineOutput;
+          }
+        });
+      } else {
+        // Non-branch query lines will be added directly
+        this.queryLines.put(queryLine.property(), lineOutput);
       }
     });
+    // Add branch query block if there are any branches
+    if (!branchQueryLines.isEmpty()) {
+      StringBuilder branchBlock = new StringBuilder();
+      branchQueryLines.entrySet().stream().forEach(branch -> {
+        // Add a UNION if there is a previous branch
+        if (!branchBlock.isEmpty()) {
+          branchBlock.append(" UNION ");
+        }
+        branchBlock.append("{").append(branch.getValue()).append("}");
+      });
+      this.queryLines.put(ShaclResource.BRANCH_KEY, branchBlock.toString());
+    }
   }
 
   /**

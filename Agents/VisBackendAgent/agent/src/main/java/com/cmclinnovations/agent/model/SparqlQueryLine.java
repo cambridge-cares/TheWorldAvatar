@@ -10,9 +10,11 @@ package com.cmclinnovations.agent.model;
  * @param labelPredicate Predicate of triple to reach the label of the property
  * @param subjectFilter  For the restricted possible value of a subject, if
  *                       available; Else, default to an empty string
+ * @param branch         The form branch category of the query line
  * @param isOptional     Indicates if this query line is optional
- * @param isClazz        Indicates if this query line requires a rdfs:label predicate
+ * @param isClazz        Indicates if this query line requires a rdfs:label
+ *                       predicate
  */
-public record SparqlQueryLine(String property, String instanceClass, String predicate, String labelPredicate, String subjectFilter,
-    boolean isOptional, boolean isClazz) {
+public record SparqlQueryLine(String property, String instanceClass, String predicate, String labelPredicate,
+        String subjectFilter, String branch, boolean isOptional, boolean isClazz) {
 }
