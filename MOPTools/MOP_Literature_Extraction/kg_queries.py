@@ -304,17 +304,8 @@ def query_characterisation(doi:str):
     return species_labels
 
 def query_synthesis_full(doi:str) -> dict:
-    # initialize KG class
-    script_dir                          = os.path.dirname(os.path.abspath(__file__))
-    # make file path dependent on script location
-    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
-    # instantiate class
-    updater = KG.UpdateKG(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD
-    )
+    # read variables for query from environment file
+    updater                             = utils.get_client("OntoSynthesisConnection")
     query                               = f"""
 PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
