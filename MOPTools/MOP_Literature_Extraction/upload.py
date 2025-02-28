@@ -18,7 +18,7 @@ import sys
 PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
-from rework_ontomops.update_kg  import config_a_box_updates
+
 import json
 import csv
 from io import StringIO
