@@ -1,5 +1,16 @@
 def step_schema(dynamic_prompt):
-    # predeffine empty dictionairies
+    """
+    Generates a JSON schema for a chemical synthesis procedure based on the steps provided
+    in the dynamic_prompt dictionary.
+    
+    Parameters:
+    dynamic_prompt (dict): A dictionary indicating which steps are present in the synthesis.
+    (Based on adaptive_schema())
+    
+    Returns:
+    dict: A JSON schema that structures the synthesis steps.
+    """
+    # Predefine empty dictionaries for each possible synthesis step
     add               = {}
     heat_chill        = {}
     filt              = {}
@@ -11,7 +22,7 @@ def step_schema(dynamic_prompt):
     dissolve          = {}
     separate          = {}
     transfer          = {}
-    # fill empty dicitonairy if step type is used
+    # Fill the respective dictionary if a specific step is used
     if dynamic_prompt["Add"] == True:
         add.update({"type": "object",
             "properties": {
@@ -48,7 +59,7 @@ def step_schema(dynamic_prompt):
             "required": ["Add"],
             "additionalProperties": False
             })
-
+    # Repeat for other steps (e.g., HeatChill, Dry, Filter, etc.)
     if dynamic_prompt["HeatChill"]:
         heat_chill.update({"type": "object",
             "properties": {
@@ -337,7 +348,7 @@ def step_schema(dynamic_prompt):
             "required": ["Transfer"],
             "additionalProperties": False
         })
-    # integrate the above schema parts in the overall schema
+    # Schema dictionary containing all defined step schemas
     step_schema_dict        = {
                       "type": "json_schema",
                       "json_schema": {
@@ -385,14 +396,26 @@ def step_schema(dynamic_prompt):
                       }
                   }
     return step_schema_dict
+
 def adaptive_schema():
+    """
+    Generates a JSON schema defining the structure for a chemical synthesis process.
+    Lists all possible synthesis step types used in the synthesis to pass it to the
+    llm and get a boolean list with the step types used in a synthesis to generate 
+    tailored schemas based on the currently processed synthesis procedure.
+    The schema ensures that only specific boolean properties related to synthesis
+    steps are allowed, and all properties are required. (OpenAi requirements)
+
+    Returns:
+        dict: A dictionary representing the JSON schema.
+    """
     schema          = {
-                      "type": "json_schema",
+                      "type": "json_schema",                            # Specifies the type of schema
                       "json_schema": {
-                          "name": "chemicalSynthesis",
+                          "name": "chemicalSynthesis",                  # Name of the schema
                           "schema": {
-                              "type": "object",
-                              "properties": {
+                              "type": "object",                         # Defines the schema as an object type
+                              "properties": {                           # Defines the allowed properties and their types
                                 "Add": {"type": "boolean"},
                                 "HeatChill": {"type": "boolean"},
                                 "Dry": {"type": "boolean"},
@@ -405,130 +428,150 @@ def adaptive_schema():
                                 "Separate": {"type": "boolean"},
                                 "Transfer": {"type": "boolean"}
                               },
-                              "required": [
+                              "required": [                             # Specifies the required properties
                                   "Add", "HeatChill", "Separate", "Transfer",
                                   "Dry", "Evaporate", "Crystallization",
                                   "Filter", "Sonicate", "Stir", "Dissolve"
                               ],
-                              "additionalProperties": False  
+                              "additionalProperties": False             # Disallows any properties not explicitly defined
                           },
-                      "strict": True
+                      "strict": True                                    # Ensures strict adherence to the schema
                       }
                   }
-    return schema
+    return schema                                                       # Returns the defined schema
+
 def chemical_schema():
+    """
+    Defines a JSON schema for chemical synthesis procedures.
+    This schema ensures structured data representation for synthesis procedures,
+    including input chemicals, output chemicals.
+    
+    Returns:
+        dict: JSON schema defining the structure of chemical in a synthesis procedure.
+    """
     schema          = {
-                    "type": "json_schema",
-                    "json_schema": {
-                      "name": "chemicalSynthesis",
-                      "schema": {
-                        "type": "object",
-                        "properties": {
-                          "synthesisProcedures": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
+                    "type": "json_schema",                                                          # Specifies that this schema follows JSON Schema standards
+                    "json_schema": {            
+                      "name": "chemicalSynthesis",                                                  # Name of the schema
+                      "schema": {           
+                        "type": "object",                                                           # Root element must be an object
+                        "properties": {         
+                          "synthesisProcedures": {                                                  # Main key containing synthesis procedure details
+                            "type": "array",                                                        # List of synthesis procedures
+                            "items": {          
+                              "type": "object",                                                     # Each procedure is an object
                               "properties": {
-                                "procedureName": { "type": "string" },
+                                "procedureName": { "type": "string" },                              # Name of the procedure
                                 "steps": {
-                                  "type": "array",
+                                  "type": "array",                                      
                                   "items": {
-                                    "type": "object",
+                                    "type": "object",                                               # Each step is an object
                                     "properties": {
-                                      "inputChemicals": {
+                                      "inputChemicals": {                                           # Input chemicals
                                         "type": "array",
                                         "items": {
-                                          "type": "object",
+                                          "type": "object",                                         # Each input chemical is an object
                                           "properties": {
-                                            "chemical":{ "type": "array",
+                                            "chemical":{ "type": "array",                           # Details of chemicals used
                                                       "items":{"type":"object",
                                                       "properties":{
-                                                        "chemicalFormula": {"type": "string"},
-                                                        "chemicalName": { "type": "array",
+                                                        "chemicalFormula": {"type": "string"},      # Input Chemical formula
+                                                        "chemicalName": { "type": "array",          # List of input chemical names
                                                         "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
                                                         "chemicalAmount": {"type": "string", "description": "Amount of the chemcial used in this step."}},
                                                         "required": ["chemicalName", "chemicalAmount", "chemicalFormula"],
                                                       "additionalProperties": False}, 
                                                       "description": "If a mixture of species is used make multiple entries each with chemcial names and chemical amount."},
-                                            "supplierName": {"type": "string"},
+                                            "supplierName": {"type": "string"},                     # Supplier information for input chemicals
                                             "purity": { "type": "string" }
                                           },
-                                          "required": ["chemical", "supplierName", "purity"],
-                                          "additionalProperties": False
+                                          "required": ["chemical", "supplierName", "purity"],       # Required fields for input chemicals
+                                          "additionalProperties": False                             # No extra properties allowed
                                         }
                                       },
-                                      "outputChemical": {
+                                      "outputChemical": {                                           # Output chemical(s)
                                         "type": "array",
                                         "items": {
                                           "type": "object",
                                           "properties": {
-                                            "chemicalFormula": { "type": "string" },
-                                            "names": { "type": "array",
+                                            "chemicalFormula": { "type": "string" },                # Formula of the output chemical
+                                            "names": { "type": "array",                             # List of output chemical names
                                                       "items":{"type":"string"}},
-                                            "yield": { "type": "string" },
-                                            "CCDCNumber": { "type": "string" }
+                                            "yield": { "type": "string" },                          # Yield of the reaction
+                                            "CCDCNumber": { "type": "string" }                      # CCDC number (if applicable)
                                           },
                                           "required": ["chemicalFormula", "names", "yield", "CCDCNumber"],
                                           "additionalProperties": False
                                         }
                                       }
                                     },
-                                    "required": ["inputChemicals", "outputChemical"],
-                                    "additionalProperties": False
+                                    "required": ["inputChemicals", "outputChemical"],               # Required fields for each step
+                                    "additionalProperties": False                                   # No extra properties allowed in step
                                   }
                                 }
                               },
-                              "required": ["procedureName", "steps"],
-                              "additionalProperties": False
+                              "required": ["procedureName", "steps"],                               # Required fields for each procedure
+                              "additionalProperties": False                                         # No extra properties allowed in procedure
                             }
                           }
                         },
-                        "required": ["synthesisProcedures"],
-                        "additionalProperties": False
+                        "required": ["synthesisProcedures"],                                        # The root object must have synthesis procedures
+                        "additionalProperties": False                                               # No extra properties allowed at the root level
                       },
-                      "strict": True
+                      "strict": True                                                                # Enforces strict validation
                     }
                   }
     return schema
 def cbu_schema():
+    """
+    Returns a JSON schema defining the structure for chemical synthesis data.
+    
+    The schema enforces a strict structure to ensure consistency in stored data.
+    """
     schema      ={
-                    "type": "json_schema",
+                    "type": "json_schema",                                      # Indicates that this is a JSON schema definition
                     "json_schema": {
-                        "name": "chemicalSynthesis",
+                        "name": "chemicalSynthesis",                            # Name of the schema
                         "schema": {
-                        "type": "object",
+                        "type": "object",                                       # Root element is an object
                         "properties": {
-                        "synthesisProcedures": {
-                        "type": "array",
+                        "synthesisProcedures": {                                # Key representing synthesis procedures
+                        "type": "array",                                        # Must be an array
                         "items": {
-                            "type": "object",
+                            "type": "object",                                   # Each item in the array is an object
                             "properties": {
-                                "mopCCDCNumber": {"type": "string"},
-                                "cbuFormula1": {"type": "string"},
+                                "mopCCDCNumber": {"type": "string"},            # Unique identifier (better than MOP name)
+                                "cbuFormula1": {"type": "string"},              # First chemical building unit formula
                                 "cbuSpeciesNames1": {
-                                    "type": "array",
-                                    "items": {"type": "string"}
+                                    "type": "array",                            # List of species names
+                                    "items": {"type": "string"}                 # Each species name is a string
                                 },
-                                "cbuFormula2": {"type": "string"},
+                                "cbuFormula2": {"type": "string"},              # Second chemical building unit formula
                                 "cbuSpeciesNames2": { 
-                                    "type": "array",
-                                    "items": {"type": "string"}
+                                    "type": "array",                            # List of species names
+                                    "items": {"type": "string"}                 # Each species name is a string
                                 }
                             },
-                            "required": [
+                            "required": [                                       # Fields that must be present in each object
                                 "mopCCDCNumber", "cbuFormula1", 
                                 "cbuSpeciesNames1", "cbuFormula2", 
                                 "cbuSpeciesNames2"
                             ],
-                            "additionalProperties": False  
+                            "additionalProperties": False                       # Prevents unspecified properties
                         }}},
-                    "required": ["synthesisProcedures"],
-                    "additionalProperties": False},
-                    "strict": True
+                    "required": ["synthesisProcedures"],                        # Top-level required field
+                    "additionalProperties": False},                             # Disallows extra fields at the root level
+                    "strict": True                                              # Ensures strict validation
                     }
                 }
     return schema
 def characterisation_schema():
+    """
+    Defines a JSON schema for characterisation devices and their associated characterisation data.
+    
+    Returns:
+        dict: A dictionary representing the JSON schema for characterisation devices.
+    """
     schema      = {    
                       "type": "json_schema",
                       "json_schema": {
@@ -541,6 +584,7 @@ def characterisation_schema():
                           "items": {
                             "type": "object",
                             "properties": {
+                            # Device schema for HNMR (Hydrogen Nuclear Magnetic Resonance)
                               "HNMRDevice": {
                                 "type": "object",
                                 "properties": {
@@ -550,6 +594,7 @@ def characterisation_schema():
                                 "required": ["deviceName", "frequency", "solventNames"],
                                 "additionalProperties": False
                               },
+                              # Device schema for Elemental Analysis
                               "ElementalAnalysisDevice": {
                                 "type": "object",
                                 "properties": {
@@ -558,6 +603,7 @@ def characterisation_schema():
                                 "required": ["deviceName"],
                                 "additionalProperties": False
                               },
+                              # Device schema for Infrared Spectroscopy
                               "InfraredSpectroscopyDevice": {
                                 "type": "object",
                                 "properties": {
@@ -566,7 +612,7 @@ def characterisation_schema():
                                 "required": ["deviceName", "solventNames"],
                                 "additionalProperties": False
                               },
-
+                                # Characterisation data for products
                                   "Characterisation": {
                                       "type": "array",
                                       "items": {
@@ -575,6 +621,7 @@ def characterisation_schema():
                                               "productNames": { "type": "array",
                                                       "items":{"type":"string"}},
                                               "productCCDCNumber": { "type": "string" },
+                                              # HNMR characterisation details
                                               "HNMR": {
                                                   "type": "object",
                                                   "properties": {
@@ -585,6 +632,7 @@ def characterisation_schema():
                                                   "required": ["shifts", "solvent", "temperature"],
                                                   "additionalProperties": False
                                               },
+                                              # Elemental Analysis characterisation details
                                               "ElementalAnalysis": {
                                                   "type": "object",
                                                   "properties": {
@@ -595,6 +643,7 @@ def characterisation_schema():
                                                   "required": ["weightPercentageCalculated", "weightPercentageExperimental", "chemicalFormula", "measurementDevice"],
                                                   "additionalProperties": False
                                               },
+                                              # Infrared Spectroscopy characterisation details
                                               "InfraredSpectroscopy": {
                                                   "type": "object",
                                                   "properties": {
