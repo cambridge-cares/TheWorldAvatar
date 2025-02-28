@@ -2,3 +2,5 @@
 *.ttl
 # ignore parameter files containing secrets
 secret*
+# ignore parameters after pushing empty
+parameters.py
