@@ -128,7 +128,7 @@ def get_input_species(doi:str) -> dict:
         ?ChemicalSynthesis osyn:retrievedFrom ?doc .
         ?doc <http://purl.org/ontology/bibo/doi> "{doi}" .
     }}
-group by ?Species
+    group by ?Species
                                               """        
     species_labels                        = updater.performQuery(query) 
     print("species labels: ", species_labels)
@@ -139,16 +139,8 @@ group by ?Species
 
 def input_for_cbu(doi:str) -> dict:
     # initialize KG class
-    script_dir                          = os.path.dirname(os.path.abspath(__file__))
-    # make file path dependent on script location
-    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
-    # instantiate class
-    updater = KG.UpdateKG(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD
-    )
+    # instantiate PySparqlClient
+    updater                             = utils.get_client("OntoSynthesisConnection")
     mops                                = get_literature(doi)
     species_list                        = []
     cbu_list                            = []
@@ -192,7 +184,7 @@ def input_for_cbu(doi:str) -> dict:
         }}
         GROUP BY ?Species  ?doi ?ChemicalSynthesis """        
       print("query: ", query)
-      species_labels                        = updater.sparql_client.performQuery(query) 
+      species_labels                        = updater.performQuery(query) 
       print("query output: ", species_labels)
       species_list.append(species_labels)
       mop_list.append(mop["CCDCNum"])
@@ -200,15 +192,9 @@ def input_for_cbu(doi:str) -> dict:
     return mop_list, cbu_list, species_list
 
 def query_mop_names(doi:str):
-    script_dir                          = os.path.dirname(os.path.abspath(__file__))
-    # make file path dependent on script location
-    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
-    # instantiate class
-    updater = KG.UpdateKG(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD)
+    # instantiate PySparqlClient
+    updater                             = utils.get_client("OntoSynthesisConnection")
+
     #where_lit                   = """   ?Provenance	om:hasReferenceDOI      ?DOI     . """
     #select_variables            = """ DISTINCT  ?DOI"""
     #literature_dois             = sparql_point.query_triple(where_lit, select_variables)
@@ -230,7 +216,7 @@ def query_mop_names(doi:str):
       ?document 			          <http://purl.org/ontology/bibo/doi>   "{doi}"		  .
           }}
                                               """        
-    species_labels                        = updater.sparql_client.performQuery(query) 
+    species_labels                        = updater.performQuery(query) 
     print("species labels: ", species_labels)
     species_list                          = []
     for species in species_labels:
@@ -240,88 +226,79 @@ def query_mop_names(doi:str):
 # generate synthesis text queries
 # -------------------------------------------------------------------
 def query_characterisation(doi:str):
-# initialize KG class
-    script_dir                          = os.path.dirname(os.path.abspath(__file__))
-    # make file path dependent on script location
-    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
-    # instantiate class
-    updater = KG.UpdateKG(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD
-    )
+    # instantiate PySparqlClient
+    updater                             = utils.get_client("OntoSynthesisConnection")
     query                               = f"""
-PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX bibo: <http://purl.org/ontology/bibo/>
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
+    PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX bibo: <http://purl.org/ontology/bibo/>
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
 
-SELECT ?ChemicalOutput
-        (GROUP_CONCAT(DISTINCT ?Plabel; separator=", ") AS ?Plabels) 
-       (GROUP_CONCAT(DISTINCT ?irDeviceLabel; SEPARATOR=", ") AS ?irDeviceLabels)
-       (GROUP_CONCAT(DISTINCT CONCAT(STR(?IRx1), " ", ?iraxis, " (", STR(?IRX1Com), ")"); SEPARATOR=", ") AS ?IRx1s)
-        (CONCAT(STR(?yieldnum), " ", STR(?yieldUnit)) AS ?yield)
-       (GROUP_CONCAT(DISTINCT CONCAT(STR(?nmrx1), " ", STR(?nmraxis), " (", STR(?nmrX1Com), ")"); SEPARATOR=", ") AS ?nmraxis_com)
-       (GROUP_CONCAT(DISTINCT CONCAT(STR(?mfnum), " ", STR(?mfunit), " of ", STR(?elelabel)); SEPARATOR=", ") AS ?elementalAnalysis)
-       (GROUP_CONCAT(DISTINCT ?nmrDeviceLabel; SEPARATOR=", ") AS ?nmrDeviceLabels)
-       (GROUP_CONCAT(DISTINCT ?NMRSolventName; SEPARATOR=", ") AS ?NMRSolventNames)
-       (GROUP_CONCAT(DISTINCT ?eleDeviceLabel; SEPARATOR=", ") AS ?eleDeviceLabels)
-       (GROUP_CONCAT(DISTINCT ?molecularFormula; SEPARATOR=", ") AS ?molecularFormulas)
-WHERE {{
-  	?ChemicalTransformation	osyn:isDescribedBy ?ChemicalSynthesis 	;
-        osyn:hasChemicalOutput ?ChemicalOutput .
-        OPTIONAL {{ ?ChemicalOutput skos:altLabel ?Plabel . }}
-        ?ChemicalSynthesis osyn:hasYield ?Yield .
-        ?Yield          om:hasValue      ?YieldValue .
-        ?YieldValue     om:hasNumericalValue ?yieldnum ;
-                        om:hasUnit ?yieldU .
-    ?yieldU rdfs:label ?yieldUnit .	
-  	?ChemicalOutput os:hasElementalAnalysis ?EleAnal ;	
-        os:hasFourierTransformSpectrum	?FTIR ;
-        os:has1H1HNMR ?HNMR .
-  	?HNMR os:hasInstrumentType ?NMRDevice ;
-        os:hasSolvent ?solvent ;
-        os:hasSpectraGraph ?nmrSpectraGraph	.
-  	?solvent rdfs:label ?NMRSolventName	.
-  	?NMRDevice rdfs:label ?nmrDeviceLabel	.
-   	?nmrSpectraGraph os:hasPeak ?nmrShift ;
-        os:hasX1Axis ?nmraxis .
-  	?nmrShift os:hasX1 ?nmrx1 ;
-        rdfs:comment ?nmrX1Com .
-  	?FTIR os:hasInstrumentType ?IRDevice ;
-        os:hasSpectraGraph ?SpectraGraph .
-  	?SpectraGraph os:hasPeak ?irBand ;
-        os:hasX1Axis ?iraxis .
-  	?irBand os:hasX1 ?IRx1 ;
-        rdfs:comment ?IRX1Com .
-  	?IRDevice rdfs:label ?irDeviceLabel	.
-  	?EleAnal os:hasElementWeightPercentage	?wper .
-  	?wper os:hasMassFraction ?mf ;				
-        os:isReferingToElement ?ele .
-  	?ele rdfs:label ?elelabel	.
-  	?mf om:hasValue ?mfValue .
-    ?mfValue om:hasNumericalValue ?mfnum ;
-        om:hasUnit ?munit .
-    ?munit rdfs:label ?mfunit .	
-    ?ChemicalSynthesis osyn:retrievedFrom ?doc .
-  	?doc bibo:doi "{doi}" .
-    OPTIONAL {{
-        ?EleAnal os:hasElementalDevice 	?eleDevice 		.
-      	 ?eleDevice rdfs:label			?eleDeviceLabel .
+    SELECT ?ChemicalOutput
+            (GROUP_CONCAT(DISTINCT ?Plabel; separator=", ") AS ?Plabels) 
+        (GROUP_CONCAT(DISTINCT ?irDeviceLabel; SEPARATOR=", ") AS ?irDeviceLabels)
+        (GROUP_CONCAT(DISTINCT CONCAT(STR(?IRx1), " ", ?iraxis, " (", STR(?IRX1Com), ")"); SEPARATOR=", ") AS ?IRx1s)
+            (CONCAT(STR(?yieldnum), " ", STR(?yieldUnit)) AS ?yield)
+        (GROUP_CONCAT(DISTINCT CONCAT(STR(?nmrx1), " ", STR(?nmraxis), " (", STR(?nmrX1Com), ")"); SEPARATOR=", ") AS ?nmraxis_com)
+        (GROUP_CONCAT(DISTINCT CONCAT(STR(?mfnum), " ", STR(?mfunit), " of ", STR(?elelabel)); SEPARATOR=", ") AS ?elementalAnalysis)
+        (GROUP_CONCAT(DISTINCT ?nmrDeviceLabel; SEPARATOR=", ") AS ?nmrDeviceLabels)
+        (GROUP_CONCAT(DISTINCT ?NMRSolventName; SEPARATOR=", ") AS ?NMRSolventNames)
+        (GROUP_CONCAT(DISTINCT ?eleDeviceLabel; SEPARATOR=", ") AS ?eleDeviceLabels)
+        (GROUP_CONCAT(DISTINCT ?molecularFormula; SEPARATOR=", ") AS ?molecularFormulas)
+    WHERE {{
+        ?ChemicalTransformation	osyn:isDescribedBy ?ChemicalSynthesis 	;
+            osyn:hasChemicalOutput ?ChemicalOutput .
+            OPTIONAL {{ ?ChemicalOutput skos:altLabel ?Plabel . }}
+            ?ChemicalSynthesis osyn:hasYield ?Yield .
+            ?Yield          om:hasValue      ?YieldValue .
+            ?YieldValue     om:hasNumericalValue ?yieldnum ;
+                            om:hasUnit ?yieldU .
+        ?yieldU rdfs:label ?yieldUnit .	
+        ?ChemicalOutput os:hasElementalAnalysis ?EleAnal ;	
+            os:hasFourierTransformSpectrum	?FTIR ;
+            os:has1H1HNMR ?HNMR .
+        ?HNMR os:hasInstrumentType ?NMRDevice ;
+            os:hasSolvent ?solvent ;
+            os:hasSpectraGraph ?nmrSpectraGraph	.
+        ?solvent rdfs:label ?NMRSolventName	.
+        ?NMRDevice rdfs:label ?nmrDeviceLabel	.
+        ?nmrSpectraGraph os:hasPeak ?nmrShift ;
+            os:hasX1Axis ?nmraxis .
+        ?nmrShift os:hasX1 ?nmrx1 ;
+            rdfs:comment ?nmrX1Com .
+        ?FTIR os:hasInstrumentType ?IRDevice ;
+            os:hasSpectraGraph ?SpectraGraph .
+        ?SpectraGraph os:hasPeak ?irBand ;
+            os:hasX1Axis ?iraxis .
+        ?irBand os:hasX1 ?IRx1 ;
+            rdfs:comment ?IRX1Com .
+        ?IRDevice rdfs:label ?irDeviceLabel	.
+        ?EleAnal os:hasElementWeightPercentage	?wper .
+        ?wper os:hasMassFraction ?mf ;				
+            os:isReferingToElement ?ele .
+        ?ele rdfs:label ?elelabel	.
+        ?mf om:hasValue ?mfValue .
+        ?mfValue om:hasNumericalValue ?mfnum ;
+            om:hasUnit ?munit .
+        ?munit rdfs:label ?mfunit .	
+        ?ChemicalSynthesis osyn:retrievedFrom ?doc .
+        ?doc bibo:doi "{doi}" .
+        OPTIONAL {{
+            ?EleAnal os:hasElementalDevice 	?eleDevice 		.
+            ?eleDevice rdfs:label			?eleDeviceLabel .
+        }}
+        OPTIONAL {{ 
+            ?EleAnal os:isBasedOnMolecularFormula ?molForm	.
+            ?molForm os:value ?molecularFormula .
+        }}
+        ?doc <http://purl.org/ontology/bibo/doi> ?doi .
     }}
-  	OPTIONAL {{ 
-        ?EleAnal os:isBasedOnMolecularFormula ?molForm	.
-        ?molForm os:value ?molecularFormula .
-    }}
-    ?doc <http://purl.org/ontology/bibo/doi> ?doi .
-}}
 
-GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
-      """        
+    GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
+    """        
     species_labels                        = updater.sparql_client.performQuery(query) 
     print("species: ", species_labels)
     return species_labels
