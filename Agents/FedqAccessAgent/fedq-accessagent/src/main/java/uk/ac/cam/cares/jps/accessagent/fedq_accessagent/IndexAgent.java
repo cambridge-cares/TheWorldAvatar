@@ -89,7 +89,7 @@ public class IndexAgent {
     }
 
     // Deserialize Dragonfly index from JSON file (restore data)**
-    public void restoreFromBackup() {
+    public void restoreFromBackup() throws IOException {
         try {
             File file = new File(BACKUP_FILE);
             if (file.exists()) {
@@ -119,7 +119,7 @@ public class IndexAgent {
     }
 
     // Serialize Dragonfly index to JSON file (backup data)**
-    public void backupDataToJson() {
+    public void backupDataToJson() throws IOException {
         try {
             Set<String> keys = redisTemplate.keys("*");
             if (keys != null) {

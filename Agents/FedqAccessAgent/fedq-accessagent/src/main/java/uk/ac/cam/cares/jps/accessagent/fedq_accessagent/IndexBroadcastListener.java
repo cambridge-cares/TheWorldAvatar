@@ -1,11 +1,18 @@
 package uk.ac.cam.cares.jps.accessagent.fedq_accessagent;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
@@ -56,6 +63,24 @@ public class IndexBroadcastListener implements MessageListener {
             System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + value);
         } else {
             System.err.println("Unknown action: " + action);
+        }
+    }
+
+    @EventListener(ContextClosedEvent.class)
+    public void onShutdown() {
+        try {
+            indexAgent.backupDataToJson();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void onStartup() {
+        try {
+            indexAgent.restoreFromBackup();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
