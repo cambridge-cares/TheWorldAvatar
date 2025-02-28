@@ -164,7 +164,7 @@ def generate_synthesis_text_llm(txt, doi):
 def generate_syn_text():
     """
     Generates synthesis text for a given DOI by querying synthesis 
-    and characterization data, formatting it, and saving it to a file.
+    and characterization data, formatting it, and saving it to a .md file in the Data/synText/ folder as doi.md.
     Additionally, the text is processed with an LLM.
     """
     # Get the directory of the current script
@@ -187,7 +187,7 @@ def generate_syn_text():
         synthesis_text          = write_characterisation_text(product, synthesis_text)
     print("query characterisation: ", query_char)   # Debugging output
     # Define output file path, replacing '/' in DOI with '_'
-    ouptut_path                 = os.path.join(script_dir, f"../Data/synText/{doi.replace("/", "_")}.md")
+    ouptut_path                 = os.path.join(para.DATA_FOLDER, f"synText/{doi.replace("/", "_")}.md")
     # Convert and save the synthesis text as a .md
     pdf_converter               = utils.PdfConverter(ouptut_path, ouptut_path)
     pdf_converter.save_text_to_file(synthesis_text, ouptut_path)
