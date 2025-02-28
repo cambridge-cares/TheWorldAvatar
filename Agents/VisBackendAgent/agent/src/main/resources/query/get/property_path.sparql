@@ -1,7 +1,7 @@
 PREFIX sh:             <http://www.w3.org/ns/shacl#>
 PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
 
-SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodegroup ?subject ?isoptional ?isnumber ?multipath ?multipath_proppath
+SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodegroup?subject ?isoptional ?isnumber ?multipath ?multipath_proppath
 WHERE{
   ?shape rdf:type sh:NodeShape ;
          sh:targetClass ?clazz ;
@@ -35,7 +35,7 @@ WHERE{
   # Retrieve sub target value first; Else, attempt to retrieve from parent or return null 
   BIND(IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null) AS ?subject)
   # Check if the path has a min count property to determine if it is optional
-  BIND(!BOUND(?minCount) AS ?isoptional)
+  BIND(BOUND(?minCount) && (?minCount=0) AS ?isoptional)
   # Verify if the data type is a number (integer/decimal)
   BIND(BOUND(?datatype) && (?datatype = xsd:integer || ?datatype =xsd:decimal) AS ?isnumber)
   

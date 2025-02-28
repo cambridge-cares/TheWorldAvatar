@@ -57,7 +57,7 @@ WHERE {
   # Retrieve parent target value if available or return null 
   BIND(IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null) AS ?subject)
   # Check if the path has a min count property to determine if it is optional
-  BIND(!BOUND(?minCount) AS ?isoptional)
+  BIND(BOUND(?minCount) && (?minCount=0) AS ?isoptional)
   # Verify if the data type is a number (integer/decimal)
   BIND(BOUND(?datatype) && (?datatype = xsd:integer || ?datatype =xsd:decimal) AS ?isnumber)
 
