@@ -42,6 +42,11 @@ services:
         retries: 10
     volumes:
       - dragonfly-data:/data
+  
+  # index-agent:
+  #   image: myrepo/index-agent
+  #   environment:
+  #     - stack.id=twa-0001
       
 # Volumes
 volumes:
