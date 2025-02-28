@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -27,11 +27,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import com.cmclinnovations.agent.model.ParentField;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -69,11 +71,11 @@ public class KGService {
    * 
    * @param fileService File service for accessing file resources.
    */
-  public KGService(FileService fileService) {
+  public KGService(FileService fileService, JsonLdService jsonLdService) {
     this.client = RestClient.create();
     this.objectMapper = new ObjectMapper();
     this.formTemplateFactory = new FormTemplateFactory();
-    this.queryTemplateFactory = new QueryTemplateFactory(this.objectMapper);
+    this.queryTemplateFactory = new QueryTemplateFactory(jsonLdService);
     this.fileService = fileService;
   }
 
@@ -295,17 +297,38 @@ public class KGService {
   }
 
   /**
-   * Queries for either all instances or a specific instance based on the id.
+   * Queries for all instance(s) associated with the target id.
    * 
    * @param shaclPathQuery The query to retrieve the required predicate paths in
    *                       the SHACL restrictions.
-   * @param targetId       An optional field to target the query at a specific
-   *                       instance.
-   * @param hasParent      Indicates if the query needs to filter out parent
-   *                       entities.
+   * @param targetId       Target ID of interest.
    */
-  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
-    return this.queryInstances(shaclPathQuery, targetId, hasParent, null);
+  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId) {
+    return this.queryInstances(shaclPathQuery, targetId, null, null);
+  }
+
+  /**
+   * Queries for all instances that may or may not be associated with a parent
+   * field.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   * @param parentField    Optional parent field.
+   */
+  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, ParentField parentField) {
+    return this.queryInstances(shaclPathQuery, "", parentField, null);
+  }
+
+  /**
+   * Queries for all instances associated with a lifecycle event.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   * @param lifecycleEvent Optional parameter to dictate the filter for a relevant
+   *                       lifecycle event.
+   */
+  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, LifecycleEventType lifecycleEvent) {
+    return this.queryInstances(shaclPathQuery, "", null, lifecycleEvent);
   }
 
   /**
@@ -315,19 +338,18 @@ public class KGService {
    *                       the SHACL restrictions.
    * @param targetId       An optional field to target the query at a specific
    *                       instance.
-   * @param hasParent      Indicates if the query needs to filter out parent
-   *                       entities.
+   * @param parentField    Optional parent field.
    * @param lifecycleEvent Optional parameter to dictate the filter for a relevant
    *                       lifecycle event.
    */
-  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent,
+  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, ParentField parentField,
       LifecycleEventType lifecycleEvent) {
     // Initialise a new queue to store all variables
     // And add the first level right away
     Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
-        hasParent, lifecycleEvent);
+        parentField, lifecycleEvent);
     LOGGER.debug("Querying the knowledge graph for the instances...");
     List<String> varSequence = this.queryTemplateFactory.getSequence();
     // Query for direct instances
@@ -356,8 +378,7 @@ public class KGService {
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, false,
-        null);
+    Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, null, null);
     LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
     // Query for direct instances
     String[] resultRows = this.queryCSV(queries.poll(), SparqlEndpointType.MIXED);
@@ -410,15 +431,34 @@ public class KGService {
    * @param field   Field name
    */
   public SparqlBinding getSingleInstance(Queue<SparqlBinding> results) {
+    if (results.size() > 1) {
+      // When there is more than one results, verify if they can be grouped
+      // as results might contain an array of different values for the same instance
+      String firstId = results.peek().getFieldValue(LifecycleResource.IRI_KEY);
+      boolean isGroup = results.stream().allMatch(binding -> {
+        String currentId = binding.getFieldValue(LifecycleResource.IRI_KEY);
+        return currentId != null && currentId.equals(firstId);
+      });
+      if (!isGroup) {
+        LOGGER.error("Detected multiple instances: Data model is invalid!");
+        throw new IllegalStateException("Detected multiple instances: Data model is invalid!");
+      }
+      // Removes the first instance from results as the core instance
+      SparqlBinding firstInstance = results.poll();
+      // Iterate over each result binding to append arrays if required
+      results.stream().forEach(binding -> firstInstance.addFieldArray(binding));
+      return firstInstance;
+    }
     if (results.size() == 1) {
       return results.poll();
-    } else if (results.isEmpty()) {
+    }
+    if (results.isEmpty()) {
       LOGGER.error("No valid instance found!");
       throw new NullPointerException("No valid instance found!");
-    } else {
-      LOGGER.error("Detected multiple instances: Data model is invalid!");
-      throw new IllegalStateException("Detected multiple instances: Data model is invalid!");
     }
+    LOGGER.error("Data model is invalid!");
+    throw new IllegalStateException("Data model is invalid!");
+
   }
 
   /**
@@ -532,7 +572,7 @@ public class KGService {
       }
       // Extend to get the next level of shape if any
       replacementShapePath = replacementShapePath.isEmpty() ? " ?nestedshape." +
-          "?nestedshape sh:name ?nodename;sh:node/sh:property"
+          "?nestedshape sh:name ?" + QueryTemplateFactory.NODE_GROUP_VAR + ";sh:node/sh:property"
           : SUB_SHAPE_PATH + replacementShapePath;
     }
     if (results.isEmpty()) {

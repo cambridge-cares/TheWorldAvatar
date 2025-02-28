@@ -19,7 +19,7 @@ WHERE {
       FILTER(isIri(?parent) && ?parent != ?root_class)
 	  }
   } UNION {
-    ?type rdfs:subClassOf+ ?root_class ;
+    ?type rdfs:subClassOf* ?root_class ;
           rdfs:label ?label ;
           rdfs:comment ?description .
     OPTIONAL{

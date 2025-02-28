@@ -1,0 +1,107 @@
+@prefix base:               <https://theworldavatar.io/kg/pricing/> .
+@prefix oservice:           <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:                 <http://www.w3.org/ns/shacl#> .
+@prefix xsd:                <http://www.w3.org/2001/XMLSchema#> .
+@prefix cmns-qtu:           <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
+@prefix fibo-fbc-fi-ip:     <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/> .
+@prefix fibo-fbc-pas-fpas:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
+@prefix fibo-fnd-acc-cur:   <https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/> .
+@prefix fibo-fnd-rel-rel:   <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> .
+
+base:PricingModelShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fbc-fi-ip:PricingModel ;
+  sh:property [
+    sh:name "id";
+    sh:description "The identifier for the pricing model.";
+    sh:order 0;
+    sh:path (
+        cmns-qtu:hasArgument
+        [sh:inversePath cmns-qtu:hasArgument]
+      ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:or (
+    base:BaseFeePricingModelShape
+    base:VariablePricingModelShape
+  ) .
+
+base:BaseFeePricingModelShape
+  a sh:NodeShape ;
+  sh:name "flat fee" ;
+  sh:description "Charges a single, fixed fee regardless of the time, resources, or usage involved" ;
+  sh:property [
+    sh:name "base fee";
+    sh:description "A fixed base fee for each service delivered.";
+    sh:order 1;
+    sh:path (cmns-qtu:hasArgument fibo-fnd-acc-cur:hasAmount) ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:VariablePricingModelShape
+  a sh:NodeShape ;
+  sh:name "variable pricing" ;
+  sh:description "Employs a flexible fee structure with optional fixed fees and variable charges based on metrics" ;
+  sh:property [
+    sh:name "base fee";
+    sh:description "A fixed base fee for each service delivered.";
+    sh:order 1;
+    sh:path (cmns-qtu:hasArgument fibo-fnd-acc-cur:hasAmount) ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "unit price";
+    sh:description "The cost per unit for each service; Multiple price points can be set for different service volumes or usage tiers.";
+    sh:order 2;
+    sh:path cmns-qtu:hasArgument ;
+    sh:node base:UnitPriceShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+base:UnitPriceShape
+  a sh:NodeShape ;
+  sh:targetClass oservice:VariableFee ;
+  sh:property [
+    sh:name "unit";
+    sh:description "The quantity unit the price is based on.";
+    sh:order 0;
+    sh:path (
+        cmns-qtu:hasLowerBound
+        rdf:type
+      ) ;
+    sh:in (base:AddYourClassHere);
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ; 
+  sh:property [
+    sh:name "rate";
+    sh:description "The price per unit within this quantity range.";
+    sh:order 1;
+    sh:path fibo-fnd-acc-cur:hasAmount ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "from";
+    sh:description "The minimum/lowest quantity at which this rate applies.";
+    sh:order 2;
+    sh:path cmns-qtu:hasLowerBound ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "to";
+    sh:description "The maximum/highest quantity at which this rate applies.";
+    sh:order 3;
+    sh:path cmns-qtu:hasUpperBound ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 0 ;
+  ] .

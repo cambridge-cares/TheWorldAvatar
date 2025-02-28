@@ -9,18 +9,22 @@ public class ShaclResource {
   public static final String TYPE_KEY = "@type";
   public static final String VAL_KEY = "@value";
   public static final String REPLACE_KEY = "@replace";
+  public static final String BRANCH_KEY = "@branch";
+  public static final String CONTENTS_KEY = "@contents";
   public static final String REVERSE_KEY = "@reverse";
   public static final String UNIT_KEY = "unit";
   public static final String VARIABLE_KEY = "variable";
   public static final String OUTPUT_KEY = "output";
   // Namespaces
-  public static final String BASE_PREFIX = "https://www.theworldavatar.com/kg/";
+  public static final String BASE_PREFIX = "https://theworldavatar.io/kg/";
   public static final String RDFS_PREFIX = "http://www.w3.org/2000/01/rdf-schema#";
   public static final String SHACL_PREFIX = "http://www.w3.org/ns/shacl#";
   public static final String XSD_PREFIX = "http://www.w3.org/2001/XMLSchema#";
+  public static final String TWA_FORM_PREFIX = BASE_PREFIX + "form/";
   // SHACL classes
   public static final String PROPERTY_GROUP = "PropertyGroup";
   public static final String PROPERTY_SHAPE = "PropertyShape";
+  public static final String NODE_SHAPE = "NodeShape";
   // SHACL properties
   public static final String COMMENT_PROPERTY = "comment";
   public static final String LABEL_PROPERTY = "label";
@@ -33,6 +37,8 @@ public class ShaclResource {
   public static final String CLASS_PROPERTY = "class";
   public static final String DATA_TYPE_PROPERTY = "datatype";
   public static final String IN_PROPERTY = "in";
+  public static final String BELONGS_TO_PROPERTY = "belongsTo";
+  public static final String NODE_PROPERTY = "node";
   // Query string elements
   public static final String RDFS_LABEL_PREDICATE = "rdfs:label";
   public static final String FULL_STOP = ".";
@@ -40,6 +46,10 @@ public class ShaclResource {
   public static final String REPLACEMENT_ENDPOINT = "[endpoint]";
   public static final String WHITE_SPACE = " ";
   public static final String UNION_OPERATOR = "} UNION {";
+  // Data types
+  public static final String XSD_DATE_TIME = XSD_PREFIX + "dateTime";
+  public static final String XSD_DECIMAL = XSD_PREFIX + "decimal";
+  public static final String XSD_STRING = XSD_PREFIX + "string";
 
   private ShaclResource() {
   }
