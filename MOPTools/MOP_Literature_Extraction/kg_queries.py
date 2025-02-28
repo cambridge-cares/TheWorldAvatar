@@ -106,7 +106,7 @@ def get_literature(doi:str) -> dict:
 
 def get_input_species(doi:str) -> dict:
     # instantiate PySparqlClient
-    updater                             = utils.get_client("OntoMOPConnection")
+    updater                             = utils.get_client("OntoSynthesisConnection")
     #where_lit                   = """   ?Provenance	om:hasReferenceDOI      ?DOI     . """
     #select_variables            = """ DISTINCT  ?DOI"""
     #literature_dois             = sparql_point.query_triple(where_lit, select_variables)
