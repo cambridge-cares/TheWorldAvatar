@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class IndexAgent {
-    private static final String BACKUP_FILE = "/data/backup.json";
+    private static final String BACKUP_DIRECTORY = "/data";
+    private static final String BACKUP_FILE = BACKUP_DIRECTORY + "/backup.json"; 
+
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON serializer
 
     @Autowired
@@ -121,15 +123,31 @@ public class IndexAgent {
     // Serialize Dragonfly index to JSON file (backup data)**
     public void backupDataToJson() throws IOException {
         try {
-            Set<String> keys = redisTemplate.keys("*");
-            if (keys != null) {
-                var backupData = new java.util.HashMap<String, Set<String>>();
-                for (String key : keys) {
-                    backupData.put(key, getValues(key));
+            File backupDir = new File(BACKUP_DIRECTORY);
+            if (!backupDir.exists()) {
+                System.out.println("Creating backup directory: " + BACKUP_DIRECTORY);
+                boolean created = backupDir.mkdirs();
+                if (!created) {
+                    throw new IOException("Failed to create backup directory.");
                 }
-                objectMapper.writeValue(new File(BACKUP_FILE), backupData);
-                System.out.println("Backup saved to " + BACKUP_FILE);
             }
+
+            Set<String> keys = redisTemplate.keys("*");
+            // if (keys == null || keys.isEmpty()) {
+            //     System.out.println("No data found in Redis to serialize.");
+            //     return;
+            // }
+            
+            Map<String, Set<String>> backupData = new java.util.HashMap<String, Set<String>>();
+            for (String key : keys) {
+                backupData.put(key, getValues(key));
+            }
+            
+            // 🔹 Write to JSON file
+            File file = new File(BACKUP_FILE);
+            objectMapper.writeValue(file, backupData);
+            System.out.println("Backup saved to: " + BACKUP_FILE);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
