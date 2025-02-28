@@ -1,0 +1,11 @@
+PREFIX ouraring: <https://www.theworldavatar.com/kg/ouraring/>
+PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?Measurement ?Name ?Unit
+WHERE {
+  SERVICE [ONTOP] {
+    [IRI] ouraring:hasOuraRing/ouraring:measures/ouraring:hasBPM/om:hasValue ?Measurement.
+    BIND("Heart rate" AS ?Name)
+    BIND("bpm" AS ?Unit)
+  }
+}

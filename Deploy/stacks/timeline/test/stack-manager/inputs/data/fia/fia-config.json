@@ -3,32 +3,43 @@
         {
             "id": "trajectory_building",
             "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
-			"trajectory": {
+            "trajectory": {
                 "pointIriQuery": "point_query.sparql",
                 "featureIriQuery": "feature_query.sql",
                 "metaQuery": "trajectory_meta.sparql",
                 "database": "postgres"
-			}
+            }
         },
         {
             "id": "trajectory_airquality",
             "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
-			"trajectory": {
+            "trajectory": {
                 "pointIriQuery": "point_query.sparql",
                 "featureIriQuery": "feature_query_nox.sparql",
                 "metaQuery": "trajectory_meta_nox.sparql",
                 "database": "postgres"
-			}
+            }
         },
         {
             "id": "trajectory_airquality",
             "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
-			"trajectory": {
+            "trajectory": {
                 "pointIriQuery": "point_query.sparql",
                 "featureIriQuery": "feature_query_pm25.sparql",
                 "metaQuery": "trajectory_meta_pm25.sparql",
                 "database": "postgres"
-			}
+            }
+        },
+        {
+            "id": "heart_rate",
+            "class": "https://w3id.org/MON/person.owl#Person",
+            "time": {
+                "queryFile": "heart_rate.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "postgres"
+            }
         }
     ]
 }
