@@ -94,11 +94,12 @@ def get_literature(doi:str) -> dict:
     query                               = f"""  
                                         PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
                                         SELECT ?Formula ?CCDCNum
-                                        WHERE
+                                        WHERE   {{
                                                 ?MOPIRI         mop:hasProvenance            ?ProvenanceIRI                  ;
                                                                 mop:hasCCDCNumber            ?CCDCNum                        ;
                                                                 mop:hasMOPFormula            ?Formula                        .
-                                                ?ProvenanceIRI	mop:hasReferenceDOI          "{doi}"                . """
+                                                ?ProvenanceIRI	mop:hasReferenceDOI          "{doi}"                         . 
+                                                }}"""
     
     mop_cbu                             = updater.perform_query(query) 
     print("mop query ouptu: ", mop_cbu)
