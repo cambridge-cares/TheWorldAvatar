@@ -79,7 +79,7 @@ WHERE {{
 
 GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
       """        
-    species_labels                        = updater.performQuery(query) 
+    species_labels                        = updater.perform_query(query) 
     print("species: ", species_labels)
     return species_labels
 
@@ -100,7 +100,7 @@ def get_literature(doi:str) -> dict:
                                                                 mop:hasMOPFormula            ?Formula                        .
                                                 ?ProvenanceIRI	mop:hasReferenceDOI          "{doi}"                . """
     
-    mop_cbu                             = updater.performQuery(query) 
+    mop_cbu                             = updater.perform_query(query) 
     print("mop query ouptu: ", mop_cbu)
     return mop_cbu
 
@@ -130,7 +130,7 @@ def get_input_species(doi:str) -> dict:
     }}
     group by ?Species
                                               """        
-    species_labels                        = updater.performQuery(query) 
+    species_labels                        = updater.perform_query(query) 
     print("species labels: ", species_labels)
     species_list                          = []
     for species in species_labels:
@@ -184,7 +184,7 @@ def input_for_cbu(doi:str) -> dict:
         }}
         GROUP BY ?Species  ?doi ?ChemicalSynthesis """        
       print("query: ", query)
-      species_labels                        = updater.performQuery(query) 
+      species_labels                        = updater.perform_query(query) 
       print("query output: ", species_labels)
       species_list.append(species_labels)
       mop_list.append(mop["CCDCNum"])
@@ -216,7 +216,7 @@ def query_mop_names(doi:str):
       ?document 			          <http://purl.org/ontology/bibo/doi>   "{doi}"		  .
           }}
                                               """        
-    species_labels                        = updater.performQuery(query) 
+    species_labels                        = updater.perform_query(query) 
     print("species labels: ", species_labels)
     species_list                          = []
     for species in species_labels:
@@ -299,7 +299,7 @@ def query_characterisation(doi:str):
 
     GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
     """        
-    species_labels                        = updater.sparql_client.performQuery(query) 
+    species_labels                        = updater.sparql_client.perform_query(query) 
     print("species: ", species_labels)
     return species_labels
 
@@ -454,7 +454,7 @@ GROUP BY ?provenance ?Output ?mopLabels ?ChemicalSynthesis ?step ?stepnumber ?ve
 ORDER BY ?ChemicalSynthesis ?provenance ?stepnumber
 
       """        
-    species_labels                        = updater.sparql_client.performQuery(query) 
+    species_labels                        = updater.sparql_client.perform_query(query) 
     print("species: ", species_labels)
     return species_labels
 
