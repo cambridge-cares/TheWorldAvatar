@@ -41,11 +41,11 @@ public class GetService {
    * Retrieve all the target instances and their information. This method can also
    * retrieve instances associated with a specific parent instance if declared.
    * 
-   * @param resourceID       The target resource identifier for the instance
-   *                         class.
-   * @param parentField      Optional parent field containing its id and name.
-   * @param requireLabel     Indicates if labels should be returned for all the
-   *                         fields that are IRIs.
+   * @param resourceID   The target resource identifier for the instance
+   *                     class.
+   * @param parentField  Optional parent field containing its id and name.
+   * @param requireLabel Indicates if labels should be returned for all the
+   *                     fields that are IRIs.
    */
   public ResponseEntity<?> getAllInstances(String resourceID, ParentField parentField, boolean requireLabel) {
     LOGGER.debug("Retrieving all instances of {} ...", resourceID);
@@ -193,7 +193,8 @@ public class GetService {
    */
   public ResponseEntity<?> getConceptMetadata(String conceptClass) {
     LOGGER.debug("Retrieving the instances for {} ...", conceptClass);
-    String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE, StringResource.parseIriForQuery(conceptClass));
+    String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE,
+        StringResource.parseIriForQuery(conceptClass));
     // Note that all concept metadata will never be stored in Ontop and will require
     // the special property paths
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);

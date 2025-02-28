@@ -220,6 +220,7 @@ public class QueryTemplateFactory {
    */
   private void sortBindings(Queue<Queue<SparqlBinding>> nestedBindings) {
     Map<String, SparqlQueryLine> queryLineMappings = new HashMap<>();
+    Map<String, SparqlQueryLine> groupQueryLineMappings = new HashMap<>();
     while (!nestedBindings.isEmpty()) {
       Queue<SparqlBinding> bindings = nestedBindings.poll();
       Queue<String> nodeGroups = new ArrayDeque<>();
@@ -230,14 +231,17 @@ public class QueryTemplateFactory {
         this.genQueryLine(binding, multiPartPredicate, multiPartLabelPredicate, nodeGroups, queryLineMappings);
       }
       // If there are any node group, these should be removed from the mappings
-      // The previous method will parse them
+      // and place into a dedicated group mapping
       while (!nodeGroups.isEmpty()) {
         String nodeGroup = nodeGroups.poll();
-        queryLineMappings.remove(nodeGroup);
-        this.varSequence.remove(nodeGroup);
+        if (!groupQueryLineMappings.containsKey(nodeGroup)) {
+          groupQueryLineMappings.put(nodeGroup, queryLineMappings.get(nodeGroup));
+          queryLineMappings.remove(nodeGroup);
+          this.varSequence.remove(nodeGroup);
+        }
       }
     }
-    this.parseQueryLines(queryLineMappings);
+    this.parseQueryLines(queryLineMappings, groupQueryLineMappings);
   }
 
   /**
@@ -302,7 +306,7 @@ public class QueryTemplateFactory {
       SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
       // Update the mapping with the extended predicates
       queryLineMappings.put(propertyName,
-          new SparqlQueryLine(propertyName, instanceClass,
+          new SparqlQueryLine(propertyName, instanceClass, currentQueryLine.subject(),
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
               currentQueryLine.subjectFilter(), currentQueryLine.branch(), currentQueryLine.isOptional(), isClassVar));
@@ -318,14 +322,14 @@ public class QueryTemplateFactory {
         orders.add(order);
         this.varSequence.put(propertyName, orders);
       }
+      String fieldSubject = LifecycleResource.IRI_KEY;
       if (shNodeGroupName != null) {
-        SparqlQueryLine nestedNodeLine = queryLineMappings.get(shNodeGroupName);
-        multiPartPredicate = parsePredicate(nestedNodeLine.predicate(), multiPartPredicate);
+        fieldSubject = shNodeGroupName;
         nodeGroups.offer(shNodeGroupName);
       }
       queryLineMappings.put(propertyName,
-          new SparqlQueryLine(propertyName, instanceClass, multiPartPredicate, multiPartLabelPredicate, subjectVar,
-              binding.getFieldValue(BRANCH_VAR), isOptional, isClassVar));
+          new SparqlQueryLine(propertyName, instanceClass, fieldSubject, multiPartPredicate,
+              multiPartLabelPredicate, subjectVar, binding.getFieldValue(BRANCH_VAR), isOptional, isClassVar));
     }
   }
 
@@ -350,10 +354,21 @@ public class QueryTemplateFactory {
   /**
    * Parses the triple query line into the mappings at the class level.
    * 
-   * @param queryLineMappings The input unparsed query lines
+   * @param queryLineMappings      The input unparsed query lines
+   * @param groupQueryLineMappings The unparsed query lines for node groups.
    */
-  private void parseQueryLines(Map<String, SparqlQueryLine> queryLineMappings) {
+  private void parseQueryLines(Map<String, SparqlQueryLine> queryLineMappings,
+      Map<String, SparqlQueryLine> groupQueryLineMappings) {
     Map<String, String> branchQueryLines = new HashMap<>();
+    Map<String, String> groupQueryLines = new HashMap<>();
+    groupQueryLineMappings.entrySet().stream().forEach(entry -> {
+      StringBuilder currentLine = new StringBuilder();
+      StringResource.appendTriple(currentLine,
+          ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().subject()),
+          entry.getValue().predicate(),
+          ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().property()));
+      groupQueryLines.put(entry.getKey(), currentLine.toString());
+    });
     queryLineMappings.values().forEach(queryLine -> {
       // Parse and generate a query line for the current line
       StringBuilder currentLine = new StringBuilder();
@@ -367,7 +382,8 @@ public class QueryTemplateFactory {
         // Simply bind the iri as the id
         currentLine.append("BIND(?iri AS ?id)");
       } else {
-        StringResource.appendTriple(currentLine, "?iri", jointPredicate,
+        StringResource.appendTriple(currentLine,
+            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.subject()), jointPredicate,
             // Note to add a _ to the property
             ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()));
       }
@@ -400,6 +416,12 @@ public class QueryTemplateFactory {
         branchQueryLines.compute(queryLine.branch(), (k, previousLine) -> {
           // Add the line output as a new key value pair as key is absent
           if (previousLine == null) {
+            // For non-iri subjects, append the associated group line once
+            if (!queryLine.subject().equals(LifecycleResource.IRI_KEY)) {
+              String groupedOutput = groupQueryLines.get(queryLine.subject()) + lineOutput;
+              groupQueryLines.remove(queryLine.subject()); // Remove to prevent side effects
+              return groupedOutput;
+            }
             return lineOutput;
           } else {
             // Append the line output to previous output as there is an existing key
@@ -411,6 +433,10 @@ public class QueryTemplateFactory {
         this.queryLines.put(queryLine.property(), lineOutput);
       }
     });
+    // If there are non-branch group query lines, add them to the query lines
+    if (!groupQueryLines.isEmpty()) {
+      this.queryLines.putAll(groupQueryLines);
+    }
     // Add branch query block if there are any branches
     if (!branchQueryLines.isEmpty()) {
       StringBuilder branchBlock = new StringBuilder();
@@ -609,7 +635,7 @@ public class QueryTemplateFactory {
       String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
       String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
       // Only the id replacement field with prefixes will be returned as an IRI
-      if (replacementType.equals("iri") && replacementId.equals("id")) {
+      if (replacementType.equals(LifecycleResource.IRI_KEY) && replacementId.equals("id")) {
         return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
       }
       return ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(replacementId);
