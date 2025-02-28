@@ -188,9 +188,10 @@ public class AddService {
       }
     } else {
       // Else recursively go deeper into the JSON object to find other replacements
-      Iterator<String> fieldNames = currentNode.fieldNames();
-      while (fieldNames.hasNext()) {
-        String fieldName = fieldNames.next();
+      Queue<String> fieldNames = new ArrayDeque<>();
+      currentNode.fieldNames().forEachRemaining(fieldNames::offer);
+      while (!fieldNames.isEmpty()) {
+        String fieldName = fieldNames.poll();
         JsonNode childNode = currentNode.get(fieldName);
         // For any form branch configuration field
         if (fieldName.equals(ShaclResource.BRANCH_KEY)) {
