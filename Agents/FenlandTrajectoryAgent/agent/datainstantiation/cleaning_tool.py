@@ -48,8 +48,6 @@ def clean_gps_data(file_path, output_dir=None):
     ew_column_name        = "E/W"  # Optional additional direction column for longitude
 
     columns_to_clean = [
-        utc_date_column_name,
-        utc_time_column_name,
         latitude_column_name,
         longitude_column_name,
         speed_column_name,
