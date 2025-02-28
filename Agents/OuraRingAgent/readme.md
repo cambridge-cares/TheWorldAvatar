@@ -11,6 +11,10 @@ WHERE {
 ?user rdfs:label "USER_ID"
 }
 
+## Optional Requirements
+Optional environment variable: NAMESPACE
+If the NAMESPACE parameter is not "kb", the namespace needs to be created before running the agent
+
 ## Routes
 
 1) POST "/"
