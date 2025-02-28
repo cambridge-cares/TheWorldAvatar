@@ -4,7 +4,7 @@
 
 Users instantiated in the timeline."ouraRing" table with their corresponding Ouraring API key.
 
-Following triple to be queried from Ontop:
+Following triple to be queried from Ontop (USER_ID is replaced with the corresponding KeyCloak user id):
 
 SELECT ?user
 WHERE {
