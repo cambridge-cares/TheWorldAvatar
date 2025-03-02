@@ -88,7 +88,12 @@ def instantiate_files():
                     continue
 
                 kg_client, ts_client, double_class, point_class = gdi.setup_clients()
-                gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class)
+                dataIRIs = gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class)
+                if dataIRIs:
+                    first_dataIRI = dataIRIs[0]
+                    gdi.update_unix_time(ts_client, first_dataIRI)
+                else:
+                    logger.warning("No dataIRIs returned from instantiate_gps_data.")
                 results.append({"file": csv_file, "status": "success"})
             except Exception as e:
                 logger.error("Error instantiating data for file %s: %s", csv_file, e, exc_info=True)
