@@ -171,6 +171,40 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_c
         logger.error(f"Error instantiating data for {gps_object['object']}: {e}")
         raise
 
+def update_unix_time(ts_client, dataIRI):
+    """
+    This function is used to add a UNIX column for the timeseries data instantiated by TSClient
+    Note that TSClient has autoCommit settings, thus conn.commit() has been removed in this function
+    """
+    try:
+        with ts_client.connect() as conn:
+            stmt = conn.createStatement()
+            sql_find = f'''
+                SELECT "tableName"
+                FROM "dbTable"
+                WHERE "dataIRI" = '{dataIRI}'
+            '''
+            rs = stmt.executeQuery(sql_find)
+            if rs.next():
+                table_name = rs.getString("tableName")
+                sql_alter = f'''
+                    ALTER TABLE "{table_name}"
+                    ADD COLUMN IF NOT EXISTS "UNIX_time" BIGINT;
+                '''
+                stmt.execute(sql_alter)
+                sql_update = f'''
+                    UPDATE "{table_name}"
+                    SET "UNIX_time" = (EXTRACT(EPOCH FROM "time") * 1000)::BIGINT
+                '''
+                stmt.execute(sql_update)
+                logger.info(f"UNIX_time column updated for table: {table_name}")
+            else:
+                logger.warning(f"No matching table found in dbTable for dataIRI={dataIRI}")
+            stmt.close()
+        return True
+    except Exception as e:
+        logger.error("Error updating UNIX_time column via TSClient: %s", e)
+        return False
 
 if __name__ == '__main__':
     try:
