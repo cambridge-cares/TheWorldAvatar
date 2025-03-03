@@ -1,7 +1,7 @@
 PREFIX sh:             <http://www.w3.org/ns/shacl#>
 PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
 
-SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodegroup ?branch ?order ?subject ?isoptional ?isclass
+SELECT DISTINCT ?clazz ?instance_clazz ?name ?nodegroup ?nested_class ?branch ?order ?subject ?isoptional ?isclass
  ?multipath ?multipath_proppath ?name_multipath ?name_multipath_proppath
 WHERE {
   ?shape rdf:type sh:NodeShape ;
@@ -9,6 +9,7 @@ WHERE {
          sh:targetClass [target] ;
          (sh:or/rdf:rest*/rdf:first)? ?node.
   ?node sh:property[shape] ?property .
+  OPTIONAL{?property sh:node/sh:targetClass ?nested_class}
   OPTIONAL {
     ?node sh:name ?branch .
   }

@@ -62,7 +62,7 @@ public class KGService {
   public static final String INVALID_SHACL_ERROR_MSG = "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.";
 
   private static final String RDF_LIST_PATH_PREFIX = "/rdf:rest";
-  private static final String SUB_SHAPE_PATH = "/sh:node/sh:property";
+  private static final String SUB_SHAPE_PATH = "sh:node/sh:property";
 
   private static final Logger LOGGER = LogManager.getLogger(KGService.class);
 
@@ -572,8 +572,9 @@ public class KGService {
       }
       // Extend to get the next level of shape if any
       replacementShapePath = replacementShapePath.isEmpty() ? " ?nestedshape." +
-          "?nestedshape sh:name ?" + QueryTemplateFactory.NODE_GROUP_VAR + ";sh:node/sh:property"
-          : SUB_SHAPE_PATH + replacementShapePath;
+          "?nestedshape sh:name ?" + QueryTemplateFactory.NODE_GROUP_VAR + ";sh:node/sh:targetClass ?"
+          + QueryTemplateFactory.NESTED_CLASS_VAR + ";" + SUB_SHAPE_PATH
+          : "/" + SUB_SHAPE_PATH + replacementShapePath;
     }
     if (results.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);

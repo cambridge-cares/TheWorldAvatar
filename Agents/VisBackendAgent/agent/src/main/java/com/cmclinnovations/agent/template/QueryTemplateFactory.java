@@ -35,6 +35,7 @@ public class QueryTemplateFactory {
   private final LifecycleQueryFactory lifecycleQueryFactory;
   private final JsonLdService jsonLdService;
   public static final String NODE_GROUP_VAR = "nodegroup";
+  public static final String NESTED_CLASS_VAR = "nested_class";
   private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
   private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
@@ -308,13 +309,14 @@ public class QueryTemplateFactory {
       SparqlQueryLine currentQueryLine = queryLineMappings.get(mappingKey);
       // Update the mapping with the extended predicates
       queryLineMappings.put(mappingKey,
-          new SparqlQueryLine(propertyName, instanceClass, currentQueryLine.subject(),
+          new SparqlQueryLine(propertyName, instanceClass, currentQueryLine.nestedClass(), currentQueryLine.subject(),
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
               currentQueryLine.subjectFilter(), currentQueryLine.branch(), currentQueryLine.isOptional(), isClassVar));
     } else {
       // When initialising a new query line
       String subjectVar = binding.containsField(SUBJECT_VAR) ? binding.getFieldValue(SUBJECT_VAR) : "";
+      String nestedClass = binding.containsField(NESTED_CLASS_VAR) ? binding.getFieldValue(NESTED_CLASS_VAR) : "";
       boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
       // Parse ordering only for label query, as we require the heading order in csv
       // Order field will not exist for non-label query
@@ -331,7 +333,7 @@ public class QueryTemplateFactory {
         nodeGroups.offer(ShaclResource.getMappingKey(shNodeGroupName, branchName));
       }
       queryLineMappings.put(mappingKey,
-          new SparqlQueryLine(propertyName, instanceClass, fieldSubject, multiPartPredicate,
+          new SparqlQueryLine(propertyName, instanceClass, nestedClass, fieldSubject, multiPartPredicate,
               multiPartLabelPredicate, subjectVar, branchName, isOptional, isClassVar));
     }
   }
@@ -370,6 +372,14 @@ public class QueryTemplateFactory {
           ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().subject()),
           entry.getValue().predicate(),
           ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().property()));
+      // If there is a sh:node targetClass property available, append the class
+      // restriction
+      if (!entry.getValue().nestedClass().isEmpty()) {
+        StringResource.appendTriple(currentLine,
+            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().property()),
+            RDF_TYPE,
+            StringResource.parseIriForQuery(entry.getValue().nestedClass()));
+      }
       groupQueryLines.put(entry.getKey(), currentLine.toString());
     });
     queryLineMappings.values().forEach(queryLine -> {
@@ -417,20 +427,17 @@ public class QueryTemplateFactory {
       // Branches should be added as a separate bunch
       if (queryLine.branch() != null) {
         branchQueryLines.compute(queryLine.branch(), (k, previousLine) -> {
-          // Add the line output as a new key value pair as key is absent
-          if (previousLine == null) {
-            // For non-iri subjects, append the associated group line once
-            if (!queryLine.subject().equals(LifecycleResource.IRI_KEY)) {
-              String mappingKey = ShaclResource.getMappingKey(queryLine.subject(), queryLine.branch());
-              String groupedOutput = groupQueryLines.get(mappingKey) + lineOutput;
-              groupQueryLines.remove(mappingKey); // Remove to prevent side effects
-              return groupedOutput;
-            }
-            return lineOutput;
-          } else {
-            // Append the line output to previous output as there is an existing key
-            return previousLine + lineOutput;
+          // Append previous line only if there are previous lines, else, it will be an
+          // empty string added
+          String prevLine = previousLine == null ? "" : previousLine;
+          // For non-iri subjects, append the associated group line once
+          if (!queryLine.subject().equals(LifecycleResource.IRI_KEY)) {
+            String mappingKey = ShaclResource.getMappingKey(queryLine.subject(), queryLine.branch());
+            String groupedOutput = groupQueryLines.getOrDefault(mappingKey, "") + lineOutput;
+            groupQueryLines.remove(mappingKey); // Remove to prevent side effects
+            return prevLine + groupedOutput;
           }
+          return prevLine + lineOutput;
         });
       } else {
         // Non-branch query lines will be added directly
