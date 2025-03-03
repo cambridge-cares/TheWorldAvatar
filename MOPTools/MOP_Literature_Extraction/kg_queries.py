@@ -176,10 +176,6 @@ def get_input_species(doi:str) -> dict:
     species_labels                        = updater.perform_query(query) 
     # Debugging output to check retrieved species labels
     print("species labels: ", species_labels)
-    species_list                          = []
-    #for species in species_labels:
-    #  species_list.append(species["labels"])
-
     # Extract species labels into a list
     species_list = [species["labels"] for species in species_labels]
     return species_list
@@ -275,11 +271,6 @@ def query_mop_names(doi:str):
     """
     # Instantiate the PySparqlClient to interact with the OntoSynthesis knowledge graph
     updater                             = utils.get_client("OntoSynthesisConnection")
-
-    #where_lit                   = """   ?Provenance	om:hasReferenceDOI      ?DOI     . """
-    #select_variables            = """ DISTINCT  ?DOI"""
-    #literature_dois             = sparql_point.query_triple(where_lit, select_variables)
-    #lit_doi                     = literature_dois[0]
     # Construct SPARQL query to retrieve MOP names (alternative labels) linked to the given DOI
     query                               = f"""
     PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
@@ -302,9 +293,6 @@ def query_mop_names(doi:str):
     species_labels                      = updater.perform_query(query) 
     # Print retrieved species labels for debugging
     print("species labels: ", species_labels)
-    #species_list                          = []
-    #for species in species_labels:
-    #  species_list.append(species["lab"])
     # Extract species labels into a list
     species_list                        = [species["lab"] for species in species_labels]
     return species_list
@@ -603,7 +591,6 @@ def species_querying(client, species_label):
     insert_string               = ""
     # Loop through each species label to format it correctly for the SPARQL VALUES clause
     for label in species_label:
-        #label = re.sub(r'[^\w\s,]', '', label)
         # If the label contains double quotes, use triple double quotes for proper escaping
         if '"' in label:
             insert_string += f' """{label}""" '
@@ -773,7 +760,6 @@ def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
     # break down mop list of strings in a way to insert in a value sparql statement
     for label in mop_name:
         if label != "N/A" and label != "" and label != " " and label != 'lab':
-            #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
             if '"' in label:
                 insert_string += f' """{label}""" '
@@ -813,7 +799,6 @@ def doi_querying(client, doi):
     Returns:
         list: Query results containing document references.
     """
-    insert_string               = "" # Placeholder (not used in this function, could be removed)
     # Construct the SPARQL query to retrieve documents based on the given DOI
     query = f"""
         PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
