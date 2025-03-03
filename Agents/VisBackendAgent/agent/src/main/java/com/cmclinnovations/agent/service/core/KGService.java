@@ -585,7 +585,8 @@ public class KGService {
   }
 
   /**
-   * Combine two queues containing SparlBinding objects. The method also removes duplicates in the combined queue.
+   * Combine two queues containing SparlBinding objects. The method also removes
+   * duplicates in the combined queue.
    * 
    * @param firstQueue The first target queue.
    * @param secQueue   The second target queue.
@@ -594,16 +595,24 @@ public class KGService {
     if (firstQueue.isEmpty() && secQueue.isEmpty()) {
       return new ArrayDeque<>();
     }
-    if (firstQueue.isEmpty()) {
-      return new ArrayDeque<>(secQueue);
-    }
-    if (secQueue.isEmpty()) {
-      return new ArrayDeque<>(firstQueue);
-    }
-
-    List<SparqlBinding> combinedList = Stream.concat(firstQueue.stream(), secQueue.stream())
+    Queue<SparqlBinding> result = new ArrayDeque<>();
+    // Group them by the IRI key
+    Map<String, List<SparqlBinding>> groupedBindings = Stream.concat(firstQueue.stream(), secQueue.stream())
         .distinct()
-        .toList();
-    return new ArrayDeque<>(combinedList);
+        .collect(Collectors.groupingBy(binding -> binding.getFieldValue(LifecycleResource.IRI_KEY)));
+    // For the same IRI, combine them using the add field array method
+    groupedBindings.values().forEach(groupedBinding -> {
+      if (groupedBinding.isEmpty()) {
+        return;
+      }
+      SparqlBinding firstBinding = groupedBinding.get(0);
+      if (groupedBinding.size() > 1) {
+        for (int i = 1; i < groupedBinding.size(); i++) {
+          firstBinding.addFieldArray(groupedBinding.get(i));
+        }
+        result.offer(firstBinding);
+      }
+    });
+    return result;
   }
 }
