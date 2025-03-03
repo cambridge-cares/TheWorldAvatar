@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -356,7 +357,7 @@ public class KGService {
     Queue<SparqlBinding> instances = this.query(queries.poll(), SparqlEndpointType.MIXED);
     // Query for secondary instances ie instances that are subclasses of parent
     Queue<SparqlBinding> secondaryInstances = this.query(queries.poll(), SparqlEndpointType.BLAZEGRAPH);
-    instances.addAll(secondaryInstances);
+    instances = this.combineBindingQueue(instances, secondaryInstances);
     // If there is a variable sequence available, add the sequence to each binding,
     if (!varSequence.isEmpty()) {
       instances.forEach(instance -> instance.addSequence(varSequence));
@@ -581,5 +582,28 @@ public class KGService {
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     return results;
+  }
+
+  /**
+   * Combine two queues containing SparlBinding objects. The method also removes duplicates in the combined queue.
+   * 
+   * @param firstQueue The first target queue.
+   * @param secQueue   The second target queue.
+   */
+  private Queue<SparqlBinding> combineBindingQueue(Queue<SparqlBinding> firstQueue, Queue<SparqlBinding> secQueue) {
+    if (firstQueue.isEmpty() && secQueue.isEmpty()) {
+      return new ArrayDeque<>();
+    }
+    if (firstQueue.isEmpty()) {
+      return new ArrayDeque<>(secQueue);
+    }
+    if (secQueue.isEmpty()) {
+      return new ArrayDeque<>(firstQueue);
+    }
+
+    List<SparqlBinding> combinedList = Stream.concat(firstQueue.stream(), secQueue.stream())
+        .distinct()
+        .toList();
+    return new ArrayDeque<>(combinedList);
   }
 }

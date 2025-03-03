@@ -209,4 +209,19 @@ public class SparqlBinding {
         .max();
     return maxSize.orElse(0);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    SparqlBinding that = (SparqlBinding) o;
+    return Objects.equals(this.get(), that.get());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.get());
+  }
 }

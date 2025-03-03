@@ -50,6 +50,7 @@ public class QueryTemplateFactory {
   private static final String MULTIPATH_VAR = "multipath";
   private static final String MULTI_NAME_PATH_VAR = "name_multipath";
   private static final String RDF_TYPE = "rdf:type";
+  private static final String REPLACEMENT_PLACEHOLDER = "[replace]";
   private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
 
   /**
@@ -203,12 +204,15 @@ public class QueryTemplateFactory {
   private Queue<String> genFederatedQuery(String selectVariables, String whereClause, String targetClass) {
     Queue<String> results = new ArrayDeque<>();
     String iriClass = StringResource.parseIriForQuery(targetClass);
+    // For mixed endpoints with Ontop which does not support property paths
     results.offer(
-        "SELECT DISTINCT " + selectVariables + " WHERE {?iri a " + iriClass + ShaclResource.FULL_STOP + whereClause
+        "SELECT DISTINCT " + selectVariables + " WHERE {?iri a " + iriClass + ShaclResource.FULL_STOP
+            + whereClause.replace(REPLACEMENT_PLACEHOLDER, "")
             + "}");
+    // For SPARQL endpoints
     results.offer(
-        "SELECT DISTINCT " + selectVariables + " WHERE {?iri a/rdfs:subClassOf+ " + iriClass + ShaclResource.FULL_STOP
-            + whereClause + "}");
+        "SELECT DISTINCT " + selectVariables + " WHERE {?iri a/rdfs:subClassOf* " + iriClass + ShaclResource.FULL_STOP
+            + whereClause.replace(REPLACEMENT_PLACEHOLDER, "/rdfs:subClassOf*") + "}");
     return results;
   }
 
@@ -377,7 +381,7 @@ public class QueryTemplateFactory {
       if (!entry.getValue().nestedClass().isEmpty()) {
         StringResource.appendTriple(currentLine,
             ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().property()),
-            RDF_TYPE,
+            RDF_TYPE + REPLACEMENT_PLACEHOLDER,
             StringResource.parseIriForQuery(entry.getValue().nestedClass()));
       }
       groupQueryLines.put(entry.getKey(), currentLine.toString());
