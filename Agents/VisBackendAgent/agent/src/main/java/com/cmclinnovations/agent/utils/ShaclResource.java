@@ -76,4 +76,15 @@ public class ShaclResource {
     // If all compared elements are equal, the shorter list is smaller
     return Integer.compare(size1, size2);
   }
+
+  /**
+   * Retrieve the query generation mapping key based on the property and branch.
+   * 
+   * @param property property name.
+   * @param branch optional branch name. must be null if optional.
+   */
+  public static String getMappingKey(String property, String branch) {
+    return branch == null ? property : branch + property;
+
+  }
 }

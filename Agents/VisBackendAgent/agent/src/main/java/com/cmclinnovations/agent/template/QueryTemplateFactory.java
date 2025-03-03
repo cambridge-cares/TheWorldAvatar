@@ -301,11 +301,13 @@ public class QueryTemplateFactory {
 
     boolean isClassVar = Boolean.parseBoolean(binding.getFieldValue(IS_CLASS_VAR));
     String instanceClass = binding.getFieldValue(INSTANCE_CLASS_VAR);
+    String branchName = binding.getFieldValue(BRANCH_VAR);
+    String mappingKey = ShaclResource.getMappingKey(propertyName, branchName);
     // For existing mappings,
-    if (queryLineMappings.containsKey(propertyName)) {
-      SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
+    if (queryLineMappings.containsKey(mappingKey)) {
+      SparqlQueryLine currentQueryLine = queryLineMappings.get(mappingKey);
       // Update the mapping with the extended predicates
-      queryLineMappings.put(propertyName,
+      queryLineMappings.put(mappingKey,
           new SparqlQueryLine(propertyName, instanceClass, currentQueryLine.subject(),
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
@@ -325,11 +327,12 @@ public class QueryTemplateFactory {
       String fieldSubject = LifecycleResource.IRI_KEY;
       if (shNodeGroupName != null) {
         fieldSubject = shNodeGroupName;
-        nodeGroups.offer(shNodeGroupName);
+        // Append branch name for groups as well if required
+        nodeGroups.offer(ShaclResource.getMappingKey(shNodeGroupName, branchName));
       }
-      queryLineMappings.put(propertyName,
+      queryLineMappings.put(mappingKey,
           new SparqlQueryLine(propertyName, instanceClass, fieldSubject, multiPartPredicate,
-              multiPartLabelPredicate, subjectVar, binding.getFieldValue(BRANCH_VAR), isOptional, isClassVar));
+              multiPartLabelPredicate, subjectVar, branchName, isOptional, isClassVar));
     }
   }
 
@@ -418,8 +421,9 @@ public class QueryTemplateFactory {
           if (previousLine == null) {
             // For non-iri subjects, append the associated group line once
             if (!queryLine.subject().equals(LifecycleResource.IRI_KEY)) {
-              String groupedOutput = groupQueryLines.get(queryLine.subject()) + lineOutput;
-              groupQueryLines.remove(queryLine.subject()); // Remove to prevent side effects
+              String mappingKey = ShaclResource.getMappingKey(queryLine.subject(), queryLine.branch());
+              String groupedOutput = groupQueryLines.get(mappingKey) + lineOutput;
+              groupQueryLines.remove(mappingKey); // Remove to prevent side effects
               return groupedOutput;
             }
             return lineOutput;
