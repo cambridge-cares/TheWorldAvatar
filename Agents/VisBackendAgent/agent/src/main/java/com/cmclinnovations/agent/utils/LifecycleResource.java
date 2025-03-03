@@ -1,10 +1,9 @@
 package com.cmclinnovations.agent.utils;
 
-import java.time.LocalDate;
-
 import com.cmclinnovations.agent.model.type.CalculationType;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.core.FileService;
+import java.time.LocalDate;
 
 public class LifecycleResource {
   public static final String LIFECYCLE_RESOURCE = "lifecycle";
@@ -29,6 +28,7 @@ public class LifecycleResource {
   public static final String SCHEDULE_START_TIME_KEY = "start time";
   public static final String SCHEDULE_END_TIME_KEY = "end time";
   public static final String SCHEDULE_RECURRENCE_KEY = "recurrence";
+  public static final String SCHEDULE_AFFECTED_BY_PUBLIC_HOLIDAY_KEY = "affected by public holiday";
   public static final String SCHEDULE_TYPE_KEY = "schedule type";
 
   public static final String EXEMPLIFIES_RELATIONS = "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies";
@@ -528,6 +528,7 @@ public class LifecycleResource {
         + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?"
         + StringResource.parseQueryVariable(SCHEDULE_END_TIME_KEY) + ";"
         + "<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasRecurrenceInterval>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDurationValue> ?"
-        + SCHEDULE_RECURRENCE_KEY + ShaclResource.FULL_STOP;
+        + SCHEDULE_RECURRENCE_KEY + ";" 
+        + "<https://theworldavatar.io/affectedByPublicHoliday> ?" + StringResource.parseQueryVariable(SCHEDULE_AFFECTED_BY_PUBLIC_HOLIDAY_KEY) + ShaclResource.FULL_STOP;
   }
 }
