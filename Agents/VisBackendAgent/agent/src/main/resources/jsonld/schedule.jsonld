@@ -42,10 +42,12 @@
         "@type": "literal",
         "datatype": "http://www.w3.org/2001/XMLSchema#time"
       }
-    },  "https://twa.io/affectedByPublicHoliday": {
-              "@replace": "affectedByPublicHoliday",
-              "@type": "literal",
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"},
+    },
+    "https://theworldavatar.io/affectedByPublicHoliday": {
+      "@replace": "affectedByPublicHoliday",
+      "@type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+    },
     "https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime": {
       "@id": {
         "@replace": "id",
