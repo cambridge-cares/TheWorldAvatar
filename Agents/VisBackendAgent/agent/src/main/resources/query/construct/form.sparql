@@ -2,7 +2,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX twa:<https://theworldavatar.io/kg/form/>
 
 CONSTRUCT {
-  ?subproperty rdf:type sh:PropertyShape ;
+  ?iri rdf:type sh:PropertyShape ;
     sh:name ?name ;
     sh:description ?description ;
     sh:order ?order;
@@ -44,6 +44,7 @@ CONSTRUCT {
     (sh:node/sh:and?/sh:property)* ?subproperty .
   ?subproperty sh:name ?name ;
     sh:description ?description .
+  BIND(IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?propname,?name)),?subproperty) AS ?iri)
   {
     ?subproperty sh:datatype ?type .
   }
@@ -69,7 +70,12 @@ CONSTRUCT {
   # Else, populate group from the target of sh:node
   BIND (IF(BOUND(?group), ?group, IF(?property != ?subproperty, ?propname, ?null)) AS ?group)
   BIND (IF(BOUND(?groupdesc), ?groupdesc, IF(?property != ?subproperty, ?propdesc, ?null)) AS ?groupdesc)
-  BIND (IF(BOUND(?groupobj), ?groupobj, IF(?property != ?subproperty, BNODE(?group), ?null)) AS ?groupobj)
+  BIND (IF(BOUND(?groupobj),
+          IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?group)),?groupobj),
+          IF(?property != ?subproperty, 
+            IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?group)),BNODE(?group)),
+            ?null)
+        ) AS ?groupobj)
 
   OPTIONAL {
     ?property sh:order ?proporder .
