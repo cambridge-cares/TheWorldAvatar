@@ -3,10 +3,12 @@ package com.cmclinnovations.agent.template;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -32,6 +34,7 @@ public class QueryTemplateFactory {
   private Queue<StringBuilder> deleteBranchBuilders;
   private Map<String, String> queryLines;
   private Map<String, List<Integer>> varSequence;
+  private Set<String> variables;
   private final LifecycleQueryFactory lifecycleQueryFactory;
   private final JsonLdService jsonLdService;
   public static final String NODE_GROUP_VAR = "nodegroup";
@@ -87,6 +90,7 @@ public class QueryTemplateFactory {
     this.queryLines = new HashMap<>();
     this.varSequence = new HashMap<>();
     this.sortedVars = new ArrayList<>();
+    this.variables = new HashSet<>();
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
     StringBuilder selectVariableBuilder = new StringBuilder();
@@ -95,9 +99,20 @@ public class QueryTemplateFactory {
     String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings);
 
-    // Retrieve all variables if no sequence of variable is present
+    // Retrieve only the property fields if no sequence of variable is present
     if (this.varSequence.isEmpty()) {
-      selectVariableBuilder.append("*");
+      selectVariableBuilder.append(ShaclResource.VARIABLE_MARK).append(LifecycleResource.IRI_KEY);
+      this.variables.stream().forEach(variable -> selectVariableBuilder.append(ShaclResource.WHITE_SPACE)
+          .append(variable));
+      // Append lifecycle events if available
+      if (lifecycleEvent != null) {
+        List.of(LifecycleResource.STATUS_KEY, LifecycleResource.SCHEDULE_START_DATE_KEY,
+            LifecycleResource.SCHEDULE_END_DATE_KEY, LifecycleResource.SCHEDULE_START_TIME_KEY,
+            LifecycleResource.SCHEDULE_END_TIME_KEY, LifecycleResource.SCHEDULE_TYPE_KEY)
+            .stream().forEach(lifecycleVar -> selectVariableBuilder.append(ShaclResource.WHITE_SPACE)
+                .append(ShaclResource.VARIABLE_MARK)
+                .append(StringResource.parseQueryVariable(lifecycleVar)));
+      }
     } else {
       // Else sort the variable and add them to the query
       // Add a status variable for lifecycle if available
@@ -145,6 +160,7 @@ public class QueryTemplateFactory {
     this.queryLines = new HashMap<>();
     this.varSequence = new HashMap<>();
     this.sortedVars = new ArrayList<>();
+    this.variables = new HashSet<>();
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
     StringBuilder whereBuilder = new StringBuilder();
@@ -447,6 +463,9 @@ public class QueryTemplateFactory {
         // Non-branch query lines will be added directly
         this.queryLines.put(queryLine.property(), lineOutput);
       }
+      // Always append current property for both branches and individual fields
+      // Grouped fields are not part of the query line parsing
+      this.variables.add(ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()));
     });
     // If there are non-branch group query lines, add them to the query lines
     if (!groupQueryLines.isEmpty()) {
