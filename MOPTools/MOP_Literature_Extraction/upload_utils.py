@@ -6,81 +6,152 @@ import utils
 import uuid
 
 def match_element(element_name, client):
+    """
+    Matches a given element name (symbol) to its corresponding IRI in the periodic table ontology 
+    and retrieves its details from the knowledge graph.
+
+    Parameters:
+    element_name (str): The chemical element symbol (e.g., 'C' for Carbon, 'O' for Oxygen).
+    client: A knowledge graph client instance used to fetch element details.
+
+    Returns:
+    Element: An instance of the Element class retrieved from the knowledge graph.
+    """
+    # Match the element symbol to its corresponding IRI from the ontology
     match element_name:
-        case 'C':
+        case 'C':                       # Carbon
             element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_f1a5025b-7e20-4a6a-821e-a7b6c0473b8c"
-        case 'O':  
+        case 'O':                       # Oxygen
             element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_6a6be1ce-2021-4634-aed4-6a77488765df"
-        case 'H': 
+        case 'H':                       # Hydrogen
             element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_43cfac3b-81db-4338-bfb1-b0b3386f7473"
-        case 'N':  
+        case 'N':                       # Nitrogen
             element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_a9a7806c-f077-4eb2-b5b0-099d51033b7b"
-        case _:     
+        case _:                         # Default case for unknown elements
             element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_e253b6ca-c169-4e60-b6be-46b95e045a85"
+    # Retrieve the element from the knowledge graph using the specified IRI
     element                                      = Element.pull_from_kg(element_iri, client,recursive_depth=-1)[0]
     return element
 
 def match_separation(separation_name, client):
+    """
+    Matches a given separation technique name to its corresponding IRI in the ontology 
+    and retrieves its details from the knowledge graph.
+
+    Parameters:
+    separation_name (str): The name of the separation technique (e.g., 'centrifuge', 'column').
+    client: A knowledge graph client instance used to fetch separation details.
+
+    Returns:
+    SeparationType: An instance of the SeparationType class retrieved from the knowledge graph.
+    """
+    # Match the separation technique name to its corresponding IRI in the ontology
     match separation_name:
-        case 'centrifuge':
+        case 'centrifuge':              # Centrifuge-based separation
             separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8"
-        case 'column':  
+        case 'column':                  # Column chromatography
             separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_aea2a49f-067f-4818-8abc-544dd8696ba8"
-        case 'washing': 
+        case 'washing':                 # Washing with solvent
             separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_61233c76-a0e5-4cb0-8c5c-ab8347955ea6"
-        case 'extraction':  
+        case 'extraction':              # Liquid-liquid or solid-liquid extraction
             separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_c6d7ff74-4bdb-47b8-bcd8-fc40d9fbfb87"
-        case _:     
+        case _:                         # Default case for unknown separation techniques
             separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0"
+     # Retrieve the separation technique details from the knowledge graph using the specified IRI
     separation                                      = SeparationType.pull_from_kg(separation_iri, client,recursive_depth=-1)[0]
     return separation
 
 def match_atmosphere(atmosphere, client):
+    """
+    Matches a given atmosphere type to its corresponding IRI in the ontology 
+    and retrieves its details from the knowledge graph.
+
+    Parameters:
+    atmosphere (str): The type of atmospheric condition (e.g., 'N2' for nitrogen, 'Ar' for argon, 'Air' for ambient air).
+    client: A knowledge graph client instance used to fetch atmospheric environment details.
+
+    Returns:
+    VesselEnvironment: An instance of the VesselEnvironment class retrieved from the knowledge graph.
+    """
+    # Match the atmosphere type to its corresponding IRI in the ontology
     match atmosphere:
-        case 'N2':
+        case 'N2':                      # Nitrogen atmosphere
             atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_434aa6e1-3ac6-4a08-a208-fbc23e78a758"
-        case 'Ar':  
+        case 'Ar':                      # Argon atmosphere
             atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_65b5af5d-349d-467c-bd14-b239d4e94376"
-        case 'Air': 
+        case 'Air':                     # Ambient air
             atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_bd2ef29a-1c5c-40eb-a9b2-84f1a3fda734"
-        case _: 
+        case _:                         # Default case for unknown or unspecified atmospheres
             atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_1f70dc2c-5a37-491a-89ec-0897f9dcb7b8"
+    # Retrieve the atmospheric environment details from the knowledge graph using the specified IRI
     atmosphere                                      = VesselEnvironment.pull_from_kg(atmosphere_iri, client, recursive_depth=-1)[0]
     return atmosphere
 
 def match_vessel(vessel_name, client): 
+    """
+    Matches a given vessel type name to its corresponding IRI in the ontology 
+    and retrieves its details from the knowledge graph.
+
+    Parameters:
+    vessel_name (str): The name of the laboratory vessel (e.g., 'Teflon-lined stainless-steel vessel', 'glass vial').
+    client: A knowledge graph client instance used to fetch vessel details.
+
+    Returns:
+    VesselType: An instance of the VesselType class retrieved from the knowledge graph.
+    """
+    # Match the vessel type name to its corresponding IRI in the ontology
     match vessel_name:
-        case 'Teflon-lined stainless-steel vessel':
+        case 'Teflon-lined stainless-steel vessel':     # High-temperature, high-pressure reaction vessel
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_eb0f5942-d36b-47b1-86f0-725c1549fa2e"
-        case 'glass vial':  
+        case 'glass vial':                              # Small-scale reaction or storage container
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_90589d23-44e8-4698-acdf-bee3e44df96f"
-        case 'quartz tube': 
+        case 'quartz tube':                             # High-temperature reaction vessel, often for thermal decomposition
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_06304c23-7926-45d2-841d-690b5de16ed0"
-        case 'round bottom flask':  
+        case 'round bottom flask':                      # Common vessel for reflux and heating reactions
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_5a7d7ec9-44d5-4280-8467-f9f624374a9d"
-        case 'glass scintillation vial':    
+        case 'glass scintillation vial':                # Typically used for sample storage or small-scale reactions
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_b67ea47b-7849-4aac-b0fd-e2715a4ac034"
-        case 'pyrex tube':  
+        case 'pyrex tube':                              # Resistant to thermal shock, used for heating or storing solutions
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_080ad74b-950d-4651-a87c-5aa96d5ffb52"
-        case 'schlenk flask':  
+        case 'schlenk flask':                           # Designed for air-sensitive reactions under inert atmosphere
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_080zd54b-230c-4341-e87g-5ta46d2fgh91"
-        case _:     
+        case _:                                         # Default case for unknown or unspecified vessels
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_183ad74b-950d-4631-a47c-5aa91d5ffb12"
+    # Retrieve the vessel details from the knowledge graph using the specified IRI
     vessel                                      = VesselType.pull_from_kg(vessel_iri, client,recursive_depth=-1)[0]
     return vessel
 
 def get_unit(unit_name, client):
+    """
+    Matches a given unit name to its corresponding IRI in the ontology 
+    and retrieves its details from the knowledge graph.
+
+    Parameters:
+    unit_name (str): The name of the unit (e.g., '°C', 'mol', 'g', 'hour').
+    client: A knowledge graph client instance used to fetch unit details.
+
+    Returns:
+    UnitOfMeasure: An instance of the UnitOfMeasure class retrieved from the knowledge graph.
+    """
+    # Print the provided unit name for debugging purposes
     print("unit_name: ", unit_name)
+    # Remove spaces from the unit name to standardize matching
     unit_name                   = unit_name.replace(" ", "")
+    # Match the unit name to its corresponding IRI in the ontology
     match unit_name:
+        # Temperature units
         case "°C" | "C" | "degC" | "ºC" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", client, recursive_depth=-1)[0]
         case "K" | "Kelvin":
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin", client, recursive_depth=-1)[0]
+        
+        # Temperature change rate units
         case "°C/h" | "C/h" | "degC/h" | "°C/hour" | "C/hour" | "degC/hour":
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerHour", client, recursive_depth=-1)[0]
         case "°C/min" | "C/min" | "degC/min" | "°C/minute" | "C/minute" | "degC/minute":
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerMinute-Time", client, recursive_depth=-1)[0]    
+        
+        # Time units
         case "hour" | "hours" | "h" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/hour", client, recursive_depth=-1)[0]    
         case "day" | "days" | "d" :
@@ -91,20 +162,30 @@ def get_unit(unit_name, client):
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time", client, recursive_depth=-1)[0]                      
         case "min" | "minute" | "minutes" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/minute-Time", client, recursive_depth=-1)[0]                      
+        
+        # Mass units
         case "g" | "gram" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/gram", client, recursive_depth=-1)[0]                      
         case "mg" | "miligram" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/milligram", client, recursive_depth=-1)[0]                      
+        
+        # Molar units
         case "mol" | "mole" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/mole", client, recursive_depth=-1)[0]                                  
         case "mmol" | "milimole" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millimole", client, recursive_depth=-1)[0]  
+        
+        # Volume units
         case "mL" | "mililitre" | "mL" | "ml"  :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", client, recursive_depth=-1)[0]                                  
+        
+        # Miscellaneous units
         case "drop" | "drops" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/drop", client, recursive_depth=-1)[0]                                  
         case "M" | "mol/L" | "mol/l":
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre",  client, recursive_depth=-1)[0]  
+        
+        # Default case for unknown units
         case _: 
             print(f"Unit was not recognized. Check the following unit: {unit_name} \n")            
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/unknown", client, recursive_depth=-1)[0]                                  
@@ -126,26 +207,44 @@ def extract_numbers_and_units(text, pattern_type, multiplier_flag=2):
         - pattern_type: "add" for regular units, "temp" for temperature or rates.
         - multiplier_flag: 0 to multiply by number1 from range, 1 to multiply by number2.
     """
-    
-    # Define patterns
+    """
+    Extracts numerical values and their corresponding units from a given text string based on the specified pattern type.
+
+    Parameters:
+        text (str): The input text containing numbers and units.
+        pattern_type (str): Determines the type of pattern to use for extraction.
+            - "add": Extracts numbers with units and processes range patterns (number1:number2).
+            - "temp": Extracts temperature or rate values, ignoring range patterns.
+        multiplier_flag (int): Determines which value from a range (number1:number2) to multiply with.
+            - 0: Multiply by number1.
+            - 1: Multiply by number2.
+            - Default is 2 (no multiplication applied).
+
+    Returns:
+        tuple: (numbers_final, units)
+            - numbers_final (list): List of extracted or processed numerical values.
+            - units (list): List of corresponding units.
+    """
+    # Define regex patterns for extracting different types of numerical data
     patterns = {
-        'add': r'(\d*\.?\d+)\s*([a-zA-Z]+)',   # Pattern for numbers with units
-        'temp': r'(\d*\.?\d+)\s*([^\d\s]+)',   # Pattern for temperature or rates
-        'range': r'\((\d+):(\d+)\)'            # Pattern for (number1:number2)
+        'add': r'(\d*\.?\d+)\s*([a-zA-Z]+)',   # Extracts numbers followed by a unit
+        'temp': r'(\d*\.?\d+)\s*([^\d\s]+)',   # Extracts numbers followed by any non-digit, non-space characters (for temperature/rates)
+        'range': r'\((\d+):(\d+)\)'            # Extracts numerical ranges in format (number1:number2)
     }
 
-    # Determine the pattern based on pattern_type
+    # Select the appropriate pattern based on pattern_type
     if pattern_type == "add":
         pattern = patterns['add']
     elif pattern_type == "temp":
         pattern = patterns['temp']
     else:
+        # If the pattern_type is invalid, return default values
         return [0], ["N/A"], [1]  # Return default values if no valid pattern_type
 
-    # Find all matches based on the selected pattern
+    # Find all matches in the text using the selected pattern
     matches = re.findall(pattern, text)
     
-    # Separate numbers and units
+    # Extract numerical values and their respective units from matches
     numbers = [float(match[0]) for match in matches]
     units = [match[1] for match in matches]
     
@@ -154,37 +253,37 @@ def extract_numbers_and_units(text, pattern_type, multiplier_flag=2):
     if not units:
         units = ["N/A"] 
     
-    # If the pattern is "add", we process the range pattern
+    # If the pattern is "add", check for range patterns (number1:number2)
     if pattern_type == "add" and matches:
-        # Find 'range' pattern matches (number1:number2)
+        # Search for range pattern matches in the text
         range_matches = re.findall(patterns['range'], text)
         
         if range_matches:
             print("range matched: ", range_matches)
-            # If 'range' pattern is found, extract number1 and number2
+            # Extract number1 and number2 from the range pattern
             number1_list = [int(match[0]) for match in range_matches]
             number2_list = [int(match[1]) for match in range_matches]
             
-            # Calculate the sum of number1 and number2 for each match
+            # Compute divisor as the sum of number1 and number2
             divisors = [n1 + n2 for n1, n2 in zip(number1_list, number2_list)]
         else:
             # Default divisor if no 'range' is found but 'add' is present
             divisors = [1] * len(numbers)
             number1_list, number2_list = [1] * len(numbers), [1] * len(numbers)
     
-        # Now divide each number by the corresponding sum of range values
+        # Normalize each number by dividing by the first divisor found
         divisor = divisors[0]  # Using the first divisor for all numbers for simplicity
         numbers_divided = [num / divisor for num in numbers]
     
-        # Multiply the result of division by number1 or number2 depending on multiplier_flag
+        # Apply multiplication based on multiplier_flag
         if multiplier_flag == 0:
             # Multiply by number1
             numbers_final = [num_div * number1_list[0] for num_div in numbers_divided]
         else:
-            # Multiply by number2
+            # No multiplication
             numbers_final = [num_div * number2_list[0] for num_div in numbers_divided]
     
-    # If the pattern is "temp", skip range processing
+    # If the pattern is "temp", return numbers directly without any range processing
     elif pattern_type == "temp":
         # Return numbers directly without dividing or multiplying by range values
         numbers_final = numbers
@@ -195,83 +294,218 @@ def extract_numbers_and_units(text, pattern_type, multiplier_flag=2):
     return numbers_final, units
 
 def extract_numbers_and_brackets(input_string):
-    # Regular expression to match numbers and content in brackets
+    """
+    Extracts numerical values along with the content inside parentheses from a given input string.
+    If no matches are found, the function returns a list of comma-separated values from the string.
+
+    Parameters:
+        input_string (str): The input string containing numbers and/or parenthetical content.
+
+    Returns:
+        list: 
+            - If matches are found, returns a list of tuples where each tuple contains:
+                (number as a string, content inside parentheses).
+            - If no matches are found, returns a list of strings split by commas.
+    """
+    # Regular expression pattern to match:
+    # - A number (integer or decimal) followed by optional whitespace
+    # - An opening parenthesis '('
+    # - Any content inside the parentheses until a closing parenthesis ')'
     pattern = r'(\d+\.?\d*)\s*\(([^)]+)\)'
     
     # Find all matches in the input string
     matches = re.findall(pattern, input_string)
     
     if matches:
-        # Convert the results into a list of tuples
+        # Convert matches into a list of tuples (number, content inside parentheses)
         extracted_data = [(num, details) for num, details in matches]
         return extracted_data
     else:
+        # If no matches are found, split the string by commas and remove leading/trailing spaces
         separated_strings = [s.strip() for s in input_string.split(",")]
         return separated_strings
         
 def remove_na(input_candidate):
+    """
+    Replaces "N/A" values with an empty string.
+
+    This function checks if the given input is "N/A" and replaces it with an empty string.
+    Otherwise, it returns the original input.
+
+    Parameters:
+        input_candidate (str): The input string to check.
+
+    Returns:
+        str: An empty string if the input is "N/A", otherwise the original input.
+    """
     if input_candidate == "N/A":
-        return ""
-    return input_candidate
+        return ""           # Return an empty string if the input is "N/A"
+    return input_candidate  # Return the original input if it's not "N/A"
 
 def update_alt_label(species, species_name):
+    """
+    Updates the alternative labels (altLabel) for a given species.
+
+    This function iterates through a list of species names and adds each name 
+    to the species' altLabel attribute if it is not already present.
+
+    Parameters:
+        species (Species): The species object whose alternative labels need to be updated.
+        species_name (list): A list of alternative names for the species.
+
+    Returns:
+        Species: The updated species object with the new altLabels added.
+    """
+    # Debugging: Print the type and content of species_name
     print("speecies name and type: ", type(species_name), species_name)
+    # Iterate over the list of species names
     for name in species_name:
+        # Add the name to altLabel if it is not already present
         if name not in species.altLabel:
             species.altLabel.add(name)
+    # Return the updated species object
     return species
 
 def replace_character(species_names):
+    """
+    Replaces specific special characters in species names with standard equivalents.
+
+    This function iterates through a list of species names and replaces non-standard characters
+    with their appropriate ASCII representations for consistency.
+
+    Parameters:
+        species_names (list): A list of species names (strings) that may contain special characters.
+
+    Returns:
+        list: A new list of species names with replaced characters.
+    """
+    # Initialize an empty list to store the cleaned names
     names                                                   = []
+    # Iterate through each species name in the input list
     for name in species_names:
-        name                = name.replace("·", "x")
-        name                = name.replace("’", "'")
-        name                = name.replace("”", '"')
-        name                = name.replace("–", '-')
-        name                = name.replace("·", 'x')
-        name                = name.replace("•", 'x')
+        # Replace special characters with standardized equivalents
+        name                = name.replace("·", "x")            # Replaces middle dot with 'x'
+        name                = name.replace("’", "'")            # Replaces curly apostrophe with standard apostrophe
+        name                = name.replace("”", '"')            # Replaces curly double quotes with standard double quotes
+        name                = name.replace("–", '-')            # Replaces en dash with standard hyphen
+        name                = name.replace("·", 'x')            # Replaces bullet point with 'x'
+        name                = name.replace("•", 'x')            # Replaces bullet point with 'x'
+        # Append the cleaned name to the list
         names.append(name)
+    # Return the list of cleaned names
     return names
 
 def push_component_to_kg(instances:list, client, recursive_depth=-1):
-    
+    """
+    Pushes a list of component instances to a knowledge graph (KG).
+
+    This function iterates through a list of instances and attempts to push each to the KG. 
+    If an error occurs due to an instance being wrapped in a list, it extracts the first 
+    element and retries the operation.
+
+    Parameters:
+        instances (list): A list of component instances to be pushed to the KG.
+        client: The KG client responsible for handling the push operation.
+        recursive_depth (int, optional): Specifies the recursive depth for pushing nested instances 
+                                         (default is -1, meaning unlimited depth).
+
+    Returns:
+        None: The function updates the KG but does not return any values.
+    """
+    # Iterate over each instance in the provided list
     for instance in instances:
         try:
+            # Attempt to push the instance to the KG and retrieve update graphs
             g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
         except:
+            # If an exception occurs, assume instance is wrapped in a list and extract the first element
             instance                                                = instance[0]
+            # Retry pushing the extracted instance to the KG
             g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
 
 
 def start_upload(input_path):
+    """
+    Initializes the upload process by retrieving SPARQL clients for different knowledge graph (KG) 
+    connections and extracting relevant file path components.
+
+    This function:
+    1. Retrieves SPARQL clients for OntoSynthesis, OntoSpecies, and OntoMOP KGs.
+    2. Extracts the filename (without extension) from the input file path.
+    3. Determines the parent directory and the second-to-last directory in the path.
+
+    Parameters:
+        input_path (str): The full path of the file to be uploaded.
+
+    Returns:
+        tuple: A tuple containing:
+            - filename_noext (str): The name of the file without its extension.
+            - secondlast_subdir (str): The parent directory of the file.
+            - sparql_client_synthesis: SPARQL client for the OntoSynthesis KG.
+            - sparql_client_species: SPARQL client for the OntoSpecies KG.
+            - sparql_client_mop: SPARQL client for the OntoMOP KG.
+    """
+    # Retrieve SPARQL clients for different ontology connections
     sparql_client_synthesis                                 = utils.get_client("OntoSynthesisConnection")
     sparql_client_species                                   = utils.get_client("OntoSpeciesConnection") 
     sparql_client_mop                                       = utils.get_client("OntoMOPConnection") 
+    # Extract the filename from the input path (e.g., 'file.txt' -> 'file')
     filename                                                = os.path.basename(input_path)
-    filename_noext                                          = os.path.splitext(filename)[0]
+    filename_noext                                          = os.path.splitext(filename)[0]     # Remove file extension
+    # Extract parent and second-to-last directory names from the input path
     secondlast_subdir,last_subdir                           = os.path.split(input_path)
+    # Return extracted filename, directory names, and SPARQL clients
     return filename_noext, secondlast_subdir, sparql_client_synthesis, sparql_client_species, sparql_client_mop  
+
 def steps_preupload(standard_step, synthesis_client, vessel_list):
-    """Each step has a duration, atmosphere, and vessel except for filter that has no duration. -> The funciton computes the common instances."""
+    """
+    Prepares and standardizes step-related data before uploading it to the knowledge graph.
+
+    Each synthesis step has attributes such as duration, atmosphere, and vessel.
+    However, filter steps do not have a duration. This function extracts and processes these
+    common instances for upload.
+
+    Parameters:
+        standard_step (dict): A dictionary containing step-related data including duration, atmosphere, and vessel.
+        synthesis_client (object): The SPARQL client used to interact with the OntoSynthesis knowledge graph.
+        vessel_list (list): A list of existing Vessel objects to check for duplicates before creating new ones.
+
+    Returns:
+        tuple: A tuple containing:
+            - vessel (Vessel): The Vessel instance associated with this step.
+            - vessel_list (list): The updated list of vessels, including newly created ones.
+            - duration (Duration): The Duration instance representing the step duration.
+            - duration_value (Measure): The numerical value and unit of the duration.
+            - atmosphere (VesselEnvironment): The atmosphere associated with the step.
+            - id_hash_value (str): A unique identifier for the step duration instance.
+    """
+    # Print the input step for debugging purposes
     print("standard step: ", standard_step)
+    # Extract the step duration if available; otherwise, assign default values
     if "duration" in standard_step:
         step_time, time_unit                    = extract_numbers_and_units(standard_step["duration"], "add")
     else:
-        step_time                               = [-1]
-        time_unit                               = "N/A"
+        step_time                               = [-1]      # Default value for missing duration
+        time_unit                               = "N/A"     # Default unit placeholder
+    # Generate a unique identifier for the duration instance
     id_hash_value                               = str(uuid.uuid4())
-    # duration 
-    duration_unit                               = get_unit(time_unit[0], synthesis_client) 
+    # Convert the extracted duration unit into a structured format
+    duration_unit                               = get_unit(time_unit[0], synthesis_client)      # Retrieve the appropriate unit from KG
     duration_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StepDuration_{id_hash_value}", hasNumericalValue=step_time[0], hasUnit=duration_unit)
     duration                                    = Duration(hasValue=duration_value)
-    # atmosphere    
+    # Retrieve the atmosphere type for the step from the knowledge graph
     atmosphere                                  = match_atmosphere(standard_step["atmosphere"], synthesis_client)
-    # Vessel:
+    # Check if the vessel already exists in the list to avoid duplicates
     for ves in vessel_list:
         if ves.rdfs_label == standard_step["usedVesselName"]:
-                vessel                                      = ves
+                vessel                                      = ves       # Reuse the existing vessel instance
                 return vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value
+    # If vessel not found, create a new vessel instance
     vessel_type                                 = match_vessel(standard_step['usedVesselType'], synthesis_client)
     vessel                                      = Vessel(rdfs_label=standard_step["usedVesselName"], hasVesselType=vessel_type)
+    # Add the newly created vessel to the vessel list for future reference
     vessel_list.append(vessel)
+    # Return processed values including vessel, duration, and atmosphere details
     return vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value 
+
+
