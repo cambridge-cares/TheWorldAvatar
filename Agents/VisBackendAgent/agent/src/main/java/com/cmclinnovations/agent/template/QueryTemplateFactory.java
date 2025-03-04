@@ -705,6 +705,14 @@ public class QueryTemplateFactory {
           : fieldNode.path(ShaclResource.ID_KEY);
       String formattedPredicate = StringResource.parseIriForQuery(predicate);
       String formattedObjVar = this.getFormattedQueryVariable(targetTripleObjectNode, targetId);
+      String parsedId = targetId;
+      // If this is a nested array element, where no id is required but this is an id
+      // field, not literal, extend the target id with the predicate
+      if (!isIdRequired && formattedObjVar.startsWith("<") && formattedObjVar.endsWith(">")
+          && targetId.contains(ShaclResource.VARIABLE_MARK)) {
+        parsedId = targetId + StringResource.getLocalName(predicate);
+        formattedObjVar = parsedId;
+      }
       StringResource.appendTriple(deleteBuilder, subject, formattedPredicate, formattedObjVar);
       // Further processing for array type
       if (fieldNode.has(ShaclResource.REPLACE_KEY) && fieldNode.path(ShaclResource.TYPE_KEY).asText().equals("array")
@@ -719,7 +727,7 @@ public class QueryTemplateFactory {
       // or a one line instance link to a TextNode eg: "@id" : "instanceIri"
           !(fieldNode.has(ShaclResource.ID_KEY) && fieldNode.size() == 1
               && fieldNode.path(ShaclResource.ID_KEY).isTextual())) {
-        this.recursiveParseNode(deleteBuilder, (ObjectNode) fieldNode, targetId, isIdRequired);
+        this.recursiveParseNode(deleteBuilder, (ObjectNode) fieldNode, parsedId, isIdRequired);
       }
       // For arrays,iterate through each object and parse the nested node
     } else if (fieldNode.isArray()) {
