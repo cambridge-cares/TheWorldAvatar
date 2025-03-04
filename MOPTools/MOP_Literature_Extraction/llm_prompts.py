@@ -1,5 +1,12 @@
 import kg_queries as kgq
 def step_types_prompt():
+    """
+    Generates a prompt to guide an LLM in identifying and categorizing synthesis step types.
+
+    Returns:
+    str: A structured prompt instructing the LLM to create a JSON file indicating which step types
+         are present in the given synthesis procedure.
+    """
     # prompt text
     prompt                              = """Task Description:
     Write a JSON file that organizes synthesis steps. Indicate wheter the type of a step is used in the following synthesis procedure. 
@@ -10,11 +17,22 @@ def step_types_prompt():
     return prompt
 
 def step_prompt(doi, dynamic_prompt):
-    # get supporting info from kg
-    chemical_names                      = kgq.get_input_species(doi)
-    mop_names                           = kgq.query_mop_names(doi)
-    # build prompt based on expected step types
+    """
+    Generates a detailed prompt for an LLM to extract and categorize synthesis steps from a given text.
+
+    Parameters:
+    doi (str): The Digital Object Identifier (DOI) of the document containing the synthesis steps.
+    dynamic_prompt (dict): A dictionary indicating which step types (e.g., Add, HeatChill, Filter) are relevant.
+
+    Returns:
+    str: A structured prompt that instructs the LLM on how to extract and categorize synthesis steps into JSON format.
+    """
+    # Retrieve supporting information from the knowledge graph
+    chemical_names                      = kgq.get_input_species(doi)    # Get the list of chemical species involved in the synthesis
+    mop_names                           = kgq.query_mop_names(doi)      # Get the list of metal organic polyhedra (MOPs)
+    # Initialize an empty string to store category-specific instructions
     category_spec           = ""
+    # Dynamically generate instructions for each relevant synthesis step type
     if dynamic_prompt["Add"]:
         category_spec      += f"Add: Steps involving adding material to a mixture or vessel. If multiple reagents or solvents are added, group each separately. Assign the chemicals added to one of the following and use the name of the chemical as follows: {chemical_names}."
     if dynamic_prompt["HeatChill"]:
@@ -37,7 +55,7 @@ def step_prompt(doi, dynamic_prompt):
         category_spec      += f"""Separate: Separation step that is not covered otherwise. Usually separate by extraction, centrifuge or column. Make sure to assign filtration as Filter step and not separation. """
     if dynamic_prompt["Transfer"]:
         category_spec      += f"""Transfer: Transfer vessel content from one vessel to another. """
-    # prompt text        
+    # Construct the prompt text with category-specific details and synthesis step formatting rules     
     prompt                  = f"""              
     Task Description:
     Write a JSON file that organizes synthesis steps. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema. Ensure that each step has an entry "stepNumber" that represents the chronological order of the steps if possible use the number given in the text.
@@ -62,7 +80,19 @@ def step_prompt(doi, dynamic_prompt):
     return prompt
 
 def chemical_prompt(doi):
+    """
+    Generates a prompt for the LLM to summarize the synthesis procedure and structure it into a JSON file. 
+    The prompt focuses on extracting relevant data, such as chemicals, CCDC numbers, and synthesis details.
+
+    Parameters:
+    doi (str): The Digital Object Identifier (DOI) of the document containing the synthesis procedure.
+
+    Returns:
+    str: A structured prompt instructing the LLM on how to extract and format the synthesis data.
+    """
+    # Retrieve the list of MOPs (molecular organic precursors) related to the given DOI from the knowledge graph
     mop_formula         = kgq.get_literature(doi)
+    # Construct the prompt text, including task specifications and category instructions
     prompt          = f""" 
     Task Specification: "Summarize the synthesis procedure into a JSON file. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema.
     Try to use product names and CCDC numbers from the following list: {mop_formula}
@@ -95,6 +125,15 @@ def chemical_prompt(doi):
     return prompt 
     
 def pre_steps_prompt():
+    """
+    Generates a structured prompt for an LLM to extract and categorize synthesis pre-steps 
+    from a given text.
+
+    Returns:
+    str: A formatted prompt instructing the LLM on how to break down synthesis steps 
+         into precise, sequential, and standalone instructions.
+    """
+    # Define the structured prompt that guides the LLM in extracting synthesis steps
     prompt          = f""" 
         Step-by-Step Instructions: Break down each synthesis procedure into precise and sequential steps. Each procedure should stand alone and not reference any other procedures or require shared understanding.
         Assign the steps in categories of Add, Heat chill, Filter, Stirr, Dry, Evaporate, Dissolve, Transfer, Separate, and Sonicate. Make sure to break down the synthesis in precise, sequential and standalone steps. 
@@ -143,7 +182,20 @@ def pre_steps_prompt():
     return prompt
 
 def procedure_prompt(doi):
+    """
+    Generates a structured prompt for an LLM to extract and format synthesis procedures 
+    from a given text.
+
+    Parameters:
+    doi (str): The Digital Object Identifier (DOI) of the document containing the synthesis procedures.
+
+    Returns:
+    str: A formatted prompt instructing the LLM on how to extract and structure synthesis procedures, 
+         ensuring completeness and clarity.
+    """
+    # Retrieve the list of molecular organic polyhedra (MOP) formulas related to the given DOI
     mop_formula                 = kgq.get_literature(doi)
+    # Construct the structured prompt guiding the LLM in extracting synthesis procedures
     prompt                      = f""" 
     Objective: 
     Extract and provide detailed, verbatim copies of all synthesis procedures, product characterizations,
@@ -207,15 +259,29 @@ def procedure_prompt(doi):
     return prompt    
 
 def cbu_prompt(doi):
-    mop_list, cbu_list, species_list    = kgq.input_for_cbu(doi)
+    """
+    Generates a structured prompt for an LLM to extract and match Chemical Building Units (CBUs) 
+    with corresponding lab species based on synthesis data.
 
+    Parameters:
+    doi (str): The Digital Object Identifier (DOI) of the document containing synthesis information.
+
+    Returns:
+    tuple: A formatted prompt string and a boolean indicating whether the prompt was successfully generated.
+           Returns ("", False) if required data is missing.
+    """
+    # Retrieve the list of MOPs, CBUs, and species involved in synthesis from the knowledge graph
+    mop_list, cbu_list, species_list    = kgq.input_for_cbu(doi)
+    # Print retrieved data for debugging
     print("cbu list: ", cbu_list, "species_list:", species_list, "mop list: ", mop_list)
+    # Check if any required data is missing or empty, return an empty prompt if so
     if cbu_list == [] or species_list == [] or mop_list == [] or species_list==[[]] or mop_list == [[]] or cbu_list == [[]]:
         return "", False 
-    
+    # Ensure that none of the species lists are empty
     for species in species_list:
         if species == []:
             return "", False 
+    # Construct the structured prompt guiding the LLM in mapping CBUs to corresponding species
     prompt                              =  f"""You will be given different metal organic polyhedron(MOP) CCDC numbers (identifier). Each MOP has two cbus. 
         Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema.
         You will also be given a list of species that are used to synthesise the MOP. 
@@ -223,14 +289,31 @@ def cbu_prompt(doi):
         adhering to the specified schema. If any information is missing or uncertain, fill the cell with N/A for strings or 0 for numeric types.
         For chemical names make sure to write each name as separate string. Wrong: ["C4H9NO, DMA, N,N'-dimethylacetamide"], Correct: ["C4H9NO", "DMA", "N,N'-dimethylacetamide"]
         \n"""
+    # Append specific MOP, CBU, and species matching instructions for each MOP
     for i, species in enumerate(species_list):
         prompt                         += (f"The {i+1}th Mop has CCDC number: {mop_list[i]}. The MOP has the following two chemical building units (CBUs): {cbu_list[i]}, assign respecting equivalent(s) from the following list of chemicals: {species} \n")
+    # Print the generated prompt for debugging
     print("prompt: ", prompt)
     return prompt, True
 
 def characterisation_prompt(doi):
+    """
+    Generates a structured prompt for an LLM to extract characterization data 
+    from synthesis sections of scientific papers.
+
+    Parameters:
+    doi (str): The Digital Object Identifier (DOI) of the document containing 
+               the synthesis and characterization details.
+
+    Returns:
+    str: A formatted prompt instructing the LLM on how to extract and structure 
+         characterization data into a JSON format.
+    """
+    # Retrieve a list of molecular organic polyhedra (MOP) formulas related to the given DOI
     mop_formula             = kgq.get_literature(doi)
+    # Retrieve a list of MOP names associated with the DOI
     mop_names               = kgq.query_mop_names(doi)
+    # Construct the structured prompt guiding the LLM in extracting characterization data
     prompt = f""" 
     Objective:
     Extract characterization data from the synthesis section of scientific papers in two steps:
@@ -269,6 +352,18 @@ def characterisation_prompt(doi):
     return prompt
 # output prompt
 def synthesis_text_prompt(txt):
+    """
+    Generates a structured prompt for an LLM to rewrite synthesis procedures 
+    in a format suitable for publication in a scientific journal.
+
+    Parameters:
+    txt (str): The synthesis text to be reformatted.
+
+    Returns:
+    str: A formatted prompt instructing the LLM on how to structure the synthesis procedure 
+         into clearly defined sections: Materials, Procedure, and Characterization.
+    """
+    # Construct the structured prompt guiding the LLM in rewriting the synthesis text
     prompt      = f"""Please translate the following synthesis text in a precise and well written synthesis procedure that could be published in a scientific journal. \n
     synthesis procedure: {txt}. Make sure to copy the product IRI as given in the text and use it as title. Write each procedure indepently and group the information in three paragraphs: 
     Material, Procedure, and Characterisation. Follow markdown syntax and follow a well readable formating.
