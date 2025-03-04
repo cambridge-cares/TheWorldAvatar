@@ -86,33 +86,24 @@
                 android:fadingEdge="none" />
         </LinearLayout>
 
-        <View
-            android:id="@+id/summary_separator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/darker_gray" />
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nested_scroll_view"
-        android:layout_marginVertical="@dimen/component_margin_small">
-        
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sessions_recycler_view"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:nestedScrollingEnabled="true"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"
+            android:fadingEdge="none" />
+    </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/sessions_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="true"
-                android:overScrollMode="never" />
-        </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+
 
     <LinearLayout
             android:layout_width="match_parent"

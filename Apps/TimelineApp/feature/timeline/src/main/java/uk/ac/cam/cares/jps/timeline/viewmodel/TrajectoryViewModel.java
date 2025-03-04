@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.model.TrajectoryByDate;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
 
@@ -24,10 +25,10 @@ import uk.ac.cam.cares.jps.data.TrajectoryRepository;
 public class TrajectoryViewModel extends ViewModel {
 
     private final TrajectoryRepository trajectoryRepository;
-    private final MutableLiveData<String> _trajectory = new MutableLiveData<>();
+    private final MutableLiveData<TrajectoryByDate> _trajectory = new MutableLiveData<>();
     private final MutableLiveData<Throwable> _trajectoryError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
-    public LiveData<String> trajectory = _trajectory;
+    public LiveData<TrajectoryByDate> trajectory = _trajectory;
     public LiveData<Throwable> trajectoryError = _trajectoryError;
     public LiveData<Boolean> isFetchingTrajectory = _isFetchingTrajectory;
     private static final Logger LOGGER = Logger.getLogger(String.valueOf(TrajectoryViewModel.class));
@@ -47,7 +48,8 @@ public class TrajectoryViewModel extends ViewModel {
         trajectoryRepository.getTrajectory(lowerbound, upperbound, new RepositoryCallback<>() {
             @Override
             public void onSuccess(String result) {
-                _trajectory.postValue(result);
+                TrajectoryByDate trajectoryByDate = new TrajectoryByDate(result, date);
+                _trajectory.postValue(trajectoryByDate);
                 _isFetchingTrajectory.postValue(false);
                 _trajectoryError.postValue(null);
             }
@@ -76,5 +78,9 @@ public class TrajectoryViewModel extends ViewModel {
         ZonedDateTime convertedDateStart = date.atStartOfDay(ZoneId.systemDefault())
                 .withZoneSameInstant(ZoneId.of("UTC"));
         return convertedDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSx"));
+    }
+
+    public void setFetching(boolean isFetching) {
+        _isFetchingTrajectory.postValue(isFetching);
     }
 }

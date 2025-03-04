@@ -16,12 +16,12 @@ public class ActivityItem {
     /**
      * Constructor for ActivityItem class
      * @param activityType the type of activity as an image
-     * @param start_time the start timestamp of the segment
-     * @param end_time the end timestamp of the segment
+     * @param startTime the start timestamp of the segment
+     * @param endTime the end timestamp of the segment
      */
-    public ActivityItem(int activityType, long start_time, long end_time) {
+    public ActivityItem(int activityType, long startTime, long endTime) {
         this.activityType = activityType;
-        this.timeSummary = toTimeSummary(start_time, end_time);
+        this.timeSummary = toTimeSummary(startTime, endTime);
 
     }
 
@@ -49,4 +49,5 @@ public class ActivityItem {
     public int getActivityImage() {
         return this.activityType;
     }
+    
 } 

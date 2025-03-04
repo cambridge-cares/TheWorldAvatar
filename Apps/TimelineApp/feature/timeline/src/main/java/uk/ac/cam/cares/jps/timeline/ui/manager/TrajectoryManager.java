@@ -28,64 +28,73 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import uk.ac.cam.cares.jps.model.TrajectoryByDate;
+import uk.ac.cam.cares.jps.timeline.viewmodel.NormalBottomSheetViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 
 /**
  * An UI manager that manages the drawing and removing of trajectories received from server
  */
+
+
 public class TrajectoryManager {
     private TrajectoryViewModel trajectoryViewModel;
+    private NormalBottomSheetViewModel normalBottomSheetViewModel;
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
     private final List<String> layerNames;
 
-    /**
-     * Constructor of the class
-     * @param fragment Host fragment
-     * @param mapView  Mapbox map view
-     */
+   /**
+    * Constructor of the class
+    * @param fragment Host fragment
+    * @param mapView  Mapbox map view
+    */
     public TrajectoryManager(Fragment fragment, MapView mapView) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
+        normalBottomSheetViewModel = new ViewModelProvider(fragment).get(NormalBottomSheetViewModel.class);
         layerNames = new ArrayList<>();
 
-        trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryStr -> {
-            mapView.getMapboxMap().getStyle(style -> {
-                removeAllLayers(style);
-                if (trajectoryStr.isEmpty()) {
-                    return;
-                }
-                Map<String, String> activityColors = new HashMap<>();
-                activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())))); // Blue
-                activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); //Black
-                activityColors.put("vehicle", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
-                activityColors.put("bike", "#585C7E");
-                paintTrajectoryByActivity(style, trajectoryStr, activityColors, "default");
+        trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryByDate -> {
+                mapView.getMapboxMap().getStyle(style -> {
+                    removeAllLayers(style);
+                        if (trajectoryByDate.getTrajectoryStr().isEmpty()) {
+                            return;
+                        } 
+                        else if (!trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                            trajectoryViewModel.setFetching(true);
+                            return;
+                        }
+                        else {
+                            Map<String, String> activityColors = new HashMap<>();
+                            activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())))); // Blue
+                            activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); // Black
+                            activityColors.put("vehicle", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
+                            activityColors.put("bike", "#585C7E");
+                            paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
+                        }
+                    });
+                    try {
+                        JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
+                        JSONArray bbox = jsonObject.getJSONArray("bbox");
+                        mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
+                            Point newCenter = getBBoxCenter(bbox);
+                            if (newCenter == null) {
+                                return null;
+                            }
 
-            });
-
-            try {
-                JSONObject jsonObject = new JSONObject(trajectoryStr);
-                JSONArray bbox = jsonObject.getJSONArray("bbox");
-                mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
-                    Point newCenter = getBBoxCenter(bbox);
-                    if (newCenter == null) {
-                        return null;
+                            plugin.flyTo(new CameraOptions.Builder()
+                                            .center(getBBoxCenter(bbox))
+                                            .build(),
+                                    new MapAnimationOptions.Builder().duration(2000).build(),
+                                    null);
+                            return null;
+                        });
+                    } catch (JSONException e) {
+                        LOGGER.info("No trajectory retrieved, no need to reset camera");
                     }
-
-                    plugin.flyTo(new CameraOptions.Builder()
-                                    .center(getBBoxCenter(bbox))
-                                    .build(),
-                            new MapAnimationOptions.Builder().duration(2000).build(),
-                            null);
-                    return null;
-                });
-            } catch (JSONException e) {
-                LOGGER.info("No trajectory retrieved, no need to reset camera");
-            }
-
-        });
-
-        
+            });
     }
+            
+
 
 
     private int getColor(Context context) {
@@ -95,7 +104,8 @@ public class TrajectoryManager {
         return colorPrimary;
     }
 
-    private void paintTrajectoryByActivity(Style style, String trajectory, Map<String, String> activityColors, String mode) {
+    private void paintTrajectoryByActivity(Style style, TrajectoryByDate trajectoryArr, Map<String, String> activityColors, String mode) {
+    String trajectory = trajectoryArr.getTrajectoryStr();
     JSONObject sourceJson = new JSONObject();
     try {
         sourceJson.put("type", "geojson");
@@ -185,3 +195,4 @@ public class TrajectoryManager {
         layerNames.clear();
     }
 }
+

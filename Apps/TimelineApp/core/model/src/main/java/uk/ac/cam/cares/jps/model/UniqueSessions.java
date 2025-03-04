@@ -3,11 +3,10 @@ package uk.ac.cam.cares.jps.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class UniqueSessions {
-    private String sessionId;
-    private String sessionTitle;
-    private List<ActivityItem> activityItemList;
+    private final String sessionId;
+    private final String sessionTitle;
+    private final List<ActivityItem> activityItemList;
     private List<ActivityItem> shownList;
     private final List<ActivityItem> EMPTY_LIST = new ArrayList<>();
 
@@ -22,10 +21,6 @@ public class UniqueSessions {
         return sessionId;
     }
 
-    public void setSessionId(String id) {
-        this.sessionId = id;
-    }
-
     public List<ActivityItem> getShownList() {
         return shownList;
     }
@@ -38,17 +33,8 @@ public class UniqueSessions {
         this.shownList = EMPTY_LIST;
     }
 
-    public void setActivityItemList(List<ActivityItem> activityItemList) {
-        this.activityItemList = activityItemList;
-    }
-
     public String getSessionTitle() {
         return sessionTitle;
     }
-
-    public void setCustomSessionTitle(String newTitle) {
-        this.sessionTitle = newTitle;
-    }
-
 
 }

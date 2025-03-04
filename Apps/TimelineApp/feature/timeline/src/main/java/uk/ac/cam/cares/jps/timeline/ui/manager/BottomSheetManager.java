@@ -21,8 +21,11 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import uk.ac.cam.cares.jps.login.AccountException;
+import uk.ac.cam.cares.jps.model.SummaryActivityItem;
+import uk.ac.cam.cares.jps.model.UniqueSessions;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
@@ -99,32 +102,27 @@ public class BottomSheetManager {
 
     private void initNormalBottomSheet() {
         normalBottomSheet = new NormalBottomSheet(context);
-        configureTrajectoryRetrieval();
         configureDateSelection();
+        configureTrajectoryRetrieval();
         configureSummary();
-        configureSessions();
     }
 
-    public void configureTrajectoryRetrieval() {
+    private void configureTrajectoryRetrieval() {
         trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
     }
 
-    public void configureSummary() {
+    private void configureSummary() {
 
-        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseActivitySummary);
+        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseSessionSummaries);
 
-        normalBottomSheetViewModel.activityItemSummaryData.observe(lifecycleOwner, activityItemSummaryList -> {
-            normalBottomSheet.updateSummaryView(activityItemSummaryList);
-            
-        });
-    }
+        normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
+            List<SummaryActivityItem> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
+            List<UniqueSessions> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
+            if(sessionSummaryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                normalBottomSheet.updateSummaryView(activityItemSummaryList);
+                normalBottomSheet.updateUniqueSessionsList(uniqueSessions);
+            }
 
-    public void configureSessions() {
-        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseUniqueSessions);
-
-        normalBottomSheetViewModel.uniqueSessions.observe(lifecycleOwner, uniqueSessionsList -> {
-            normalBottomSheet.updateUniqueSessionsList(uniqueSessionsList);
-            
         });
     }
 

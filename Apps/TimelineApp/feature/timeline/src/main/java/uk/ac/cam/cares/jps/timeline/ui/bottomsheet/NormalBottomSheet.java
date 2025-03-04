@@ -104,8 +104,6 @@ public class NormalBottomSheet extends BottomSheet {
     }
 
     private void showEmptyState() {
-
-        bottomSheet.findViewById(R.id.summary_separator).setVisibility(View.GONE);
         sessionsRecyclerView.setVisibility(View.GONE);
         summaryRecyclerView.setVisibility(View.GONE);
 

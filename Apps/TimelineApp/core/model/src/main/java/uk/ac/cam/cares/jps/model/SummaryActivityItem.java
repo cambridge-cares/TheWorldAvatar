@@ -1,10 +1,20 @@
 package uk.ac.cam.cares.jps.model;
+;
 
+/**
+ * class that represents the summary of trajectory information over a period of time
+ */
 public class SummaryActivityItem {
     private final int activityItem;
     private final String totalDistance; //meters
     private final String totalTimeSummary; //hours and minutes
 
+    /**
+     * constructor for summarizing trajectory info
+     * @param activityItem image representing an activity type
+     * @param totalDistance total distance in meters
+     * @param totalTimeInMinutes total time for activity in minutes
+     */
     public SummaryActivityItem(int activityItem, int totalDistance, long totalTimeInMinutes) {
         this.activityItem = activityItem;
         this.totalDistance = totalDistance + " m";
@@ -31,4 +41,5 @@ public class SummaryActivityItem {
     public String getTotalTimeSummary() {
         return this.totalTimeSummary;
     }
+
 }
