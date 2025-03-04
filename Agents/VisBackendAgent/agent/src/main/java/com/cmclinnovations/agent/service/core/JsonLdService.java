@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.service.core;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,12 +13,14 @@ import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class JsonLdService {
   private final ObjectMapper objectMapper;
 
+  private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
   private static final Logger LOGGER = LogManager.getLogger(JsonLdService.class);
 
   /**
@@ -75,6 +78,18 @@ public class JsonLdService {
   }
 
   /**
+   * Generates a instance object node with a readable label.
+   * 
+   * @param prefix  IRI prefix.
+   * @param concept The ontology concept class/type for the instance.
+   * @param label   The label for the instance.
+   */
+  public ObjectNode genInstance(String prefix, String concept, String label) {
+    return this.genInstance(prefix, concept)
+        .put(RDFS_LABEL, label);
+  }
+
+  /**
    * Generates a instance object node.
    * 
    * @param prefix  IRI prefix.
@@ -93,14 +108,78 @@ public class JsonLdService {
    * @param dataType   Indicates the data type for the literal. Defaults to string
    *                   if null.
    */
-  public ObjectNode genLiteral(String literalVal, String dataType) {
+  public ObjectNode genLiteral(String literalVal, String dataType) throws NumberFormatException {
+    if (dataType.equals(ShaclResource.XSD_DECIMAL) && literalVal.isEmpty()) {
+      LOGGER.warn("Numeric value cannot be an empty string!");
+      throw new NumberFormatException("Numeric value cannot be an empty string!");
+    }
     ObjectNode literal = this.objectMapper.createObjectNode()
         .put(ShaclResource.VAL_KEY, literalVal);
-    if (dataType == null) {
-      literal.put(ShaclResource.TYPE_KEY, "http://www.w3.org/2001/XMLSchema#string");
-    } else {
-      literal.put(ShaclResource.TYPE_KEY, dataType);
-    }
+    literal.put(ShaclResource.TYPE_KEY, dataType == null ? ShaclResource.XSD_STRING : dataType);
     return literal;
+  }
+
+  /**
+   * Creates an empty object node.
+   */
+  public ObjectNode genObjectNode() {
+    return this.objectMapper.createObjectNode();
+  }
+
+  /**
+   * Retrieves an object node from a JSON node.
+   * 
+   * @param input The JSON node.
+   */
+  public ObjectNode getObjectNode(JsonNode input) {
+    if (input.isObject()) {
+      return (ObjectNode) input;
+    } else {
+      String inputString = input.toPrettyString();
+      LOGGER.error("Invalid object input: {}", inputString);
+      throw new IllegalArgumentException(MessageFormat.format("Invalid object input: {}", inputString));
+    }
+  }
+
+  /**
+   * Creates an empty array node.
+   */
+  public ArrayNode genArrayNode() {
+    return this.objectMapper.createArrayNode();
+  }
+
+  /**
+   * Generates an array node from the input JSON nodes.
+   * 
+   * @param inputs The required JSON nodes as inputs.
+   */
+  public ArrayNode genArrayNode(JsonNode... inputs) {
+    ArrayNode placeholder = this.objectMapper.createArrayNode();
+
+    for (JsonNode input : inputs) {
+      if (input.isArray()) {
+        StreamSupport.stream(input.spliterator(), false)
+            .forEach(placeholder::add);
+      } else {
+        // object nodes should be added directly
+        placeholder.add(input);
+      }
+    }
+    return placeholder;
+  }
+
+  /**
+   * Retrieves an object node from a JSON node.
+   * 
+   * @param input The JSON node.
+   */
+  public ArrayNode getArrayNode(JsonNode input) {
+    if (input.isArray()) {
+      return (ArrayNode) input;
+    } else {
+      String inputString = input.toPrettyString();
+      LOGGER.error("Invalid array input: {}", inputString);
+      throw new IllegalArgumentException(MessageFormat.format("Invalid array input: {}", inputString));
+    }
   }
 }

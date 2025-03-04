@@ -4,8 +4,7 @@
   },
   "@id": {
     "@replace": "id",
-    "@type": "iri",
-    "prefix": "https://www.example.com/kg/complete/"
+    "@type": "iri"
   },
   "@type": "https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence",
   "http://www.w3.org/2000/01/rdf-schema#comment": {
@@ -25,7 +24,7 @@
   },
   "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds": {
     "@id": {
-      "@replace": "dispatch",
+      "@replace": "order",
       "@type": "iri"
     }
   },
@@ -34,25 +33,6 @@
       "@id": {
         "@replace": "stage",
         "@type": "iri"
-      }
-    },
-    "https://www.omg.org/spec/Commons/DatesAndTimes/succeeds": {
-      "@replace": "calculation",
-      "@type": "difference",
-      "variable": [
-        {
-          "@id": "gross weight",
-          "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"
-        },
-        {
-          "@id": "delivery weight",
-          "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"
-        }
-      ],
-      "output": {
-        "@id": "net weight",
-        "@type": "https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue",
-        "unit": "https://www.theworldavatar.com/kg/ontoservice/tonne"
       }
     }
   }
