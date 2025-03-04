@@ -18,9 +18,6 @@ import sys
 PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
-
-import json
-import csv
 from io import StringIO
 import upload_utils as uputil
 import utils
