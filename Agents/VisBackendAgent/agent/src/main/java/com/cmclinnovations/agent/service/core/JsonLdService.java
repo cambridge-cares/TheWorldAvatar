@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.service.core;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -145,6 +146,26 @@ public class JsonLdService {
    */
   public ArrayNode genArrayNode() {
     return this.objectMapper.createArrayNode();
+  }
+
+  /**
+   * Generates an array node from the input JSON nodes.
+   * 
+   * @param inputs The required JSON nodes as inputs.
+   */
+  public ArrayNode genArrayNode(JsonNode... inputs) {
+    ArrayNode placeholder = this.objectMapper.createArrayNode();
+
+    for (JsonNode input : inputs) {
+      if (input.isArray()) {
+        StreamSupport.stream(input.spliterator(), false)
+            .forEach(placeholder::add);
+      } else {
+        // object nodes should be added directly
+        placeholder.add(input);
+      }
+    }
+    return placeholder;
   }
 
   /**

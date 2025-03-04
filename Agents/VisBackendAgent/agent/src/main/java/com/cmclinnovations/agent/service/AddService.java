@@ -204,8 +204,12 @@ public class AddService {
             String currentOptionField = matchedOptionFieldNames.next();
             this.recursiveReplacePlaceholders(matchedOption, currentNode, currentOptionField,
                 replacements);
+            JsonNode matchedField = matchedOption.path(currentOptionField);
+            if (currentNode.has(currentOptionField)) {
+              matchedField = this.jsonLdService.genArrayNode(currentNode.path(currentOptionField), matchedField);
+            }
             // Append matched option field node to the current node
-            currentNode.set(currentOptionField, matchedOption.path(currentOptionField));
+            currentNode.set(currentOptionField, matchedField);
           }
           currentNode.remove(ShaclResource.BRANCH_KEY); // Always remove the branch field once parsed
           // For all other fields
