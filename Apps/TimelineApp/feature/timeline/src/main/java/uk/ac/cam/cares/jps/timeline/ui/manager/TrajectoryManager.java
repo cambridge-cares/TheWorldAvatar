@@ -72,24 +72,26 @@ public class TrajectoryManager {
                             paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
                         }
                     });
-                    try {
-                        JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
-                        JSONArray bbox = jsonObject.getJSONArray("bbox");
-                        mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
-                            Point newCenter = getBBoxCenter(bbox);
-                            if (newCenter == null) {
-                                return null;
-                            }
+                    if(trajectoryViewModel.trajectory.getValue().getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
+                            JSONArray bbox = jsonObject.getJSONArray("bbox");
+                            mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
+                                Point newCenter = getBBoxCenter(bbox);
+                                if (newCenter == null) {
+                                    return null;
+                                }
 
-                            plugin.flyTo(new CameraOptions.Builder()
-                                            .center(getBBoxCenter(bbox))
-                                            .build(),
-                                    new MapAnimationOptions.Builder().duration(2000).build(),
-                                    null);
-                            return null;
-                        });
-                    } catch (JSONException e) {
-                        LOGGER.info("No trajectory retrieved, no need to reset camera");
+                                plugin.flyTo(new CameraOptions.Builder()
+                                                .center(getBBoxCenter(bbox))
+                                                .build(),
+                                        new MapAnimationOptions.Builder().duration(2000).build(),
+                                        null);
+                                return null;
+                            });
+                        } catch (JSONException e) {
+                            LOGGER.info("No trajectory retrieved, no need to reset camera");
+                        }
                     }
             });
     }
