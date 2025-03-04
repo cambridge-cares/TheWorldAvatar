@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>isochroneagent</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.0-op-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <properties>
@@ -45,14 +45,12 @@
             <id>prod-profile</id>
             <properties>
                 <!-- Set property to download production logging config -->
-                <log.artifact>java-logging-prod</log.artifact>
             </properties>
         </profile>
     </profiles>
 
     <!-- Build settings -->
     <build>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -64,7 +62,7 @@
                 </configuration>
             </plugin>
 
-                        <!-- Allows maven executions -->
+            <!-- Allows maven executions -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -122,7 +120,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20180813</version>
+            <version>20240303</version>
             <type>jar</type>
         </dependency>
         <!-- Logging, versions pulled from parent -->
@@ -162,7 +160,6 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.5.4</version>
         </dependency>
         <!-- for interacting with the stack -->
         <dependency>
