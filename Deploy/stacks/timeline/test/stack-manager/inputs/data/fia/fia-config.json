@@ -31,13 +31,19 @@
             }
         },
         {
-            "id": "heart_rate",
+            "id": "person",
             "class": "https://w3id.org/MON/person.owl#Person",
             "time": {
                 "queryFile": "heart_rate.sparql",
                 "limit": 24,
                 "unit": "hours",
                 "reference": "latest",
+                "database": "postgres"
+            },
+            "trajectory": {
+                "pointIriQuery": "point_query_user.sparql",
+                "featureIriQuery": "feature_query_pm25.sparql",
+                "metaQuery": "trajectory_meta_pm25.sparql",
                 "database": "postgres"
             }
         }
