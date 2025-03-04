@@ -479,7 +479,12 @@ public class QueryTemplateFactory {
         if (!branchBlock.isEmpty()) {
           branchBlock.append(" UNION ");
         }
-        branchBlock.append("{").append(branch.getValue()).append("}");
+        // If there is only one branch, it should be an optional clause instead
+        if (branchQueryLines.size() == 1) {
+          branchBlock.append(StringResource.genOptionalClause(branch.getValue()));
+        } else {
+          branchBlock.append("{").append(branch.getValue()).append("}");
+        }
       });
       this.queryLines.put(ShaclResource.BRANCH_KEY, branchBlock.toString());
     }

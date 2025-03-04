@@ -599,7 +599,9 @@ public class KGService {
     // Group them by the IRI key
     Map<String, List<SparqlBinding>> groupedBindings = Stream.concat(firstQueue.stream(), secQueue.stream())
         .distinct()
-        .collect(Collectors.groupingBy(binding -> binding.getFieldValue(LifecycleResource.IRI_KEY)));
+        .collect(Collectors.groupingBy(binding -> binding.containsField(LifecycleResource.IRI_KEY)
+            ? binding.getFieldValue(LifecycleResource.IRI_KEY)
+            : binding.getFieldValue("id")));
     // For the same IRI, combine them using the add field array method
     groupedBindings.values().forEach(groupedBinding -> {
       if (groupedBinding.isEmpty()) {
