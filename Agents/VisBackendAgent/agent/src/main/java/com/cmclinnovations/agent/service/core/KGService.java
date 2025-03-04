@@ -610,8 +610,8 @@ public class KGService {
         for (int i = 1; i < groupedBinding.size(); i++) {
           firstBinding.addFieldArray(groupedBinding.get(i));
         }
-        result.offer(firstBinding);
       }
+      result.offer(firstBinding);
     });
     return result;
   }
