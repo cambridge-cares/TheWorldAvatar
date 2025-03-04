@@ -9,7 +9,7 @@ CONSTRUCT {
     sh:datatype ?type ;
     sh:in ?range ;
     sh:class ?dataclass ;
-    twa:belongsTo ?node;
+    twa:belongsTo ?nodegroup ;
     twa:dependentOn ?dependentShape ;
     sh:group ?groupobj ;
     sh:minCount ?mincount ;
@@ -25,99 +25,100 @@ CONSTRUCT {
     rdfs:label ?group ;
     rdfs:comment ?groupdesc ;
     sh:order ?grouporder.
-  ?node rdf:type sh:NodeShape ;
+  ?nodegroup rdf:type sh:NodeShape ;
     rdfs:label ?nodename ;
     rdfs:comment ?nodedesc .
 } WHERE {
   ?shape rdf:type sh:NodeShape ;
-    sh:targetClass [target] .
-  {
-    ?shape (sh:and/rdf:rest*/rdf:first)?/sh:property ?property .
-   } UNION {
-    ?shape sh:or/rdf:rest*/rdf:first ?node.
+    sh:targetClass [target] ;
+    (sh:and|sh:or/rdf:rest*/rdf:first)? ?node.
+  OPTIONAL{
     ?node sh:name ?nodename ;
-    	sh:description ?nodedesc ;
-      sh:property ?property .
+    	sh:description ?nodedesc.
+    BIND(IF(BOUND(?nodename),?node,?null) AS ?nodegroup)
   }
-  ?property sh:name ?propname ;
-    sh:description ?propdesc ;
-    (sh:node/sh:and?/sh:property)* ?subproperty .
-  ?subproperty sh:name ?name ;
-    sh:description ?description .
-  BIND(IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?propname,?name)),?subproperty) AS ?iri)
-  {
-    ?subproperty sh:datatype ?type .
-  }
-  UNION
-  {
-    ?subproperty sh:in/(rdf:rest*/rdf:first)? ?range .
-  }
-  UNION
-  {
-    ?subproperty sh:class ?dataclass .
-    OPTIONAL {
-      ?subproperty twa:dependentOn ?dependentShape .
+  OPTIONAL{
+    ?node sh:property ?property .
+    ?property sh:name ?propname ;
+      sh:description ?propdesc ;
+      (sh:node/sh:and?/sh:property)* ?subproperty .
+    ?subproperty sh:name ?name ;
+      sh:description ?description .
+    BIND(IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?propname,?name)),?subproperty) AS ?iri)
+    {
+      ?subproperty sh:datatype ?type .
     }
-  }
+    UNION
+    {
+      ?subproperty sh:in/(rdf:rest*/rdf:first)? ?range .
+    }
+    UNION
+    {
+      ?subproperty sh:class ?dataclass .
+      OPTIONAL {
+        ?subproperty twa:dependentOn ?dependentShape .
+      }
+    }
 
-  # Retrieve group directly if available
-  OPTIONAL {
-    ?subproperty sh:group ?groupobj .
-    ?groupobj rdfs:label ?group;
-		sh:description ?groupdesc;
-		sh:order ?grouporder.
-  }
-  # Else, populate group from the target of sh:node
-  BIND (IF(BOUND(?group), ?group, IF(?property != ?subproperty, ?propname, ?null)) AS ?group)
-  BIND (IF(BOUND(?groupdesc), ?groupdesc, IF(?property != ?subproperty, ?propdesc, ?null)) AS ?groupdesc)
-  BIND (IF(BOUND(?groupobj),
-          IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?group)),?groupobj),
-          IF(?property != ?subproperty, 
-            IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?group)),BNODE(?group)),
-            ?null)
-        ) AS ?groupobj)
+    # Retrieve group directly if available
+    OPTIONAL {
+      ?subproperty sh:group ?groupobj .
+      ?groupobj rdfs:label ?group;
+      sh:description ?groupdesc;
+      sh:order ?grouporder.
+    }
+    # Else, populate group from the target of sh:node
+    BIND (IF(BOUND(?group), ?group, IF(?property != ?subproperty, ?propname, ?null)) AS ?group)
+    BIND (IF(BOUND(?groupdesc), ?groupdesc, IF(?property != ?subproperty, ?propdesc, ?null)) AS ?groupdesc)
+    BIND (IF(BOUND(?groupobj),
+            IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?group)),?groupobj),
+            IF(?property != ?subproperty, 
+              IF(BOUND(?nodename),BNODE(CONCAT(?nodename,?group)),BNODE(?group)),
+              ?null)
+          ) AS ?groupobj)
 
-  OPTIONAL {
-    ?property sh:order ?proporder .
-    ?subproperty sh:order ?order .
-    BIND (IF(?property != ?subproperty, ?proporder, 0) AS ?grouporder)
-  }
-  OPTIONAL {
-    ?property sh:order ?order .
-  }
-  BIND (IF(BOUND(?order), ?order, 0) AS ?order)
-  BIND (IF(BOUND(?grouporder), ?grouporder, 0) AS ?grouporder)
-  
-  # Value constraints
-  OPTIONAL {
-    ?subproperty sh:minCount ?mincount .
-  }
-  OPTIONAL {
-    ?subproperty sh:maxCount ?maxcount .
-  }
+    OPTIONAL {
+      ?property sh:order ?proporder .
+      ?subproperty sh:order ?order .
+      BIND (IF(?property != ?subproperty, ?proporder, 0) AS ?grouporder)
+    }
+    OPTIONAL {
+      ?property sh:order ?order .
+    }
+    BIND (IF(BOUND(?order), ?order, 0) AS ?order)
+    BIND (IF(BOUND(?grouporder), ?grouporder, 0) AS ?grouporder)
+    
+    # Value constraints
+    OPTIONAL {
+      ?subproperty sh:minCount ?mincount .
+    }
+    OPTIONAL {
+      ?subproperty sh:maxCount ?maxcount .
+    }
 
-  OPTIONAL {
-    ?subproperty sh:minInclusive ?mininclusive .
-  }
-  OPTIONAL {
-    ?subproperty sh:maxInclusive ?maxinclusive .
-  }
+    OPTIONAL {
+      ?subproperty sh:minInclusive ?mininclusive .
+    }
+    OPTIONAL {
+      ?subproperty sh:maxInclusive ?maxinclusive .
+    }
 
-  OPTIONAL {
-    ?subproperty sh:minExclusive ?minexclusive .
-  }
-  OPTIONAL {
-    ?subproperty sh:maxExclusive ?maxexclusive .
-  }
+    OPTIONAL {
+      ?subproperty sh:minExclusive ?minexclusive .
+    }
+    OPTIONAL {
+      ?subproperty sh:maxExclusive ?maxexclusive .
+    }
 
-  OPTIONAL {
-    ?subproperty sh:minLength ?minlength .
-  }
-  OPTIONAL {
-    ?subproperty sh:maxLength ?maxlength .
-  }
+    OPTIONAL {
+      ?subproperty sh:minLength ?minlength .
+    }
+    OPTIONAL {
+      ?subproperty sh:maxLength ?maxlength .
+    }
 
-  OPTIONAL {
-    ?subproperty sh:pattern ?pattern .
+    OPTIONAL {
+      ?subproperty sh:pattern ?pattern .
+    }
   }
 }
