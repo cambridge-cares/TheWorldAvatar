@@ -2,7 +2,7 @@ import datetime
 import subprocess
 import re
 import os
-import secret_parameter as spara
+import secrets.secret_parameter as spara
 import fitz  # PyMuPDF
 import json
 from twa.kg_operations import PySparqlClient
