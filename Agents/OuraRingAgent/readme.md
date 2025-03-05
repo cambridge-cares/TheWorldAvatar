@@ -12,6 +12,7 @@ WHERE {
 }
 
 ## Optional Requirements
+
 Optional environment variable: NAMESPACE
 If the NAMESPACE parameter is not "kb", the namespace needs to be created before running the agent
 
@@ -23,7 +24,7 @@ If the NAMESPACE parameter is not "kb", the namespace needs to be created before
    1) start_datetime
    2) end_datetime
 
-   If bounds are not given, agent will set the upperbound to current time and lowerbound to 30 days before current time.
+   If bounds are not given, the agent will set the upperbound to current time and lowerbound to 30 days before current time. This agent will download and instantiate heart rate data for the users in the timeline."ouraRing" table for the specified time bounds.
 
    Example request:
 
