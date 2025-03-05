@@ -4,7 +4,7 @@
         "Name": "feature-info-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/feature-info-agent:3.3.2-combine-metadata-time-series-and-trajectory-data-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/feature-info-agent:3.4-combine-metadata-time-series-and-trajectory-data-SNAPSHOT",
                 "Env": [
                     "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
                     "FIA_CONFIG_FILE=/app/queries/fia-config.json"
@@ -40,7 +40,7 @@
     },
     "endpoints": {
         "ui": {
-            "url": "http://localhost:8080/FeatureInfoAgent/",
+            "url": "http://localhost:8080/feature-info-agent/",
             "externalPath": "/feature-info-agent/"
         }
     }
