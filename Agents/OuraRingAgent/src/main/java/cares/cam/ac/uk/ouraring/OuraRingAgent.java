@@ -57,6 +57,11 @@ public class OuraRingAgent extends HttpServlet {
         PostgresClient postgresClient = new PostgresClient();
         Map<String, String> userToOuraApiMap = postgresClient.getUserToOuraApiMap();
 
+        if (userToOuraApiMap.isEmpty()) {
+            LOGGER.info("No users are detected, check contents of timeline.\"ouraRing\"");
+            return;
+        }
+
         List<User> users = new ArrayList<>();
         userToOuraApiMap.keySet().forEach(userId -> {
             User user = new User(userId);
