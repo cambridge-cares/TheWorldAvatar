@@ -3,36 +3,33 @@
         {
             "id": "trajectory_building",
             "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
-            "trajectory": {
-                "pointIriQuery": "point_query.sparql",
-                "featureIriQuery": "feature_query.sql",
-                "metaQuery": "trajectory_meta.sparql",
-                "database": "postgres"
-            }
+            "trajectory": [
+                {
+                    "pointIriQuery": "point_query.sparql",
+                    "featureIriQuery": "feature_query.sql",
+                    "metaQuery": "trajectory_meta.sparql",
+                    "database": "postgres"
+                },
+                {
+                    "pointIriQuery": "point_query.sparql",
+                    "featureIriQuery": "feature_query_nox.sparql",
+                    "metaQuery": "trajectory_meta_nox.sparql",
+                    "database": "postgres"
+                },
+                {
+                    "pointIriQuery": "point_query.sparql",
+                    "featureIriQuery": "feature_query_pm25.sparql",
+                    "metaQuery": "trajectory_meta_pm25.sparql",
+                    "database": "postgres"
+                }
+            ]
         },
         {
-            "id": "trajectory_airquality",
-            "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
-            "trajectory": {
-                "pointIriQuery": "point_query.sparql",
-                "featureIriQuery": "feature_query_nox.sparql",
-                "metaQuery": "trajectory_meta_nox.sparql",
-                "database": "postgres"
-            }
-        },
-        {
-            "id": "trajectory_airquality",
-            "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
-            "trajectory": {
-                "pointIriQuery": "point_query.sparql",
-                "featureIriQuery": "feature_query_pm25.sparql",
-                "metaQuery": "trajectory_meta_pm25.sparql",
-                "database": "postgres"
-            }
-        },
-        {
-            "id": "person",
+            "id": "person_pm25",
             "class": "https://w3id.org/MON/person.owl#Person",
+            "meta": {
+                "queryFile": "user.sparql"
+            },
             "time": {
                 "queryFile": "heart_rate.sparql",
                 "limit": 24,
@@ -40,12 +37,26 @@
                 "reference": "latest",
                 "database": "postgres"
             },
-            "trajectory": {
-                "pointIriQuery": "point_query_user.sparql",
-                "featureIriQuery": "feature_query_pm25.sparql",
-                "metaQuery": "trajectory_meta_pm25.sparql",
-                "database": "postgres"
-            }
+            "trajectory": [
+                {
+                    "pointIriQuery": "point_query_user.sparql",
+                    "featureIriQuery": "feature_query.sql",
+                    "metaQuery": "trajectory_meta.sparql",
+                    "database": "postgres"
+                },
+                {
+                    "pointIriQuery": "point_query_user.sparql",
+                    "featureIriQuery": "feature_query_nox.sparql",
+                    "metaQuery": "trajectory_meta_nox.sparql",
+                    "database": "postgres"
+                },
+                {
+                    "pointIriQuery": "point_query_user.sparql",
+                    "featureIriQuery": "feature_query_pm25.sparql",
+                    "metaQuery": "trajectory_meta_pm25.sparql",
+                    "database": "postgres"
+                }
+            ]
         }
     ]
 }
