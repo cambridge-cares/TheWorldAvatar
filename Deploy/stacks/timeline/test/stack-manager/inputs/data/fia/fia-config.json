@@ -1,7 +1,7 @@
 {
     "entries": [
         {
-            "id": "trajectory_building",
+            "id": "smartphone",
             "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
             "trajectory": [
                 {
@@ -25,7 +25,7 @@
             ]
         },
         {
-            "id": "person_pm25",
+            "id": "person",
             "class": "https://w3id.org/MON/person.owl#Person",
             "meta": {
                 "queryFile": "user.sparql"
