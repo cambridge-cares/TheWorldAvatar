@@ -31,18 +31,26 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+1. **Configure parameters:**  
+   Populate the `parameters.py` file with information specific to your set up.  
 
-Run the main pipeline to process literature:
+2. **Set up environment files:**  
+   For each required Knowledge Graph (KG) connection, fill out the corresponding `.env` file. Use `OntoMOPConnectionExample.env` as a reference.  
+   - For the master’s thesis, connections were established to **OntoMOPs, OntoSpecies, and OntoSynthesis**.  
 
-```bash
-python main_pipeline.py
-```
+3. **Secure sensitive parameters:**  
+   Copy and complete `secret_parameter_example.py`, ensuring that it is never committed to GitHub.  
 
-This will execute the full pipeline including:
+4. **Initialize the folder structure:**  
+   Run `setup_structure.py` to create the necessary directory setup.  
 
-1. Converting PDFs to text
-2. Extracting synthesis details
-3. Uploading data to a knowledge graph
+5. **Prepare input data:**  
+   Place the research papers to be processed in the `BatchName_pdf` folder.  
+
+6. **Run the pipeline:**  
+   Execute the main pipeline either **all at once** or **one function at a time** for step-by-step processing.  
+
+
 
 ## Module Descriptions
 
