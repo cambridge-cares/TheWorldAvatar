@@ -5,7 +5,7 @@ import utils
 import parameters as para
 import json_schemas as jschem
 import llm_prompts as llmp
-import secret_parameter as spara
+import secrets.secret_parameter as spara
 
 class ChatGPTAPI:
     """
