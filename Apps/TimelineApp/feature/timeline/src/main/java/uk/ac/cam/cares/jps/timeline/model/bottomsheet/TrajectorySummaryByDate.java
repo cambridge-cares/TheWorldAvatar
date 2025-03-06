@@ -1,14 +1,15 @@
-package uk.ac.cam.cares.jps.model;
+package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public class SessionSummaryByDate {
+
+public class TrajectorySummaryByDate {
     LocalDate date;
     List<SummaryActivityItem> activitySummary;
-    List<UniqueSessions> uniqueSessions;
+    List<Session> uniqueSessions;
 
-    public SessionSummaryByDate(LocalDate date, List<SummaryActivityItem> activitySummary, List<UniqueSessions> uniqueSessions) {
+    public TrajectorySummaryByDate(LocalDate date, List<SummaryActivityItem> activitySummary, List<Session> uniqueSessions) {
         this.date = date;
         this.activitySummary = activitySummary;
         this.uniqueSessions = uniqueSessions;
@@ -22,7 +23,7 @@ public class SessionSummaryByDate {
         return activitySummary;
     }
 
-    public List<UniqueSessions> getUniqueSessions() {
+    public List<Session> getUniqueSessions() {
         return uniqueSessions;
     }
 }

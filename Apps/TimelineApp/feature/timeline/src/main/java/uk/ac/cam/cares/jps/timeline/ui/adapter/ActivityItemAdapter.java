@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.model.ActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timelinemap.R;
 /**
  * Adapter class for recyclerview to view activity summary information.

@@ -1,4 +1,5 @@
-package uk.ac.cam.cares.jps.model;
+package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
+
 ;
 
 /**

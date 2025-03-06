@@ -42,14 +42,14 @@ joined_data AS (
         t.session_id, 
         t.user_id, 
         a.activity_type,
-        a.confidence_level
+        a.confidence_level,
+        LAG(t.time) OVER (PARTITION BY t.user_id ORDER BY t.time) AS prev_time
     FROM 
         timeseries t
     JOIN 
         activity_data a 
     ON 
-        t.user_id = a.user_id 
-        AND ABS(t.time - a.time) <= 5000 -- Allow a 5-second difference
+        ABS(t.time - a.time) <= 10000 -- Allow a 10-second difference
     ORDER BY t.time
 ),
 
@@ -64,20 +64,7 @@ fixed_activity_data AS (
         user_id,
         activity_type,
         confidence_level
-    FROM (
-        SELECT 
-            time,
-            speed,
-            altitude,
-            geom,
-            bearing,
-            session_id,
-            user_id,
-            activity_type,
-            confidence_level,
-            LAG(time) OVER (PARTITION BY user_id ORDER BY time) AS prev_time
-        FROM joined_data
-    ) AS subquery
+    FROM joined_data
     WHERE time <> prev_time  
 ),
 
@@ -144,7 +131,7 @@ filled_activity_data AS (
             FIRST_VALUE(activity_type) OVER (PARTITION BY user_id ORDER BY time ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)
         ) AS filled_activity_type
     FROM numbered_activity_data
-)
+),
 
 SELECT
     MIN(na.time) AS start_time,  
@@ -163,3 +150,4 @@ WHERE
     AND ('%upperbound%' = '0' OR na.time < '%upperbound%'::BIGINT)
 GROUP BY
     na.id, na.filled_activity_type, na.user_id, na.session_id
+    ORDER BY start_time

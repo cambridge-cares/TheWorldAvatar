@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.model.SummaryActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import android.widget.ImageView;
 import android.widget.TextView;

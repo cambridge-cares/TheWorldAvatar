@@ -1,0 +1,6 @@
+<resources>
+    <declare-styleable name="Theme.TWA">
+        <attr name="colorQuaternary" format="color"/>
+        <attr name="colorDefault" format="color"/>
+    </declare-styleable>
+</resources>

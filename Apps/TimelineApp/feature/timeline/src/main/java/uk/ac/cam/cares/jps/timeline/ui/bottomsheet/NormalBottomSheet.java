@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.model.SummaryActivityItem;
-import uk.ac.cam.cares.jps.model.UniqueSessions;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.ActivitySummaryAdapter;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.UniqueSessionsAdapter;
 import uk.ac.cam.cares.jps.timelinemap.R;
@@ -77,9 +77,9 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateUniqueSessionsList(List<UniqueSessions> uniqueSessionsList) {
-        if (uniqueSessionsList != null && !uniqueSessionsList.isEmpty()) {
-            sessionsAdapter.setUniqueSessionsList(uniqueSessionsList);
+    public void updateUniqueSessionsList(List<Session> sessionList) {
+        if (sessionList != null && !sessionList.isEmpty()) {
+            sessionsAdapter.setUniqueSessionsList(sessionList);
             sessionsAdapter.notifyDataSetChanged();
             
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);

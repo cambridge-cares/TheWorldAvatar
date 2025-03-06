@@ -1,16 +1,16 @@
-package uk.ac.cam.cares.jps.model;
+package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UniqueSessions {
+public class Session {
     private final String sessionId;
     private final String sessionTitle;
     private final List<ActivityItem> activityItemList;
     private List<ActivityItem> shownList;
     private final List<ActivityItem> EMPTY_LIST = new ArrayList<>();
 
-    public UniqueSessions(String sessionId, List<ActivityItem> activityItemList, String sessionTitle) {
+    public Session(String sessionId, List<ActivityItem> activityItemList, String sessionTitle) {
         this.sessionId = sessionId;
         this.activityItemList = activityItemList;
         this.shownList = activityItemList;

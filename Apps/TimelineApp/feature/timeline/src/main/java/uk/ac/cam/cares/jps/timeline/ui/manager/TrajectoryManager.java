@@ -3,7 +3,10 @@ package uk.ac.cam.cares.jps.timeline.ui.manager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.util.Log;
+import android.util.TypedValue;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -28,9 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import uk.ac.cam.cares.jps.model.TrajectoryByDate;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
 import uk.ac.cam.cares.jps.timeline.viewmodel.NormalBottomSheetViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
+import uk.ac.cam.cares.jps.timelinemap.R;
 
 /**
  * An UI manager that manages the drawing and removing of trajectories received from server
@@ -42,6 +46,7 @@ public class TrajectoryManager {
     private NormalBottomSheetViewModel normalBottomSheetViewModel;
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
     private final List<String> layerNames;
+    private final Map<String, String> activityColors;
 
    /**
     * Constructor of the class
@@ -53,58 +58,45 @@ public class TrajectoryManager {
         normalBottomSheetViewModel = new ViewModelProvider(fragment).get(NormalBottomSheetViewModel.class);
         layerNames = new ArrayList<>();
 
+        this.activityColors = new HashMap<>();
+        activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(),  com.google.android.material.R.attr.colorPrimary))));
+        activityColors.put("still", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), R.attr.colorQuaternary))));
+        activityColors.put("vehicle", String.format("#%06X", (0xFFFFF & getColor(fragment.requireContext(),  com.google.android.material.R.attr.colorSecondary))));
+        activityColors.put("bike", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), com.google.android.material.R.attr.colorTertiary))));
+        activityColors.put("default", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), R.attr.colorDefault)))); // Default gray color
+
+
         trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryByDate -> {
+            if(!trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                trajectoryViewModel.setFetching(true);
+                return;
+            }
+            else {
                 mapView.getMapboxMap().getStyle(style -> {
                     removeAllLayers(style);
                         if (trajectoryByDate.getTrajectoryStr().isEmpty()) {
                             return;
-                        } 
-                        else if (!trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
-                            trajectoryViewModel.setFetching(true);
-                            return;
                         }
                         else {
-                            Map<String, String> activityColors = new HashMap<>();
-                            activityColors.put("walking", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())))); // Blue
-                            activityColors.put("still", String.format("#%06X", (0x000000 & getColor(fragment.requireContext())))); // Black
-                            activityColors.put("vehicle", String.format("#%06X", (0x00FF00 & getColor(fragment.requireContext())))); // Green
-                            activityColors.put("bike", "#585C7E");
+                            
                             paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
                         }
                     });
-                    if(trajectoryViewModel.trajectory.getValue().getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
-                            JSONArray bbox = jsonObject.getJSONArray("bbox");
-                            mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
-                                Point newCenter = getBBoxCenter(bbox);
-                                if (newCenter == null) {
-                                    return null;
-                                }
-
-                                plugin.flyTo(new CameraOptions.Builder()
-                                                .center(getBBoxCenter(bbox))
-                                                .build(),
-                                        new MapAnimationOptions.Builder().duration(2000).build(),
-                                        null);
-                                return null;
-                            });
-                        } catch (JSONException e) {
-                            LOGGER.info("No trajectory retrieved, no need to reset camera");
-                        }
-                    }
+                    resetCameraCentre(mapView, trajectoryByDate);
+                }
             });
     }
             
 
+    private int getColor(Context context, int colorAttr) {
+    TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{colorAttr});
+    int color = typedArray.getColor(0, Color.BLACK); 
+    typedArray.recycle();
+    return color;
+}
 
 
-    private int getColor(Context context) {
-        TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{com.google.android.material.R.attr.colorPrimary});
-        int colorPrimary = typedArray.getColor(0, Color.BLACK);
-        typedArray.recycle();
-        return colorPrimary;
-    }
+
 
     private void paintTrajectoryByActivity(Style style, TrajectoryByDate trajectoryArr, Map<String, String> activityColors, String mode) {
     String trajectory = trajectoryArr.getTrajectoryStr();
@@ -143,7 +135,7 @@ public class TrajectoryManager {
         }
 
        
-        colorExpression.put(activityColors.getOrDefault("default", "#9d9d9d"));
+        colorExpression.put(activityColors.get("default"));
 
         JSONObject paint = new JSONObject();
         paint.put("line-color", colorExpression);
@@ -171,6 +163,27 @@ public class TrajectoryManager {
             return Point.fromLngLat(lngAvg, latAvg);
         } catch (JSONException e) {
             return null;
+        }
+    }
+
+    private void resetCameraCentre(MapView mapView, TrajectoryByDate trajectoryByDate) {
+        try {
+            JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
+            JSONArray bbox = jsonObject.getJSONArray("bbox");
+            mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
+                Point newCenter = getBBoxCenter(bbox);
+                if (newCenter == null) {
+                    return null;
+                }
+                plugin.flyTo(new CameraOptions.Builder()
+                                .center(getBBoxCenter(bbox))
+                                .build(),
+                        new MapAnimationOptions.Builder().duration(2000).build(),
+                        null);
+                return null;
+        });
+        } catch (JSONException e) {
+            LOGGER.info("No trajectory retrieved, no need to reset camera");
         }
     }
 

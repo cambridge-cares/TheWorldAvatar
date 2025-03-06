@@ -24,9 +24,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.login.AccountException;
-import uk.ac.cam.cares.jps.model.SummaryActivityItem;
-import uk.ac.cam.cares.jps.model.UniqueSessions;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
@@ -117,7 +117,7 @@ public class BottomSheetManager {
 
         normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
             List<SummaryActivityItem> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
-            List<UniqueSessions> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
+            List<Session> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
             if(sessionSummaryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
                 normalBottomSheet.updateSummaryView(activityItemSummaryList);
                 normalBottomSheet.updateUniqueSessionsList(uniqueSessions);

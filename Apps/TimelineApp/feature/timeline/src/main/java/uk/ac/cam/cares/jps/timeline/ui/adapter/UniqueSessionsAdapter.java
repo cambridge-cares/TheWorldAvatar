@@ -12,19 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.model.UniqueSessions;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 public class UniqueSessionsAdapter extends RecyclerView.Adapter<UniqueSessionsAdapter.UniqueSessionsViewHolder> {
-    private List<UniqueSessions> uniqueSessionsList;
+    private List<Session> sessionList;
     private final RecyclerView.RecycledViewPool activitySummaryViewPool = new RecyclerView.RecycledViewPool();
 
     public UniqueSessionsAdapter() {
-        this.uniqueSessionsList = new ArrayList<>();
+        this.sessionList = new ArrayList<>();
     }
 
-    public void setUniqueSessionsList(List<UniqueSessions> uniqueSessionsList) {
-        this.uniqueSessionsList = new ArrayList<>(uniqueSessionsList);
+    public void setUniqueSessionsList(List<Session> sessionList) {
+        this.sessionList = new ArrayList<>(sessionList);
         notifyDataSetChanged(); 
     }
 
@@ -37,7 +37,7 @@ public class UniqueSessionsAdapter extends RecyclerView.Adapter<UniqueSessionsAd
 
     @Override
     public void onBindViewHolder(@NonNull UniqueSessionsViewHolder holder, int position) {
-        UniqueSessions session = uniqueSessionsList.get(position);
+        Session session = sessionList.get(position);
         holder.sessionTitle.setText(session.getSessionTitle());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(
@@ -65,7 +65,7 @@ public class UniqueSessionsAdapter extends RecyclerView.Adapter<UniqueSessionsAd
 
     @Override
     public int getItemCount() {
-        return uniqueSessionsList.size();
+        return sessionList.size();
     }
 
     public static class UniqueSessionsViewHolder extends RecyclerView.ViewHolder {

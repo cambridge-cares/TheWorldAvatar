@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.model;
+package uk.ac.cam.cares.jps.timeline.model.trajectory;
 
 import org.json.JSONArray;
 import org.json.JSONException;

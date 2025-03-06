@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.model;
+package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
