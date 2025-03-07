@@ -725,7 +725,10 @@ base:ExampleClassShape
 
 ### 3.1.1 Branching Form
 
-Users can generate branching forms using the `sh:or` logical constraint. This generates a form with a category dropdown. Selecting a category displays a different set of form fields. Each branch requires a separate node shape without a `sh:targetClass` property, but with `sh:name` and `sh:description` properties. These properties populate the category dropdown."
+Users can generate branching forms using the `sh:or` logical constraint. This generates a form with a category dropdown. Selecting a category displays a different set of form fields. Each branch requires a separate node shape without a `sh:targetClass` property, but with `sh:name` and `sh:description` properties. These properties populate the category dropdown.
+
+> [!TIP]
+> In scenarios where one of the branches do not have additional unique properties, users can generate this branch with an empty SHACL node shape without any property constraints. But only one variant of this is allowed at any time.
 
 A sample SHACL format in (TTL) for `sh:or` is described below:
 
@@ -1074,7 +1077,10 @@ The instantiation of array fields can be created using the following replacement
 
 #### 4.1.2 Form Branch
 
-Form branches adapt to selected categories by displaying different field sets. Depending on the selected category, a different instantiation template is required. These templates can be set up as an array using the `@branch` key. Do note that there should not be any `@id` and `@type` included within the templates, as the agent will search for the most relevant template and append these templates to the common fields.
+Form branches adapt to selected categories by displaying different field sets. Depending on the selected category, a different instantiation template is required. These templates can be set up as an array using the `@branch` key. Do note that there should not be any `@id` and `@type` included within the templates, as the agent will search for the most relevant template and append these templates to the common fields. 
+
+> [!TIP]
+> Only one form branch can be empty as all other branches have additional properties beyond the common template
 
 ```json
 {
