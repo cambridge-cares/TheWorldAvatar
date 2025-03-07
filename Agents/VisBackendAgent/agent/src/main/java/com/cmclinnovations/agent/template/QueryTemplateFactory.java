@@ -1,5 +1,6 @@
 package com.cmclinnovations.agent.template;
 
+import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -521,8 +522,21 @@ public class QueryTemplateFactory {
   private void appendOptionalIdFilters(StringBuilder query, String filterId, ParentField parentField) {
     // Add filter clause for a parent field instead if available
     if (parentField != null) {
-      query.append("FILTER STRENDS(STR(?")
-          .append(StringResource.parseQueryVariable(parentField.name()))
+      String parsedFieldName = "";
+      String normalizedParentFieldName = StringResource.parseQueryVariable(parentField.name());
+      for (String variable : variables) {
+        if (variable.endsWith(normalizedParentFieldName)) {
+          parsedFieldName = variable;
+          break;
+        }
+      }
+      if (parsedFieldName.isEmpty()) {
+        LOGGER.error("Unable to find matching variable for parent field: {}", parentField.name());
+        throw new IllegalArgumentException(
+            MessageFormat.format("Unable to find matching variable for parent field: {}", parentField.name()));
+      }
+      query.append("FILTER STRENDS(STR(")
+          .append(parsedFieldName)
           .append("), \"")
           .append(parentField.id())
           .append("\")");
