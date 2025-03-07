@@ -7,10 +7,13 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Set;
 
 @Configuration
 public class IndexConfig {
@@ -27,13 +30,14 @@ public class IndexConfig {
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate() {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+    public RedisTemplate<String, Set<String>> redisTemplate() {
+        RedisTemplate<String, Set<String>> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
-        //template.setKeySerializer(new StringRedisSerializer());
-        //template.setValueSerializer(new StringRedisSerializer());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());  // Use JSON serializer for complex objects
         return template;
     }
+    
 
     @Bean
     public StringRedisTemplate stringRedisTemplate() {
