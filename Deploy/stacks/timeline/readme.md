@@ -4,7 +4,7 @@
 
 Stack name should be `timeline-test`.
 
-Prepare these secret files in [](./test/stack-manager/inputs/secrets)
+Prepare these secret files in the [stack secret folder](./stack-manager/test/inputs/secrets)
 
 - geoserver_password
 - postgis_password
@@ -17,10 +17,14 @@ Set value of KC_DB_PASSWORD to match value in postgis_password.
 
 Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
 
-Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN shared folder\_TWA_Shared_Data\Timeline`. Copy the files from the folder to the stack [data folder](test/stack-manager/inputs/data). They are required for user agent since [version 2.0.0](https://github.com/orgs/cambridge-cares/packages/container/package/user-agent).
-<!-- markdown-link-check-disable -->
-> If the stack is deployed in remote server, please update the `auth-server-url` in [user-agent.json](test/stack-manager/inputs/data/user_agent_keycloak.json) accordingly. `rootUrl` for user-agent client in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data/timeline-realm.json) should be updated as well.
-<!-- markdown-link-check-enable -->
+Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN shared folder\_TWA_Shared_Data\Timeline` (accessible by CARES member only). Copy the files from the folder to the stack [data folder](test/stack-manager/inputs/data). They are required for user agent since [version 2.0.0](https://github.com/orgs/cambridge-cares/packages/container/package/user-agent). Provided files are as follows:
+- user_agent_keycloak.json
+- keycloak/data/timeline-realm.json
+
+> If the stack is deployed in remote server, please update 
+> - `auth-server-url` in [user_agent_keycloak.json](test/stack-manager/inputs/data) accordingly
+> - `rootUrl` for user-agent client from `localhost:58085` to the server address in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data)
+
 You may need to change the permissions of the keycloak startup script, i.e.
 
 ```bash
