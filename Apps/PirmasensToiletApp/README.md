@@ -48,11 +48,11 @@ Any data access required should be contacted through someone working on the repo
 
 ### 2.1 Backend Services
 
-The app will require a running [The World Avatar stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) as the backend.
+The app will require a running [The World Avatar stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) as the backend.
 
 ### 2.1.1 Stack Data Uploader
 
-Data specified in [this section](#12-data-sources) should be uploaded using the [Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). All the relevant configurations and settings are included in the [`./inputs/data/`](./inputs/data/) directory.
+Data specified in [this section](#12-data-sources) should be uploaded using the [Stack Data Uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader). All the relevant configurations and settings are included in the [`./inputs/data/`](./inputs/data/) directory.
 
 Briefly, the app will only require the `Wasgau` and `Toilet` datasets, as well as the associated ontologies and OBDA mappings for the base functionality of this application. Extended configuration are for routing purposes.
 

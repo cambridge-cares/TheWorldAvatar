@@ -1,7 +1,6 @@
 # PSR-7 implementation
 
 [![Latest Version](https://img.shields.io/github/release/Nyholm/psr7.svg?style=flat-square)](https://github.com/Nyholm/psr7/releases)
-[![Build Status](https://img.shields.io/travis/Nyholm/psr7/master.svg?style=flat-square)](https://travis-ci.org/Nyholm/psr7)
 [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/Nyholm/psr7.svg?style=flat-square)](https://scrutinizer-ci.com/g/Nyholm/psr7)
 [![Quality Score](https://img.shields.io/scrutinizer/g/Nyholm/psr7.svg?style=flat-square)](https://scrutinizer-ci.com/g/Nyholm/psr7)
 [![Total Downloads](https://poser.pugx.org/nyholm/psr7/downloads)](https://packagist.org/packages/nyholm/psr7)
@@ -101,7 +100,7 @@ $response = $psr17Factory->createResponse(200)->withBody($responseBody);
 
 ## Our goal
 
-This package is currently maintained by [Tobias Nyholm](http://nyholm.se) and
+This package is currently maintained by [Tobias Nyholm](http://tnyholm.se) and
 [Martijn van der Ven](https://vanderven.se/martijn/). They have decided that the
 goal of this library should be to provide a super strict implementation of
 [PSR-7](https://www.php-fig.org/psr/psr-7/) that is blazing fast.

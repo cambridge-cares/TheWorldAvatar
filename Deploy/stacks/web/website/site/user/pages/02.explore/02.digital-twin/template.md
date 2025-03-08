@@ -34,4 +34,4 @@ slug: slug
 
 <br>
 
-[plugin:content-inject](/modular/partners)
+[plugin:content-inject](../../modular/partners)

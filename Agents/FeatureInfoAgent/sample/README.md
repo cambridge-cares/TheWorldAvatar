@@ -1,6 +1,6 @@
 # Feature Info Agent - Sample
 
-This directory contains a small set of sample data, configurations, and scripts that can be used to spin up a [TWA Stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) instance with a copy of the Feature Info Agent, and enough data to test it in a typical runtime environment.
+This directory contains a small set of sample data, configurations, and scripts that can be used to spin up a [TWA Stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) instance with a copy of the Feature Info Agent, and enough data to test it in a typical runtime environment.
 
 Sample data used in this example is generated and no regard has been given for correctness. It is not suggested that people use this example as a starting point for their own projects.
 

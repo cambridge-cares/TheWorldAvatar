@@ -1,5 +1,5 @@
 # reCAPTCHA PHP client library
-
+<!-- markdown-link-check-disable-next-line -->
 [![Build Status](https://travis-ci.org/google/recaptcha.svg)](https://travis-ci.org/google/recaptcha)
 [![Coverage Status](https://coveralls.io/repos/github/google/recaptcha/badge.svg)](https://coveralls.io/github/google/recaptcha)
 [![Latest Stable Version](https://poser.pugx.org/google/recaptcha/v/stable.svg)](https://packagist.org/packages/google/recaptcha)
@@ -55,8 +55,7 @@ own autoloader or require the needed files directly in your code.
 ## Usage
 
 First obtain the appropriate keys for the type of reCAPTCHA you wish to
-integrate for v2 at https://www.google.com/recaptcha/admin or v3 at
-https://g.co/recaptcha/v3.
+integrate for v2 or v3 at https://www.google.com/recaptcha/admin.
 
 Then follow the [integration guide on the developer
 site](https://developers.google.com/recaptcha/intro) to add the reCAPTCHA

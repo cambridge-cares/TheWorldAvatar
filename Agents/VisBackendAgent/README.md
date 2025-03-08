@@ -40,7 +40,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
 
 ## 1. Agent Deployment
 
-The agent is designed for execution through a Docker container within [The World Avatar's stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). It cannot run as a standalone container, and other deployment workflows are beyond the scope of this document.
+The agent is designed for execution through a Docker container within [The World Avatar's stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager). It cannot run as a standalone container, and other deployment workflows are beyond the scope of this document.
 
 ### 1.1 Preparation
 
@@ -101,7 +101,7 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 2. Update the environment variables in `./docker/vis-backend-agent.json` if required.
 3. Copy the `./docker/vis-backend-agent.json` file into the `inputs/config/services` directory of the stack manager.
 4. Ensure the bind mount path is correctly set in the stack configuration for `vis-resources`.
-5. Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+5. Start the stack manager as usual following [these instructions](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 **DEBUGGING ENVIRONMENT**
 Follow the same steps as the **PRODUCTION ENVIRONMENT**, but use the `vis-backend-agent-debug.json` file instead in step 3.

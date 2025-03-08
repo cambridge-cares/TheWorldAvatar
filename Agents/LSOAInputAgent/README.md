@@ -4,7 +4,7 @@ The `LSOAInput agent` is dedicated to process data around the UK Lower-layer Sup
 
 This agent extract data and turn it into Knowledge Graph. The data, such as electricity consumption, gas consumption, fuel poverty, climate (temperature) and geometric shape are used to perform the use case of analysing the deployment of heat pump. The data instatiated in the knowledge graph follows [Ontoclimate](http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl), [Ontofuelpoverty](http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl) and [Ontogasgrid](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/GasGrid) ontologies in the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar). 
 
-The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). 
+The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager). 
 
 Please note that the use of derive informtaion framework for heat pump analysis only need to run part of this agent in advance (to upload temperature data), other functions serve as an supplementary functions to uploaded triples to the blazegraph. 
 

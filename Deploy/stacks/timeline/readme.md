@@ -4,7 +4,7 @@
 
 Stack name should be `timeline-test`.
 
-Prepare these secret files in [](./stack-manager/test/inputs/secrets)
+Prepare these secret files in [](./test/stack-manager/inputs/secrets)
 
 - geoserver_password
 - postgis_password
@@ -18,9 +18,9 @@ Set value of KC_DB_PASSWORD to match value in postgis_password.
 Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
 
 Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN shared folder\_TWA_Shared_Data\Timeline`. Copy the files from the folder to the stack [data folder](test/stack-manager/inputs/data). They are required for user agent since [version 2.0.0](https://github.com/orgs/cambridge-cares/packages/container/package/user-agent).
-
+<!-- markdown-link-check-disable -->
 > If the stack is deployed in remote server, please update the `auth-server-url` in [user-agent.json](test/stack-manager/inputs/data/user_agent_keycloak.json) accordingly. `rootUrl` for user-agent client in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data/timeline-realm.json) should be updated as well.
-
+<!-- markdown-link-check-enable -->
 You may need to change the permissions of the keycloak startup script, i.e.
 
 ```bash
@@ -49,7 +49,7 @@ then restart stack manager again:
 
 Stack name should be `timeline`.
 
-Prepare these secret files in [](./stack-manager/prod/inputs/secrets)
+Prepare these secret files in [](./test/stack-manager/inputs/secrets)
 
 - geoserver_password
 - postgis_password
@@ -120,9 +120,9 @@ IMPORT FOREIGN SCHEMA public
 3. Replace <KEYCLOAK_URL> in vis-files/keycloak.json with the URL of the KeyCloak server, needs to be an address that can be accessed from client and the server.
    1. The configuration assumes a realm called `timeline` exists and a client called `desktop-vis` is set up correctly with the correct redirect urls.
 4. Upload [./shacl/timeline.ttl](./shacl/timeline.ttl) to the kb namespace on Blazegraph
-5. Download contents of [https://github.com/TheWorldAvatar/viz/tree/main/code/public/images/defaults] into [./test/vis/vis-files/public/images/defaults](./test/vis/vis-files/public/images/defaults).
+5. Download contents of https://github.com/TheWorldAvatar/viz/tree/main/code/public/images/defaults into [./test/vis/vis-files/public/images/defaults](./test/vis/vis-files/public/images/defaults).
 6. Run `docker compose up -d` in [./test/vis/](./test/vis/).
 7. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
 
-[keycloak-test.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
-[keycloak-prod.json]: ./stack-manager/test/inputs/config/services/keycloak-prod.json
+[keycloak-test.json]: ./test/stack-manager/inputs/config/services/keycloak-test.json
+[keycloak-prod.json]: ./prod/stack-manager/inputs/config/services/keycloak-prod.json

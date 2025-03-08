@@ -54,7 +54,7 @@ This will test the agent in a production environment including connections to th
 
 ## 2. Deployment Instructions
 
-The Access Agent can be deployed in a standalone Docker container or as part of The World Avatar [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+The Access Agent can be deployed in a standalone Docker container or as part of The World Avatar [stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ### 2.1 Standalone Container
 

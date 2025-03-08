@@ -146,7 +146,7 @@ The Dockerfile will automatically copy all properties files and mapping folder a
 ### [Option 2] Run in a Docker Stack
 **Note: Please follow instructions in Option 1 to build the agent first before proceeding with Option 2. **
 
-Running this agent in a docker stack is a more advanced option as it facilitate interactions between other agents for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+Running this agent in a docker stack is a more advanced option as it facilitate interactions between other agents for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 A successful setup will result in 9 containers (optional 10):
 - Default containers
   - Stack Manager (exits when spins up all other containers)

@@ -21,7 +21,7 @@ repo_username.txt should contain your Github username. repo_password.txt should 
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
 ##### Stack containers
-This agent requires the following tools, which **MUST** run on the same stack. Please read more from the [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for setting these containers up.
+This agent requires the following tools, which **MUST** run on the same stack. Please read more from the [stack manager page](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for setting these containers up.
 
 (1) [Grafana](https://grafana.com/docs/grafana/latest/) dashboard
 - Requires the deployment of the built-in optional `grafana` service on the stack to configure and set up dashboards
@@ -58,7 +58,7 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 - Build this agent's image by issuing `docker compose build` within this folder. Do not start the container.
 - Copy the `dashboard-agent.json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required. 
 Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
-- Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+- Start the stack manager as usual following [these instructions](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ### 2. Agent Route
 The agent currently offers two API routes:

@@ -140,7 +140,7 @@ For developers new to `Run and Debug` configurations, please refer to these offi
 - [Use Docker Compose: Debug](https://code.visualstudio.com/docs/containers/docker-compose#_debug)
 - [Debugpy](https://github.com/microsoft/debugpy)
 
-For developers interested to see more example of possible configurations, including those relevant to the usage of [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
+For developers interested to see more example of possible configurations, including those relevant to the usage of [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager), please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 ### Develop tests for new agents
 
@@ -238,7 +238,7 @@ docker run --env-file <env_file_path> --name derivation_agent_python_example ghc
 ## Adapt agent to work with stack
 > **NOTE** This agent example will be updated to incorporate Stack in the next iteration.
 
-This agent example has been adapted to work with a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
+This agent example has been adapted to work with a Docker stack spun up by the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 
 &nbsp;

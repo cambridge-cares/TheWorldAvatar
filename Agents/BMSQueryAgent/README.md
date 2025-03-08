@@ -9,7 +9,7 @@ To achieve a balance between response speed and body size, the agent breaks the 
 - Once the room is determined, users can send `retrieve/equipment?RoomIRI=<selected room iri>` to get all the equipment in the selected room.
 
 # 1. Setup
-This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). 
+This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager). 
 A successful setup will result in 9 containers (optional 10):
 - Default containers
   - Stack Manager (exits when spins up all other containers)

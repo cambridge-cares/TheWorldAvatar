@@ -146,7 +146,7 @@ If the agent runs successfully, you should see a returned Object that is similar
 
 ####  [Option 2] As a stacked docker container
 
-Running this agent in a docker stack is a more advanced option as it facilitate interactions between other agents for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+Running this agent in a docker stack is a more advanced option as it facilitate interactions between other agents for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 A successful setup will result in 9 containers (optional 10):
 - Default containers

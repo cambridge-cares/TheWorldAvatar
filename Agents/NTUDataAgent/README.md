@@ -70,7 +70,7 @@ More information about adding custom containers to the stack can be found [here]
 ### 4. Spin up a Docker Stack
 **Note: The docker container must run within the same stack as the HistoricalNTUEnergyAgent to get access and query the NTU Power Network Knowledge Graph for calculation.**
 
-Running this agent in a docker stack can facilitate interactions between other agents and endpoints (Postgres, Blazegraph, etc,.) for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+Running this agent in a docker stack can facilitate interactions between other agents and endpoints (Postgres, Blazegraph, etc,.) for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ## Run
 Once the stack is up and running, the agent can be activated by sending a Curl request as shown below with the paramters stack=true and the desired date:

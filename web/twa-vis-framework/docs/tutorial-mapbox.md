@@ -151,7 +151,7 @@ source          SELECT "OrganisationCode" AS id ,
 
 ## Uploading the data
 
-To upload the data so that it can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
+To upload the data so that it can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
 
 An example configuration file that covers all three CSVs used in tutorial, can be seen below and also found in the TWA repository [here](./resources/nhs.json).
 
@@ -492,7 +492,7 @@ SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
 
 Now that we've configured the FIA to register a metadata query for IRIs with the `http://theworldavatar.com/ontology/health/nhs.owl#GPPractice` class, we can spin the agent up within our stack.
 
-For information on how to restart the stack with the FIA agent, please see the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) documentation.
+For information on how to restart the stack with the FIA agent, please see the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) documentation.
 
 
 **3. Configuring the visualisation:**<br/>

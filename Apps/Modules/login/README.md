@@ -10,14 +10,14 @@ This module contains two parts: core and feature. It integrates [AppAuth for And
 > Import :core:login
 2. Open the `Modules` tab and click the `+` to add new modules under `core`
 3. In the pop up `Create New Module` window, click `Import...`
-4. Select [/core/login](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/Modules/core/login) as source location
+4. Select [/core/login](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/Modules/login/core/login) as source location
 5. Set the `Module name` to `:core:login`
     1. You may see warning about missing `:core:utils` module. Ignore this warning while importing and fix the error in code after import.
 
 > Import :feature:login
 6. Click the `+` to add new modules under `feature`
 7. In the pop up `Create New Module` window, click `Import...`
-8. Select [/feature/login](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/Modules/feature/login) as source location
+8. Select [/feature/login](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/Modules/login/feature/login) as source location
 9. Set the `Module name` to `:feature:login`
 
 10. Click `Finish` and wait for the module to be imported

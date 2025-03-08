@@ -44,12 +44,12 @@ docker-compose up -d
 ```
 docker build -t data-bridge-agent:versionNo .
 ```
-  2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services) directory
+  2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services) directory
      - Please ensure the version numbers are targeted at the right image. If you are building it, please update the version number accordingly.
   3) Modify the absolute path of the agent's `config` folder to your absolute file path
      - For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`
   4) Include this agent service into the stack configuration file at `stack-manager/inputs/config/<STACK-NAME>.json`
-     - Read more in the [Stack Configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) section
+     - Read more in the [Stack Configuration](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) section
   5) Start the stack as per normal
 
 If the agent is successfully started, the endpoint at `http://localhost:3838/data-bridge-agent/status` should return the following message.

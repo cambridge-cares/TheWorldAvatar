@@ -35,7 +35,7 @@ How do we know if it's not working? If the python logger logging to tomcat serve
  	- https://www.icis.com/resources/news/2013/11/08/9723077/se-asia-to-china-palm-oil-freight-rates-may-fall-on-weak-demand/
  	- Non_Residential_Programmes_Electricity_Tariffs.aspx - missing
 
- 2. exchange_rates.pyw
+ 2. exchange_rates.pyw<!-- markdown-link-check-disable-next-line -->
  	- http://apilayer.net/api/live?access_key=402d77f0850c35adfa5a797e325262dd&currencies=CNY,SGD&source=USD&format=1
 
  3. FAME_download.pyw

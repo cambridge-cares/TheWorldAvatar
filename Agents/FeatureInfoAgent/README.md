@@ -18,7 +18,7 @@ These SPARQL queries are written on a class-by-class (TBox) basis; this should m
 
 At the time of writing, the FIA has a few restrictions that all deploying developers should be aware of. These are as follows:
 
-- The FIA can only be run within a [TWA Stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+- The FIA can only be run within a [TWA Stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 - The FIA can only report meta and time data that is contained within the same stack as the agent itself.
 - The FIA can only return time series data on series that uses the [Instant](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html) class.
 
@@ -74,7 +74,7 @@ For the FIA to function, a number of configuration steps need to take place befo
 
 **Note:** As of version `3.0.0` of the FeatureInfoAgent, the configuration format has changed to support new options. The new format is documented below, but the older format is also supported. To support the newer features, it is recommended that developers write new configurations using the new format, and existing configurations are manually updated wherever possible.
 
-Follow the below configuration steps within the `fia-queries` subdirectory of the TWA stack manager's data directory. Volumes that are used by containers running with the TWA Stack are populated by named subdirectories within the stack manager's [data directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data). For more details, read the [TWA Stack Manager documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+Follow the below configuration steps within the `fia-queries` subdirectory of the TWA stack manager's data directory. Volumes that are used by containers running with the TWA Stack are populated by named subdirectories within the stack manager's [data directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data). For more details, read the [TWA Stack Manager documentation](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 The configuration file should be a JSON file named `fia-config.json`, contained within it should be:
 

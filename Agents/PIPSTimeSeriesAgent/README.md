@@ -4,7 +4,7 @@ This agent is designed to receive an access token, carry out verification with K
 # Prerequisite
 1. It is necessary to have Keycloak set up properly. Refer to the official [Keycloak guides](https://www.keycloak.org/guides#getting-started) for how to get started. 
 
-2. The TWA (TheWorldAvatar) stack can also be used to set up the Keycloak service along with a variety of other services. Refer to [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for more information.
+2. The TWA (TheWorldAvatar) stack can also be used to set up the Keycloak service along with a variety of other services. Refer to [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for more information.
 
 3. It is necessary to have a PostgreSQL database set up properly. The tables and columns should have a structure similar to how the [OPCUAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OPCUAAgent) construct its tables and columns. This agent is originally designed to work with the [OPCUAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OPCUAAgent) but it is possible to reuse the agent for other databases as long as they have a similar structure.
 

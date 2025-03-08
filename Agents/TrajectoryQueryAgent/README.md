@@ -7,7 +7,7 @@ TrajectoryQueryAgent is an agent that handles trajectory related tasks. It curre
 
 ## Requirements
 
-Launch [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) with the default containers and the following additional containers:
+Launch [stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) with the default containers and the following additional containers:
 
 - information from [SensorLoggerMobileAppAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/SensorLoggerMobileAppAgent) to be instantiated
 

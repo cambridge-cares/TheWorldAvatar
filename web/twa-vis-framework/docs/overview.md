@@ -24,7 +24,7 @@ At the time of writing the available mapping providers are [Mapbox](https://www.
 
 Before we can start specifying the data to be hosted within the visualisation, we need to create a Docker container that can host the web files the visualisation uses. This can be done by running a container based on the `twa-vf` image; an image that contains the pre-built TWA-VF libraries (available from the `/var/www/html/twa-vf` directory) and a webserver.
 
-Users can either write their own `docker-compose.yml` file to run a standalone visualisation (i.e. outside of a TWA Stack environment), or use the TWA Stack to create a standard visualisation integrated within a stack instance (see the [TWA Stack Manager documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for more details on the latter).
+Users can either write their own `docker-compose.yml` file to run a standalone visualisation (i.e. outside of a TWA Stack environment), or use the TWA Stack to create a standard visualisation integrated within a stack instance (see the [TWA Stack Manager documentation](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for more details on the latter).
 
 ### Importing the library
 
@@ -154,7 +154,7 @@ The `index.html` file of the example Mapbox & Cesium visualisations has been pro
 
 In addition to the aforementioned configuration files, two additional files are required to house a Mapbox username and associated API key. Note these are required, even in Cesium visualisations, as the base map imagery is still provided by Mapbox.
 
-To set these two files, either create and populate `mapbox_username`, and `mapbox_api_key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+To set these two files, either create and populate `mapbox_username`, and `mapbox_api_key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 Once present, these files are queried by the TWA-VF, loading in the required credentials. Note that previous versions of the TWA-VF required these parameters to be set within each visualisation's `index.html` file, this is no longer required (see the example visualisations to learn about the new format).
 

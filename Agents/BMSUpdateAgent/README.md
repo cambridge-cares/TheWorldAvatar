@@ -9,7 +9,7 @@ BMSUpdateAgent is an agent designed for multiple functions:
 4) It is able to retrieve the present value for a Bacnet object and update the knowledge graph accordingly. More information is available at the [Update Present Value Route](#34-update-present-value-route).
 
 # 1. Setup
-This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ## 1.1. Build Image
 The BMSUpdateAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
