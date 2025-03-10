@@ -7,7 +7,7 @@ import parameters as para
 
 def write_step_text(query_output:dict, synthesis_text:str, doi:str):
     """
-    Generates a synthesis step text based on the provided query_output dictionary by 
+    Generates a synthesis-step text based on the provided query_output dictionary by 
     pluging in the obtained dictionairy values in a pre writen text that can be later on passed
     to an LLM for refinement.
     Usually the dictionary provides information about a single step in the synthesis procedure. 
@@ -80,14 +80,13 @@ def write_step_text(query_output:dict, synthesis_text:str, doi:str):
             """           
     # Handle "Dry" step type
     elif "Dry" in query_output["step"]:
-        # distinguish between washing and filtering:
+        # Add general dry step information and general information as additional_text
         synthesis_text        += f"""
-{query_output["stepnumber"]}. Dry:Dry the content of vessel {query_output["vesselName"]} {additional_text}
+        {query_output["stepnumber"]}. Dry:Dry the content of vessel {query_output["vesselName"]} {additional_text}
         """          
         # Include temperature if specified
         if "temperature" in query_output:
            synthesis_text        += f"Dry at a temperature of {query_output["vesselName"]}"
-           # check key
         # Include pressure if specified
         if "pressure" in query_output:
            synthesis_text        += f"Dry at {query_output["pressure"]}"
@@ -129,10 +128,10 @@ def write_characterisation_text(query_output:dict, synthesis_text:str):
         species_string     += (species + " ")
     # Append characterization details to synthesis_text
     synthesis_text                  += f"""
-- IR characterization: Ir measured with a {query_output['irDeviceLabels']} values are: {query_output['IRx1s']}.
-- NMR characterization: NMR measured with a {query_output['nmrDeviceLabels']} and solvent {species_string} values are: {query_output['nmraxis_com']}
-- Elemental analysis characterization: Measured with a {query_output['eleDeviceLabels']} values are: {query_output['elementalAnalysis']} calculated values based on molecular formula {query_output['molecularFormulas']}.
-- Yield: {query_output['yield']}
+    - IR characterization: Ir measured with a {query_output['irDeviceLabels']} values are: {query_output['IRx1s']}.
+    - NMR characterization: NMR measured with a {query_output['nmrDeviceLabels']} and solvent {species_string} values are: {query_output['nmraxis_com']}
+    - Elemental analysis characterization: Measured with a {query_output['eleDeviceLabels']} values are: {query_output['elementalAnalysis']} calculated values based on molecular formula {query_output['molecularFormulas']}.
+    - Yield: {query_output['yield']}
     """
     return synthesis_text
 
@@ -161,14 +160,11 @@ def generate_synthesis_text_llm(txt, doi):
     # Save the generated text response to the specified markdown file
     pdf_converter.save_text_to_file(response, ouptut_path_llm)
 
-def generate_syn_text():
+def generate_syn_text_plain(doi):
     """
     Generates synthesis text for a given DOI by querying synthesis 
     and characterization data, formatting it, and saving it to a .md file in the Data/synText/ folder as doi.md.
-    Additionally, the text is processed with an LLM.
     """
-    # Get the directory of the current script
-    script_dir       = os.path.dirname(os.path.abspath(__file__))
     # DOI of the paper to be processed
     # Example DOI commented out:
     # doi = "10.1021/ic501012e"
@@ -191,10 +187,23 @@ def generate_syn_text():
     # Convert and save the synthesis text as a .md
     pdf_converter               = utils.PdfConverter(ouptut_path, ouptut_path)
     pdf_converter.save_text_to_file(synthesis_text, ouptut_path)
+    return synthesis_text
+
+def generate_syn_text(doi):
+    """
+    Produces two synthesis text files. 
+    First a templated based text is retrieved that is stored as doi.md in the Data/synText Folder.
+    Secondly the generated synthesis text is passed to an LLM to retrieve and save a more refined version as doi_llm.md
+    """
+    synthesis_text = generate_syn_text_plain(doi)
     # Additionaly generate additional synthesis text asking llm to write it based on puzzle text. 
     generate_synthesis_text_llm(synthesis_text, doi)
 
 
 # Example usage:
 if __name__ == "__main__":
-    generate_syn_text()
+    # DOI of the paper to be processed
+    # Example DOI commented out:
+    # doi = "10.1021/ic501012e"
+    doi              = "10.1021/jacs.8b05780"
+    generate_syn_text(doi)
