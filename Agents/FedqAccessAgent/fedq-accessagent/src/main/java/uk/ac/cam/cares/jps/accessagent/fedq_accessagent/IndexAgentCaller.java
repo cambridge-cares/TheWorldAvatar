@@ -20,13 +20,8 @@ public class IndexAgentCaller {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Set<String>> getValues(@RequestParam String key) {
-        Set<String> values = indexAgent.getValues(key);
+    public ResponseEntity<Set<String>> getEndpoints(@RequestParam String key) {
+        Set<String> values = indexAgent.getEndpoints(key);
         return ResponseEntity.ok(values);
-    }
-
-    public Set<String> getValuesCL(String key) {
-        Set<String> values = indexAgent.getValues(key);
-        return values;
     }
 }
