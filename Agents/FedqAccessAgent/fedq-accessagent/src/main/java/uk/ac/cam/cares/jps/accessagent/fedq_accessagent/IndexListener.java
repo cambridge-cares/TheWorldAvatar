@@ -11,13 +11,15 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.Map;
 
 @Service
-public class IndexBroadcastListener implements MessageListener {
+public class IndexListener implements MessageListener {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -28,41 +30,44 @@ public class IndexBroadcastListener implements MessageListener {
     private final String STACK_ID;
 
     // Read stack ID from environment variable or default to "defaultStack"
-    public IndexBroadcastListener(@Value("${stack.id:defaultStack}") String stackId) {
+    public IndexListener(@Value("${stack.id:defaultStack}") String stackId) {
         this.STACK_ID = stackId;
         System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
     }
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String receivedMessage = new String(message.getBody(), StandardCharsets.UTF_8);
-        System.out.println("Received Broadcast: " + receivedMessage);
+        try{
 
-        String[] parts = receivedMessage.split(":", 4);
-        if (parts.length < 4) {
-            System.err.println("Invalid message format: " + receivedMessage);
-            return;
-        }
-
-        String sourceStack = parts[0];
-        String action = parts[1]; // "ADD" or "REMOVE"
-        String key = parts[2];
-        String value = parts[3];
-
-        // Ignore messages from this stack to prevent duplicates
-        if (STACK_ID.equals(sourceStack)) {
-            return;
-        }
-
-        // Perform the corresponding action
-        if ("ADD".equalsIgnoreCase(action)) {
-            indexAgent.addValue(key, value);
-            System.out.println("Synced ADD from " + sourceStack + " → " + key + " = " + value);
-        } else if ("REMOVE".equalsIgnoreCase(action)) {
-            indexAgent.removeValue(key, value);
-            System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + value);
-        } else {
-            System.err.println("Unknown action: " + action);
+            String receivedMessage = new String(message.getBody(), StandardCharsets.UTF_8);
+            System.out.println("Received Broadcast: " + receivedMessage);
+    
+            // Parse JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> data = objectMapper.readValue(receivedMessage, Map.class);
+    
+            String sourceStack = data.get("stack");
+            String action = data.get("action");
+            String key = data.get("key");
+            String endpoint = data.get("endpoint");
+    
+            // Ignore messages from this stack to prevent duplicates
+            if (STACK_ID.equals(sourceStack)) {
+                return;
+            }
+    
+            // Perform the corresponding action
+            if ("ADD".equalsIgnoreCase(action)) {
+                indexAgent.loadValue(key, endpoint, sourceStack);
+                System.out.println("Synced ADD from " + sourceStack + " → " + key + " = " + endpoint);
+            } else if ("REMOVE".equalsIgnoreCase(action)) {
+                indexAgent.removeValueWithoutBroadcast(key, endpoint, sourceStack);
+                System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + endpoint);
+            } else {
+                System.err.println("Unknown action: " + action);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -58,7 +58,7 @@ public class IndexConfig {
     }
 
     @Bean
-    public MessageListenerAdapter listenerAdapter(IndexBroadcastListener listener) {
+    public MessageListenerAdapter listenerAdapter(IndexListener listener) {
         return new MessageListenerAdapter(listener);
     }
 }
