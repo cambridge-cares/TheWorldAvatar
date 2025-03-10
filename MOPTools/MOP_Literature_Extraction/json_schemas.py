@@ -349,6 +349,21 @@ def step_schema(dynamic_prompt):
             "additionalProperties": False
         })
     # Schema dictionary containing all defined step schemas
+    stepList = [  
+                                                          add,
+                                                          heat_chill,
+                                                          filt,
+                                                          crystal,
+                                                          stir,
+                                                          soni,
+                                                          evap,
+                                                          dry,
+                                                          dissolve, 
+                                                          transfer, 
+                                                          separate
+                                                      ]
+    # Filter out empty dictionaries
+    stepList = [step for step in stepList if step != {}]
     step_schema_dict        = {
                       "type": "json_schema",
                       "json_schema": {
@@ -368,19 +383,7 @@ def step_schema(dynamic_prompt):
                                                   "type": "array",
                                                   "items": {
                                                       "type": "object",
-                                                      "anyOf": [  
-                                                          add,
-                                                          heat_chill,
-                                                          filt,
-                                                          crystal,
-                                                          stir,
-                                                          soni,
-                                                          evap,
-                                                          dry,
-                                                          dissolve, 
-                                                          transfer, 
-                                                          separate
-                                                      ]
+                                                      "anyOf": stepList
                                                   }
                                               }
                                           },
@@ -395,6 +398,7 @@ def step_schema(dynamic_prompt):
                           "strict": True
                       }
                   }
+    print("schema: ", step_schema_dict)
     return step_schema_dict
 
 def adaptive_schema():
