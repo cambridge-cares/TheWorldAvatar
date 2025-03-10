@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.service.core;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +176,8 @@ public class KGService {
   public Queue<SparqlBinding> query(String query, SparqlEndpointType endpointType) {
     List<String> endpoints;
     if (endpointType.equals(SparqlEndpointType.MIXED)) {
-      endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+      // Immutable list return and needs to be mutable
+      endpoints = new ArrayList<>(this.getEndpoints(SparqlEndpointType.BLAZEGRAPH));
       endpoints.addAll(this.getEndpoints(SparqlEndpointType.ONTOP));
     } else {
       endpoints = this.getEndpoints(endpointType);

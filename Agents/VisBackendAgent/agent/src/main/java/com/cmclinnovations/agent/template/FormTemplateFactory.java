@@ -273,7 +273,7 @@ public class FormTemplateFactory {
    * @param properties target properties.
    */
   private List<Map<String, Object>> genOutputs(Map<String, Map<String, Object>> properties) {
-    List<Map<String, Object>> results = properties.values().stream().map(propOrGroup -> {
+    List<Map<String, Object>> results = new ArrayList<>(properties.values().stream().map(propOrGroup -> {
       // For a property group which has `property` relations,
       // sort the properties before appending the group
       if (propOrGroup.containsKey(ShaclResource.PROPERTY_PROPERTY)) {
@@ -283,7 +283,7 @@ public class FormTemplateFactory {
         propOrGroup.put(ShaclResource.PROPERTY_PROPERTY, groupProperties);
       }
       return propOrGroup;
-    }).toList();
+    }).toList());
     // Sort the results based on order
     results.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
     return results;
