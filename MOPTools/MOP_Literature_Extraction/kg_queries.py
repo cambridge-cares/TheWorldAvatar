@@ -390,7 +390,7 @@ def query_characterisation(doi:str):
     GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
     """        
     # Execute the SPARQL query using the knowledge graph client
-    species_labels                        = updater.sparql_client.perform_query(query) 
+    species_labels                        = updater.perform_query(query) 
     # Print retrieved characterization data for debugging
     print("species: ", species_labels)
     return species_labels
@@ -565,7 +565,7 @@ def query_synthesis_full(doi:str) -> dict:
 
       """        
     # Execute the SPARQL query using the knowledge graph client
-    species_labels                        = updater.sparql_client.perform_query(query) 
+    species_labels                        = updater.perform_query(query) 
     # Print retrieved synthesis details for debugging
     print("species: ", species_labels)
     return species_labels
