@@ -208,51 +208,59 @@ public class FormTemplateFactory {
       Map.Entry<String, JsonNode> shapeFieldEntry = iterator.next();
       String shapeField = shapeFieldEntry.getKey();
       JsonNode shapeFieldNode = shapeFieldEntry.getValue();
-      // Id will always be a string
-      if (shapeField.equals(ShaclResource.ID_KEY)) {
-        inputModel.put(shapeField, shapeFieldNode.asText());
-      } else if (shapeField.equals(ShaclResource.TYPE_KEY)) {
-        // Type will always be enclosed in a string array of one item
-        inputModel.put(shapeField, shapeFieldNode.get(0).asText());
-      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY)) {
-        Map<String, Object> nameLiteral = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
-        inputModel.put(StringResource.getLocalName(shapeField), nameLiteral);
-        if (!defaultVals.isEmpty()) {
-          String parsedField = nameLiteral.get(ShaclResource.VAL_KEY).toString().replace(ShaclResource.WHITE_SPACE,
-              "_");
-          inputModel.put("defaultValue", defaultVals.get(parsedField));
-        }
-      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.ORDER_PROPERTY)) {
-        Map<String, Object> orderMap = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
-        inputModel.put(StringResource.getLocalName(shapeField),
-            Integer.valueOf(orderMap.get(ShaclResource.VAL_KEY).toString()));
-      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.DATA_TYPE_PROPERTY)) {
-        // Data types are stored in @id key with xsd namespace
-        // But we are only interested in the local name and extract it accordingly
-        Map<String, Object> dataType = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
-        inputModel.put(StringResource.getLocalName(shapeField),
-            StringResource.getLocalName(dataType.get(ShaclResource.ID_KEY).toString()));
-      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.IN_PROPERTY)) {
-        ArrayNode inArray = (ArrayNode) shapeFieldNode;
-        // Iterate and remove any blank node values
-        Iterator<JsonNode> elements = inArray.elements();
-        while (elements.hasNext()) {
-          JsonNode currentElement = elements.next();
-          if (currentElement.isObject()) {
-            String valueConstraint = currentElement.get(ShaclResource.ID_KEY).asText();
-            if (valueConstraint.startsWith("_:")) {
-              elements.remove(); // Remove the current blank node
-              break; // break iteration if blank node is found assuming only one blank node
+      switch (shapeField) {
+        case ShaclResource.ID_KEY:
+          // Id will always be a string
+          inputModel.put(shapeField, shapeFieldNode.asText());
+          break;
+        case ShaclResource.TYPE_KEY:
+          // Type will always be enclosed in a string array of one item
+          inputModel.put(shapeField, shapeFieldNode.get(0).asText());
+          break;
+        case ShaclResource.SHACL_NAME_PROPERTY:
+          Map<String, Object> nameLiteral = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
+          inputModel.put(StringResource.getLocalName(shapeField), nameLiteral);
+          if (!defaultVals.isEmpty()) {
+            String parsedField = nameLiteral.get(ShaclResource.VAL_KEY).toString().replace(ShaclResource.WHITE_SPACE,
+                "_");
+            inputModel.put("defaultValue", defaultVals.get(parsedField));
+          }
+          break;
+        case ShaclResource.SHACL_ORDER_PROPERTY:
+          Map<String, Object> orderMap = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
+          inputModel.put(StringResource.getLocalName(shapeField),
+              Integer.valueOf(orderMap.get(ShaclResource.VAL_KEY).toString()));
+          break;
+        case ShaclResource.SHACL_DATA_TYPE_PROPERTY:
+          // Data types are stored in @id key with xsd namespace
+          // But we are only interested in the local name and extract it accordingly
+          Map<String, Object> dataType = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
+          inputModel.put(StringResource.getLocalName(shapeField),
+              StringResource.getLocalName(dataType.get(ShaclResource.ID_KEY).toString()));
+          break;
+        case ShaclResource.SHACL_IN_PROPERTY:
+          ArrayNode inArray = (ArrayNode) shapeFieldNode;
+          // Iterate and remove any blank node values
+          Iterator<JsonNode> elements = inArray.elements();
+          while (elements.hasNext()) {
+            JsonNode currentElement = elements.next();
+            if (currentElement.isObject()) {
+              String valueConstraint = currentElement.get(ShaclResource.ID_KEY).asText();
+              if (valueConstraint.startsWith("_:")) {
+                elements.remove(); // Remove the current blank node
+                break; // break iteration if blank node is found assuming only one blank node
+              }
             }
           }
-        }
-        // Convert the new array and append it into the output
-        inputModel.put(ShaclResource.IN_PROPERTY, this.objectMapper.convertValue(inArray, List.class));
-      } else {
-        // Every other fields are stored as a nested JSON object of key:value pair
-        // within a one item JSON array
-        inputModel.put(StringResource.getLocalName(shapeField),
-            this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class));
+          // Convert the new array and append it into the output
+          inputModel.put(ShaclResource.IN_PROPERTY, this.objectMapper.convertValue(inArray, List.class));
+          break;
+        default:
+          // Every other fields are stored as a nested JSON object of key:value pair
+          // within a one item JSON array
+          inputModel.put(StringResource.getLocalName(shapeField),
+              this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class));
+          break;
       }
     }
     return inputModel;

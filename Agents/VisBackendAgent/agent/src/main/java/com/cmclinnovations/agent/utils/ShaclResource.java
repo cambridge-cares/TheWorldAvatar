@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent.utils;
 
 import java.util.List;
+import java.util.Map;
 
 public class ShaclResource {
   // JSON LD keys
@@ -29,14 +30,18 @@ public class ShaclResource {
   public static final String COMMENT_PROPERTY = "comment";
   public static final String LABEL_PROPERTY = "label";
   public static final String NAME_PROPERTY = "name";
+  public static final String SHACL_NAME_PROPERTY = SHACL_PREFIX + NAME_PROPERTY;
   public static final String DESCRIPTION_PROPERTY = "description";
   public static final String ORDER_PROPERTY = "order";
+  public static final String SHACL_ORDER_PROPERTY = SHACL_PREFIX + ORDER_PROPERTY;
   public static final String GROUP_PROPERTY = "group";
   public static final String PROPERTY_PROPERTY = "property";
   public static final String DEFAULT_VAL_PROPERTY = "defaultValue";
   public static final String CLASS_PROPERTY = "class";
   public static final String DATA_TYPE_PROPERTY = "datatype";
+  public static final String SHACL_DATA_TYPE_PROPERTY = SHACL_PREFIX + DATA_TYPE_PROPERTY;
   public static final String IN_PROPERTY = "in";
+  public static final String SHACL_IN_PROPERTY = SHACL_PREFIX + IN_PROPERTY;
   public static final String BELONGS_TO_PROPERTY = "belongsTo";
   public static final String NODE_PROPERTY = "node";
   // Query string elements
@@ -81,7 +86,7 @@ public class ShaclResource {
    * Retrieve the query generation mapping key based on the property and branch.
    * 
    * @param property property name.
-   * @param branch optional branch name. must be null if optional.
+   * @param branch   optional branch name. must be null if optional.
    */
   public static String getMappingKey(String property, String branch) {
     return branch == null ? property : branch + property;
