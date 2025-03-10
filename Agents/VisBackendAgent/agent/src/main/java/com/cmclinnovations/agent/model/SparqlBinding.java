@@ -200,9 +200,6 @@ public class SparqlBinding {
    * Retrieve the longest field array size.
    */
   private int getLongestFieldArray() {
-    if (this.bindingList.isEmpty()) {
-      return 0;
-    }
     OptionalInt maxSize = this.bindingList.values().stream()
         .filter(Objects::nonNull) // Filter out null lists
         .mapToInt(List::size) // Map each list to its size
