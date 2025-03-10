@@ -299,13 +299,13 @@ public class AddService {
     } else {
       Iterator<String> fields = currentNode.fieldNames();
       while (fields.hasNext()) {
-        String currentField = fields.next();
-        if (currentNode.path(currentField).isArray()) {
-          for (JsonNode arrayItemNode : currentNode.path(currentField)) {
+        JsonNode currentField = currentNode.path(fields.next());
+        if (currentField.isArray()) {
+          for (JsonNode arrayItemNode : currentField) {
             this.recursiveFindReplaceFields(arrayItemNode, foundFields);
           }
         } else {
-          this.recursiveFindReplaceFields(currentNode.path(currentField), foundFields);
+          this.recursiveFindReplaceFields(currentField, foundFields);
         }
       }
     }
