@@ -268,7 +268,7 @@ def extract_characterization(file_path, output_dir):
     # Combine the prompt with the synthesis text for context
     full_prompt             = f"{prompt}\n\n{file_content}"
     # Retrieve the schema defining the expected structure of the characterization response
-    schema                  = jschem.characterisation_schema
+    schema                  = jschem.characterisation_schema()
     # Make an API call to extract the characterization data in a structured format
     response                = chatgpt_api.make_llm_call_structured(full_prompt, schema)
     # Generate a valid filename from the DOI by replacing slashes with underscores
