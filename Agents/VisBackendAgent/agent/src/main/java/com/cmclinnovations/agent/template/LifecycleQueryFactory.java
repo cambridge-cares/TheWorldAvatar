@@ -44,8 +44,7 @@ public class LifecycleQueryFactory {
     return this.getScheduleTemplate()
         + "BIND(IF(?" + LifecycleResource.SCHEDULE_RECURRENCE_KEY + "=\"P1D\",\"Single Service\","
         + "IF(?" + LifecycleResource.SCHEDULE_RECURRENCE_KEY + "=\"P2D\",\"Alternate Day Service\", "
-        + "CONCAT(\"Regular Service\")"
-        + ")" // Close IF statement
+        + "\"Regular Service\")" // Close IF statement
         + ") AS ?" + StringResource.parseQueryVariable(LifecycleResource.SCHEDULE_TYPE_KEY) + ")";
   }
 
