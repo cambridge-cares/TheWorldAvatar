@@ -11,13 +11,7 @@ WITH distinct_devices AS (
 --get location data without activity
 timeseries AS (
     SELECT
-        timeseries.time AS time,
-        timeseries.speed AS speed,
-        timeseries.altitude AS altitude,
-        timeseries.geom AS geom,
-        timeseries.bearing AS bearing,
-        timeseries.session_id AS session_id,
-        timeseries.user_id AS user_id
+        *
     FROM
         public.get_location_table((SELECT device_list FROM distinct_devices)) AS timeseries
     ORDER BY time
@@ -26,10 +20,7 @@ timeseries AS (
 --get activity data
 activity_data AS (
     SELECT
-        activity_data.time AS time,
-        activity_data.user_id AS user_id,
-        activity_data.activity_type AS activity_type,
-        activity_data.confidence_level AS confidence_level
+        *
     FROM
         public.get_activity_table((SELECT device_list FROM distinct_devices)) AS activity_data
     ORDER BY time
@@ -38,13 +29,7 @@ activity_data AS (
 --join data so all location points are accounted for and allows for time to be off by 5 seconds
 joined_data AS (
     SELECT 
-        t.time, 
-        t.speed, 
-        t.altitude, 
-        t.geom, 
-        t.bearing, 
-        t.session_id, 
-        t.user_id, 
+        t.*, 
         a.activity_type,
         a.confidence_level,
         LAG(t.time) OVER (PARTITION BY t.user_id ORDER BY t.time) AS prev_time
@@ -101,7 +86,7 @@ filled_activity_data AS (
     ORDER BY time
 ),
 
---add field for to mrk each time an activity type changes
+--add field for to mark each time an activity type changes
 change_marked AS (
     SELECT 
         *,
@@ -116,25 +101,12 @@ change_marked AS (
 
 --add duplicate row at each change with the previous activity type to ensure smooth line segments and timing
 change_marked_union AS (
-    SELECT 
-        *
-    FROM change_marked
-
+    SELECT * FROM change_marked
     UNION ALL  
-    SELECT 
-        time,
-        speed,
-        altitude,
-        geom,
-        bearing,
-        session_id,
-        user_id,
-        LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time) as activity_type,  
-        confidence_level,
-        0 AS change_flag  
-    FROM change_marked
-    WHERE change_flag = 1
-    ORDER BY time, change_flag 
+    SELECT time, speed, altitude, geom, bearing, session_id, user_id, 
+        LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time), confidence_level, 0
+    FROM change_marked WHERE change_flag = 1
+    ORDER BY time, change_flag
 ),
 
 --add column id to have a unique id for each segment of the trajectory by adding all change_flag up to that point
@@ -148,20 +120,20 @@ numbered_activity_data AS (
 )
 
 SELECT
-    MIN(na.time) AS start_time,  
-    MAX(na.time) AS end_time,
-    na.user_id,
-    na.activity_type,
-    na.session_id,
-    ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)) AS geom, 
-    ST_Length(ST_Transform(ST_MakeLine(ARRAY_AGG(na.geom ORDER BY na.time)), 3857))::INTEGER AS distance_traveled,
-    CONCAT('https://w3id.org/MON/person.owl#person_', na.user_id) AS iri
+    MIN(time) AS start_time,  
+    MAX(time) AS end_time,
+    user_id,
+    activity_type,
+    session_id,
+    ST_MakeLine(ARRAY_AGG(geom ORDER BY time)) AS geom, 
+    ST_Length(ST_Transform(ST_MakeLine(ARRAY_AGG(geom ORDER BY time)), 3857))::INTEGER AS distance_traveled,
+    CONCAT('https://w3id.org/MON/person.owl#person_', user_id) AS iri
 FROM
-    numbered_activity_data AS na 
+    numbered_activity_data
 WHERE  
-    ('%user_id%' = '' OR na.user_id = '%user_id%')
-    AND ('%lowerbound%' = '0' OR na.time > '%lowerbound%'::BIGINT)
-    AND ('%upperbound%' = '0' OR na.time < '%upperbound%'::BIGINT)
+    ('%user_id%' = '' OR user_id = '%user_id%')
+    AND ('%lowerbound%' = '0' OR time > '%lowerbound%'::BIGINT)
+    AND ('%upperbound%' = '0' OR time < '%upperbound%'::BIGINT)
 GROUP BY
-    na.id, na.activity_type, na.user_id, na.session_id
+    id, activity_type, user_id, session_id
 ORDER BY start_time
