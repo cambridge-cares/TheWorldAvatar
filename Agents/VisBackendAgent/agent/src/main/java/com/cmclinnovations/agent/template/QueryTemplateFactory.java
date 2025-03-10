@@ -632,48 +632,53 @@ public class QueryTemplateFactory {
     while (iterator.hasNext()) {
       Map.Entry<String, JsonNode> field = iterator.next();
       JsonNode fieldNode = field.getValue();
-      // Create the following query line for all @type fields
-      if (field.getKey().equals(ShaclResource.TYPE_KEY)) {
-        String typeTripleObject = this.getFormattedQueryVariable(fieldNode, targetId);
-        StringResource.appendTriple(deleteBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
-        StringResource.appendTriple(whereBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
-        // For any @branch field
-      } else if (field.getKey().equals(ShaclResource.BRANCH_KEY)) {
-        // Iterate over all possible branches
-        ArrayNode branches = this.jsonLdService.getArrayNode(fieldNode);
-        for (JsonNode branch : branches) {
-          // Generate the required delete template and store the template
-          StringBuilder deleteBranchBuilder = new StringBuilder();
-          StringBuilder deleteBranchWhereBuilder = new StringBuilder();
-          ObjectNode branchNode = this.jsonLdService.getObjectNode(branch);
-          // Retain the current ID value
-          branchNode.set(ShaclResource.ID_KEY, currentNode.path(ShaclResource.ID_KEY));
-          this.recursiveParseNode(deleteBranchBuilder, deleteBranchWhereBuilder, branchNode, targetId, isIdRequired);
-          this.deleteBranchBuilders.offer(deleteBranchBuilder);
-          this.deleteBranchBuilders.offer(deleteBranchWhereBuilder);
-        }
-        // For all @reverse fields
-      } else if (field.getKey().equals(ShaclResource.REVERSE_KEY)) {
-        if (fieldNode.isArray()) {
-          LOGGER.error(
-              "Invalid reverse predicate JSON-LD schema for {}! Fields must be stored in an object!",
-              idTripleSubject);
-          throw new IllegalArgumentException(
-              "Invalid reverse predicate JSON-LD schema! Fields must be stored in an object!");
-        } else if (fieldNode.isObject()) {
-          // Reverse fields must be an object that may contain one or multiple fields
-          Iterator<String> fieldIterator = fieldNode.fieldNames();
-          while (fieldIterator.hasNext()) {
-            String reversePredicate = fieldIterator.next();
-            this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
-                reversePredicate, deleteBuilder, whereBuilder, targetId, true, isIdRequired);
+      String fieldKey = field.getKey();
+      switch (fieldKey) {
+        case ShaclResource.TYPE_KEY:
+          // Create the following query line for all @type fields
+          String typeTripleObject = this.getFormattedQueryVariable(fieldNode, targetId);
+          StringResource.appendTriple(deleteBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
+          StringResource.appendTriple(whereBuilder, idTripleSubject, RDF_TYPE, typeTripleObject);
+          break;
+        case ShaclResource.BRANCH_KEY:
+          // Iterate over all possible branches
+          ArrayNode branches = this.jsonLdService.getArrayNode(fieldNode);
+          for (JsonNode branch : branches) {
+            // Generate the required delete template and store the template
+            StringBuilder deleteBranchBuilder = new StringBuilder();
+            StringBuilder deleteBranchWhereBuilder = new StringBuilder();
+            ObjectNode branchNode = this.jsonLdService.getObjectNode(branch);
+            // Retain the current ID value
+            branchNode.set(ShaclResource.ID_KEY, currentNode.path(ShaclResource.ID_KEY));
+            this.recursiveParseNode(deleteBranchBuilder, deleteBranchWhereBuilder, branchNode, targetId, isIdRequired);
+            this.deleteBranchBuilders.offer(deleteBranchBuilder);
+            this.deleteBranchBuilders.offer(deleteBranchWhereBuilder);
           }
-        }
-        // The @id and @context field should be ignored but continue parsing for
-        // everything else
-      } else if (!field.getKey().equals(ShaclResource.ID_KEY) && !field.getKey().equals(ShaclResource.CONTEXT_KEY)) {
-        this.parseFieldNode(currentNode.path(ShaclResource.ID_KEY), fieldNode, idTripleSubject, field.getKey(),
-            deleteBuilder, whereBuilder, targetId, isIdRequired);
+          break;
+        case ShaclResource.REVERSE_KEY:
+          if (fieldNode.isArray()) {
+            LOGGER.error(
+                "Invalid reverse predicate JSON-LD schema for {}! Fields must be stored in an object!",
+                idTripleSubject);
+            throw new IllegalArgumentException(
+                "Invalid reverse predicate JSON-LD schema! Fields must be stored in an object!");
+          } else if (fieldNode.isObject()) {
+            // Reverse fields must be an object that may contain one or multiple fields
+            Iterator<String> fieldIterator = fieldNode.fieldNames();
+            while (fieldIterator.hasNext()) {
+              String reversePredicate = fieldIterator.next();
+              this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
+                  reversePredicate, deleteBuilder, whereBuilder, targetId, true, isIdRequired);
+            }
+          }
+          break;
+        case ShaclResource.ID_KEY, ShaclResource.CONTEXT_KEY:
+          // Ignore @id and @context fields
+          break;
+        default:
+          this.parseFieldNode(currentNode.path(ShaclResource.ID_KEY), fieldNode, idTripleSubject, field.getKey(),
+              deleteBuilder, whereBuilder, targetId, isIdRequired);
+          break;
       }
     }
   }

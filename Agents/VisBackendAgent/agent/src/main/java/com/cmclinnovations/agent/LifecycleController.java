@@ -38,7 +38,6 @@ public class LifecycleController {
 
   private static final String MISSING_FIELD_MSG_TEMPLATE = "Missing `{0}` field in request parameters!";
   private static final String SOME_ORDER_GEN_FAIL_MSG = "Some orders have failed to be generated. Please read logs for more information.";
-  private static final List<String> VALID_CONTRACT_SERVICE_TYPES = List.of("COMPLETE", "REPORT", "CANCEL");
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
@@ -167,52 +166,54 @@ public class LifecycleController {
   @PostMapping("/service/{type}")
   public ResponseEntity<ApiResponse> performServiceAction(@PathVariable String type,
       @RequestBody Map<String, Object> params) {
-    // Case-insensitive check
-    if (!VALID_CONTRACT_SERVICE_TYPES.contains(type.toUpperCase())) {
-      return new ResponseEntity<>(new ApiResponse("Invalid route"), HttpStatus.BAD_REQUEST);
-    }
+    // Common check for all routes
     if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
           new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
           HttpStatus.BAD_REQUEST);
     }
-    // End completion request early
-    if (type.equals("complete")) {
-      LOGGER.info("Received request to complete a service order with completion details...");
-      return this.lifecycleService.genDispatchOrDeliveryOccurrence(params, LifecycleEventType.SERVICE_EXECUTION);
+    String successMsg = "";
+    switch (type.toLowerCase()) {
+      case "complete":
+        LOGGER.info("Received request to complete a service order with completion details...");
+        return this.lifecycleService.genDispatchOrDeliveryOccurrence(params, LifecycleEventType.SERVICE_EXECUTION);
+      case "cancel":
+        LOGGER.info("Received request to cancel the upcoming service...");
+        if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
+          return new ResponseEntity<>(
+              new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
+              HttpStatus.BAD_REQUEST);
+        }
+        if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), true)) {
+          String errorDateMsg = "Invalid Date: Services can only be cancelled for today or future dates. Cancellation of past services is not allowed.";
+          LOGGER.error(errorDateMsg);
+          return new ResponseEntity<>(new ApiResponse(errorDateMsg), HttpStatus.BAD_REQUEST);
+        }
+        this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_CANCELLATION);
+        successMsg = "Service has been successfully cancelled!";
+        break;
+      case "report":
+        LOGGER.info("Received request to report an unfulfilled service...");
+        if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
+          return new ResponseEntity<>(
+              new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
+              HttpStatus.BAD_REQUEST);
+        }
+        if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), false)) {
+          String errorDateMsg = "Invalid Date: Reports cannot be lodged for future dates. Please select today's date or any date in the past.";
+          LOGGER.error(errorDateMsg);
+          return new ResponseEntity<>(new ApiResponse(errorDateMsg), HttpStatus.BAD_REQUEST);
+        }
+        this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_INCIDENT_REPORT);
+        successMsg = "Report for an unfulfilled service has been successfully lodged!";
+        break;
+      default:
+        return new ResponseEntity<>(
+            new ApiResponse(MessageFormat
+                .format("Service route {0} is invalid! please contact your technical team for assistance.", type)),
+            HttpStatus.NOT_FOUND);
     }
-    // Is either cancellation request or incident report
-    boolean isCancellationRequest = type.equals("cancel");
-    if (isCancellationRequest) {
-      LOGGER.info("Received request to cancel the upcoming service...");
-    } else {
-      LOGGER.info("Received request to report an unfulfilled service...");
-    }
-    if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
-      return new ResponseEntity<>(
-          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
-          HttpStatus.BAD_REQUEST);
-    }
-    String date = params.get(LifecycleResource.DATE_KEY).toString();
-    // Invalidate request if the report is being lodged for future dates or
-    // if the cancellation is targeted at past services
-    if (LifecycleResource.checkDate(date, isCancellationRequest)) {
-      String errorMsg = !isCancellationRequest
-          ? "Invalid Date: Reports cannot be lodged for future dates. Please select today's date or any date in the past."
-          : "Invalid Date: Services can only be cancelled for today or future dates. Cancellation of past services is not allowed.";
-      LOGGER.error(errorMsg);
-      return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
-    }
-    String successMsg;
-    if (isCancellationRequest) {
-      LOGGER.info("Received request to cancel the upcoming service...");
-      this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_CANCELLATION);
-      successMsg = "Service has been successfully cancelled!";
-    } else {
-      LOGGER.info("Received request to report an unfulfilled service...");
-      this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_INCIDENT_REPORT);
-      successMsg = "Report for an unfulfilled service has been successfully lodged!";
-    }
+    // Executes common code only for cancel or report route
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
         LifecycleResource.OCCURRENCE_LINK_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
