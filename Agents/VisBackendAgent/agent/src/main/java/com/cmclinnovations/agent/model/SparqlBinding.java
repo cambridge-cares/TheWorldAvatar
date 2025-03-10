@@ -62,19 +62,7 @@ public class SparqlBinding {
    *         List<SparqlResponseField> as its values.
    */
   public Map<String, Object> get() {
-    Map<String, Object> resultBindings;
-    if (!this.sequence.isEmpty()) {
-      // Sort the map if there is a sequence
-      resultBindings = new LinkedHashMap<>();
-      this.sequence.forEach(variable -> {
-        String field = StringResource.parseQueryVariable(variable);
-        if (this.bindings.get(field) != null) {
-          resultBindings.put(field, this.bindings.get(field));
-        }
-      });
-      return resultBindings;
-    }
-    resultBindings = new HashMap<>();
+    Map<String, Object> resultBindings = new HashMap<>();
     // When there are array results,
     if (!this.bindingList.isEmpty()) {
       // Append array results to the result mappings
@@ -85,8 +73,21 @@ public class SparqlBinding {
         this.bindings.remove(arrayField);
       });
     }
+    // Place the remaining bindings that exclude any array fields
     resultBindings.putAll(this.bindings);
-    return resultBindings;
+    // Return unsorted bindings if not required
+    if (this.sequence.isEmpty()) {
+      return resultBindings;
+    }
+    // Else, sort the map if there is a sequence
+    Map<String, Object> sortedBindings = new LinkedHashMap<>();
+    this.sequence.forEach(variable -> {
+      String field = StringResource.parseQueryVariable(variable);
+      if (resultBindings.get(field) != null) {
+        sortedBindings.put(field, resultBindings.get(field));
+      }
+    });
+    return sortedBindings;
   }
 
   /**
