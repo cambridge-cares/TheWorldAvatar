@@ -91,94 +91,96 @@ public class TrajectoryNetworkSource {
         };
     }
 
-private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound) throws JSONException {
-    if (!rawResponse.has("message")) {
-        LOGGER.error("Not able to handle the agent response. Please check the backend");
-        onFailureUpper.onErrorResponse(new VolleyError("Server error"));
-        return null;
-    }
+    private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound) throws JSONException {
+        if (!rawResponse.has("message")) {
+            LOGGER.error("Not able to handle the agent response. Please check the backend");
+            onFailureUpper.onErrorResponse(new VolleyError("Server error"));
+            return null;
+        }
 
-    if (rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
-        onFailureUpper.onErrorResponse(new VolleyError(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user)));
-        return null;
-    } else if (rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_measurement_iri_missing))) {
-        LOGGER.info("No trajectory retrieved for this user id");
-        onSuccessUpper.onResponse("");
-        return null;
-    } else if (!rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_layer_created))) {
-        LOGGER.error("Not able to handle the agent response. Please check the backend");
-        onFailureUpper.onErrorResponse(new VolleyError("Server error"));
-        return null;
-    }
+        if (rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
+            onFailureUpper.onErrorResponse(new VolleyError(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user)));
+            return null;
+        } else if (rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_measurement_iri_missing))) {
+            LOGGER.info("No trajectory retrieved for this user id");
+            onSuccessUpper.onResponse("");
+            return null;
+        } else if (!rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_layer_created))) {
+            LOGGER.error("Not able to handle the agent response. Please check the backend");
+            onFailureUpper.onErrorResponse(new VolleyError("Server error"));
+            return null;
+        }
 
-    // Primary request URL
-    String getTrajectoryActivityUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
-            .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
-            .addQueryParameter("service", "WFS")
-            .addQueryParameter("version", "1.0.0")
-            .addQueryParameter("request", "GetFeature")
-            .addQueryParameter("typeName", "twa:trajectoryUserIdByActivity")
-            .addQueryParameter("outputFormat", "application/json")
-            .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
-            .build().toString();
+        // Primary request URL
+        String getTrajectoryActivityUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
+                .addQueryParameter("service", "WFS")
+                .addQueryParameter("version", "1.0.0")
+                .addQueryParameter("request", "GetFeature")
+                .addQueryParameter("typeName", "twa:trajectoryUserIdByActivity")
+                .addQueryParameter("outputFormat", "application/json")
+                .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
+                .build().toString();
 
-    // Fallback request URL
-    String getTrajectoryDefaultUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
-            .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
-            .addQueryParameter("service", "WFS")
-            .addQueryParameter("version", "1.0.0")
-            .addQueryParameter("request", "GetFeature")
-            .addQueryParameter("typeName", "twa:trajectoryUserId")
-            .addQueryParameter("outputFormat", "application/json")
-            .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
-            .build().toString();
+        // Fallback request URL
+        String getTrajectoryDefaultUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
+                .addQueryParameter("service", "WFS")
+                .addQueryParameter("version", "1.0.0")
+                .addQueryParameter("request", "GetFeature")
+                .addQueryParameter("typeName", "twa:trajectoryUserId")
+                .addQueryParameter("outputFormat", "application/json")
+                .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
+                .build().toString();
 
-    LOGGER.info("Print out URI: " + getTrajectoryActivityUri);
+        LOGGER.info("Print out URI: " + getTrajectoryActivityUri);
 
-    Response.Listener<String> onGetTrajectorySuccess = s1 -> {
-        try {
-            LOGGER.debug("Full server response: " + s1);
+        Response.Listener<String> onGetTrajectorySuccess = s1 -> {
+            try {
+                LOGGER.debug("Full server response: " + s1);
 
-            JSONObject trajectoryResponse = new JSONObject(s1);
+                JSONObject trajectoryResponse = new JSONObject(s1);
 
-            // Check if response is empty or invalid
-            if (trajectoryResponse.getInt("totalFeatures") == 0 || 
-                (trajectoryResponse.getInt("totalFeatures") == 1 && 
-                "null".equals(trajectoryResponse.getJSONArray("features").getJSONObject(0).getString("geometry")))) {
+                if (trajectoryResponse.getInt("totalFeatures") == 0 || 
+                    (trajectoryResponse.getInt("totalFeatures") == 1 && 
+                    "null".equals(trajectoryResponse.getJSONArray("features").getJSONObject(0).getString("geometry")))) {
 
-                LOGGER.info("No valid trajectory found, switching to default URI.");
+                    LOGGER.info("No valid trajectory found, switching to default URI.");
 
-                // Create and send fallback request
-                StringRequest fallbackRequest = new StringRequest(Request.Method.GET, getTrajectoryDefaultUri, onSuccessUpper, onFailureUpper) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put("Authorization", "Bearer " + accessToken);
-                        return headers;
-                    }
-                };
-                fallbackRequest.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                    StringRequest fallbackRequest = new StringRequest(Request.Method.GET, getTrajectoryDefaultUri, onSuccessUpper, onFailureUpper) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            Map<String, String> headers = new HashMap<>();
+                            headers.put("Authorization", "Bearer " + accessToken);
+                            return headers;
+                        }
+                    };
+                    fallbackRequest.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-                RequestQueue requestQueue = Volley.newRequestQueue(context);
-                requestQueue.add(fallbackRequest);
+                    RequestQueue requestQueue = Volley.newRequestQueue(context);
+                    requestQueue.add(fallbackRequest);
 
-            } else {
-                onSuccessUpper.onResponse(trajectoryResponse.toString());
+                } else {
+                    onSuccessUpper.onResponse(trajectoryResponse.toString());
+                }
+            } catch (JSONException e) {
+                LOGGER.error("Received XML response instead of JSON: " + s1);
+                onFailureUpper.onErrorResponse(new VolleyError("Geoserver error"));
             }
-        } catch (JSONException e) {
-            LOGGER.error("Received XML response instead of JSON: " + s1);
-            onFailureUpper.onErrorResponse(new VolleyError("Geoserver error"));
-        }
-    };
+        };
 
-    return new StringRequest(Request.Method.GET, getTrajectoryActivityUri, onGetTrajectorySuccess, onFailureUpper) {
-        @Override
-        public Map<String, String> getHeaders() throws AuthFailureError {
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer " + accessToken);
-            return headers;
-        }
-    };
-}
+        StringRequest request = new StringRequest(Request.Method.GET, getTrajectoryActivityUri, onGetTrajectorySuccess, onFailureUpper) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        return request;
+    }
 
 }

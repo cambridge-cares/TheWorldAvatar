@@ -63,7 +63,7 @@ public class TrajectoryManager {
         activityColors.put("still", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), R.attr.colorQuaternary))));
         activityColors.put("vehicle", String.format("#%06X", (0xFFFFF & getColor(fragment.requireContext(),  com.google.android.material.R.attr.colorSecondary))));
         activityColors.put("bike", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), com.google.android.material.R.attr.colorTertiary))));
-        activityColors.put("default", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), R.attr.colorDefault)))); // Default gray color
+        activityColors.put("default", String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext(), R.attr.colorDefault))));
 
 
         trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryByDate -> {
