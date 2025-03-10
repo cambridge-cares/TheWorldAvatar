@@ -324,7 +324,7 @@ public class AddService {
 
     String arrayFieldName = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
     List<Map<String, Object>> arrayFields = (List<Map<String, Object>>) replacements.get(arrayFieldName);
-    arrayFields.stream().forEach(arrayField -> {
+    arrayFields.forEach(arrayField -> {
       // Copy the template to prevent any modification
       ObjectNode currentArrayItem = arrayTemplate.deepCopy();
       arrayField.putAll(replacements);// place existing replacements into the array mappings

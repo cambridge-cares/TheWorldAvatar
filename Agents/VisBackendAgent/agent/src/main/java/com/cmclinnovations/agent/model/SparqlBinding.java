@@ -121,7 +121,7 @@ public class SparqlBinding {
 
     // Longest existing field array before iteration
     int longestArraySize = this.getLongestFieldArray();
-    fieldsForIteration.stream().forEach((field) -> {
+    fieldsForIteration.forEach((field) -> {
       // Create placeholder fields
       SparqlResponseField existingField;
       SparqlResponseField newField;

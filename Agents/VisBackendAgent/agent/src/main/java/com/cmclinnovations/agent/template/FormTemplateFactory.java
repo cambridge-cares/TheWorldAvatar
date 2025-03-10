@@ -146,14 +146,14 @@ public class FormTemplateFactory {
     this.form.put(ShaclResource.PROPERTY_PROPERTY, this.genOutputs(defaultProperties));
 
     List<Map<String, Object>> nodeShape = new ArrayList<>();
-    this.nodes.entrySet().stream().forEach(entry -> {
+    this.nodes.forEach((key, node) -> {
       Map<String, Object> output = new HashMap<>();
       output.put(ShaclResource.LABEL_PROPERTY,
-          entry.getValue().path(ShaclResource.RDFS_PREFIX + ShaclResource.LABEL_PROPERTY).get(0));
+          node.path(ShaclResource.RDFS_PREFIX + ShaclResource.LABEL_PROPERTY).get(0));
       output.put(ShaclResource.COMMENT_PROPERTY,
-          entry.getValue().path(ShaclResource.RDFS_PREFIX + ShaclResource.COMMENT_PROPERTY).get(0));
+          node.path(ShaclResource.RDFS_PREFIX + ShaclResource.COMMENT_PROPERTY).get(0));
       output.put(ShaclResource.PROPERTY_PROPERTY,
-          this.genOutputs(altProperties.getOrDefault(entry.getKey(), new HashMap<>())));
+          this.genOutputs(altProperties.getOrDefault(key, new HashMap<>())));
       nodeShape.add(output);
     });
     this.form.put(ShaclResource.NODE_PROPERTY, nodeShape);
@@ -275,7 +275,7 @@ public class FormTemplateFactory {
         propOrGroup.put(ShaclResource.PROPERTY_PROPERTY, groupProperties);
       }
       return propOrGroup;
-    }).collect(Collectors.toList());
+    }).toList();
     // Sort the results based on order
     results.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
     return results;

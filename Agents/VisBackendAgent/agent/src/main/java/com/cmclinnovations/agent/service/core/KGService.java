@@ -447,7 +447,7 @@ public class KGService {
       // Removes the first instance from results as the core instance
       SparqlBinding firstInstance = results.poll();
       // Iterate over each result binding to append arrays if required
-      results.stream().forEach(binding -> firstInstance.addFieldArray(binding));
+      results.stream().forEach(firstInstance::addFieldArray);
       return firstInstance;
     }
     if (results.size() == 1) {
@@ -481,7 +481,7 @@ public class KGService {
     Queue<SparqlBinding> results = this.query(query);
     return results.stream()
         .map(binding -> binding.getFieldValue("endpoint"))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**

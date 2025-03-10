@@ -103,14 +103,14 @@ public class QueryTemplateFactory {
     // Retrieve only the property fields if no sequence of variable is present
     if (this.varSequence.isEmpty()) {
       selectVariableBuilder.append(ShaclResource.VARIABLE_MARK).append(LifecycleResource.IRI_KEY);
-      this.variables.stream().forEach(variable -> selectVariableBuilder.append(ShaclResource.WHITE_SPACE)
+      this.variables.forEach(variable -> selectVariableBuilder.append(ShaclResource.WHITE_SPACE)
           .append(variable));
       // Append lifecycle events if available
       if (lifecycleEvent != null) {
         List.of(LifecycleResource.STATUS_KEY, LifecycleResource.SCHEDULE_START_DATE_KEY,
             LifecycleResource.SCHEDULE_END_DATE_KEY, LifecycleResource.SCHEDULE_START_TIME_KEY,
             LifecycleResource.SCHEDULE_END_TIME_KEY, LifecycleResource.SCHEDULE_TYPE_KEY)
-            .stream().forEach(lifecycleVar -> selectVariableBuilder.append(ShaclResource.WHITE_SPACE)
+            .forEach(lifecycleVar -> selectVariableBuilder.append(ShaclResource.WHITE_SPACE)
                 .append(ShaclResource.VARIABLE_MARK)
                 .append(StringResource.parseQueryVariable(lifecycleVar)));
       }
@@ -388,21 +388,21 @@ public class QueryTemplateFactory {
       Map<String, SparqlQueryLine> groupQueryLineMappings) {
     Map<String, String> branchQueryLines = new HashMap<>();
     Map<String, String> groupQueryLines = new HashMap<>();
-    groupQueryLineMappings.entrySet().stream().forEach(entry -> {
+    groupQueryLineMappings.forEach((key, queryLine) -> {
       StringBuilder currentLine = new StringBuilder();
       StringResource.appendTriple(currentLine,
-          ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().subject()),
-          entry.getValue().predicate(),
-          ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().property()));
+          ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.subject()),
+          queryLine.predicate(),
+          ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()));
       // If there is a sh:node targetClass property available, append the class
       // restriction
-      if (!entry.getValue().nestedClass().isEmpty()) {
+      if (!queryLine.nestedClass().isEmpty()) {
         StringResource.appendTriple(currentLine,
-            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(entry.getValue().property()),
+            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()),
             RDF_TYPE + REPLACEMENT_PLACEHOLDER,
-            StringResource.parseIriForQuery(entry.getValue().nestedClass()));
+            StringResource.parseIriForQuery(queryLine.nestedClass()));
       }
-      groupQueryLines.put(entry.getKey(), currentLine.toString());
+      groupQueryLines.put(key, currentLine.toString());
     });
     queryLineMappings.values().forEach(queryLine -> {
       // Parse and generate a query line for the current line
@@ -476,16 +476,16 @@ public class QueryTemplateFactory {
     // Add branch query block if there are any branches
     if (!branchQueryLines.isEmpty()) {
       StringBuilder branchBlock = new StringBuilder();
-      branchQueryLines.entrySet().stream().forEach(branch -> {
+      branchQueryLines.values().forEach(branch -> {
         // Add a UNION if there is a previous branch
         if (!branchBlock.isEmpty()) {
           branchBlock.append(" UNION ");
         }
         // If there is only one branch, it should be an optional clause instead
         if (branchQueryLines.size() == 1) {
-          branchBlock.append(StringResource.genOptionalClause(branch.getValue()));
+          branchBlock.append(StringResource.genOptionalClause(branch));
         } else {
-          branchBlock.append("{").append(branch.getValue()).append("}");
+          branchBlock.append("{").append(branch).append("}");
         }
       });
       this.queryLines.put(ShaclResource.BRANCH_KEY, branchBlock.toString());

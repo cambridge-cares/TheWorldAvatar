@@ -67,7 +67,7 @@ public class GetService {
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 
@@ -207,7 +207,7 @@ public class GetService {
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 
@@ -231,7 +231,7 @@ public class GetService {
     return new ResponseEntity<>(
         results.stream()
             .map(binding -> binding.getFieldValue("iri"))
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 }
