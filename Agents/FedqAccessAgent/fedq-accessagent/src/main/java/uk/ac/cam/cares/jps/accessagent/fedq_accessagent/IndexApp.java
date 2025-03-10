@@ -17,7 +17,6 @@ public class IndexApp {
     public CommandLineRunner run(ApplicationContext context) {
         return args -> {
             IndexAgentCaller controller = context.getBean(IndexAgentCaller.class);
-            System.out.print(controller.getValuesCL("mykey").toString());
         };
     }
 }
