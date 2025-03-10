@@ -168,7 +168,6 @@ def generate_syn_text_plain(doi):
     # DOI of the paper to be processed
     # Example DOI commented out:
     # doi = "10.1021/ic501012e"
-    doi              = "10.1021/jacs.8b05780"
     # Query synthesis and characterization data for the given DOI
     query_output     = kgq.query_synthesis_full(doi)
     query_char       = kgq.query_characterisation(doi)
@@ -184,6 +183,7 @@ def generate_syn_text_plain(doi):
     print("query characterisation: ", query_char)   # Debugging output
     # Define output file path, replacing '/' in DOI with '_'
     ouptut_path                 = os.path.join(para.DATA_FOLDER, f"synText/{doi.replace("/", "_")}.md")
+    print("output path: ", ouptut_path)
     # Convert and save the synthesis text as a .md
     pdf_converter               = utils.PdfConverter(ouptut_path, ouptut_path)
     pdf_converter.save_text_to_file(synthesis_text, ouptut_path)
@@ -205,5 +205,5 @@ if __name__ == "__main__":
     # DOI of the paper to be processed
     # Example DOI commented out:
     # doi = "10.1021/ic501012e"
-    doi              = "10.1021/jacs.8b05780"
+    doi              = "10.1002/anie.201900519"
     generate_syn_text(doi)
