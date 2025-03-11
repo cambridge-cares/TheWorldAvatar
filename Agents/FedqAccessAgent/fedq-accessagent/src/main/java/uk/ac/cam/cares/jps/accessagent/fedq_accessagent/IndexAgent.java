@@ -162,7 +162,7 @@ public class IndexAgent {
     }
 
     // Remove endpoint & broadcast
-    public void removeValue(String key, String endpoint) {
+    public void removeValue(String key, String endpoint, String source_stack) {
         try{
             if (key != null && endpoint != null) {
                 // Retrieve the current Set of JSON strings from Redis for the given key
@@ -180,7 +180,8 @@ public class IndexAgent {
                         ObjectNode jsonObject = objectMapper.readValue(jsonString, ObjectNode.class);
     
                         // Check if the endpoint matches and remove it
-                        if (jsonObject.has("endpoint") && jsonObject.get("endpoint").asText().equals(endpoint)) {
+                        if (jsonObject.has("endpoint") && jsonObject.get("endpoint").asText().equals(endpoint) &&
+                            jsonObject.has("stack") && jsonObject.get("stack").asText().equals(source_stack)) {
                             // If endpoint matches, skip this one (i.e., do not add it to the updated set)
                             removed = true;
                             continue; // Skip this JSON entry
