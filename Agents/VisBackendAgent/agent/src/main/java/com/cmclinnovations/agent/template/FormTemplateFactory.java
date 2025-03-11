@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -273,7 +272,7 @@ public class FormTemplateFactory {
    * @param properties target properties.
    */
   private List<Map<String, Object>> genOutputs(Map<String, Map<String, Object>> properties) {
-    List<Map<String, Object>> results = new ArrayList<>(properties.values().stream().map(propOrGroup -> {
+    return properties.values().stream().map(propOrGroup -> {
       // For a property group which has `property` relations,
       // sort the properties before appending the group
       if (propOrGroup.containsKey(ShaclResource.PROPERTY_PROPERTY)) {
@@ -283,9 +282,9 @@ public class FormTemplateFactory {
         propOrGroup.put(ShaclResource.PROPERTY_PROPERTY, groupProperties);
       }
       return propOrGroup;
-    }).toList());
+    })
     // Sort the results based on order
-    results.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
-    return results;
+    .sorted(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)))
+    .toList();
   }
 }
