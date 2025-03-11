@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,6 +20,9 @@ import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.Style;
 import com.mapbox.maps.plugin.animation.MapAnimationOptions;
+import com.mapbox.maps.plugin.gestures.GesturesPlugin;
+import com.mapbox.maps.plugin.gestures.GesturesUtils;
+import com.mapbox.maps.plugin.gestures.OnMapClickListener;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -47,6 +51,7 @@ public class TrajectoryManager {
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
     private final List<String> layerNames;
     private final Map<String, String> activityColors;
+    private String layerId;
 
    /**
     * Constructor of the class
@@ -74,12 +79,14 @@ public class TrajectoryManager {
             else {
                 mapView.getMapboxMap().getStyle(style -> {
                     removeAllLayers(style);
+                    trajectoryViewModel.removeAllClicked();
                         if (trajectoryByDate.getTrajectoryStr().isEmpty()) {
                             return;
                         }
                         else {
                             
                             paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
+                            addTrajectoryClickListener(mapView);
                         }
                     });
                     resetCameraCentre(mapView, trajectoryByDate);
@@ -96,6 +103,19 @@ public class TrajectoryManager {
 }
 
 
+   private void addTrajectoryClickListener(MapView mapView) {
+
+    GesturesPlugin gesturesPlugin = GesturesUtils.getGestures(mapView);
+
+ 
+    gesturesPlugin.addOnMapClickListener(point -> {
+        Log.d("TrajectoryClick", "Map clicked at: " + point.longitude() + ", " + point.latitude());
+
+        trajectoryViewModel.setClicked(point);
+
+        return true;
+    });
+}
 
 
     private void paintTrajectoryByActivity(Style style, TrajectoryByDate trajectoryArr, Map<String, String> activityColors, String mode) {
@@ -120,6 +140,8 @@ public class TrajectoryManager {
         layerJson.put("type", "line");
         layerJson.put("source", "trajectory_" + mode);
         layerJson.put("line-join", "bevel");
+
+        this.layerId = "trajectory_layer_" + mode;
 
         
         JSONArray colorExpression = new JSONArray();

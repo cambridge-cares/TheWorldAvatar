@@ -120,6 +120,7 @@ numbered_activity_data AS (
 )
 
 SELECT
+    id,
     MIN(time) AS start_time,  
     MAX(time) AS end_time,
     user_id,

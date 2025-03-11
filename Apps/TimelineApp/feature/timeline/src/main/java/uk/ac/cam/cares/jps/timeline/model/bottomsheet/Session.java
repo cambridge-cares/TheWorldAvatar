@@ -37,4 +37,13 @@ public class Session {
         return sessionTitle;
     }
 
+    public boolean containsSegment(int id) {
+        for(ActivityItem item : this.activityItemList) {
+            if(item.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

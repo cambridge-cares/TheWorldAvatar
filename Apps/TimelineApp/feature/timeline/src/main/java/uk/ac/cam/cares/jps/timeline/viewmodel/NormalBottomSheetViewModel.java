@@ -146,7 +146,9 @@ public class NormalBottomSheetViewModel extends ViewModel {
                 long startTime = segment.startTime();
                 long endTime = segment.endTime();
 
-                summaries.add(new ActivityItem(activityImage, startTime, endTime));
+                int id = segment.id();
+
+                summaries.add(new ActivityItem(id, activityImage, startTime, endTime));
             }
         }
         return summaries;

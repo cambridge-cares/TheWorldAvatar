@@ -14,6 +14,7 @@
         <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
         <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
         <item name="colorQuaternary">@color/md_theme_light_quaternary</item>
+        <item name="colorSelected">@color/md_theme_light_selected</item>
         <item name="colorDefault">@color/md_theme_light_default</item>
         <item name="colorError">@color/md_theme_light_error</item>
         <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>

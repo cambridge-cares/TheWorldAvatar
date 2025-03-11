@@ -9,8 +9,10 @@ import java.time.format.DateTimeFormatter;
  * class to represent one segment of activity and its time summary
  */
 public class ActivityItem {
+    private final int id;
     private final int activityType;
     private final String timeSummary;
+    private boolean clicked;
 
 
     /**
@@ -19,9 +21,11 @@ public class ActivityItem {
      * @param startTime the start timestamp of the segment
      * @param endTime the end timestamp of the segment
      */
-    public ActivityItem(int activityType, long startTime, long endTime) {
+    public ActivityItem(int id, int activityType, long startTime, long endTime) {
+        this.id = id;
         this.activityType = activityType;
         this.timeSummary = toTimeSummary(startTime, endTime);
+        this.clicked = false;
 
     }
 
@@ -48,6 +52,18 @@ public class ActivityItem {
 
     public int getActivityImage() {
         return this.activityType;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setClicked(boolean click) {
+        this.clicked = click;
+    }
+
+    public boolean getClicked() {
+        return this.clicked;
     }
     
 } 

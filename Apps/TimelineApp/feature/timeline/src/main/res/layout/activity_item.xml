@@ -31,5 +31,15 @@
         android:textColor="#121212"
         android:textSize="16sp" />
 
+     <ImageView
+        android:id="@+id/clicked"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@+id/timeSummary"
+        android:src="@drawable/baseline_keyboard_double_arrow_left_24"/>
+
 </RelativeLayout>
 

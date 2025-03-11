@@ -40,10 +40,11 @@ public class TrajectoryByDate {
                 int id = properties.optInt("id", 0);
                 String activityType = properties.optString("activity_type", "unknown");
                 String sessionId = properties.optString("session_id", "unknown");
+                JSONObject geom = feature.optJSONObject("geometry");
                 int distanceTraveled = properties.optInt("distance_traveled", 0);
                 String iri = properties.optString("iri", "unknown");
 
-                segments.add(new TrajectorySegment(startTime, endTime, id, activityType, sessionId, distanceTraveled, iri));
+                segments.add(new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, distanceTraveled, iri));
 
             }
         }

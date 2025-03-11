@@ -15,8 +15,9 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.ActivitySummaryAdapter;
-import uk.ac.cam.cares.jps.timeline.ui.adapter.UniqueSessionsAdapter;
+import uk.ac.cam.cares.jps.timeline.ui.adapter.SessionsAdapter;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 /**
@@ -27,7 +28,7 @@ public class NormalBottomSheet extends BottomSheet {
     private RecyclerView summaryRecyclerView;
     private ActivitySummaryAdapter summaryAdapter;
     private RecyclerView sessionsRecyclerView;
-    private UniqueSessionsAdapter sessionsAdapter;
+    private SessionsAdapter sessionsAdapter;
 
     public NormalBottomSheet(Context context) {
         super(context);
@@ -40,7 +41,7 @@ public class NormalBottomSheet extends BottomSheet {
 
         sessionsRecyclerView = bottomSheet.findViewById(R.id.sessions_recycler_view);
 
-        sessionsAdapter = new UniqueSessionsAdapter();
+        sessionsAdapter = new SessionsAdapter();
         sessionsRecyclerView.setAdapter(sessionsAdapter);
         sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
@@ -58,7 +59,7 @@ public class NormalBottomSheet extends BottomSheet {
 
     public void showFetchingAnimation(boolean isFetching) {
         if (isFetching) {
-            sessionsAdapter = new UniqueSessionsAdapter();
+            sessionsAdapter = new SessionsAdapter();
             sessionsRecyclerView.setAdapter(sessionsAdapter);
 
             summaryAdapter = new ActivitySummaryAdapter();
@@ -68,8 +69,8 @@ public class NormalBottomSheet extends BottomSheet {
             getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
             sessionsRecyclerView.setVisibility(View.GONE);
             summaryRecyclerView.setVisibility(View.GONE);
-            
-        
+
+
         } else {
             getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.GONE);
             summaryRecyclerView.setVisibility(View.VISIBLE);
@@ -77,17 +78,17 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateUniqueSessionsList(List<Session> sessionList) {
+    public void updateUniqueSessionsList(List<Session> sessionList, Integer clickedId) {
         if (sessionList != null && !sessionList.isEmpty()) {
-            sessionsAdapter.setUniqueSessionsList(sessionList);
+            sessionsAdapter.setUniqueSessionsList(sessionList, clickedId);
             sessionsAdapter.notifyDataSetChanged();
-            
+
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
             if (trajectoryTextView != null) {
                 trajectoryTextView.setVisibility(View.GONE);
             }
         } else {
-            showEmptyState(); 
+            showEmptyState();
         }
     }
 
@@ -110,7 +111,12 @@ public class NormalBottomSheet extends BottomSheet {
         TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
         if (trajectoryTextView != null) {
             trajectoryTextView.setText(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_trajectory_found);
-            trajectoryTextView.setVisibility(View.VISIBLE); 
+            trajectoryTextView.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void highlightClickedSegment(Integer clickedId) {
+        sessionsAdapter.setClickedSegment(clickedId);
+        sessionsAdapter.notifyDataSetChanged();
     }
 }

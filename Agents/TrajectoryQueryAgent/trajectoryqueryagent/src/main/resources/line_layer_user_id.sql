@@ -25,7 +25,8 @@ SELECT
     MAX(time) AS end_time,
     ST_MakeLine(geom) as geom, 
     CONCAT('https://w3id.org/MON/person.owl#person_', '%user_id%') AS iri,
-    session_id,
+    session_id AS session_id,
+    1 AS id
     ST_Length(ST_Transform(ST_MakeLine(ARRAY_AGG(geom ORDER BY time)), 3857))::INTEGER AS distance_traveled
 FROM 
     timeseries ts

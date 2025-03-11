@@ -51,6 +51,7 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
         return summaryList.size();
     }
 
+
     static class ActivitySummaryViewHolder extends RecyclerView.ViewHolder {
         ImageView activityType;
         TextView totalDistance;
