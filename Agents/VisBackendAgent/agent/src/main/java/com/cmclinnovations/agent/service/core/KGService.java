@@ -129,7 +129,8 @@ public class KGService {
    * @return the query results.
    */
   public Queue<SparqlBinding> query(String query) {
-    return this.query(query, BlazegraphClient.getInstance().getRemoteStoreClient(DEFAULT_NAMESPACE).getQueryEndpoint());
+    return this.query(query,
+        BlazegraphClient.getInstance().getRemoteStoreClient(DEFAULT_NAMESPACE).getQueryEndpoint());
   }
 
   /**
@@ -174,14 +175,7 @@ public class KGService {
    * @return the query results.
    */
   public Queue<SparqlBinding> query(String query, SparqlEndpointType endpointType) {
-    List<String> endpoints;
-    if (endpointType.equals(SparqlEndpointType.MIXED)) {
-      // Immutable list return and needs to be mutable
-      endpoints = new ArrayList<>(this.getEndpoints(SparqlEndpointType.BLAZEGRAPH));
-      endpoints.addAll(this.getEndpoints(SparqlEndpointType.ONTOP));
-    } else {
-      endpoints = this.getEndpoints(endpointType);
-    }
+    List<String> endpoints = this.getEndpoints(endpointType);
     try {
       StringWriter stringWriter = new StringWriter();
       FedXRepository repository = FedXFactory.createSparqlFederation(endpoints);
@@ -191,7 +185,8 @@ public class KGService {
         tq.setMaxExecutionTime(600);
         SPARQLResultsJSONWriter jsonWriter = new SPARQLResultsJSONWriter(stringWriter);
         tq.evaluate(jsonWriter);
-        JsonNode bindings = this.objectMapper.readValue(stringWriter.toString(), ObjectNode.class).path("results")
+        JsonNode bindings = this.objectMapper.readValue(stringWriter.toString(), ObjectNode.class)
+            .path("results")
             .path("bindings");
         if (bindings.isArray()) {
           return this.parseResults((ArrayNode) bindings);
@@ -219,13 +214,7 @@ public class KGService {
    * @return the query results as CSV rows.
    */
   public String[] queryCSV(String query, SparqlEndpointType endpointType) {
-    List<String> endpoints;
-    if (endpointType.equals(SparqlEndpointType.MIXED)) {
-      endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
-      endpoints.addAll(this.getEndpoints(SparqlEndpointType.ONTOP));
-    } else {
-      endpoints = this.getEndpoints(endpointType);
-    }
+    List<String> endpoints = this.getEndpoints(endpointType);
     try {
       StringWriter stringWriter = new StringWriter();
       FedXRepository repository = FedXFactory.createSparqlFederation(endpoints);
@@ -381,7 +370,8 @@ public class KGService {
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, null, null);
+    Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, null,
+        null);
     LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
     // Query for direct instances
     String[] resultRows = this.queryCSV(queries.poll(), SparqlEndpointType.MIXED);
@@ -416,7 +406,8 @@ public class KGService {
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    Queue<String> searchQuery = this.queryTemplateFactory.genSearchTemplate(nestedVariablesAndPropertyPaths, criterias);
+    Queue<String> searchQuery = this.queryTemplateFactory.genSearchTemplate(nestedVariablesAndPropertyPaths,
+        criterias);
     LOGGER.debug("Querying the knowledge graph for the matching instances...");
     // Query for direct instances
     Queue<SparqlBinding> instances = this.query(searchQuery.poll(), SparqlEndpointType.MIXED);
@@ -470,16 +461,12 @@ public class KGService {
    * 
    * @param endpointType The required endpoint type. Can be either mixed,
    *                     blazegraph, or ontop.
+   * @return List of endpoints of type `endpointType`
    */
   public List<String> getEndpoints(SparqlEndpointType endpointType) {
     LOGGER.debug("Retrieving available endpoints...");
-    String serviceClass = "";
-    if (endpointType.equals(SparqlEndpointType.BLAZEGRAPH)) {
-      serviceClass = "ser:Blazegraph";
-    } else if (endpointType.equals(SparqlEndpointType.ONTOP)) {
-      serviceClass = "ser:Ontop";
-    }
-    String query = this.fileService.getContentsWithReplacement(FileService.ENDPOINT_QUERY_RESOURCE, serviceClass);
+    String query = this.fileService.getContentsWithReplacement(FileService.ENDPOINT_QUERY_RESOURCE,
+        endpointType.getIri());
     Queue<SparqlBinding> results = this.query(query);
     return results.stream()
         .map(binding -> binding.getFieldValue("endpoint"))
