@@ -13,13 +13,18 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class IndexListener implements MessageListener {
+    private static final String BACKUP_DIRECTORY = "/data";
+    private static final String BACKUP_FILE = BACKUP_DIRECTORY + "/backup.json";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -58,15 +63,45 @@ public class IndexListener implements MessageListener {
     
             // Perform the corresponding action
             if ("ADD".equalsIgnoreCase(action)) {
-                indexAgent.loadValue(key, endpoint, sourceStack);
+                indexAgent.addValue(key, endpoint, sourceStack);
+                updateBackupFile(key, true);
                 System.out.println("Synced ADD from " + sourceStack + " → " + key + " = " + endpoint);
             } else if ("REMOVE".equalsIgnoreCase(action)) {
-                indexAgent.removeValueWithoutBroadcast(key, endpoint, sourceStack);
+                indexAgent.removeValue(key, endpoint, sourceStack);
+                updateBackupFile(key, false);
                 System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + endpoint);
             } else {
                 System.err.println("Unknown action: " + action);
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized void updateBackupFile(String key, boolean isAdd) {
+        try {
+            File file = new File(BACKUP_FILE);
+            Map<String, Set<String>> backupData = new HashMap<>();
+
+            // Load existing data if the file exists
+            if (file.exists()) {
+                backupData = objectMapper.readValue(file, HashMap.class);
+            }
+
+            if (isAdd) {
+                // Add key values from Redis
+                Set<String> jsonSet = redisTemplate.opsForSet().members(key);
+                backupData.put(key, jsonSet);
+            } else {
+                // Remove key
+                backupData.remove(key);
+            }
+
+            // Write back to file
+            objectMapper.writeValue(file, backupData);
+            System.out.println("Updated backup.json successfully.");
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
