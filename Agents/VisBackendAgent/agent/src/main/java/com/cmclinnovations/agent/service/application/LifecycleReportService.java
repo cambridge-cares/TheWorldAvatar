@@ -11,6 +11,7 @@ import com.cmclinnovations.agent.service.GetService;
 import com.cmclinnovations.agent.service.core.DateTimeService;
 import com.cmclinnovations.agent.service.core.JsonLdService;
 import com.cmclinnovations.agent.service.core.LoggingService;
+import com.cmclinnovations.agent.template.LifecycleQueryFactory;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
@@ -27,6 +28,7 @@ public class LifecycleReportService {
   private final JsonLdService jsonLdService;
   private final LoggingService loggingService;
   private final ObjectMapper objectMapper;
+  private final LifecycleQueryFactory queryFactory;
 
   private static final String LIFECYCLE_REPORT_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/report/";
   private static final String LIFECYCLE_RECORD_PREFIX = "https://www.theworldavatar.io/kg/lifecycle/record/";
@@ -54,6 +56,7 @@ public class LifecycleReportService {
     this.jsonLdService = jsonLdService;
     this.loggingService = loggingService;
     this.objectMapper = objectMapper;
+    this.queryFactory = new LifecycleQueryFactory();
   }
 
   /**
@@ -82,26 +85,20 @@ public class LifecycleReportService {
         params);
     parentNode.set(LifecycleResource.SUCCEEDS_RELATIONS, calculationInstance);
     // Generate record instance
-    ObjectNode recordInstance = this.genRecordInstance();
+    ObjectNode recordInstance = this.jsonLdService.genInstance(LIFECYCLE_RECORD_PREFIX,
+        LifecycleResource.LIFECYCLE_RECORD);
     // Retrieve and associate output value in calculation
     recordInstance.set(LifecycleResource.RECORDS_RELATIONS,
         calculationInstance.get(LifecycleResource.HAS_QTY_VAL_RELATIONS));
     // Retrieve report instance and attach record to report
-    String query = LifecycleResource.genReportQuery(params.get(LifecycleResource.STAGE_KEY).toString());
-    String report = this.getService.getInstance(query);
+    String query = this.queryFactory.getReportQuery(params.get(LifecycleResource.STAGE_KEY).toString());
+    String report = this.getService.getInstance(query).getFieldValue(LifecycleResource.IRI_KEY);
     ObjectNode reportsOnNode = this.objectMapper.createObjectNode()
         .set(LifecycleResource.REPORTS_ON_RELATIONS,
             this.objectMapper.createObjectNode().put(ShaclResource.ID_KEY, report));
     recordInstance.set(ShaclResource.REVERSE_KEY, reportsOnNode);
     // Parent node should be a reverse node
     parentNode.set(LifecycleResource.IS_ABOUT_RELATIONS, recordInstance);
-  }
-
-  /**
-   * Generates a record instance.
-   */
-  private ObjectNode genRecordInstance() {
-    return this.jsonLdService.genInstance(LIFECYCLE_RECORD_PREFIX, LifecycleResource.LIFECYCLE_RECORD);
   }
 
   /**
@@ -188,7 +185,7 @@ public class LifecycleReportService {
     // Set event date time
     occurrence.set("https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/hasEventDate",
         this.jsonLdService.genLiteral(this.dateTimeService.getCurrentDateTime(),
-            "http://www.w3.org/2001/XMLSchema#dateTime"));
+            ShaclResource.XSD_DATE_TIME));
 
     // Set exemplifies relation
     ObjectNode exemplifiesNode = objectMapper.createObjectNode();
@@ -279,7 +276,7 @@ public class LifecycleReportService {
         this.objectMapper.createObjectNode()
             .put(ShaclResource.ID_KEY, scalarQuantityConfig.get(ShaclResource.UNIT_KEY).asText()));
     quantity.set("https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasNumericValue",
-        this.jsonLdService.genLiteral(String.valueOf(value), "http://www.w3.org/2001/XMLSchema#decimal"));
+        this.jsonLdService.genLiteral(String.valueOf(value), ShaclResource.XSD_DECIMAL));
     return quantity;
   }
 }

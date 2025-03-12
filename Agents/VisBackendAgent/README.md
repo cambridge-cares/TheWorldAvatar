@@ -14,7 +14,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
       - [2.2.1 Geocoding route](#221-geocoding-route)
       - [2.2.2 Address search route](#222-address-search-route)
     - [2.3 Form Route](#23-form-route-baseurlvis-backend-agentformtype)
-    - [2.4 Concept Metadata Route](#24-concept-metadata-route-baseurlvis-backend-agenttypetype)
+    - [2.4 Concept Metadata Route](#24-concept-metadata-route-baseurlvis-backend-agenttype)
     - [2.5 Instance Route](#25-instance-route)
       - [2.5.1 Add route](#251-add-route)
       - [2.5.2 Delete route](#252-delete-route)
@@ -29,13 +29,17 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [viz](https:
       - [2.6.6 Archive contract route](#266-archive-contract-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
-      - [3.1.1 Property Groups](#311-property-groups)
-      - [3.1.2 Dependent Form Fields](#312-dependent-form-fields)
-      - [3.1.3 Lifecycle-specific Features](#313-lifecycle-specific-feature)
+      - [3.1.1 Branching Form](#311-branching-form)
+      - [3.1.2 Property Groups](#312-property-groups)
+      - [3.1.3 Dependent Form Fields](#313-dependent-form-fields)
+      - [3.1.4 Array Field](#314-array-field)
+      - [3.1.5 Lifecycle-specific Features](#315-lifecycle-specific-feature)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
-      - [4.1.1 Service lifecycle](#411-service-lifecycle)
+      - [4.1.1 Array](#411-array)
+      - [4.1.2 Form Branch](#412-form-branch)
+      - [4.1.3 Service Lifecycle](#413-service-lifecycle)
     - [4.2 Geocoding](#42-geocoding)
 
 ## 1. Agent Deployment
@@ -237,9 +241,9 @@ If successful, the response will return a form template in the following (minima
 }
 ```
 
-### 2.4 Concept Metadata Route: `<baseURL>/vis-backend-agent/type/{type}`
+### 2.4 Concept Metadata Route: `<baseURL>/vis-backend-agent/type`
 
-This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<baseURL>/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<baseURL>/vis-backend-agent/type` with the `uri` query parameter and value of the required ontology class.
 
 If successful, the response will return an array of objects in the following format:
 
@@ -533,7 +537,7 @@ For tasks associated with a contract, users can send a `GET` request to the `<ba
 
 Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch/{id}` endpoint to retrieve the form template associated with the dispatch event, where `id` is either the identifier of the occurrence of interest, which may be a dispatch or subsequent succeeding instance, or `form` for an empty form template. Note that this will require `SHACL` restrictions to be defined and instantiated into the knowledge graph. A sample `ServiceDispatchOccurrenceShape` is defined in `./resources/shacl.ttl`, which can be extended for your specific requirements.
 
-Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch` endpoint to assign dispatch details for a target order. The details are configurable using the `ServiceDispatchOccurrenceShape` and an additional `dispatch.jsonld` file with the corresponding identifier as `dispatch` in the `application-service.json`. A sample file is defined in `./resources/dispatch.jsonld`, with line 1 - 32 being required. It is recommended that the id field comes with a prefix, following the frontend actions. Note that this route does require the following `JSON` request parameters:
+Users can send a `PUT` request to the `<baseURL>/vis-backend-agent/contracts/service/dispatch` endpoint to assign dispatch details for a target order. The details are configurable using the `ServiceDispatchOccurrenceShape` and an additional `dispatch.jsonld` file with the corresponding identifier as `dispatch` in the `application-service.json`. A sample file is defined in `./resources/jsonld/dispatch.jsonld`, with line 1 - 32 being required. It is recommended that the id field comes with a prefix, following the frontend actions. Note that this route does require the following `JSON` request parameters:
 
 ```json
 {
@@ -648,8 +652,17 @@ base:NameOfConceptShape
     sh:maxCount 1 ;
   ] ;
   sh:property [
-    sh:name "instance dropdown" ;
+    sh:name "list of subclasses dropdown" ;
     sh:order 2 ;
+    sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from a list of at least one target class and its subclasses" ;
+    sh:path ontoexample:hasDropdownOptions ;
+    sh:in (ontoexample:DropdownOptionOne ontoexample:DropdownOptionTwo) ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "instance dropdown" ;
+    sh:order 3 ;
     sh:description "A sample property showing the structure for creating a new dropdown and its list of selections from instances associated with the target class" ;
     sh:path ontoexample:hasDropdownForInstances ;
     sh:class ontoexample:ExampleClass ;
@@ -659,7 +672,7 @@ base:NameOfConceptShape
   sh:property [
     sh:name "text input";
     sh:description "A sample property showing the structure for creating a new text input field" ;
-    sh:order 3 ;
+    sh:order 4 ;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
@@ -668,7 +681,7 @@ base:NameOfConceptShape
   sh:property [
     sh:name "number input";
     sh:description "A sample property showing the structure for creating a new numerical input field" ;
-    sh:order 4 ;
+    sh:order 5 ;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:decimal ;
     sh:minCount 1 ;
@@ -677,7 +690,7 @@ base:NameOfConceptShape
   sh:property [
     sh:name "date input";
     sh:description "A sample property showing the structure for creating a new date input field" ;
-    sh:order 5 ;
+    sh:order 6 ;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:date ;
     sh:minCount 1 ;
@@ -710,7 +723,60 @@ base:ExampleClassShape
   ] .
 ```
 
-### 3.1.1 Property Groups
+### 3.1.1 Branching Form
+
+Users can generate branching forms using the `sh:or` logical constraint. This generates a form with a category dropdown. Selecting a category displays a different set of form fields. Each branch requires a separate node shape without a `sh:targetClass` property, but with `sh:name` and `sh:description` properties. These properties populate the category dropdown.
+
+> [!TIP]
+> In scenarios where one of the branches do not have additional unique properties, users can generate this branch with an empty SHACL node shape without any property constraints. But only one variant of this is allowed at any time.
+
+A sample SHACL format in (TTL) for `sh:or` is described below:
+
+```
+base:CoreShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:ExampleClass ;
+  sh:property [
+    sh:name "common field";
+    sh:description "A common field that will be rendered for all branches.";
+    sh:path rdfs:label ;
+    sh:datatype xsd:string .
+  ] ;
+  sh:or (
+    base:BranchOneShape
+    base:BranchTwoShape
+  ) .
+
+base:BranchOneShape
+  a sh:NodeShape ;
+  sh:name "branch one" ;
+  sh:description "The first branch or set of form rendered" ;
+  sh:property [
+    sh:name "field one";
+    sh:description "A field specific to branch one.";
+    sh:path ontoexample:hasInput ;
+    sh:datatype xsd:string .
+  ] .
+
+base:BranchTwoShape
+  a sh:NodeShape ;
+  sh:name "branch two" ;
+  sh:description "The second branch or set of form rendered" ;
+  sh:property [
+    sh:name "field two";
+    sh:description "A field specific to branch two.";
+    sh:path ontoexample:hasSecondInput ;
+    sh:datatype xsd:string .
+  ] ;
+  sh:property [
+    sh:name "extra field";
+    sh:description "An extra field rendered when branch two is selected.";
+    sh:path ontoexample:hasExtraInput ;
+    sh:datatype xsd:string .
+  ] .
+```
+
+### 3.1.2 Property Groups
 
 Users may group form inputs into one form section either by using Nested Concepts via `sh:node` or `PropertyGroup` via sh:group.
 
@@ -774,6 +840,7 @@ base:ExampleGroupPropertyShape
   sh:property [
     sh:name "group string input";
     sh:description "String input for a form section.";
+    sh:group base:ExampleFormSectionGroup ;
     sh:order 2;
     sh:path ontoexample:hasInput ;
     sh:datatype xsd:string ;
@@ -783,6 +850,7 @@ base:ExampleGroupPropertyShape
   sh:property [
     sh:name "group dropdown";
     sh:description "A dropdown for a form section.";
+    sh:group base:ExampleFormSectionGroup ;
     sh:order 3;
     sh:path ontoexample:hasDropdownOption ;
     sh:class ontoexample:DropdownOption ;
@@ -797,10 +865,9 @@ base:ExampleFormSectionGroup
 	sh:order "2"^^xsd:integer .
 ```
 
-> [!IMPORTANT] 
-> `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
+> [!IMPORTANT] > `PropertyGroup` are most useful for setting dependent form fields, which relies on some form field.
 
-### 3.1.2 Dependent Form Fields
+### 3.1.3 Dependent Form Fields
 
 Users can set up dependencies between form fields by targeting the independent form property (via the corresponding `PropertyShape`) using the `https://theworldavatar.io/kg/form/dependentOn` relations. A sample SHACL file in TTL is given below:
 
@@ -830,10 +897,79 @@ base:FormDependencyShape-independent a sh:PropertyShape ;
   sh:maxCount 1 .
 ```
 
-### 3.1.3 Lifecycle-specific Feature
+### 3.1.4 Array Field
+
+Users may generate an array field within the form by either removing the `maxCount` property or setting the `maxCount` property to at least 2. The array field may be displayed in the [viz](https://github.com/TheWorldAvatar/viz) either as a standalone field or grouped as an array section. The display of a standalone array field can be configured following the sample `TTL`.
+
+```
+base:StandaloneArrayShape
+  a sh:NodeShape ;
+  sh:targetClass base:Concept ;
+  sh:property [
+    sh:name "contact" ;
+    sh:order 1 ;
+    sh:description "A sample property showing a standalone field array for contact information" ;
+    sh:path ontoexample:hasContact ;
+    sh:datatype xsd:integer ;
+    sh:minCount 1 ;
+  ] .
+```
+
+When there are several array fields, users can choose to group these fields into one or multiple groups to reduce the form complexity. Users may choose to implement these grouping using either the `sh:node` or `PropertyGroup` [approach](#312-property-groups). Non-array fields can also be included within the group.
+
+```
+base:GroupArrayShape
+  a sh:NodeShape ;
+  sh:targetClass base:Concept ;
+  sh:property [
+    sh:name "id";
+    sh:description "Identifier for the example class instance.";
+    sh:order 0;
+    sh:path (
+      rdfs:label
+      [sh:inversePath rdfs:label]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "name";
+    sh:description "A sample property showing a standalone field array for the contact's name" ;
+    sh:group base:ExampleContactGroup ;
+    sh:order 1;
+    sh:path rdfs:label ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "contact" ;
+    sh:description "A sample property showing a standalone field array for contact information" ;
+    sh:group base:ExampleContactGroup ;
+    sh:order 2 ;
+    sh:path ontoexample:hasArray ;
+    sh:datatype xsd:decimal ;
+    sh:minCount 1 ;
+  ] .
+
+base:ExampleContactGroup
+	a sh:PropertyGroup ;
+	rdfs:label "contact details" ;
+  sh:description "An example form section grouping properties of contact person and number through SHACL." ;
+	sh:order "1"^^xsd:integer .
+
+```
+
+> [!CAUTION]
+> Array fields within a group must have the same `maxCount` property value. Array fields cannot be nested within a nested group, for example, `rootShape sh:property/sh:node propGroup. propGroup sh:property/sh:group nestedGroup.` will not work.
+
+### 3.1.5 Lifecycle-specific Feature
 
 > [!IMPORTANT]
 > For any lifecycle form, users will be required to configure the event occurrences using `SHACL` restrictions. Typically, `TerminatedServiceEvent`, `IncidentReportEvent`, `ContractRescission`, and `ContractTermination` can only accommodate a remarks property. For the `ServiceDispatchEvent`, users may assign additional dispatch details through defining more `SHACL` properties. Note that an id field must be included for a `ServiceDispatchEvent`. A sample file has been created in `./resources/shacl.ttl`
+
+> [!IMPORTANT]
+> Users can configure a pricing model for the agreement following the sample SHACL in `./resources/pricing.ttl`. This will have to be used alongside the corresponding `JSON-LD` at `./resources/jsonld/pricing.jsonld`. Users must update the possible list of classes in line 85 of the SHACL constraints. No modifications are required for the `JSON-LD` file.
 
 ### 3.2 Automated Data Retrieval
 
@@ -895,21 +1031,96 @@ It is expected that we should create a new ID and name for the person instance. 
 ```json
 {
   "@replace": "parameter name", # this may be a subset of the parameter name
-  "@type": "iri", # expected request parameter type - iri or literal
+  "@type": "iri", # expected request parameter type - iri, literal, or array
   "datatype": "http://www.w3.org/2001/XMLSchema#date", # optional data type for LITERAL types if we wish to instantiate non-string literals
   "prefix": "http://example.org/prefix/me/" # optional prefix for IRI types if we require only the identifier but not the entire IRI of the request parameter
 }
 ```
 
-A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted.
 
-#### 4.1.1 Service lifecycle
+> [!CAUTION]
+> Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+> [!NOTE]
+> There are additional `@replace` options such as `schedule` that will be used by default in the agent, but it is not intended for users and should be ignored.
+
+#### 4.1.1 Array
+
+The instantiation of array fields can be created using the following replacement object:
 
 > [!IMPORTANT]
-> Users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`. This event should assign dispatch details before the service executes. A sample file has been created in `./resources/dispatch.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service dispatch` section [over here](#265-service-order-route).
+> For the JSON-LD object in the `@contents` field, the agent will instantiate one instance per array item. The agent will generate an unique identifier for each instance only on replacement `id` fields eg `"@replace": "id"`.
+
+```json
+{
+  "@replace": "group or property name", # this must be the name of the SHACL property group or the standalone property
+  "@type": "array",
+  "@contents": { # each item in the array will be instantiated with the following triples
+      "@id": { # the unique iri will be generated with the following prefix
+        "@replace": "id",
+        "@type": "iri",
+        "prefix": "https://www.example.org/kg/grouping/"
+        },
+      "@type": "https://www.example.org/ExampleGrouping",
+      "https://www.example.org/hasRepeatedInfo": {
+        "@replace": "array info",
+        "@type": "literal"
+      },
+       "https://www.example.org/hasRepeatedPerson": { # this will not generate an iri
+        "@replace": "person",
+        "@type": "iri"
+      },
+  }
+}
+```
+
+#### 4.1.2 Form Branch
+
+Form branches adapt to selected categories by displaying different field sets. Depending on the selected category, a different instantiation template is required. These templates can be set up as an array using the `@branch` key. Do note that there should not be any `@id` and `@type` included within the templates, as the agent will search for the most relevant template and append these templates to the common fields. 
+
+> [!TIP]
+> Only one form branch can be empty as all other branches have additional properties beyond the common template
+
+```json
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "@type": "iri",
+    "prefix": "https://www.example.org/root"
+  },
+  "@type": "https://www.example.org/BranchingClass",
+  "@branch": [
+    {
+      "https://www.example.org/showsBranchOneProperty": {
+        "@replace": "branch one",
+        "@type": "literal"
+      }
+    },
+    {
+      "https://www.example.org/showsBranchTwoProperty": {
+        "@replace": "branch two",
+        "@type": "literal"
+      },
+      "https://www.example.org/showsBranchTwoExtraProperty": {
+        "@replace": "branch two extra",
+        "@type": "literal"
+      }
+    }
+  ]
+}
+```
+
+#### 4.1.3 Service Lifecycle
 
 > [!IMPORTANT]
-> Users will be required to add a `JSON-LD` for the `ServiceDeliveryEvent`. This event should execute upon completion of the service order, and can contain additional properties/details following the user's input. A sample file has been created in `./resources/complete.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service completion` section [over here](#265-service-order-route). Users can also define a special replacement `JSON` object for performing any calculation based upon the completion logs as follows:
+> Users will be required to add a `JSON-LD` for the `ServiceDispatchEvent`. This event should assign dispatch details before the service executes. A sample file has been created in `./resources/jsonld/dispatch.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service dispatch` section [over here](#265-service-order-route).
+
+> [!IMPORTANT]
+> Users will be required to add a `JSON-LD` for the `ServiceDeliveryEvent`. This event should execute upon completion of the service order, and can contain additional properties/details following the user's input. A sample file has been created in `./resources/jsonld/complete.jsonld`, and users must not modify line 1 - 39. The relevant route(s) is found in the `Service completion` section [over here](#265-service-order-route). Users can also define a special replacement `JSON` object for performing any calculation based upon the completion logs as follows:
 
 ```json
 {

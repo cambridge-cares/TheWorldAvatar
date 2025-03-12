@@ -1,0 +1,92 @@
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "@type": "iri",
+    "prefix": "https://www.theworldavatar.io/kg/agreement/payment/obligation/"
+  },
+  "@type": "https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation",
+  "@reverse": {
+    "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/confers": {
+      "@replace": "id",
+      "@type": "iri",
+      "prefix": "https://www.theworldavatar.io/kg/agreement/"
+    }
+  },
+  "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/mandates": {
+    "@id": {
+      "@replace": "id",
+      "@type": "iri",
+      "prefix": "https://www.theworldavatar.io/kg/agreement/payment/model/"
+    },
+    "@type": "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/PricingModel",
+    "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasArgument": {
+      "@id": {
+        "@replace": "id",
+        "@type": "iri",
+        "prefix": "https://www.theworldavatar.io/kg/agreement/payment/base/fee/"
+      },
+      "@type": "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryPrice",
+      "http://www.w3.org/2000/01/rdf-schema#label": "Base Fee",
+      "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/hasAmount": {
+        "@replace": "base fee",
+        "@type": "literal"
+      }
+    },
+    "@branch": [
+      {},
+      {
+        "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasArgument": [
+          {
+            "@replace": "unit price",
+            "@type": "array",
+            "@contents": {
+              "@id": {
+                "@replace": "id",
+                "@type": "iri",
+                "prefix": "https://www.theworldavatar.io/kg/agreement/payment/variable/fee/"
+              },
+              "@type": "https://www.theworldavatar.com/kg/ontoservice/VariableFee",
+              "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/hasAmount": {
+                "@replace": "rate",
+                "@type": "literal"
+              },
+              "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasLowerBound": {
+                "@id": {
+                  "@replace": "id",
+                  "@type": "iri",
+                  "prefix": "https://www.theworldavatar.io/kg/agreement/payment/variable/fee/lower/bound/"
+                },
+                "@type": {
+                  "@replace": "unit",
+                  "@type": "iri"
+                },
+                "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasNumericValue": {
+                  "@replace": "from",
+                  "@type": "literal"
+                }
+              },
+              "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasUpperBound": {
+                "@id": {
+                  "@replace": "id",
+                  "@type": "iri",
+                  "prefix": "https://www.theworldavatar.io/kg/agreement/payment/variable/fee/upper/bound/"
+                },
+                "@type": {
+                  "@replace": "unit",
+                  "@type": "iri"
+                },
+                "https://www.omg.org/spec/Commons/QuantitiesAndUnits/hasNumericValue": {
+                  "@replace": "to",
+                  "@type": "literal"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

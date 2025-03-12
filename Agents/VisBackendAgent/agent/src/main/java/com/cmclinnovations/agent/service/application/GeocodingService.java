@@ -21,7 +21,6 @@ import com.cmclinnovations.agent.model.type.GeoLocationType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.KGService;
-import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
@@ -256,7 +255,7 @@ public class GeocodingService {
    * @param whereClauseLines The query lines for the WHERE clause.
    */
   private String genQueryTemplate(String selectVariables, String whereClauseLines) {
-    return LifecycleResource.genPrefixes() +
+    return StringResource.QUERY_TEMPLATE_PREFIX +
         "SELECT DISTINCT " + selectVariables + " WHERE {" +
         ShaclResource.VARIABLE_MARK + ADDRESS_VAR + " a fibo-fnd-plc-adr:ConventionalStreetAddress;" +
         whereClauseLines +
@@ -271,7 +270,7 @@ public class GeocodingService {
    */
   private String genCoordinateQuery(String location) {
     String locationVar = ShaclResource.VARIABLE_MARK + LOCATION_VAR;
-    return LifecycleResource.genPrefixes() +
+    return StringResource.QUERY_TEMPLATE_PREFIX +
         "SELECT DISTINCT " + locationVar + "{" +
         StringResource.parseIriForQuery(location) + " a fibo-fnd-plc-loc:PhysicalLocation;" +
         "geo:hasGeometry/geo:asWKT " + locationVar + "." +

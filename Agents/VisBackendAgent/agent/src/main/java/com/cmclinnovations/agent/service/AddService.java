@@ -1,9 +1,13 @@
 package com.cmclinnovations.agent.service;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +24,6 @@ import com.cmclinnovations.agent.service.core.KGService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -30,7 +33,6 @@ public class AddService {
   private final FileService fileService;
   private final JsonLdService jsonLdService;
   private final LifecycleReportService lifecycleReportService;
-  private final ObjectMapper objectMapper;
 
   private static final Logger LOGGER = LogManager.getLogger(AddService.class);
 
@@ -42,15 +44,13 @@ public class AddService {
    * @param jsonLdService          A service for interactions with JSON LD.
    * @param lifecycleReportService A service for reporting lifecycle matters such
    *                               as calculation instances.
-   * @param objectMapper           The JSON object mapper.
    */
   public AddService(KGService kgService, FileService fileService, JsonLdService jsonLdService,
-      LifecycleReportService lifecycleReportService, ObjectMapper objectMapper) {
+      LifecycleReportService lifecycleReportService) {
     this.kgService = kgService;
     this.fileService = fileService;
     this.jsonLdService = jsonLdService;
     this.lifecycleReportService = lifecycleReportService;
-    this.objectMapper = objectMapper;
   }
 
   /**
@@ -92,17 +92,10 @@ public class AddService {
     // Update ID value to target ID
     param.put("id", targetId);
     // Retrieve the instantiation JSON schema
-    JsonNode addJsonSchema = this.fileService.getJsonContents(filePath);
+    ObjectNode addJsonSchema = this.jsonLdService.getObjectNode(
+        this.fileService.getJsonContents(filePath));
     // Attempt to replace all placeholders in the JSON schema
-    if (addJsonSchema.isObject()) {
-      this.recursiveReplacePlaceholders((ObjectNode) addJsonSchema, null, null, param);
-    } else {
-      LOGGER.info("Invalid JSON-LD format for replacement!");
-      return new ResponseEntity<>(
-          new ApiResponse("Invalid JSON-LD format for replacement! Please contact your technical team for assistance."),
-          HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
+    this.recursiveReplacePlaceholders(addJsonSchema, null, null, param);
     return this.instantiateJsonLd(addJsonSchema, resourceID + " has been successfully instantiated!");
   }
 
@@ -153,23 +146,41 @@ public class AddService {
           // Add a different interaction for calculations
         } else if (currentNode.path(ShaclResource.REPLACE_KEY).asText().equals("calculation")) {
           this.lifecycleReportService.appendCalculationRecord(parentNode, currentNode, replacements);
+          // When parsing an array for an object node
+        } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("array")) {
+          ArrayNode resultArray = this.genFieldArray(currentNode, replacements);
+          parentNode.set(parentField, resultArray);
           // Parse literal with data types differently
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
             && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
-          ObjectNode literalNode = this.jsonLdService.genLiteral(
-              this.jsonLdService.getReplacementValue(currentNode, replacements),
-              currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
-          parentNode.set(parentField, literalNode);
+          String replacement = this.jsonLdService.getReplacementValue(currentNode, replacements);
+          if (replacement.isEmpty()) { // Remove empty replacements
+            parentNode.remove(parentField);
+          } else {
+            ObjectNode literalNode = this.jsonLdService.genLiteral(replacement,
+                currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
+            parentNode.set(parentField, literalNode);
+          }
           // IRIs that are not assigned to @id or @type should belong within a nested @id
           // object
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
             && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
-          ObjectNode newIriNode = this.objectMapper.createObjectNode();
-          newIriNode.put(ShaclResource.ID_KEY, this.jsonLdService.getReplacementValue(currentNode, replacements));
-          parentNode.set(parentField, newIriNode);
+          String replacement = this.jsonLdService.getReplacementValue(currentNode, replacements);
+          if (replacement.isEmpty()) { // Remove empty replacements
+            parentNode.remove(parentField);
+          } else {
+            ObjectNode newIriNode = this.jsonLdService.genObjectNode();
+            newIriNode.put(ShaclResource.ID_KEY, replacement);
+            parentNode.set(parentField, newIriNode);
+          }
         } else {
           // For IRIs and literal with no other pattern, simply replace the value
-          parentNode.put(parentField, this.jsonLdService.getReplacementValue(currentNode, replacements));
+          String replacement = this.jsonLdService.getReplacementValue(currentNode, replacements);
+          if (replacement.isEmpty()) { // Remove empty replacements
+            parentNode.remove(parentField);
+          } else {
+            parentNode.put(parentField, replacement);
+          }
         }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
@@ -177,23 +188,151 @@ public class AddService {
       }
     } else {
       // Else recursively go deeper into the JSON object to find other replacements
-      Iterator<String> fieldNames = currentNode.fieldNames();
-      while (fieldNames.hasNext()) {
-        String fieldName = fieldNames.next();
+      Queue<String> fieldNames = new ArrayDeque<>();
+      currentNode.fieldNames().forEachRemaining(fieldNames::offer);
+      while (!fieldNames.isEmpty()) {
+        String fieldName = fieldNames.poll();
         JsonNode childNode = currentNode.get(fieldName);
-        // If the child node is an object, recurse deeper
-        if (childNode.isObject()) {
-          recursiveReplacePlaceholders((ObjectNode) childNode, currentNode, fieldName, replacements);
-        } else if (childNode.isArray()) {
-          // If the child node contains an array, recursively parse through each object
-          ArrayNode childrenNodes = (ArrayNode) childNode;
-          for (int i = 0; i < childrenNodes.size(); i++) {
-            // Assumes that the nodes in the array are object node
-            recursiveReplacePlaceholders((ObjectNode) childrenNodes.get(i), currentNode, fieldName, replacements);
+        // For any form branch configuration field
+        if (fieldName.equals(ShaclResource.BRANCH_KEY)) {
+          ObjectNode matchedOption = this.findMatchingOption(
+              this.jsonLdService.getArrayNode(currentNode.path(ShaclResource.BRANCH_KEY)),
+              replacements.keySet());
+          // Iterate and append each property in the target node to the current node
+          Iterator<String> matchedOptionFieldNames = matchedOption.fieldNames();
+          while (matchedOptionFieldNames.hasNext()) {
+            String currentOptionField = matchedOptionFieldNames.next();
+            this.recursiveReplacePlaceholders(matchedOption, currentNode, currentOptionField,
+                replacements);
+            JsonNode matchedField = matchedOption.path(currentOptionField);
+            if (currentNode.has(currentOptionField)) {
+              matchedField = this.jsonLdService.genArrayNode(currentNode.path(currentOptionField), matchedField);
+            }
+            // Append matched option field node to the current node
+            currentNode.set(currentOptionField, matchedField);
+          }
+          currentNode.remove(ShaclResource.BRANCH_KEY); // Always remove the branch field once parsed
+          // For all other fields
+        } else {
+          // If the child node is an object, recurse deeper
+          if (childNode.isObject()) {
+            recursiveReplacePlaceholders((ObjectNode) childNode, currentNode, fieldName, replacements);
+          } else if (childNode.isArray()) {
+            // If the child node contains an array, recursively parse through each object
+            ArrayNode childrenNodes = (ArrayNode) childNode;
+            Deque<Integer> removableIndexes = new ArrayDeque<>();
+            Queue<JsonNode> additionalNodes = new ArrayDeque<>();
+            for (int i = 0; i < childrenNodes.size(); i++) {
+              ObjectNode currentChildNode = this.jsonLdService.getObjectNode(childrenNodes.get(i));
+              // If child node is an array field
+              if (currentChildNode.path(ShaclResource.TYPE_KEY).asText().equals("array")) {
+                ArrayNode resultArray = this.genFieldArray(currentChildNode, replacements);
+                // Store the results and removable index
+                for (JsonNode element : resultArray) {
+                  additionalNodes.offer(element);
+                }
+                removableIndexes.addFirst(i);
+              } else {
+                // Assumes that the nodes in the array are object node
+                this.recursiveReplacePlaceholders(currentChildNode, currentNode, fieldName, replacements);
+              }
+            }
+            // Remove the array fields that should be removed
+            while (!removableIndexes.isEmpty()) {
+              childrenNodes.remove(removableIndexes.removeFirst());
+            }
+            // Add all additional nodes
+            while (!additionalNodes.isEmpty()) {
+              childrenNodes.add(additionalNodes.poll());
+            }
           }
         }
       }
     }
+  }
+
+  /**
+   * Search for the option that matches most of the replacement fields in the
+   * array.
+   * 
+   * @param options        List of options to filter.
+   * @param matchingFields A list containing the fields for matching.
+   */
+  private ObjectNode findMatchingOption(ArrayNode options, Set<String> matchingFields) {
+    // Remove irrelevant parameters
+    matchingFields.remove("entity");
+    ObjectNode bestMatchNode = this.jsonLdService.genObjectNode();
+    int maxMatches = -1;
+    for (JsonNode currentOption : options) {
+      Set<String> availableFields = new HashSet<>();
+      this.recursiveFindReplaceFields(currentOption, availableFields);
+      // Only continue parsing when there are less fields than matching fields
+      // When there are more available fields than matching fields, multiple
+      // options may matched and cannot be discerned
+      if (availableFields.size() <= matchingFields.size()) {
+        // Verify if there are more matched fields than the current maximum
+        Set<String> intersection = new HashSet<>(availableFields);
+        intersection.retainAll(matchingFields);
+        if (intersection.size() > maxMatches) {
+          maxMatches = intersection.size();
+          bestMatchNode = this.jsonLdService.getObjectNode(currentOption);
+        }
+      }
+    }
+    return bestMatchNode;
+  }
+
+  /**
+   * Recursively iterate through the current node to find all replacement fields.
+   * 
+   * @param currentNode The current object node for iteration.
+   * @param foundFields A list storing the fields that have already been found.
+   */
+  private void recursiveFindReplaceFields(JsonNode currentNode, Set<String> foundFields) {
+    // For an replacement object
+    if (currentNode.has(ShaclResource.REPLACE_KEY)) {
+      String replaceValue = currentNode.path(ShaclResource.REPLACE_KEY).asText();
+      // Add the replace value if it has yet to be found
+      if (!foundFields.contains(replaceValue)) {
+        foundFields.add(replaceValue);
+      }
+    } else {
+      Iterator<String> fields = currentNode.fieldNames();
+      while (fields.hasNext()) {
+        JsonNode currentField = currentNode.path(fields.next());
+        if (currentField.isArray()) {
+          for (JsonNode arrayItemNode : currentField) {
+            this.recursiveFindReplaceFields(arrayItemNode, foundFields);
+          }
+        } else {
+          this.recursiveFindReplaceFields(currentField, foundFields);
+        }
+      }
+    }
+  }
+
+  /**
+   * Generates a field array node from the replacement node of array type.
+   * 
+   * @param replacementNode Input contents to perform operation on.
+   * @param replacements    Mappings of the replacement value with their
+   *                        corresponding node.
+   */
+  private ArrayNode genFieldArray(ObjectNode replacementNode, Map<String, Object> replacements) {
+    ArrayNode resultArray = this.jsonLdService.genArrayNode();
+    ObjectNode arrayTemplate = this.jsonLdService.getObjectNode(replacementNode.path(ShaclResource.CONTENTS_KEY));
+
+    String arrayFieldName = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
+    List<Map<String, Object>> arrayFields = (List<Map<String, Object>>) replacements.get(arrayFieldName);
+    arrayFields.forEach(arrayField -> {
+      // Copy the template to prevent any modification
+      ObjectNode currentArrayItem = arrayTemplate.deepCopy();
+      arrayField.putAll(replacements);// place existing replacements into the array mappings
+      arrayField.put("id", UUID.randomUUID()); // generate a new ID key for each item in the array
+      this.recursiveReplacePlaceholders(currentArrayItem, null, null, arrayField);
+      resultArray.add(currentArrayItem);
+    });
+    return resultArray;
   }
 
   /**
@@ -209,17 +348,14 @@ public class AddService {
   private void replaceDayOfWeekSchedule(ObjectNode parentNode, String parentField, Map<String, Object> replacements) {
     // Note that this method assumes that the explicit recurrence interval will
     // always contain an array of items
-    ArrayNode results = this.objectMapper.createArrayNode(); // Empty array to store values
+    ArrayNode results = this.jsonLdService.genArrayNode(); // Empty array to store values
     // First iterate through the schedule array and retrieve all items that are not
     // the replacement object
-    JsonNode scheduleNode = parentNode.path(parentField);
-    if (scheduleNode.isArray()) {
-      ArrayNode nodes = (ArrayNode) scheduleNode;
-      for (int i = 0; i < nodes.size(); i++) {
-        JsonNode currentScheduleNode = nodes.get(i);
-        if (currentScheduleNode.isObject() && !((ObjectNode) currentScheduleNode).has(ShaclResource.REPLACE_KEY)) {
-          results.add(currentScheduleNode);
-        }
+    ArrayNode nodes = this.jsonLdService.getArrayNode(parentNode.path(parentField));
+    for (int i = 0; i < nodes.size(); i++) {
+      JsonNode currentScheduleNode = nodes.get(i);
+      if (currentScheduleNode.isObject() && !currentScheduleNode.has(ShaclResource.REPLACE_KEY)) {
+        results.add(currentScheduleNode);
       }
     }
 
@@ -239,7 +375,7 @@ public class AddService {
       // Parameter name is in lowercase based on the frontend
       if (replacements.containsKey(currentDay.toLowerCase()) && (boolean) replacements.get(currentDay.toLowerCase())) {
         // Only include the selected day if it has been selected on the frontend
-        ObjectNode currentDayNode = this.objectMapper.createObjectNode();
+        ObjectNode currentDayNode = this.jsonLdService.genObjectNode();
         currentDayNode.put(ShaclResource.ID_KEY,
             "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/"
                 + currentDay + "");

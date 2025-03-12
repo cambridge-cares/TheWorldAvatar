@@ -11,11 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.model.ParentField;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.service.core.FileService;
 import com.cmclinnovations.agent.service.core.KGService;
-import com.cmclinnovations.agent.utils.LifecycleResource;
+import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class GetService {
@@ -40,13 +41,13 @@ public class GetService {
    * Retrieve all the target instances and their information. This method can also
    * retrieve instances associated with a specific parent instance if declared.
    * 
-   * @param resourceID       The target resource identifier for the instance
-   *                         class.
-   * @param parentInstanceId Optional parent instance identifier.
-   * @param requireLabel     Indicates if labels should be returned for all the
-   *                         fields that are IRIs.
+   * @param resourceID   The target resource identifier for the instance
+   *                     class.
+   * @param parentField  Optional parent field containing its id and name.
+   * @param requireLabel Indicates if labels should be returned for all the
+   *                     fields that are IRIs.
    */
-  public ResponseEntity<?> getAllInstances(String resourceID, String parentInstanceId, boolean requireLabel) {
+  public ResponseEntity<?> getAllInstances(String resourceID, ParentField parentField, boolean requireLabel) {
     LOGGER.debug("Retrieving all instances of {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
@@ -54,23 +55,19 @@ public class GetService {
       return iriResponse;
     }
     String queryPath = FileService.SHACL_PATH_QUERY_RESOURCE;
-    String parentId = parentInstanceId;
-    // If no parent instance ID is supplied, hasParent should be true
-    boolean hasParent = parentInstanceId != null;
     if (requireLabel) {
       // Only use the label query if required due to the associated slower query
       // performance
       queryPath = FileService.SHACL_PATH_LABEL_QUERY_RESOURCE;
       // Parent related parameters should be disabled
-      parentId = null;
-      hasParent = false;
+      parentField = null;
     }
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
-    Queue<SparqlBinding> results = this.kgService.queryInstances(query, parentId, hasParent);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, parentField);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 
@@ -126,7 +123,7 @@ public class GetService {
     String queryPath = requireLabel ? FileService.SHACL_PATH_LABEL_QUERY_RESOURCE
         : FileService.SHACL_PATH_QUERY_RESOURCE;
     String query = this.fileService.getContentsWithReplacement(queryPath, replacement);
-    Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId);
     if (results.size() == 1) {
       return new ResponseEntity<>(
           results.poll().get(),
@@ -148,10 +145,10 @@ public class GetService {
    * 
    * @param query Query for execution.
    */
-  public String getInstance(String query) {
+  public SparqlBinding getInstance(String query) {
     LOGGER.debug("Retrieving an instance...");
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
+    return this.kgService.getSingleInstance(results);
   }
 
   /**
@@ -192,17 +189,12 @@ public class GetService {
    * Retrieve the metadata (IRI, label, and description) of the concept associated
    * with the target resource. This will return their current or sub-classes.
    * 
-   * @param resourceID The target resource identifier for the instance class.
+   * @param conceptClass The target class details to retrieved.
    */
-  public ResponseEntity<?> getConceptMetadata(String resourceID) {
-    LOGGER.debug("Retrieving the instances for {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
-    // Return the BAD REQUEST response directly if IRI is invalid
-    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-      return iriResponse;
-    }
+  public ResponseEntity<?> getConceptMetadata(String conceptClass) {
+    LOGGER.debug("Retrieving the instances for {} ...", conceptClass);
     String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE,
-        iriResponse.getBody());
+        StringResource.parseIriForQuery(conceptClass));
     // Note that all concept metadata will never be stored in Ontop and will require
     // the special property paths
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
@@ -215,7 +207,7 @@ public class GetService {
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 
@@ -239,7 +231,7 @@ public class GetService {
     return new ResponseEntity<>(
         results.stream()
             .map(binding -> binding.getFieldValue("iri"))
-            .collect(Collectors.toList()),
+            .toList(),
         HttpStatus.OK);
   }
 }
