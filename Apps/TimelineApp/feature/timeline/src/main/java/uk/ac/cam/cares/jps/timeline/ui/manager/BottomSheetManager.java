@@ -137,16 +137,16 @@ public class BottomSheetManager {
     normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
         List<SummaryActivityItem> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
         List<Session> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
-        Integer clickedId = trajectoryViewModel.clickedId.getValue();  // Get the clicked segment ID
+        TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
 
         if (sessionSummaryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
             normalBottomSheet.updateSummaryView(activityItemSummaryList);
-            normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedId);
+            normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
         }
     });
 
     // Observe clickedId and update the RecyclerView when a trajectory is clicked
-    trajectoryViewModel.clickedId.observe(lifecycleOwner, clickedId -> {
+    trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedId -> {
         if (clickedId != null) {
             normalBottomSheet.highlightClickedSegment(clickedId);  // Implement this method in your bottom sheet UI
         }

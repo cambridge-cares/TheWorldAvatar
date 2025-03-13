@@ -19,11 +19,14 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapter.ActivityItemViewHolder> {
     private final List<ActivityItem> activityList;
 
-    public ActivityItemAdapter(List<ActivityItem> activityList, Integer clickedId) {
+    public ActivityItemAdapter(List<ActivityItem> activityList, TrajectorySegment clickedSegment) {
         this.activityList = activityList;
 
         for(ActivityItem item : activityList) {
-            if(item.getId() == clickedId) {
+            if(clickedSegment == null) {
+                item.setClicked(false);
+            }
+            else if(item.getId() == clickedSegment.id()) {
                 item.setClicked(!item.getClicked());
             }
             else {

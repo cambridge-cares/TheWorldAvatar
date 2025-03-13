@@ -91,16 +91,16 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 // }
 public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.SessionsViewHolder> {
     private List<Session> sessionList;
-    private Integer clickedId;
+    private TrajectorySegment clickedSegment;
     private final RecyclerView.RecycledViewPool activitySummaryViewPool = new RecyclerView.RecycledViewPool();
 
     public SessionsAdapter() {
         this.sessionList = new ArrayList<>();
     }
 
-    public void setUniqueSessionsList(List<Session> sessionList, Integer clickedId) {
+    public void setUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
         this.sessionList = new ArrayList<>(sessionList);
-        this.clickedId = clickedId;
+        this.clickedSegment = clickedSegment;
         notifyDataSetChanged(); 
     }
 
@@ -124,7 +124,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         layoutManager.setInitialPrefetchItemCount(session.getShownList().size());
 
         // Ensure ActivityItemAdapter receives the updated clickedId
-        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getShownList(), clickedId);
+        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getShownList(), clickedSegment);
         holder.activitySummaryRecyclerView.setLayoutManager(layoutManager);
         holder.activitySummaryRecyclerView.setAdapter(activityItemAdapter);
         holder.activitySummaryRecyclerView.setRecycledViewPool(activitySummaryViewPool);
@@ -144,13 +144,12 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         return sessionList.size();
     }
 
-    public void setClickedSegment(Integer clickedId) {
-        this.clickedId = clickedId;
-        
+    public void setClickedSegment(TrajectorySegment clickedSegment) {
+        this.clickedSegment = clickedSegment;
         // Find which session contains the clicked segment and update only that session
         for (int i = 0; i < sessionList.size(); i++) {
             Session session = sessionList.get(i);
-            if (session.containsSegment(clickedId)) { // Assuming a helper method
+            if (session.containsSegment(clickedSegment)) { // Assuming a helper method
                 notifyItemChanged(i);
                 return;
             }

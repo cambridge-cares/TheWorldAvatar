@@ -78,7 +78,7 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateUniqueSessionsList(List<Session> sessionList, Integer clickedId) {
+    public void updateUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedId) {
         if (sessionList != null && !sessionList.isEmpty()) {
             sessionsAdapter.setUniqueSessionsList(sessionList, clickedId);
             sessionsAdapter.notifyDataSetChanged();
@@ -115,8 +115,8 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void highlightClickedSegment(Integer clickedId) {
-        sessionsAdapter.setClickedSegment(clickedId);
+    public void highlightClickedSegment(TrajectorySegment clickedSegment) {
+        sessionsAdapter.setClickedSegment(clickedSegment);
         sessionsAdapter.notifyDataSetChanged();
     }
 }

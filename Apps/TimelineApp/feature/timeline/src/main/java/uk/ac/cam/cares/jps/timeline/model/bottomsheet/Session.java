@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
+
 public class Session {
     private final String sessionId;
     private final String sessionTitle;
@@ -37,13 +39,18 @@ public class Session {
         return sessionTitle;
     }
 
-    public boolean containsSegment(int id) {
-        for(ActivityItem item : this.activityItemList) {
-            if(item.getId() == id) {
-                return true;
+    public boolean containsSegment(TrajectorySegment segment) {
+        if(sessionId.equals(segment.sessionId())) {
+            for (ActivityItem item : this.activityItemList) {
+                if (item.getId() == segment.id()) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
+        else {
+            return false;
+        }
     }
 
 }

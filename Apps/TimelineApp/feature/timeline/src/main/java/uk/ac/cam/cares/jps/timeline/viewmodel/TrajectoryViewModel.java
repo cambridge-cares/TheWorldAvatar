@@ -38,12 +38,12 @@ public class TrajectoryViewModel extends ViewModel {
     private final MutableLiveData<TrajectoryByDate> _trajectory = new MutableLiveData<>();
     private final MutableLiveData<Throwable> _trajectoryError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
-    private final MutableLiveData<Integer> _clickedId = new MutableLiveData<>(0);
+    private final MutableLiveData<TrajectorySegment> _clickedSegment = new MutableLiveData<>(null);
 
     public LiveData<TrajectoryByDate> trajectory = _trajectory;
     public LiveData<Throwable> trajectoryError = _trajectoryError;
     public LiveData<Boolean> isFetchingTrajectory = _isFetchingTrajectory;
-    public LiveData<Integer> clickedId = _clickedId;
+    public LiveData<TrajectorySegment> clickedSegment = _clickedSegment;
 
     private static final Logger LOGGER = Logger.getLogger(String.valueOf(TrajectoryViewModel.class));
 
@@ -113,17 +113,17 @@ public class TrajectoryViewModel extends ViewModel {
 
             if(isClicked(geom, p)) {
                 Log.d("valid click", "clicked segment with id " + segment.id());
-                _clickedId.postValue(segment.id());
+                _clickedSegment.postValue(segment);
                 return;
             }
         }
-        _clickedId.postValue(0);
+        _clickedSegment.postValue(null);
         Log.d("invalid click","not a segment.");
 
     }
 
     public void removeAllClicked() {
-        _clickedId.postValue(0);
+        _clickedSegment.postValue(null);
     }
 
     private long calculateLowerbound(LocalDate date) {
