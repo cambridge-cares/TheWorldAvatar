@@ -51,9 +51,6 @@ public class IndexConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(listenerAdapter, new PatternTopic("stackSyncChannel"));
-        // container.addMessageListener(listenerAdapter, new PatternTopic("__keyevent@0__:set"));
-        // container.addMessageListener(listenerAdapter, new PatternTopic("__keyevent@0__:del"));
-        // container.addMessageListener(listenerAdapter, new PatternTopic("__keyevent@0__:expired"));
         return container;
     }
 
