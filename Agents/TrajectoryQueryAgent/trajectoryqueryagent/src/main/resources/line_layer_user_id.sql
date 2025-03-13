@@ -26,14 +26,15 @@ SELECT
     ST_MakeLine(geom) as geom, 
     CONCAT('https://w3id.org/MON/person.owl#person_', '%user_id%') AS iri,
     session_id AS session_id,
-    1 AS id
+    1 AS id,
     ST_Length(ST_Transform(ST_MakeLine(ARRAY_AGG(geom ORDER BY time)), 3857))::INTEGER AS distance_traveled
 FROM 
     timeseries ts
 WHERE
     ('%user_id%' = '' OR user_id = '%user_id%')
-    AND (%lowerbound% = 0 OR time > %lowerbound%)
-    AND (%upperbound% = 0 OR time < %upperbound%)
+    AND ('%lowerbound%' = 0 OR time > '%lowerbound%')
+    AND ('%upperbound%' = 0 OR time < '%upperbound%')
 GROUP BY
     ts.session_id
-    ORDER BY start_time;
+ORDER BY start_time
+

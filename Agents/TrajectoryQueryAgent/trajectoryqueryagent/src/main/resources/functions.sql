@@ -197,7 +197,7 @@ DECLARE
 BEGIN
     
     FOREACH activity IN ARRAY activity_types
-    LOOP 
+    LOOP
         IF activity <> 'others' THEN
             last_valid := activity;
             EXIT;  
@@ -213,7 +213,7 @@ BEGIN
         result := array_append(result, last_valid);
     END LOOP;
 
-    FOR i IN 1..array_length(result, 1)
+    FOR i IN 1..array_length(times, 1)
     LOOP
         activity_time := times[i];
         RETURN QUERY SELECT activity_time, result[i]; 
