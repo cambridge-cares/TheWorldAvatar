@@ -32,8 +32,8 @@ FROM
     timeseries ts
 WHERE
     ('%user_id%' = '' OR user_id = '%user_id%')
-    AND ('%lowerbound%' = 0 OR time > '%lowerbound%')
-    AND ('%upperbound%' = 0 OR time < '%upperbound%')
+AND ('%lowerbound%' = '0' OR ts.time > '%lowerbound%'::BIGINT)
+AND ('%upperbound%' = '0' OR ts.time < '%upperbound%'::BIGINT)
 GROUP BY
     ts.session_id
 ORDER BY start_time
