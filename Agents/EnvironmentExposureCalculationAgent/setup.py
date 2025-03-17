@@ -10,7 +10,7 @@ setup(
         'pandas',
         'twa',
         'pydantic',
-        'psycopg2'
+        'psycopg2-binary'
     ],
     extras_require={
         'dev': [

@@ -1,26 +1,29 @@
 ################################################
-# Authors: Jiying Chen (jc2341)                #    
+# Authors: Jiying Chen (jc2341)                #
 # Date: 11/03 2024                             #
 ################################################
 
-# This module is used to to provide functionality to execute KG queries and updates 
+# This module is used to to provide functionality to execute KG queries and updates
 # using the RemoteStoreClient from the JPS_BASE_LIB
 
 import json
 from twa import agentlogging
+from twa.kg_operations import PySparqlClient
 from agent.exceptions import KGException
-from jps_singletons import jps_gateway
+from flask import current_app
 
-logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("kg_client")
+
 
 class KGClient:
-    
-    def __init__(self, query_endpoint, update_endpoint, kg_user=None, 
+
+    def __init__(self, query_endpoint, update_endpoint, kg_user=None,
                  kg_password=None):
 
         # create a JVM module view and use it to import the required java classes
-        self.stackClients_view = jps_gateway.createModuleView()
-        jps_gateway.importPackages(self.stackClients_view,"uk.ac.cam.cares.jps.base.query.*")
+        # self.stackClients_view = current_app.extensions['stack_client'].createModuleView()
+        # current_app.extensions['stack_client'].importPackages(
+        #     self.stackClients_view, "uk.ac.cam.cares.jps.base.query.*")
 
         # replace RemoteStoreClient with AccessAgent/StoreClient once its tested
         # StoreRouter = jpsBaseLib_view.StoreRouter
@@ -30,14 +33,14 @@ class KGClient:
 
         try:
             if kg_user is not None:
-                self.kg_client = self.stackClients_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
+                self.kg_client = PySparqlClient(
+                    query_endpoint, update_endpoint, kg_user, kg_password)
             else:
-                self.kg_client = self.stackClients_view.RemoteStoreClient(query_endpoint, update_endpoint)
+                self.kg_client = PySparqlClient(query_endpoint, update_endpoint)
         except Exception as ex:
             logger.error("Unable to initialise KG client")
             raise KGException("Unable to initialise KG client.") from ex
 
-    
     def performQuery(self, query):
         """
             This function performs query to knowledge graph.
@@ -51,7 +54,6 @@ class KGClient:
             raise KGException("SPARQL query not successful.") from ex
         return json.loads(response)
 
-
     def performUpdate(self, update):
         """
             This function performs SPARQL Update to knowledge graph.
@@ -63,8 +65,8 @@ class KGClient:
         except Exception as ex:
             logger.error("SPARQL update not successful")
             raise KGException("SPARQL update not successful.") from ex
-    
-    def get_time_series_details(self, iri_to_forecast:str):
+
+    def get_time_series_details(self, iri_to_forecast: str):
         query = f"""
             SELECT DISTINCT ?data_iri ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
             WHERE {{   
@@ -80,7 +82,8 @@ class KGClient:
         try:
             response = self.performQuery(query)
             if response and len(response) == 1:
-                return response[0]  # Simplified for illustration; adapt as needed
+                # Simplified for illustration; adapt as needed
+                return response[0]
             else:
                 raise ValueError("No unique time series details found.")
         except Exception as ex:

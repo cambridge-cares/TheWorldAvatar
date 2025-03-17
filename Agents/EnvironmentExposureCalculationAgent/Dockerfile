@@ -19,12 +19,10 @@ RUN mkdir -p ./tmp_stack
 COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
-
-# Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./setup.py .
 # COPY ./resources/ontop.obda ./resources/ontop.obda
-# ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
@@ -35,31 +33,26 @@ RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_j
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
 # Expose port
-EXPOSE 5000 5005
+EXPOSE 5000 5678
 
 # #------------------------------------------------------
 # # Debugging image reusing the base
 # #------------------------------------------------------
-# FROM base as debug
-# # Install additional dependencies for debugging
+FROM base as debug
 RUN pip install debugpy
-
-# # Set flask app and development environment to allow for hot-reloading
-# ENV FLASK_APP=app/agent/flaskapp/wsgi.py
-# ENV FLASK_DEBUG=1
-
-# # Launch application in container
-# WORKDIR /app/agent/flaskapp/
-# CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+WORKDIR /app/agent
+ENV FLASK_APP=/app/agent/app.py
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask --debug run -h 0.0.0.0 -p 5000
 
 
 # #------------------------------------------------------
 # # Production image reusing the base
 # #------------------------------------------------------
-# FROM base as prod
+FROM base as prod
 
 # # Copy required source code (as code is not attached as volume)
-# WORKDIR /app
+WORKDIR /app/agent
+CMD python -m flask run -h 0.0.0.0 -p 5000
 # COPY ./agent ./agent
 # COPY ./app_entry_point.sh .
 
@@ -69,7 +62,7 @@ RUN pip install debugpy
 # ENTRYPOINT ./app_entry_point.sh
 # #==================================================================================================
 
-FROM base as debug
-WORKDIR /agent
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000", "--debug"]
-# CMD ["sh", "-c", "while true; do sleep 3600; done"]
+# FROM base as debug
+# WORKDIR /agent
+# CMD ["flask", "run", "--host=0.0.0.0", "--port=5000", "--debug"]
+# # CMD ["sh", "-c", "while true; do sleep 3600; done"]

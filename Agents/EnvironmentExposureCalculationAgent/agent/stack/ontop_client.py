@@ -1,16 +1,17 @@
 import json
 from agent.exceptions import StackException
-from twa.jps_singletons import jps_gateway
 from twa import agentlogging
+from twa.kg_operations import PySparqlClient
 
 class OntopClient():
-    stackClients_view = jps_gateway.createModuleView()
-    logger = agentlogging.get_logger("PostGISClient")
 
+#todo: need to double check how is ontop client used in java 
     def __init__(self, query_endpoint: str):
+        logger = agentlogging.get_logger("dev")
+        
         # Initialise OntopClient as RemoteStoreClient
         try:
-            self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
+            self.ontop_client = PySparqlClient(query_endpoint, None)
         except Exception as ex:
             self.logger.error("Unable to initialise OntopClient.")
             raise StackException("Unable to initialise OntopClient.") from ex
