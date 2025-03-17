@@ -4,7 +4,7 @@
 
 Stack name should be `timeline-test`.
 
-Prepare these secret files in [](./stack-manager/test/inputs/secrets)
+Prepare these secret files in the [stack secret folder](./stack-manager/test/inputs/secrets)
 
 - geoserver_password
 - postgis_password
@@ -16,6 +16,14 @@ Majority of KeyCloak settings are set using environment variables in [keycloak-t
 Set value of KC_DB_PASSWORD to match value in postgis_password.
 
 Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
+
+Preconfigured realm and client settings can be found in dropbox `IRP3 CAPRICORN shared folder\_TWA_Shared_Data\Timeline` (accessible by CARES member only). Copy the files from the folder to the stack [data folder](test/stack-manager/inputs/data). They are required for user agent since [version 2.0.0](https://github.com/orgs/cambridge-cares/packages/container/package/user-agent). Provided files are as follows:
+- user_agent_keycloak.json
+- keycloak/data/timeline-realm.json
+
+> If the stack is deployed in remote server, please update 
+> - `auth-server-url` in [user_agent_keycloak.json](test/stack-manager/inputs/data) accordingly
+> - `rootUrl` for user-agent client from `localhost:58085` to the server address in [timeline-realm.json](test/stack-manager/inputs/data/keycloak/data)
 
 You may need to change the permissions of the keycloak startup script, i.e.
 
@@ -119,6 +127,12 @@ IMPORT FOREIGN SCHEMA public
 5. Download contents of [https://github.com/TheWorldAvatar/viz/tree/main/code/public/images/defaults] into [./test/vis/vis-files/public/images/defaults](./test/vis/vis-files/public/images/defaults).
 6. Run `docker compose up -d` in [./test/vis/](./test/vis/).
 7. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
+
+## Oura Ring data
+
+Create a namespace called `ouraring` in Blazegraph (default namespace defined in [./test/stack-manager/inputs/config/services/ouraring-agent.json](./test/stack-manager/inputs/config/services/ouraring-agent.json)).
+
+Refer to documentation at [../../../Agents/OuraRingAgent](../../../Agents/OuraRingAgent/readme.md) for instructions to instantiate Oura Ring data
 
 [keycloak-test.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
 [keycloak-prod.json]: ./stack-manager/test/inputs/config/services/keycloak-prod.json

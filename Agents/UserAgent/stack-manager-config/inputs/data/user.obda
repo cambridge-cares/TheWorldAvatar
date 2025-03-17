@@ -3,10 +3,12 @@ xsd:    http://www.w3.org/2001/XMLSchema#
 bot:    https://w3id.org/bot#
 mon:    https://w3id.org/MON/person.owl#
 sla:    https://www.theworldavatar.com/kg/sensorloggerapp/
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
 
 [MappingDeclaration] @collection [[
 mappingId   User
 target      mon:person_{id} a mon:Person;
+                rdfs:label id;
                 mon:personalMailbox {email};
                 mon:firstName {first_name};
                 mon:lastName {last_name};

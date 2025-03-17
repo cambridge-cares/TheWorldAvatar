@@ -105,8 +105,7 @@ public class BuildingUsageHelper
                 .addOptional("?usage", "ontoBuiltEnv:hasUsageShare", "?UsageShare");
 
         sb.addVar("?BuildingUsage").addVar("?UsageShare")
-                .addWhere(wb)
-                .addOrderBy("UsageShare", Order.DESCENDING);
+                .addWhere(wb);
 
         sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
 

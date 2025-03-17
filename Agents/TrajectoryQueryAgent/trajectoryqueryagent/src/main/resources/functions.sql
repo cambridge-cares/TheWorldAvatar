@@ -100,23 +100,30 @@ RETURNS TABLE (
 ) AS $$
 DECLARE
     query TEXT := '';
+    processed_array TEXT[] := ARRAY[]::TEXT[];
 BEGIN
     FOR i IN 1..array_length(device_id_array, 1) LOOP
+        IF get_column_name(get_point_iri(device_id_array[i])) IS NOT NULL THEN
+            processed_array := array_append(processed_array, device_id_array[i]);
+        END IF;
+    END LOOP;
+
+    FOR i IN 1..array_length(processed_array, 1) LOOP
         IF i > 1 THEN
             query := query || ' UNION ALL ';
         END IF;
 
         query := query || format(
             'SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing, %I AS session_id, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri=%L',
-            get_column_name(get_point_iri(device_id_array[i])),
-            get_column_name(get_speed_iri(device_id_array[i])),
-            get_column_name(get_altitude_iri(device_id_array[i])),
-            get_column_name(get_bearing_iri(device_id_array[i])),
-            get_column_name(get_session_iri(device_id_array[i])),
-            device_id_array[i],
-            get_user_id(device_id_array[i]),
-            get_table_name(get_point_iri(device_id_array[i])),
-            get_time_series(get_point_iri(device_id_array[i]))
+            get_column_name(get_point_iri(processed_array[i])),
+            get_column_name(get_speed_iri(processed_array[i])),
+            get_column_name(get_altitude_iri(processed_array[i])),
+            get_column_name(get_bearing_iri(processed_array[i])),
+            get_column_name(get_session_iri(processed_array[i])),
+            processed_array[i],
+            get_user_id(processed_array[i]),
+            get_table_name(get_point_iri(processed_array[i])),
+            get_time_series(get_point_iri(processed_array[i]))
         );
     END LOOP;
 

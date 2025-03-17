@@ -1,12 +1,5 @@
+# The JPS Base Lib is no more
 
-# JPS Base Library
+The artist formerly known as JPS_BASE_LIB has been moved to its own repository within [The World Avatar](https://github.com/TheWorldAvatar/BaseLib).
 
-To be written
-
-## Requirements
-
-To be written
-
-## Usage
-
-To be written
+Please continue to contribute there.

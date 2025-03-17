@@ -1,0 +1,9 @@
+PREFIX mon: <https://w3id.org/MON/person.owl#>
+
+SELECT ?Property ?Value
+WHERE {
+    SERVICE [ONTOP] {
+        [IRI] mon:firstName ?Value.
+        BIND("First name" AS ?Property)
+    }
+}

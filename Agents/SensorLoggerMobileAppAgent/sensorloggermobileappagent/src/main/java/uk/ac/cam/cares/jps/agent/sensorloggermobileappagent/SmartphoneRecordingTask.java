@@ -6,8 +6,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.*;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -15,8 +19,10 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
@@ -32,12 +38,14 @@ public class SmartphoneRecordingTask {
     LocationDataProcessor locationDataProcessor;
     MagnetometerDataProcessor magnetometerDataProcessor;
     RelativeBrightnessProcessor relativeBrightnessProcessor;
-    List<SensorDataProcessor> sensorDataProcessorList;
+    ActivityProcessor activityProcessor;
+    List<SensorDataProcessor> sensorDataProcessors;
 
     private final Node smartphoneIRI;
     private final String deviceId;
 
     private final RemoteStoreClient ontopRemoteStoreClient;
+    private final RemoteStoreClient blazegraphStoreClient;
     private final TimeSeriesClient<Long> tsClient;
     private final AgentConfig config;
 
@@ -57,7 +65,8 @@ public class SmartphoneRecordingTask {
         tsRdbClient.setRdbUser(rdbStoreClient.getUser());
         tsRdbClient.setRdbPassword(rdbStoreClient.getPassword());
 
-        this.tsClient = new TimeSeriesClient<>(storeClient, tsRdbClient);
+        this.blazegraphStoreClient = storeClient;
+        this.tsClient = new TimeSeriesClient<>(blazegraphStoreClient, tsRdbClient);
         this.config = config;
         lastActiveTime = System.currentTimeMillis();
         lastProcessedTime = System.currentTimeMillis();
@@ -72,9 +81,9 @@ public class SmartphoneRecordingTask {
                 rdbStoreClient.getUser(), rdbStoreClient.getPassword());
     }
 
-    public synchronized void addData(HashMap<String, List<?>> data) {
+    public synchronized void addData(Payload data) {
         logger.info("adding data...");
-        sensorDataProcessorList.forEach(p -> p.addData(data));
+        sensorDataProcessors.forEach(p -> p.addData(data));
         lastActiveTime = System.currentTimeMillis();
         logger.info("finish adding data and the last active time is updated to " + lastActiveTime);
     }
@@ -97,25 +106,34 @@ public class SmartphoneRecordingTask {
         isProcessing = true;
 
         logger.info("Processing and sending data");
-        if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isIriInstantiationNeeded)) {
-            logger.info("Need to init kg");
-            initKgUsingOntop();
+
+        List<SensorDataProcessor> processorsToInstantiate = sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInstantiateDevice).toList();
+        if (!processorsToInstantiate.isEmpty()) {
+            logger.info("Need to init device: " + processorsToInstantiate.stream()
+                    .map(SensorDataProcessor::getOntodeviceLabel).collect(Collectors.joining(",")));
+            initDeviceKgUsingOntop(processorsToInstantiate);
         }
 
-        if (sensorDataProcessorList.stream().anyMatch(SensorDataProcessor::isRbdInstantiationNeeded)) {
-            sensorDataProcessorList.forEach(s -> s.initIRIs());
-            logger.info("Need to init rdb");
-            bulkInitRdb();
+        List<SensorDataProcessor> processorsToInitTimeSeries = sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInitTimeSeries).toList();
+        if (!processorsToInitTimeSeries.isEmpty()) {
+            logger.info("Need to init rdb for " + processorsToInitTimeSeries.stream()
+                    .map(SensorDataProcessor::getOntodeviceLabel).collect(Collectors.joining(",")));
+            initDevicesInRDB();
         }
+
+        fixUninitializedSensorData();
 
         try {
             bulkAddTimeSeriesData();
         } catch (RuntimeException e) {
-            logger.error(e.getMessage());
-            logger.error(e.getCause());
-
             lastProcessedTime = System.currentTimeMillis();
             isProcessing = false;
+
+            logger.error(e.getMessage());
+            logger.error(e.getCause());
+            logger.error("Failed to process, release isProcessing and update the processed time to " + lastProcessedTime);
             return;
         }
 
@@ -126,36 +144,33 @@ public class SmartphoneRecordingTask {
     }
 
     public synchronized boolean shouldTerminateTask() {
-        if (System.currentTimeMillis() - lastActiveTime > config.getTaskInactiveTime() * 1000L) {
-            return true;
-        }
-
-        return false;
+        return System.currentTimeMillis() - lastActiveTime > config.getTaskInactiveTime() * 1000L;
     }
 
     private void initSensorProcessors() {
-        accelerometerProcessor = new AccelerometerProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        dbfsDataProcessor = new DBFSDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        gravityDataProcessor = new GravityDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        illuminationProcessor = new IlluminationProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        locationDataProcessor = new LocationDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
-        relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, ontopRemoteStoreClient,
-                smartphoneIRI);
+        accelerometerProcessor = new AccelerometerProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        dbfsDataProcessor = new DBFSDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        gravityDataProcessor = new GravityDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        illuminationProcessor = new IlluminationProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        locationDataProcessor = new LocationDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
+        activityProcessor = new ActivityProcessor(this.config, ontopRemoteStoreClient, blazegraphStoreClient, smartphoneIRI);
 
-        sensorDataProcessorList = Arrays.asList(accelerometerProcessor,
+        sensorDataProcessors = Arrays.asList(accelerometerProcessor,
                 dbfsDataProcessor,
                 gravityDataProcessor,
                 illuminationProcessor,
                 locationDataProcessor,
                 magnetometerDataProcessor,
-                relativeBrightnessProcessor);
+                relativeBrightnessProcessor,
+                activityProcessor);
     }
 
-    private void initKgUsingOntop() {
+    private void initDeviceKgUsingOntop(List<SensorDataProcessor> processors) {
         logger.info("Instantiating kg in ontop");
 
-        List<String> sensorClasses = sensorDataProcessorList.stream().map(s -> s.getOntodeviceLabel())
+        List<String> sensorClasses = processors.stream().map(SensorDataProcessor::getOntodeviceLabel)
                 .collect(Collectors.toList());
 
         boolean firstTime = sensorLoggerPostgresClient.populateTable(deviceId, sensorClasses);
@@ -171,7 +186,6 @@ public class SmartphoneRecordingTask {
             OntopClient.getInstance().updateOBDA(obdaFile);
         }
 
-        sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
         logger.info(
                 "finish instantiating kg, exception above is probably from updating the obda file and is harmless.");
         // wait 30 seconds for ontop to initialise before allow queries execution
@@ -181,11 +195,13 @@ public class SmartphoneRecordingTask {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+
+        sensorDataProcessors.forEach(s -> s.initIRIs());
     }
 
-    private void bulkInitRdb() {
-        Iterator<SensorDataProcessor> iterator = sensorDataProcessorList.stream()
-                .filter(SensorDataProcessor::isRbdInstantiationNeeded).iterator();
+    private void initDevicesInRDB() {
+        Iterator<SensorDataProcessor> iterator = sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInitTimeSeries).iterator();
         List<List<String>> dataIris = new ArrayList<>();
         List<List<Class<?>>> dataClasses = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -198,13 +214,46 @@ public class SmartphoneRecordingTask {
         List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
 
-        sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded)
-                .forEach(p -> p.setRbdInstantiationNeeded(false));
+        sensorDataProcessors.stream()
+                .filter(SensorDataProcessor::isNeedToInitTimeSeries).forEach(SensorDataProcessor::getTimeSeriesIrisFromBlazegraph);
         logger.info("finish init postgres dbTable and the corresponding table");
     }
 
+    /**
+     * Updates blazegraph and time_series_quantities table for new sensor data when
+     * device already exists.
+     * This handles the case where the device and some of its sensor data exists,
+     * but having new sensor data not yet linked with a time series in blazegraph
+     * and RDB tables.
+     * Only updates entries for sensor data that need to be initialized.
+     * 
+     * NOTICE: This function assumes all sensor data by a device has the same time
+     * series.
+     */
+    private void fixUninitializedSensorData() {
+        for (SensorDataProcessor sensorDataProcessor : sensorDataProcessors) {
+            List<SensorData<?>> sensorData = sensorDataProcessor.getSensorData().stream().filter(sd -> sd.isNeedToInitTimeSeries()).collect(Collectors.toList());
+            if (sensorData.isEmpty()) {
+                continue;
+            }
+
+            List<String> dataIris = new ArrayList<>();
+            List<Class<?>> classes = new ArrayList<>();
+            for (SensorData sd : sensorData) {
+                dataIris.add(sd.getDataIri());
+                classes.add(sd.getType());
+            }
+
+            logger.debug(sensorDataProcessor.getSensorName() + ": " + String.join(",", dataIris) + " have no tsIRI, fixing is needed.");
+
+            tsClient.addColumnsToExistingTimeSeries(sensorDataProcessor.getTsIri(), dataIris, classes,
+                    classes.contains(Point.class)?4326:null);
+            sensorData.forEach(sd -> sd.setNeedToInitTimeSeries(false));
+        }
+    }
+
     private void bulkAddTimeSeriesData() throws RuntimeException {
-        List<TimeSeries<Long>> tsList = sensorDataProcessorList.stream()
+        List<TimeSeries<Long>> tsList = sensorDataProcessors.stream()
                 .filter(p -> p.getTimeSeriesLength() > 0)
                 .map(p -> {
                     try {
@@ -220,12 +269,7 @@ public class SmartphoneRecordingTask {
 
         // downsampling algorithm applied in getProcessedTimeSeries might make a time
         // series empty
-        Iterator<TimeSeries<Long>> tsIterator = tsList.iterator();
-        while (tsIterator.hasNext()) {
-            if (tsIterator.next().getTimes().isEmpty()) {
-                tsIterator.remove();
-            }
-        }
+        tsList.removeIf(longTimeSeries -> longTimeSeries.getTimes().isEmpty());
 
         logger.info(String.format("bulk adding %d time series", tsList.size()));
         tsClient.bulkaddTimeSeriesData(tsList);
@@ -252,8 +296,7 @@ public class SmartphoneRecordingTask {
     }
 
     public void instantiate() {
-        initKgUsingOntop();
-        sensorDataProcessorList.forEach(s -> s.initIRIs());
-        bulkInitRdb();
+        initDeviceKgUsingOntop(sensorDataProcessors);
+        initDevicesInRDB();
     }
 }

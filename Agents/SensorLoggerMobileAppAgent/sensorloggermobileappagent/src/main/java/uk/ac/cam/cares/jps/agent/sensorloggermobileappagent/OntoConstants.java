@@ -7,6 +7,7 @@ public class OntoConstants {
     public static final String ONTODEVICE = "https://www.theworldavatar.com/kg/ontodevice/";
     public static final String SAREF = "https://saref.etsi.org/core/";
     public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String ONTOTS = "https://www.theworldavatar.com/kg/ontotimeseries/";
 
     private OntoConstants() {
         throw new IllegalStateException("OntoConstants");

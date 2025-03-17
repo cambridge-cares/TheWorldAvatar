@@ -17,7 +17,7 @@
 5) Using git-filter-repo, which is now installed as a script on the branch, run:
 
     ```bash
-     python3 git-filter-repo --path web/twa-vis-platform
+     python3 git-filter-repo --no-ff --path <subdirectory to be kept>
      ```
 
    Further documentation on git-filter-repo and its extended capabilities [here](https://github.com/newren/git-filter-repo)
