@@ -43,4 +43,4 @@ fi
 ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml $DEBUG_COMPOSE_FILE build --build-arg CACHEBUST="${CACHEBUST}" "$@"
 
 # Push the images to the remote repo, docker swarm works better with pushed images
-${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml $DEBUG_COMPOSE_FILE push
+#${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml $DEBUG_COMPOSE_FILE push
