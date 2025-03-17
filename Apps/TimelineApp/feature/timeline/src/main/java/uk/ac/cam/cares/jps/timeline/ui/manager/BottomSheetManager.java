@@ -112,28 +112,11 @@ public class BottomSheetManager {
         trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
     }
 
-    // private void configureSummary() {
-
-    //     trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseSessionSummaries);
-
-    //     normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
-    //         List<SummaryActivityItem> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
-    //         List<Session> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
-    //         Integer clickedId = trajectoryViewModel.clickedId.getValue();
-
-    //         if(sessionSummaryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
-    //             normalBottomSheet.updateSummaryView(activityItemSummaryList);
-    //             normalBottomSheet.updateUniqueSessionsList(uniqueSessions,clickedId);
-    //         }
-
-    //     });
-    // }
 
     private void configureSummary() {
-    // Observing trajectory updates
+
     trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseSessionSummaries);
 
-    // Observing session summary updates
     normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
         List<SummaryActivityItem> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
         List<Session> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
@@ -145,11 +128,8 @@ public class BottomSheetManager {
         }
     });
 
-    // Observe clickedId and update the RecyclerView when a trajectory is clicked
     trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedId -> {
-        if (clickedId != null) {
-            normalBottomSheet.highlightClickedSegment(clickedId);  // Implement this method in your bottom sheet UI
-        }
+        normalBottomSheet.highlightClickedSegment(clickedId);  
     });
 }
 

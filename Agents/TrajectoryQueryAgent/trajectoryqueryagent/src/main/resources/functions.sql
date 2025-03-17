@@ -129,7 +129,7 @@ CREATE OR REPLACE FUNCTION get_activity_table(
 RETURNS TABLE (
     "time" bigint,
     "activity_type" VARCHAR,
-    "confidence_level" smallint,
+    "confidence_level" integer,
     "device_id" TEXT,
     "user_id" TEXT
 ) AS $$
@@ -145,7 +145,7 @@ BEGIN
 
 
         query := query || format(
-            'SELECT time, %I AS activity_type, %I AS confidence_level, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri = %L',
+            'SELECT time, %I AS activity_type, %I ::INTEGER AS confidence_level, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri = %L',
             get_column_name(get_activity_type_iri(device_id)),
             get_column_name(get_confidence_level_iri(device_id)),
             device_id,

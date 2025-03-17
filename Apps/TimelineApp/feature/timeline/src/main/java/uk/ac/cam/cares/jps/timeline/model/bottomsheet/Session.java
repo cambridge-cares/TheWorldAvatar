@@ -40,6 +40,9 @@ public class Session {
     }
 
     public boolean containsSegment(TrajectorySegment segment) {
+        if(segment == null) {
+            return false;
+        }
         if(sessionId.equals(segment.sessionId())) {
             for (ActivityItem item : this.activityItemList) {
                 if (item.getId() == segment.id()) {

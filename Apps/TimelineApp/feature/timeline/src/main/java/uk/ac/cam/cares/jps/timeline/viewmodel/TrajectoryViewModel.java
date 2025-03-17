@@ -97,7 +97,7 @@ public class TrajectoryViewModel extends ViewModel {
     }
 
     private boolean isCloseToClickedPoint(double lng, double lat, Point clickedPoint) {
-        double threshold = 0.00001;
+        double threshold = 0.0001;
         return Math.abs(lng - clickedPoint.longitude()) < threshold &&
             Math.abs(lat - clickedPoint.latitude()) < threshold;
     }
