@@ -12,6 +12,8 @@ import kong.unirest.UnirestException;
 import org.apache.http.HttpException;
 import org.apache.http.protocol.HTTP;
 import com.google.gson.Gson;
+import org.json.JSONObject;
+
 
 import org.locationtech.jts.geom.Geometry;
 import java.io.*;
@@ -32,6 +34,7 @@ public class RunCEATask implements Runnable {
     private final String crs;
     private final String database;
     private final CEAMetaData metaData;
+    private final String solarProperties;
     private Double weather_lat;
     private Double weather_lon;
     private Double weather_elevation;
@@ -60,7 +63,7 @@ public class RunCEATask implements Runnable {
     private static final String SCENARIO_NAME = "testScenario";
     private static final String CEA_OUTPUT_DATA_DIRECTORY = PROJECT_NAME + FS + SCENARIO_NAME + FS + "outputs" + FS + "data";
 
-    public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri, ArrayList<String> uris, int thread, String crs, String ceaDatabase) {
+    public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri, ArrayList<String> uris, int thread, String crs, String ceaDatabase, JSONObject solar) {
         this.inputs = buildingData;
         this.endpointUri = endpointUri;
         this.uris = uris;
@@ -68,6 +71,7 @@ public class RunCEATask implements Runnable {
         this.crs = crs;
         this.metaData = ceaMetaData;
         this.database = ceaDatabase;
+        this.solarProperties = solar == null ? "null" : solar.toString();
     }
 
     public void stop() {
@@ -92,7 +96,7 @@ public class RunCEATask implements Runnable {
             System.out.println("Process exitValue: " + exitVal);
             return p;
 
-        } catch ( IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
@@ -483,7 +487,7 @@ public class RunCEATask implements Runnable {
 
                     args4.add("/bin/bash");
                     args4.add("-c");
-                    args4.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile + " " + WORKFLOW_YML + " " + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
+                    args4.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile + " " + WORKFLOW_YML + " " + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database + " null");
 
                     args5.add("/bin/bash");
                     args5.add("-c");
@@ -497,7 +501,7 @@ public class RunCEATask implements Runnable {
 
                     args7.add("/bin/bash");
                     args7.add("-c");
-                    args7.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile1 + " " + WORKFLOW_YML1 + " " + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " " + database);
+                    args7.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile1 + " " + WORKFLOW_YML1 + " " + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " " + database + " " + solarProperties);
 
                     args8.add("/bin/bash");
                     args8.add("-c");
@@ -505,7 +509,7 @@ public class RunCEATask implements Runnable {
 
                     args9.add("/bin/bash");
                     args9.add("-c");
-                    args9.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile2 + " " + WORKFLOW_YML2 + " " + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
+                    args9.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile2 + " " + WORKFLOW_YML2 + " " + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database + " " + solarProperties);
 
                     args10.add("/bin/bash");
                     args10.add("-c");

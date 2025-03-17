@@ -55,6 +55,7 @@ public class CEAAgent extends JPSAgent {
     public static final String KEY_TERRAIN_DB = "terrainDatabase";
     public static final String KEY_TERRAIN_TABLE = "terrainTable";
     public static final String KEY_CEA = "ceaEndpoint";
+    public static final String KEY_SOLAR = "solarProperties";
 
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
@@ -183,7 +184,9 @@ public class CEAAgent extends JPSAgent {
                 catch (Exception e) {
                 }
 
-                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase);
+                JSONObject solar = requestParams.has(KEY_SOLAR) ? requestParams.getJSONObject(KEY_SOLAR) : null;
+
+                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar);
             }
             else if (requestUrl.contains(URI_UPDATE)) {
                 // parse times
@@ -450,9 +453,9 @@ public class CEAAgent extends JPSAgent {
      * @param threadNumber int tracking thread that is running
      * @param crs coordinate reference system
      */
-    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase) {
+    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase, JSONObject solar) {
         try {
-            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs, ceaDatabase);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs, ceaDatabase, solar);
             CEAExecutor.execute(task);
         }
         catch(URISyntaxException e){
