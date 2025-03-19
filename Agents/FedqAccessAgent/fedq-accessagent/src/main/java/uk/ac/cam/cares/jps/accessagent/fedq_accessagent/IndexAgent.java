@@ -44,7 +44,7 @@ import org.apache.jena.graph.Node;
 public class IndexAgent {
     private static final String BACKUP_DIRECTORY = "/data";
     private static final String BACKUP_FILE = BACKUP_DIRECTORY + "/backup.json"; 
-    private static final String BLAZEGRAPH_URL = "http://172.26.15.166:48889/blazegraph/";
+    private static final String BLAZEGRAPH_URL = "http://172.26.15.166:3838/blazegraph/ui/";
     private final RestTemplate restTemplate = new RestTemplate();
     private final Gson gson = new Gson();
     
@@ -56,9 +56,8 @@ public class IndexAgent {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    private final String STACK_ID="S001";
-
     // Read stack ID from environment variable or default to "defaultStack"
+    private final String STACK_ID="S001";
     // public IndexAgent(@Value("${stack.id:defaultStack}") String stackId) {
     //     this.STACK_ID = stackId;
     //     System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
@@ -83,13 +82,13 @@ public class IndexAgent {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, String> message = new HashMap<>();
-                message.put("stack", STACK_ID);
-                message.put("endpoint", endpoint);
                 
                 //insert into the dragonfly memory
-                redisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(message)); // Store as JSON
-    
+                redisTemplate.opsForSet().add(key, endpoint); 
+                
                 // Publish/broadcast JSON-based message
+                message.put("stack", STACK_ID);
+                message.put("endpoint", endpoint);
                 message.put("key", key);
                 message.put("action", "ADD");
                 String jsonMessage = objectMapper.writeValueAsString(message);
@@ -106,13 +105,12 @@ public class IndexAgent {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, String> message = new HashMap<>();
+                //insert into the dragonfly memory
+                redisTemplate.opsForSet().add(key, endpoint); 
+                
+                // Publish/broadcast JSON-based message
                 message.put("stack", source_stack);
                 message.put("endpoint", endpoint);
-                
-                //insert into the dragonfly memory
-                redisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(message)); // Store as JSON
-    
-                // Publish/broadcast JSON-based message
                 message.put("key", key);
                 message.put("action", "ADD");
                 String jsonMessage = objectMapper.writeValueAsString(message);
@@ -127,39 +125,30 @@ public class IndexAgent {
     // Load/not-a-new-add a endpoint 
     public void loadValue(String key, String endpoint) {
         if (key != null && endpoint != null) {
-            // String stackKey = STACK_ID + ":" + key; // Namespaced key
-            // redisTemplate.opsForSet().add(stackKey, endpoint);
             try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                Map<String, String> message = new HashMap<>();
-                message.put("stack", STACK_ID);
-                message.put("endpoint", endpoint);
-                
                 //insert into the dragonfly memory
-                redisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(message)); // Store as JSON
+                redisTemplate.opsForSet().add(key, endpoint); 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void loadValue(String key, String endpoint, String source_stack) {
-        if (key != null && endpoint != null) {
-            // String stackKey = source_stack + ":" + key; // Namespaced key
-            // redisTemplate.opsForSet().add(stackKey, endpoint);
-            try{
-                ObjectMapper objectMapper = new ObjectMapper();
-                Map<String, String> message = new HashMap<>();
-                message.put("stack", source_stack);
-                message.put("endpoint", endpoint);
+    // public void loadValue(String key, String endpoint, String source_stack) {
+    //     if (key != null && endpoint != null) {
+    //         try{
+    //             ObjectMapper objectMapper = new ObjectMapper();
+    //             Map<String, String> message = new HashMap<>();
+    //             message.put("stack", source_stack);
+    //             message.put("endpoint", endpoint);
                 
-                //insert into the dragonfly memory
-                redisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(message)); // Store as JSON
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    //             //insert into the dragonfly memory
+    //             redisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(message)); // Store as JSON
+    //         } catch (Exception e) {
+    //             e.printStackTrace();
+    //         }
+    //     }
+    // }
 
     // Remove endpoint & broadcast
     public void removeValue(String key, String endpoint, String source_stack) {
