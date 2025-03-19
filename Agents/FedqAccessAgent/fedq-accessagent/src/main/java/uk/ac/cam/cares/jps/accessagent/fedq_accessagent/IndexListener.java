@@ -22,8 +22,8 @@ import java.util.HashMap;
 
 @Service
 public class IndexListener implements MessageListener {
-    private static final String BACKUP_DIRECTORY = "/data";
-    private static final String BACKUP_FILE = BACKUP_DIRECTORY + "/backup.json";
+    private static final String DATA_DIRECTORY = "/data";
+    private static final String REINDEX_FILE = DATA_DIRECTORY + "/reindex.json";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -32,9 +32,8 @@ public class IndexListener implements MessageListener {
     @Autowired
     private IndexAgent indexAgent; // Access the main index agent
 
-    private final String STACK_ID;
-
     // Read stack ID from environment variable or default to "defaultStack"
+    private final String STACK_ID;
     public IndexListener(@Value("${stack.id:defaultStack}") String stackId) {
         this.STACK_ID = stackId;
         System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
@@ -64,11 +63,11 @@ public class IndexListener implements MessageListener {
             // Perform the corresponding action
             if ("ADD".equalsIgnoreCase(action)) {
                 indexAgent.addValue(key, endpoint, sourceStack);
-                updateBackupFile(key, true);
+                updateReindexFile(key, true);
                 System.out.println("Synced ADD from " + sourceStack + " → " + key + " = " + endpoint);
             } else if ("REMOVE".equalsIgnoreCase(action)) {
                 indexAgent.removeValue(key, endpoint, sourceStack);
-                updateBackupFile(key, false);
+                updateReindexFile(key, false);
                 System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + endpoint);
             } else {
                 System.err.println("Unknown action: " + action);
@@ -78,27 +77,27 @@ public class IndexListener implements MessageListener {
         }
     }
 
-    private synchronized void updateBackupFile(String key, boolean isAdd) {
+    private synchronized void updateReindexFile(String key, boolean isAdd) {
         try {
-            File file = new File(BACKUP_FILE);
-            Map<String, Set<String>> backupData = new HashMap<>();
+            File file = new File(REINDEX_FILE);
+            Map<String, Set<String>> reindexData = new HashMap<>();
 
             // Load existing data if the file exists
             if (file.exists()) {
-                backupData = objectMapper.readValue(file, HashMap.class);
+                reindexData = objectMapper.readValue(file, HashMap.class);
             }
 
             if (isAdd) {
                 // Add key values from Redis
                 Set<String> jsonSet = redisTemplate.opsForSet().members(key);
-                backupData.put(key, jsonSet);
+                reindexData.put(key, jsonSet);
             } else {
                 // Remove key
-                backupData.remove(key);
+                reindexData.remove(key);
             }
 
             // Write back to file
-            objectMapper.writeValue(file, backupData);
+            objectMapper.writeValue(file, reindexData);
             System.out.println("Updated backup.json successfully.");
 
         } catch (IOException e) {
