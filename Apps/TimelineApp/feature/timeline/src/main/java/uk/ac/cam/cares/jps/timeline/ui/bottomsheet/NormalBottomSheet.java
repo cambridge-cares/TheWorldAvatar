@@ -48,11 +48,6 @@ public class NormalBottomSheet extends BottomSheet {
         summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
 
         summaryAdapter = new ActivitySummaryAdapter();
-        summaryRecyclerView.setHasFixedSize(true);
-        summaryRecyclerView.setNestedScrollingEnabled(true);
-        summaryRecyclerView.setVerticalScrollBarEnabled(false);
-        summaryRecyclerView.setHorizontalScrollBarEnabled(true);
-        summaryRecyclerView.setScrollbarFadingEnabled(false);
         summaryRecyclerView.setAdapter(summaryAdapter);
         summaryRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     }

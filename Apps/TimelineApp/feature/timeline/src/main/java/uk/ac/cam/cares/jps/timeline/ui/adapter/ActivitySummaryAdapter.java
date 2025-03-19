@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +22,10 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
     public ActivitySummaryAdapter() {
         this.summaryList = new ArrayList<>();
     }
-    
+
     public void setActivityItemList(List<SummaryActivityItem> summaryList) {
         this.summaryList = new ArrayList<>(summaryList);
-        notifyDataSetChanged(); 
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -39,11 +40,27 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
         SummaryActivityItem summaryItem = summaryList.get(position);
 
         holder.activityType.setImageResource(summaryItem.getActivityImage());
-        holder.activityType.setVisibility(View.VISIBLE);
+
+        List<String> validActivities = new ArrayList<>();
+        validActivities.add("still");
+        validActivities.add("walking");
+        validActivities.add("bike");
+        validActivities.add("vehicle");
+
+
+
+
         holder.totalDistance.setText(summaryItem.getTotalDistance());
         holder.timeSummary.setText(summaryItem.getTotalTimeSummary());
-        
-        
+
+        if(validActivities.contains(summaryItem.getActivity())) {
+            holder.activityType.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.activityType.setVisibility(View.GONE);
+            holder.totalDistance.setVisibility(View.GONE);
+            holder.timeSummary.setVisibility(View.GONE);
+        }
     }
 
     @Override

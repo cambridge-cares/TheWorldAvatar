@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.ArrayList;
+
+
 
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
@@ -47,7 +50,22 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         ActivityItem activityItem = activityList.get(position);
 
         holder.activityType.setImageResource(activityItem.getActivityImage());
-        holder.activityType.setVisibility(View.VISIBLE);
+
+        List<String> validActivities = new ArrayList<>();
+        validActivities.add("still");
+        validActivities.add("walking");
+        validActivities.add("bike");
+        validActivities.add("vehicle");
+        validActivities.add("unknown");
+
+
+        if(validActivities.contains(activityItem.getActivity())) {
+            holder.activityType.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.activityType.setVisibility(View.GONE);
+        }
+
         holder.timeSummary.setText(activityItem.getTimeSummary());
 
         holder.clicked.setImageResource(R.drawable.baseline_keyboard_double_arrow_left_24);
@@ -57,7 +75,7 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         else {
             holder.clicked.setVisibility(View.GONE);
         }
-        
+
     }
 
     @Override

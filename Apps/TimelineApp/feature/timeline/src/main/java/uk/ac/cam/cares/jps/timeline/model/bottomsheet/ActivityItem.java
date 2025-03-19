@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class ActivityItem {
     private final int id;
     private final int activityType;
+    private final String activity;
     private final String timeSummary;
     private boolean clicked;
 
@@ -21,8 +22,9 @@ public class ActivityItem {
      * @param startTime the start timestamp of the segment
      * @param endTime the end timestamp of the segment
      */
-    public ActivityItem(int id, int activityType, long startTime, long endTime) {
+    public ActivityItem(int id, String activity, int activityType, long startTime, long endTime) {
         this.id = id;
+        this.activity = activity;
         this.activityType = activityType;
         this.timeSummary = toTimeSummary(startTime, endTime);
         this.clicked = false;
@@ -36,17 +38,21 @@ public class ActivityItem {
 
     private String toHoursAndMinutes(long timestamp) {
 
-    LocalDateTime dateTime = Instant.ofEpochMilli(timestamp)
-                                    .atZone(ZoneId.systemDefault())
-                                    .toLocalDateTime();
+        LocalDateTime dateTime = Instant.ofEpochMilli(timestamp)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    return dateTime.format(formatter);
+        return dateTime.format(formatter);
     }
 
     public String getTimeSummary() {
         return timeSummary;
+    }
+
+    public String getActivity() {
+        return activity;
     }
 
 
@@ -65,5 +71,5 @@ public class ActivityItem {
     public boolean getClicked() {
         return this.clicked;
     }
-    
+
 } 

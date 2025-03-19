@@ -32,7 +32,6 @@ public class TrajectoryNetworkSource {
     private final RequestQueue requestQueue;
     private final Context context;
 
-
     /**
      * Constructor of the class. The instantiation is handled by dependency injection.
      * @param requestQueue Volley queue for network request.
@@ -81,7 +80,7 @@ public class TrajectoryNetworkSource {
             }
         };
 
-       return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
+        return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -140,13 +139,13 @@ public class TrajectoryNetworkSource {
                 LOGGER.debug("Full server response: " + s1);
 
                 JSONObject trajectoryResponse = new JSONObject(s1);
-
-                if (trajectoryResponse.getInt("totalFeatures") == 0 || 
-                    (trajectoryResponse.getInt("totalFeatures") == 1 && 
-                    "null".equals(trajectoryResponse.getJSONArray("features").getJSONObject(0).getString("geometry")))) {
-
-                    LOGGER.info("No valid trajectory found, switching to default URI.");
-
+                if (trajectoryResponse.getInt("totalFeatures") == 0 ||
+                        (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
+                                .getJSONArray("features")
+                                .getJSONObject(0)
+                                .getString("geometry").equals("null"))) {
+                    LOGGER.info("No trajectory from getTrajectoryActivityUri, trying getTrajectoryDefaultUri...");
+                    // Fallback request
                     StringRequest fallbackRequest = new StringRequest(Request.Method.GET, getTrajectoryDefaultUri, onSuccessUpper, onFailureUpper) {
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
@@ -155,11 +154,8 @@ public class TrajectoryNetworkSource {
                             return headers;
                         }
                     };
-                    fallbackRequest.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-                    RequestQueue requestQueue = Volley.newRequestQueue(context);
                     requestQueue.add(fallbackRequest);
-
                 } else {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());
                 }
@@ -182,5 +178,4 @@ public class TrajectoryNetworkSource {
 
         return request;
     }
-
 }

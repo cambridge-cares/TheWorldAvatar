@@ -1,11 +1,12 @@
 WITH distinct_devices AS (
-    SELECT 
+    SELECT
         array_agg(device_id::text) AS device_list
-    FROM 
-        (SELECT DISTINCT device_id 
-         FROM devices 
+    FROM
+        (SELECT DISTINCT device_id
+         FROM devices
          WHERE sensor_class = 'Activity') AS distinct_devices
 ),
+
 
 timeseries AS (
     SELECT
@@ -15,6 +16,7 @@ timeseries AS (
     ORDER BY time
 ),
 
+
 activity_data AS (
     SELECT
         *
@@ -23,23 +25,25 @@ activity_data AS (
     ORDER BY time
 ),
 
+
 joined_data AS (
-    SELECT 
-        t.*, 
+    SELECT
+        t.*,
         a.activity_type,
         a.confidence_level,
         LAG(t.time) OVER (PARTITION BY t.user_id ORDER BY t.time) AS prev_time
-    FROM 
+    FROM
         timeseries t
-    LEFT JOIN 
-        activity_data a 
-    ON 
-        ABS(t.time - a.time) <= 5000 
+    LEFT JOIN
+        activity_data a
+    ON
+        ABS(t.time - a.time) <= 5000
     ORDER BY t.time
 ),
 
+
 fixed_activity_data AS (
-    SELECT 
+    SELECT
         time,
         speed,
         altitude,
@@ -48,17 +52,19 @@ fixed_activity_data AS (
         session_id,
         user_id,
         confidence_level,
-        COALESCE(activity_type, 'others') AS activity_type
+        COALESCE(activity_type, 'unknown') AS activity_type
     FROM joined_data
-    WHERE time <> prev_time  
+    WHERE time <> prev_time
 ),
+
 
 temp_activity_table AS (
     SELECT * FROM fill_activity_types(
-        (SELECT array_agg(activity_type ORDER BY time) FROM fixed_activity_data),  
-        (SELECT array_agg(time ORDER BY time) FROM fixed_activity_data) 
+        (SELECT array_agg(activity_type ORDER BY time) FROM fixed_activity_data),
+        (SELECT array_agg(time ORDER BY time) FROM fixed_activity_data)
     )
 ),
+
 
 filled_activity_data AS (
     SELECT
@@ -72,10 +78,11 @@ filled_activity_data AS (
         temp.activity_type AS activity_type,
         fixed.confidence_level AS confidence_level
     FROM fixed_activity_data AS fixed
-    JOIN temp_activity_table AS temp 
+    JOIN temp_activity_table AS temp
     ON fixed.time = temp.time
     ORDER BY time
 ),
+
 
 change_marked AS (
     SELECT
@@ -84,10 +91,11 @@ change_marked AS (
             WHEN
                 LAG(activity_type) OVER (PARTITION BY user_id ORDER BY time) IS DISTINCT FROM activity_type
             THEN 1
-            ELSE 0 
+            ELSE 0
         END AS change_flag
     FROM filled_activity_data
 ),
+
 
 change_marked_union AS (
     SELECT * FROM change_marked
@@ -98,14 +106,16 @@ change_marked_union AS (
     ORDER BY time, change_flag
 ),
 
+
 numbered_activity_data AS (
-    SELECT 
+    SELECT
         *,
         SUM(change_flag) OVER (PARTITION BY user_id ORDER BY time ROWS UNBOUNDED PRECEDING) AS id
     FROM change_marked_union cm
     WHERE activity_type IS NOT NULL
     ORDER BY cm.time, cm.change_flag
 )
+
 
 SELECT
     id,

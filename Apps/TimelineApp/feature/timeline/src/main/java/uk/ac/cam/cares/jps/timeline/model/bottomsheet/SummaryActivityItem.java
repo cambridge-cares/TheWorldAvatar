@@ -6,6 +6,7 @@ package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
  * class that represents the summary of trajectory information over a period of time
  */
 public class SummaryActivityItem {
+    private final String activity;
     private final int activityItem;
     private final String totalDistance; //meters
     private final String totalTimeSummary; //hours and minutes
@@ -16,7 +17,8 @@ public class SummaryActivityItem {
      * @param totalDistance total distance in meters
      * @param totalTimeInMinutes total time for activity in minutes
      */
-    public SummaryActivityItem(int activityItem, int totalDistance, long totalTimeInMinutes) {
+    public SummaryActivityItem(String activity, int activityItem, int totalDistance, long totalTimeInMinutes) {
+        this.activity = activity;
         this.activityItem = activityItem;
         this.totalDistance = totalDistance + " m";
         this.totalTimeSummary = toMinutesAndHours(totalTimeInMinutes);
@@ -29,6 +31,10 @@ public class SummaryActivityItem {
             return hours + " hr " + minutes + " min";
         }
         else return  minutes + " min";
+    }
+
+    public String getActivity() {
+        return activity;
     }
 
     public int getActivityImage() {

@@ -128,8 +128,8 @@ public class NormalBottomSheetViewModel extends ViewModel {
             List<ActivityItem> activities = parseActivityItemsBySession(trajectory, uniqueSessionNames.get(i-1));
             Session uniqueSession = new Session(uniqueSessionNames.get(i-1), activities, "Trip " + i);
             finalResult.add(uniqueSession);
-         }
-          return finalResult;
+        }
+        return finalResult;
     }
 
 
@@ -148,7 +148,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
                 int id = segment.id();
 
-                summaries.add(new ActivityItem(id, activityImage, startTime, endTime));
+                summaries.add(new ActivityItem(id, activity, activityImage, startTime, endTime));
             }
         }
         return summaries;
@@ -180,39 +180,32 @@ public class NormalBottomSheetViewModel extends ViewModel {
             Objects.requireNonNull(distancePerActivityType.get(activityType)).add(distance);
         }
         for (String activity : distancePerActivityType.keySet()) {
-            int totalDistance = activity.equals("still") ? 0 : addTogether(Objects.requireNonNull(distancePerActivityType.get(activity)));
-            long totalTime = addTogetherLong(Objects.requireNonNull(timePerActivityType.get(activity)));
+            int totalDistance = activity.equals("still") ? 0 : Objects.requireNonNull(distancePerActivityType.get(activity)).stream().mapToInt(Integer::intValue).sum();
+            long totalTime = Objects.requireNonNull(timePerActivityType.get(activity)).stream().mapToLong(Long::longValue).sum();;
 
             int activityImage = getActivityImage(activity);
 
-            summaries.add(new SummaryActivityItem(activityImage, totalDistance, totalTime));
+            summaries.add(new SummaryActivityItem(activity, activityImage, totalDistance, totalTime));
         }
 
         return summaries;
     }
 
     private int getActivityImage(String activity) {
-        int activityImage = R.drawable.baseline_man_24;
+        int activityImage = R.drawable.baseline_arrow_circle_right_24;
         if (activity.equals("walking")) activityImage = R.drawable.baseline_directions_walk_24;
         else if (activity.equals("vehicle")) activityImage = R.drawable.baseline_directions_car_24;
         else if (activity.equals("bike")) activityImage = R.drawable.baseline_directions_bike_24;
+        else if (activity.equals("still")) activityImage = R.drawable.baseline_man_24;
         else if (activity.equals("unknown")) activityImage = R.drawable.baseline_arrow_circle_right_24;
 
         return activityImage;
     }
 
-    private long addTogetherLong(List<Long> longs) {
-        return longs.stream().mapToLong(Long::longValue).sum();
-    }
-
-    private int addTogether(List<Integer> integers) {
-        return integers.stream().mapToInt(Integer::intValue).sum();
-    }
-
     private long differenceInTime(long startTime, long endTime) {
         return ChronoUnit.MINUTES.between(
-            Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()).toLocalDateTime(),
-            Instant.ofEpochMilli(endTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                Instant.ofEpochMilli(endTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
         );
     }
 

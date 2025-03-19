@@ -80,7 +80,6 @@ public class TrajectoryQueryAgent extends JPSAgent {
      * 3) Create geoserver layer
      * 4) Return pointIRI to application as response
      *
-     * @param requestParams
      * @return
      */
     public JSONObject createLayer() {
