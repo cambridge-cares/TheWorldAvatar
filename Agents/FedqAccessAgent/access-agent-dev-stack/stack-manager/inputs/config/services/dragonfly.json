@@ -1,0 +1,33 @@
+{
+    "ServiceSpec": {
+        "Name": "dragonfly",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.dragonflydb.io/dragonflydb/dragonfly:v1.28.0",
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "dragonfly-data",
+                        "Target": "/data"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "6379",
+                    "PublishedPort": "6379"
+                }
+            ]
+        }
+    },
+    "endpoints": {
+      "ui": {
+        "url": "http://localhost:6379/",
+        "externalPath": "/dragonfly/"
+      }
+    }
+}
