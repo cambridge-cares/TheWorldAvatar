@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.osmagent.geometry;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -14,8 +16,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 public class GeometryMatcher {
@@ -330,7 +330,7 @@ public class GeometryMatcher {
             e.printStackTrace();
             throw new JPSRuntimeException(String.format("%s file not found", csv));
         }
-        catch (IOException e) {
+        catch (IOException | CsvValidationException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
