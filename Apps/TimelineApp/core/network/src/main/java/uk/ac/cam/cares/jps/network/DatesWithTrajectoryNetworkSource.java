@@ -33,8 +33,9 @@ public class DatesWithTrajectoryNetworkSource {
 
     /**
      * Constructor of the class. The instantiation is handled by dependency injection.
+     *
      * @param requestQueue Volley queue for network request.
-     * @param context App context
+     * @param context      App context
      */
     public DatesWithTrajectoryNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
@@ -43,7 +44,8 @@ public class DatesWithTrajectoryNetworkSource {
 
     /**
      * Get all dates where there is trajectory data
-     * @param timezone Current timezone of the phone
+     *
+     * @param timezone       Current timezone of the phone
      * @param onSuccessUpper Success callback
      * @param onFailureUpper Failure callback
      */
@@ -67,7 +69,7 @@ public class DatesWithTrajectoryNetworkSource {
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject jo = result.getJSONObject(i);
                     datesWithTrajectory.put(new YearMonthCompositeKey(jo.getInt("year"),
-                            jo.getInt("month")),
+                                    jo.getInt("month")),
                             stringToDates(jo.getString("days")));
                 }
                 onSuccessUpper.onResponse(datesWithTrajectory);
@@ -75,14 +77,13 @@ public class DatesWithTrajectoryNetworkSource {
                 throw new RuntimeException(e);
             }
         }, onFailureUpper) {
-
-        @Override
-        public Map<String, String> getHeaders() {
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer " + accessToken);
-            return headers;
-        }
-    };
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
         requestQueue.add(request);
     }
 

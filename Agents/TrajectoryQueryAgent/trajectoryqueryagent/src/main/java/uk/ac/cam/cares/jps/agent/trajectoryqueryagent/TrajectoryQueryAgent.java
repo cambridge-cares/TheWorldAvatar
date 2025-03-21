@@ -80,7 +80,6 @@ public class TrajectoryQueryAgent extends JPSAgent {
      * 3) Create geoserver layer
      * 4) Return pointIRI to application as response
      *
-     * @param requestParams
      * @return
      */
     public JSONObject createLayer() {
@@ -108,7 +107,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             response.put("message", "Succeed");
             response.put("result", result);
         } else {
-            response.put("message", "Faile");
+            response.put("message", "Failed");
         }
 
         return response;
@@ -236,6 +235,32 @@ public class TrajectoryQueryAgent extends JPSAgent {
             geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdLineSegments",
                     geoServerVectorSettings);
         }
+
+
+        String lineLayerUserIdByActivity = null;
+        try (InputStream is = new ClassPathResource("line_layer_user_id_by_activity.sql").getInputStream()) {
+            lineLayerUserIdByActivity = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("failed to read line_layer_user_id_by_activity.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        if (lineLayerUserIdByActivity != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(lineLayerUserIdByActivity);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("line_layer_user_id_by_activity_table");
+            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326");
+            virtualTable.addVirtualTableParameter("user_id", "null", ".*");
+            virtualTable.addVirtualTableParameter("upperbound", "0", "^(0|[1-9][0-9]*)$");
+            virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdByActivity", geoServerVectorSettings);
+        }
+
     }
 
     /**

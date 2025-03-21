@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="host_with_port"></string>
+    <!--    <string name="host_with_port">http://192.168.1.5:3838</string>-->
+
+    <string name="host_with_port">http://10.0.2.2:58085</string>
 
     <string name="trajectoryqueryagent_createLayer">trajectoryqueryagent/createLayer</string>
     <string name="trajectoryqueryagent_getDatesWithData">trajectoryqueryagent/getDatesWithData</string>
+        <string name="trajectoryqueryagent_getUniqueSessions">trajectoryqueryagent/getUniqueSessions</string>
     <string name="useragent_registerphone">user-agent/registerPhone</string>
     <string name="geoserver_jwt_proxy_geoserver_twa_wfs">geoserver-jwt-proxy/geoserver/twa/wfs</string>
     <string name="sensorloggeragent_update">sensorloggermobileappagent/update</string>
-</resources>
+</resources> 

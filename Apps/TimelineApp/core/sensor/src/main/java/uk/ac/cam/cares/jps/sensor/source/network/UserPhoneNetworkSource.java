@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.sensor.source.network;
 
 import android.content.Context;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -10,6 +11,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.HttpUrl;
 
@@ -28,16 +32,16 @@ public class UserPhoneNetworkSource {
 
     /**
      * Register phone to user
-     * @param userId current logged in user
+     * @param accessToken current accessToken
      * @param deviceId current device id
      * @param onSuccessListener operations to perform when success
      * @param errorListener operations to perform when failure
      */
-    public void registerAppToUser(String userId, String deviceId, Response.Listener<Boolean> onSuccessListener, Response.ErrorListener errorListener) {
+    public void registerAppToUser(String accessToken, String deviceId, Response.Listener<Boolean> onSuccessListener, Response.ErrorListener errorListener) {
 
         try {
             JSONObject body = new JSONObject();
-            body.put("userId", userId);
+            //body.put("userId", userId);
             body.put("phoneId", deviceId);
 
             String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
@@ -45,11 +49,19 @@ public class UserPhoneNetworkSource {
                     .build().toString();
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, body, jsonObject -> {
-                LOGGER.info(String.format("Phone id %s is register to user %s", deviceId, userId));
+                //LOGGER.info(String.format("Phone id %s is register to user %s", deviceId, userId));
                 onSuccessListener.onResponse(true);
             }, volleyError -> {
                 LOGGER.error(volleyError.getMessage());
-            });
+            }) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + accessToken); // Ensure this is the correct user
+                    return headers;
+                }
+            };
 
             requestQueue.add(request);
         } catch (JSONException e) {
