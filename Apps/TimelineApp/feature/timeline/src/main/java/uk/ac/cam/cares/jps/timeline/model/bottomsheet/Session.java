@@ -8,16 +8,32 @@ import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 public class Session {
     private final String sessionId;
     private final String sessionTitle;
-    private final List<ActivityItem> activityItemList;
+    private final List<TrajectorySegment> trajectorySegments;
+    private final List<ActivityItem> activityList;
     private List<ActivityItem> shownList;
     private final List<ActivityItem> EMPTY_LIST = new ArrayList<>();
 
-    public Session(String sessionId, List<ActivityItem> activityItemList, String sessionTitle) {
+    public Session(String sessionId, String sessionTitle, List<TrajectorySegment> trajectorySegments) {
         this.sessionId = sessionId;
-        this.activityItemList = activityItemList;
-        this.shownList = activityItemList;
+        this.trajectorySegments = trajectorySegments;
+        this.activityList = parseTrajectorySegment(trajectorySegments);
+        this.shownList = activityList;
         this.sessionTitle = sessionTitle;
     }
+
+    private List<ActivityItem> parseTrajectorySegment(List<TrajectorySegment> trajectorySegments) {
+        List<ActivityItem> activities = new ArrayList<>();
+
+        for(TrajectorySegment segment : trajectorySegments) {
+            activities.add(new ActivityItem(segment.id(), segment.activityType(), segment.startTime(), segment.endTime()));
+        }
+
+        return activities;
+    }
+
+    public List<TrajectorySegment> getTrajectorySegments() { return this.trajectorySegments;}
+
+    public List<ActivityItem> getActivityList() { return this.activityList;}
 
     public String getSessionId() {
         return sessionId;
@@ -28,7 +44,7 @@ public class Session {
     }
 
     public void setShownListAsActivityList() {
-        this.shownList = this.activityItemList;
+        this.shownList = this.activityList;
     }
 
     public void setShownListAsEmptyList() {
@@ -44,7 +60,7 @@ public class Session {
             return false;
         }
         if(sessionId.equals(segment.sessionId())) {
-            for (ActivityItem item : this.activityItemList) {
+            for (ActivityItem item : this.activityList) {
                 if (item.getId() == segment.id()) {
                     return true;
                 }

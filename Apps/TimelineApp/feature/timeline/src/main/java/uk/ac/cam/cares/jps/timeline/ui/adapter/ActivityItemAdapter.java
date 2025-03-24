@@ -59,7 +59,7 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         validActivities.add("unknown");
 
 
-        if(validActivities.contains(activityItem.getActivity())) {
+        if(validActivities.contains(activityItem.getActivityType())) {
             holder.activityType.setVisibility(View.VISIBLE);
         }
         else {

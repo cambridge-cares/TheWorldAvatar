@@ -105,7 +105,7 @@ public class TrajectoryViewModel extends ViewModel {
 
     public void setClicked(Point p) {
         
-        List<TrajectorySegment> trajectorySegments = Objects.requireNonNull(trajectory.getValue()).getTrajectory();
+        List<TrajectorySegment> trajectorySegments = Objects.requireNonNull(trajectory.getValue()).getTrajectorySegments();
 
         for(TrajectorySegment segment  : trajectorySegments) {
         

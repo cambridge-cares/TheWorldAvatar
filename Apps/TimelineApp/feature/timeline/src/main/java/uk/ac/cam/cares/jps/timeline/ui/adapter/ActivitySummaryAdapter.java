@@ -11,19 +11,19 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivitySummary;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummaryAdapter.ActivitySummaryViewHolder> {
-    private List<SummaryActivityItem> summaryList;
+    private List<ActivitySummary> summaryList;
 
     public ActivitySummaryAdapter() {
         this.summaryList = new ArrayList<>();
     }
 
-    public void setActivityItemList(List<SummaryActivityItem> summaryList) {
+    public void setActivityItemList(List<ActivitySummary> summaryList) {
         this.summaryList = new ArrayList<>(summaryList);
         notifyDataSetChanged();
     }
@@ -37,7 +37,7 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
 
     @Override
     public void onBindViewHolder(@NonNull ActivitySummaryViewHolder holder, int position) {
-        SummaryActivityItem summaryItem = summaryList.get(position);
+        ActivitySummary summaryItem = summaryList.get(position);
 
         holder.activityType.setImageResource(summaryItem.getActivityImage());
 
@@ -51,9 +51,9 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
 
 
         holder.totalDistance.setText(summaryItem.getTotalDistance());
-        holder.timeSummary.setText(summaryItem.getTotalTimeSummary());
+        holder.timeSummary.setText(summaryItem.getTimeSummary());
 
-        if(validActivities.contains(summaryItem.getActivity())) {
+        if(validActivities.contains(summaryItem.getActivityType())) {
             holder.activityType.setVisibility(View.VISIBLE);
         }
         else {

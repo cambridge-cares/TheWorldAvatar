@@ -22,7 +22,6 @@ import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.TrajectorySummaryByDate;
-import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
@@ -102,111 +101,8 @@ public class NormalBottomSheetViewModel extends ViewModel {
     }
 
     public void parseSessionSummaries(TrajectoryByDate trajectory) {
-        List<Session> uniqueSessions = parseUniqueSessions(trajectory);
-        List<SummaryActivityItem> summaryActivityItems = parseActivitySummary(trajectory);
-        LocalDate date = trajectory.getDate();
 
-        TrajectorySummaryByDate sessionSummary = new TrajectorySummaryByDate(date, summaryActivityItems, uniqueSessions);
-
-        _sessionSummary.postValue(sessionSummary);
+        _sessionSummary.postValue(trajectory.parseSessionSummaries());
     }
-
-    private List<Session> parseUniqueSessions(TrajectoryByDate trajectory) {
-
-        List<String> uniqueSessionNames = new ArrayList<>();
-        List<TrajectorySegment> trajectorySegments = trajectory.getTrajectory();
-
-        for(TrajectorySegment segment : trajectorySegments) {
-            String sessionId = segment.sessionId();
-            if(!uniqueSessionNames.contains(sessionId)) {
-                uniqueSessionNames.add(sessionId);
-            }
-        }
-
-        List<Session> finalResult = new ArrayList<>();
-        for(int i = 1; i <= uniqueSessionNames.size(); i++) {
-            List<ActivityItem> activities = parseActivityItemsBySession(trajectory, uniqueSessionNames.get(i-1));
-            Session uniqueSession = new Session(uniqueSessionNames.get(i-1), activities, "Trip " + i);
-            finalResult.add(uniqueSession);
-        }
-        return finalResult;
-    }
-
-
-    private List<ActivityItem> parseActivityItemsBySession(TrajectoryByDate trajectory, String sessionId) {
-
-        List<ActivityItem> summaries = new ArrayList<>();
-        List<TrajectorySegment> trajectorySegments = trajectory.getTrajectory();
-
-        for(TrajectorySegment segment  : trajectorySegments) {
-            String activity = segment.activityType();
-            if(sessionId.equals(segment.sessionId())) {
-                int activityImage = getActivityImage(activity);
-
-                long startTime = segment.startTime();
-                long endTime = segment.endTime();
-
-                int id = segment.id();
-
-                summaries.add(new ActivityItem(id, activity, activityImage, startTime, endTime));
-            }
-        }
-        return summaries;
-    }
-
-
-    private List<SummaryActivityItem> parseActivitySummary(TrajectoryByDate trajectory) {
-        List<SummaryActivityItem> summaries = new ArrayList<>();
-
-        Map<String, List<Integer>> distancePerActivityType = new HashMap<>();
-        Map<String, List<Long>> timePerActivityType = new HashMap<>();
-        long startTime = 0;
-
-        List<TrajectorySegment> trajectorySegments = trajectory.getTrajectory();
-
-        for(TrajectorySegment segment : trajectorySegments) {
-
-            String activityType = segment.activityType();
-            startTime = segment.startTime();
-            long endTime = segment.endTime();
-            int distance = segment.distanceTraveled();
-
-            long minutes = (endTime > startTime) ? differenceInTime(startTime, endTime) : 0;
-
-            timePerActivityType.putIfAbsent(activityType, new ArrayList<>());
-            Objects.requireNonNull(timePerActivityType.get(activityType)).add(minutes);
-
-            distancePerActivityType.putIfAbsent(activityType, new ArrayList<>());
-            Objects.requireNonNull(distancePerActivityType.get(activityType)).add(distance);
-        }
-        for (String activity : distancePerActivityType.keySet()) {
-            int totalDistance = activity.equals("still") ? 0 : Objects.requireNonNull(distancePerActivityType.get(activity)).stream().mapToInt(Integer::intValue).sum();
-            long totalTime = Objects.requireNonNull(timePerActivityType.get(activity)).stream().mapToLong(Long::longValue).sum();;
-
-            int activityImage = getActivityImage(activity);
-
-            summaries.add(new SummaryActivityItem(activity, activityImage, totalDistance, totalTime));
-        }
-
-        return summaries;
-    }
-
-    private int getActivityImage(String activity) {
-        int activityImage = R.drawable.baseline_arrow_circle_right_24;
-        if (activity.equals("walking")) activityImage = R.drawable.baseline_directions_walk_24;
-        else if (activity.equals("vehicle")) activityImage = R.drawable.baseline_directions_car_24;
-        else if (activity.equals("bike")) activityImage = R.drawable.baseline_directions_bike_24;
-        else if (activity.equals("still")) activityImage = R.drawable.baseline_man_24;
-        else if (activity.equals("unknown")) activityImage = R.drawable.baseline_arrow_circle_right_24;
-
-        return activityImage;
-    }
-
-    private long differenceInTime(long startTime, long endTime) {
-        return ChronoUnit.MINUTES.between(
-                Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()).toLocalDateTime(),
-                Instant.ofEpochMilli(endTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        );
-    }
-
+    
 }

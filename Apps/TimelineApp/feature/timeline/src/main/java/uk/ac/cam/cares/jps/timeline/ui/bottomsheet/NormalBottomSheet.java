@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.timeline.model.bottomsheet.SummaryActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivitySummary;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.ActivitySummaryAdapter;
@@ -87,7 +87,7 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateSummaryView(List<SummaryActivityItem> summaryActivityItemList) {
+    public void updateSummaryView(List<ActivitySummary> summaryActivityItemList) {
         if (summaryActivityItemList != null && !summaryActivityItemList.isEmpty()) {
             summaryAdapter.setActivityItemList(summaryActivityItemList);
             summaryAdapter.notifyDataSetChanged();
