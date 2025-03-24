@@ -22,7 +22,7 @@ def create_ponits_table_self_defined_area(lng_start: float, lng_end: float, lng_
     script_dir = os.path.dirname(os.path.abspath(__file__))
     regularly_sample_sql_path = os.path.join(script_dir, "script", "regularly_sample.sql")
     with open(regularly_sample_sql_path, "r") as file:
-        postgis_client.execute_query(file.read(), table_mapping, params)
+        postgis_client.execute_update(file.read(), table_mapping, params)
 
 
 def create_points_table_provided_list(lng: float, lat: float) -> str:

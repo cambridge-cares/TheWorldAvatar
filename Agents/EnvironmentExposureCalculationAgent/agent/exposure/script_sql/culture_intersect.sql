@@ -10,8 +10,7 @@ FROM
         p.buffer_geom,
         ST_Transform(hs.wkb_geometry, 4326)
     )
-UNION
-ALL
+UNION ALL
 SELECT
     CONCAT(
         'https://www.theworldavatar.com/kg/HeritageTree/',
@@ -24,8 +23,7 @@ FROM
         p.buffer_geom,
         ST_Transform(ht.wkb_geometry, 4326)
     )
-UNION
-ALL
+UNION ALL
 SELECT
     CONCAT(
         'https://www.theworldavatar.com/kg/Museum/',
@@ -38,8 +36,7 @@ FROM
         p.buffer_geom,
         ST_Transform(m.wkb_geometry, 4326)
     )
-UNION
-ALL
+UNION ALL
 SELECT
     CONCAT(
         'https://www.theworldavatar.com/kg/Monument/',
@@ -52,8 +49,7 @@ FROM
         p.buffer_geom,
         ST_Transform(mo.wkb_geometry, 4326)
     )
-UNION
-ALL
+UNION ALL
 SELECT
     CONCAT(
         'https://www.theworldavatar.com/kg/TouristAttraction/',

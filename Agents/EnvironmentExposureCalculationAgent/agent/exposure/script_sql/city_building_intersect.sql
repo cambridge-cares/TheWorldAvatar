@@ -1,6 +1,5 @@
 select
     iri,
-    geometry,
     p.id as point_id
 from
     "citydb"."bldg_mat_view"

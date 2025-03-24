@@ -3,7 +3,7 @@ import json
 from flask import abort, jsonify, request
 
 from agent.boundary import create_buffer_around_points
-from agent.exposure import intersect
+from agent.exposure.intersect import intersect
 from agent.point_selection.point_selection import create_ponits_table_self_defined_area
 
 
@@ -27,7 +27,7 @@ def register_route(app):
         points_table_name = select_points(point_selection, data)
 
         # step2: create boundary around points
-        create_boundary(points_table_name, boundary)
+        create_boundary(points_table_name, boundary, data)
 
         # step3: exposure calculation
         exposure_calculation(points_table_name, algorithm)
@@ -72,9 +72,9 @@ def select_points(point_selection: str, data: dict) -> str:
     return table_name
 
 
-def create_boundary(points_table_name: str, boundary: str):
+def create_boundary(points_table_name: str, boundary: str, data:dict):
     if boundary == 'buffer':
-        boundary_radius = float(date['boundary_radius'])
+        boundary_radius = float(data['boundary_radius'])
         create_buffer_around_points(points_table_name, boundary_radius)
     else:
         abort(400, description="Unsupported buffer method")

@@ -1,5 +1,6 @@
 import re
-from typing import Any
+from typing import Any, List, Tuple
+import pandas as pd
 import psycopg2
 from pydantic import BaseModel, model_validator
 from agent.exceptions import StackException
@@ -39,27 +40,37 @@ class DBConfig(BaseModel):
         values["dbname"] = db_name  # Set dbname explicitly if provided
         return values
 
+
 class PostGISClient:
-    
+
     logger = agentlogging.get_logger("dev")
     db_config: DBConfig
 
-    def __init__(self, db_config: DBConfig):        
+    def __init__(self, db_config: DBConfig):
         self.db_config = db_config
 
-    def execute_query(self, query: str, table_mappings: dict, val_params:dict) -> psycopg2.extensions.connection:
+    def execute_query(self, query: str, table_mappings: dict, val_params: dict = None) -> pd.DataFrame:
+        query = self.process_table_mapping(query, table_mappings)
+
+        with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
+            with conn.cursor() as cur:
+                if val_params:
+                    cur.execute(query, val_params)
+                else:
+                    cur.execute(query)
+                return pd.DataFrame(cur.fetchall())
+
+    def execute_update(self, query: str, table_mappings: dict, val_params: dict = None):
+        query = self.process_table_mapping(query, table_mappings)
+
+        with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, val_params)
+                conn.commit()
+
+    def process_table_mapping(self, query: str, table_mappings: dict) -> str:
         if table_mappings:
             for key, value in table_mappings.items():
                 placeholder = f"%({key})s"
                 query = query.replace(placeholder, value)
-            
-        with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
-            with conn.cursor() as cur:
-                cur.execute(query, val_params)
-                # results = cur.fetchall()
-                # print(results)
-
-    def load_template(self, filepath: str) -> str:
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
-        return content
+        return query
