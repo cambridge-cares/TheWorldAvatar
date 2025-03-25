@@ -33,9 +33,7 @@ public class GeometryMatcher {
         int polygonSRID;
 
         int pointMin;
-        int polygonMin;
         int pointMax;
-        int polygonMax;
 
         // get SRID of OSM point geometries
         JSONArray result = rdbStoreClient.executeQuery(sridQuery(pointTable, "geometryProperty"));
@@ -80,16 +78,6 @@ public class GeometryMatcher {
                 throw new JPSRuntimeException("Failed, no ogc_fid column in OSM points table.");
             }
 
-            // get min and max IDs for polygons table
-            result = rdbStoreClient.executeQuery(idQuery(polygonTable));
-
-            if (!result.isEmpty()) {
-                polygonMin = result.getJSONObject(0).getInt("min");
-                polygonMax = result.getJSONObject(0).getInt("max");
-            } else {
-                throw new JPSRuntimeException("Failed, no ogc_fid column in OSM points table.");
-            }
-
             // matching osm point geometries with CityDB building footprints
             try (Connection connection = rdbStoreClient.getConnection();
                  Statement statement = connection.createStatement()) {
@@ -105,10 +93,8 @@ public class GeometryMatcher {
             System.out.println("Finished OSM points matching.");
 
             try (Connection connection = rdbStoreClient.getConnection();
-                 Statement statement = connection.createStatement()) {
-                for (int i = polygonMin; i <= polygonMax; i++) {
-                    statement.execute(polygonSQL(polygonTable, citydbPolygon, threshold, i));
-                }
+                Statement statement = connection.createStatement()) {
+                statement.execute(bulkPolygonSQL(polygonTable, citydbPolygon, threshold));
             }
             catch (SQLException e) {
                 e.printStackTrace();
@@ -277,6 +263,53 @@ public class GeometryMatcher {
 
         return String.format(update, table, cityTable, id, threshold);
     }
+
+    /**
+     * Same purpose as polygonSQL, but do it to all polygons
+     * @param table OSM polygons table
+     * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
+     * @return SQL query
+     */
+    private String bulkPolygonSQL(String table, String cityTable, double threshold) {
+        String update = "CREATE TEMP TABLE TempBuildingIRI AS\n" +
+                        "WITH RankedIntersections AS (\n" + // extract data from intersecting polygons from two tables
+                        "    SELECT\n" +
+                        "        a.ogc_fid AS a_row,\n" +
+                        "        b.urival AS b_id,\n" +
+                        "        a.\"geometryProperty\" AS a_geom,\n" +
+                        "        b.geometry AS b_geom,\n" +
+                        "        ST_Area(a.\"geometryProperty\") as a_area,\n" +
+                        "        ST_Area(b.geometry) as b_area\n" +
+                        "    FROM %s a JOIN %s b ON\n" +
+                        "        ST_Intersects(a.\"geometryProperty\", b.geometry)\n" +
+                        "),\n" +
+                        "CalculatedIntersections AS(\n" + // calculate intersection area
+                        "    SELECT\n" +
+                        "        a_row, b_id, a_geom,\n" +
+                        "        b_geom, a_area, b_area,\n" +
+                        "        ST_Area(ST_Intersection(a_geom, b_geom)) AS intersection_area,\n" +
+                        "        LEAST(a_area, b_area) AS smaller_polygon_area\n" +
+                        "    FROM RankedIntersections\n" +
+                        "),\n" +
+                        "RankedIntersectionsFinal as (\n" + // rank intersection area in desending order
+                        "    SELECT\n" +
+                        "        a_row, b_id, intersection_area, smaller_polygon_area,\n" +
+                        "        RANK() OVER (PARTITION BY a_row ORDER BY intersection_area DESC) AS rank\n" +
+                        "    FROM CalculatedIntersections\n" +
+                        "    WHERE intersection_area > %f * smaller_polygon_area\n" +
+                        ")\n" +
+                        "SELECT\n" + // pick pairs with biggest intersection area
+                        "    a_row, b_id FROM\n" +
+                        "    RankedIntersectionsFinal WHERE rank = 1;\n" +
+                        "UPDATE %s\n" + // update building IRI in polygon table
+                        "SET building_iri = TempBuildingIRI.b_id\n" +
+                        "FROM TempBuildingIRI\n" +
+                        "WHERE %s.ogc_fid = TempBuildingIRI.a_row";
+
+        return String.format(update, table, cityTable, threshold, table, table);
+    }
+
+    
 
     /**
      * Matches building IRIs not in usageTable with land use from landUseTable, and updates usageTable with the assigned OntoBuiltEnv:PropertyUsage class according to '/dlm_landuse.csv'
