@@ -33,9 +33,6 @@ public class GeometryMatcher {
         int pointSRID;
         int polygonSRID;
 
-        int pointMin;
-        int pointMax;
-
         // get SRID of OSM point geometries
         JSONArray result = rdbStoreClient.executeQuery(sridQuery(pointTable, "geometryProperty"));
 
@@ -198,16 +195,6 @@ public class GeometryMatcher {
         return String.format("SELECT DISTINCT public.ST_SRID(p.\"%s\") AS srid FROM %s p", geometryColumn, table);
     }
 
-    /**
-     * Returns SQL query for the min and max ID of a table
-     * 
-     * @param table table name
-     * @return SQL query for the min and max ID of table
-     */
-    private String idQuery(String table) {
-        return "SELECT MIN(ogc_fid) as min, MAX(ogc_fid) as max FROM " + table;
-    }
-
     private String boundGeometry(String bound, Integer boundSRID, Integer targetSRID) {
         return String.format("public.ST_Transform(public.ST_GeomFromText(\'%s\', %d), %d)", bound, boundSRID,
                 targetSRID);
@@ -362,17 +349,14 @@ public class GeometryMatcher {
 
                 String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt, source) \n" +
                         "SELECT q2.iri, \'" + ontobuilt + "\' , \'land_use\' FROM \n" +
-                        "(SELECT q.urival AS iri, q.geometry AS geo FROM " + citydbTable + "q\n" +
+                        "(SELECT q.urival AS iri, q.geometry AS geo FROM " + citydbTable + " q\n" +
                         "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
                         "WHERE u.building_iri IS NULL) AS q2 \n" +
-                        "WHERE public.ST_Intersects(q2.geo, \n" +
-                        "(SELECT CASE WHEN public.ST_IsValid(public.ST_Collect(\"%s\")) THEN public.ST_Collect(\"%s\")\n"
-                        +
-                        "ELSE public.ST_MakeValid(public.ST_Collect(\"%s\")) END AS g FROM " + landUseTable + " \n" +
-                        "WHERE \"" + key + "\" = \'" + value + "\'))";
+                        "JOIN " + landUseTable + " lu ON\n" +
+                        "public.ST_Intersects(q2.geo, public.ST_MakeValid(lu.\"%s\"))" + 
+                        "WHERE lu.\"" + key + "\" = \'" + value + "\'";
 
-                rdbStoreClient
-                        .executeUpdate(String.format(updateLandUse, geometryColumn, geometryColumn, geometryColumn));
+                rdbStoreClient.executeUpdate(String.format(updateLandUse, geometryColumn));
                 System.out.println(
                         "Untagged buildings with building_iri are assigned for " + key + " with value:"
                                 + value + " under the ontobuiltenv:" + ontobuilt
