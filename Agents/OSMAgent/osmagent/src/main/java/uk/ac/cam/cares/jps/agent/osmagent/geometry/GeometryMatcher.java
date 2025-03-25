@@ -59,11 +59,14 @@ public class GeometryMatcher {
 
         // create temporary tables of CityDB building footprints, transformed to the same SRIDs of OSM point and polygon geometries
         String citydbPoint = createTable(bound, boundSRID, pointSRID);
-
         String citydbPolygon = "";
 
         if (pointSRID != polygonSRID) {
+            // if OSM polygon geometries have different SRIDs to OSM points, create another temporary table for polygons
             citydbPolygon = createTable(bound, boundSRID, polygonSRID);
+        } else {
+            // if OSM point and polygon geometries have the same SRIDs, they can use the same temporary table
+            citydbPolygon = citydbPoint;
         }
 
         if (bound == null) {
@@ -104,7 +107,7 @@ public class GeometryMatcher {
             try (Connection connection = rdbStoreClient.getConnection();
                  Statement statement = connection.createStatement()) {
                 for (int i = polygonMin; i <= polygonMax; i++) {
-                    statement.execute(polygonSQL(polygonTable, citydbPoint, threshold, i));
+                    statement.execute(polygonSQL(polygonTable, citydbPolygon, threshold, i));
                 }
             }
             catch (SQLException e) {
@@ -113,8 +116,7 @@ public class GeometryMatcher {
             }
 
             System.out.println("Finished OSM polygons matching.");
-        }
-        else {
+        } else {
             result = rdbStoreClient.executeQuery(boundID(pointTable, bound, boundSRID, pointSRID));
 
             try (Connection connection = rdbStoreClient.getConnection();
@@ -135,7 +137,7 @@ public class GeometryMatcher {
             try (Connection connection = rdbStoreClient.getConnection();
                  Statement statement = connection.createStatement()) {
                 for (int i = 0; i < result.length(); i++) {
-                    statement.execute(polygonSQL(polygonTable, citydbPoint, threshold, result.getJSONObject(i).getInt("ogc_fid")));
+                    statement.execute(polygonSQL(polygonTable, citydbPolygon, threshold, result.getJSONObject(i).getInt("ogc_fid")));
                 }
             }
             catch (SQLException e) {
@@ -148,7 +150,7 @@ public class GeometryMatcher {
 
         // delete temporary tables
         deleteTable(citydbPoint);
-        if (!citydbPolygon.isEmpty()) {
+        if (!citydbPolygon.equals(citydbPoint)) {
             deleteTable(citydbPolygon);
         }
     }
