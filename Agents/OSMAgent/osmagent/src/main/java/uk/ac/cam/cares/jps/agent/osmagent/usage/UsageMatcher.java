@@ -174,6 +174,11 @@ public class UsageMatcher {
         String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
         rdbStoreClient.executeUpdate(initialiseSchema);
 
+        // add extension for UUID generation if not exist
+
+        String createExtension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"";
+        rdbStoreClient.executeUpdate(createExtension);
+
         // initialise address table
         String initialiseAddressTable = "CREATE TABLE IF NOT EXISTS " + addressTable;
 
