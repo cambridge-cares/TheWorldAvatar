@@ -15,6 +15,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.List;
 import java.util.Objects;
@@ -76,25 +77,25 @@ public class TrajectoryViewModel extends ViewModel {
         });
     }
 
-    private boolean isClicked(JSONObject geom, Point clickedPoint) {
-        try {
-            JSONArray coordinates = geom.getJSONArray("coordinates");
+    // private boolean isClicked(JSONObject geom, Point clickedPoint) {
+    //     try {
+    //         JSONArray coordinates = geom.getJSONArray("coordinates");
 
-            for (int i = 0; i < coordinates.length(); i++) {
-                JSONArray point = coordinates.getJSONArray(i);
-                double lng = point.getDouble(0);
-                double lat = point.getDouble(1);
+    //         for (int i = 0; i < coordinates.length(); i++) {
+    //             JSONArray point = coordinates.getJSONArray(i);
+    //             double lng = point.getDouble(0);
+    //             double lat = point.getDouble(1);
 
-                if (isCloseToClickedPoint(lng, lat, clickedPoint)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        catch(Exception e) {
-            return false;
-        }
-    }
+    //             if (isCloseToClickedPoint(lng, lat, clickedPoint)) {
+    //                 return true;
+    //             }
+    //         }
+    //         return false;
+    //     }
+    //     catch(Exception e) {
+    //         return false;
+    //     }
+    // }
 
     private boolean isCloseToClickedPoint(double lng, double lat, Point clickedPoint) {
         double threshold = 0.0001;
@@ -105,21 +106,55 @@ public class TrajectoryViewModel extends ViewModel {
 
     public void setClicked(Point p) {
         
+        if (p == null) {
+            _clickedSegment.postValue(null);
+            Log.d("invalid click", "No point clicked or not on a segment.");
+            return;
+        }
+
         List<TrajectorySegment> trajectorySegments = Objects.requireNonNull(trajectory.getValue()).getTrajectorySegments();
 
-        for(TrajectorySegment segment  : trajectorySegments) {
-        
-            JSONObject geom = segment.geom();
-
-            if(isClicked(geom, p)) {
-                Log.d("valid click", "clicked segment with id " + segment.id());
-                _clickedSegment.postValue(segment);
-                return;
-            }
+        if (trajectorySegments.isEmpty()) {
+            _clickedSegment.postValue(null);
+            return;
         }
-        _clickedSegment.postValue(null);
-        Log.d("invalid click","not a segment.");
 
+        TrajectorySegment closestSegment = trajectorySegments.get(0);
+        double closestDistance = calculateMinEndpointDistance(closestSegment, p);
+
+        for (TrajectorySegment segment : trajectorySegments) {
+            double distance = calculateMinEndpointDistance(segment, p);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestSegment = segment;
+            }
+
+        }
+        _clickedSegment.postValue(closestSegment);
+        Log.d("valid click", "clicked segment with id " + closestSegment.id());
+
+        
+    }
+
+    private double calculateMinEndpointDistance(TrajectorySegment segment, Point p) {
+        try {
+            JSONArray coordinates = segment.geom().getJSONArray("coordinates");
+            JSONArray start = coordinates.getJSONArray(0);
+            JSONArray end = coordinates.getJSONArray(coordinates.length() - 1);
+
+            double startDistance = differenceInDistance(start, p);
+            double endDistance = differenceInDistance(end, p);
+
+            return Math.min(startDistance, endDistance);
+        } catch (Exception e) {
+            return Double.MAX_VALUE; 
+        }
+    }
+
+    private double differenceInDistance(JSONArray coord, Point p) throws JSONException {
+        double lng = coord.getDouble(0);
+        double lat = coord.getDouble(1);
+        return Math.sqrt(Math.pow(lng - p.longitude(), 2) + Math.pow(lat - p.latitude(), 2));
     }
 
     public void removeAllClicked() {

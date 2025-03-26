@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.Log;
-import android.util.TypedValue;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
 
 import com.mapbox.bindgen.Expected;
 import com.mapbox.bindgen.None;
@@ -18,11 +16,15 @@ import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
+import com.mapbox.maps.QueriedFeature;
+import com.mapbox.maps.RenderedQueryGeometry;
+import com.mapbox.maps.RenderedQueryOptions;
+import com.mapbox.maps.ScreenBox;
+import com.mapbox.maps.ScreenCoordinate;
 import com.mapbox.maps.Style;
 import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 import com.mapbox.maps.plugin.gestures.GesturesPlugin;
 import com.mapbox.maps.plugin.gestures.GesturesUtils;
-import com.mapbox.maps.plugin.gestures.OnMapClickListener;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -30,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,13 +110,33 @@ public class TrajectoryManager {
 
     GesturesPlugin gesturesPlugin = GesturesUtils.getGestures(mapView);
 
- 
     gesturesPlugin.addOnMapClickListener(point -> {
         Log.d("TrajectoryClick", "Map clicked at: " + point.longitude() + ", " + point.latitude());
 
-        trajectoryViewModel.setClicked(point);
+        ScreenCoordinate screenPoint = mapView.getMapboxMap().pixelForCoordinate(point);
 
-        return true;
+        ScreenBox screenBox = new ScreenBox(
+                new ScreenCoordinate(screenPoint.getX() - 20, screenPoint.getY() - 20),
+                new ScreenCoordinate(screenPoint.getX() + 20, screenPoint.getY() + 20)
+        );
+
+        mapView.getMapboxMap().queryRenderedFeatures(
+                new RenderedQueryGeometry(screenBox),
+                new RenderedQueryOptions(List.of(this.layerId), null),  
+                result -> {
+                    if (result.getValue() != null && !result.getValue().isEmpty()) {
+
+                        Log.d("TrajectoryClick", "Line segment clicked!");
+                        trajectoryViewModel.setClicked(point);
+                    } else {
+
+                        Log.d("TrajectoryClick", "No segment clicked.");
+                        trajectoryViewModel.setClicked(null);
+                    }
+                }
+        );
+
+        return true; 
     });
 }
 
