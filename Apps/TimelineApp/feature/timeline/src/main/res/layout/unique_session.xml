@@ -45,7 +45,7 @@
         android:id="@+id/activity_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/session_dropdown_layout"
+        app:layout_constraintTop_toBottomOf="@id/session_dropdown_layout"
         android:fadingEdge="none"
         android:nestedScrollingEnabled="true"
         android:overScrollMode="always"

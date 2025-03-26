@@ -86,11 +86,11 @@ public class TrajectoryByDate {
 
                     parsedSessionIds.add(sessionId);
                     sessionTitleNumber++;
-                    String sessionTitle = "Title " + sessionTitleNumber;
+                    String sessionTitle = "Trip " + sessionTitleNumber;
                     for(int j = i; j < features.length(); j++) {
 
-                        JSONObject feature2 = features.getJSONObject(i);
-                        JSONObject properties2 = feature.getJSONObject("properties");
+                        JSONObject feature2 = features.getJSONObject(j);
+                        JSONObject properties2 = feature2.getJSONObject("properties");
 
                         if(properties2.optString("session_id", "unknown").equals(sessionId)) {
                             long startTime = properties2.optLong("start_time", 0);
