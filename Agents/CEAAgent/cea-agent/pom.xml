@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.cam.cares.jps.agent</groupId>
     <artifactId>cea-agent</artifactId>
-    <version>3.5.1</version>
+    <version>3.5.2-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>1.35.0</version>
+            <version>1.46.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>junit</groupId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.10.2</version>
+            <version>1.40.1</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

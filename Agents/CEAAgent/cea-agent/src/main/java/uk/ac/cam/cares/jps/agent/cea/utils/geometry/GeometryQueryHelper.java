@@ -41,32 +41,26 @@ public class GeometryQueryHelper {
      * @return returns building height as a string
      */
     public static String getBuildingHeight(String uriString, String endpoint) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
-                    .addWhere("?s", "bldg:measuredHeight", "?height")
-                    .addFilter("!isBlank(?height)");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?height")
-                    .addWhere(wb);
-            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
+                .addWhere("?s", "bldg:measuredHeight", "?height")
+                .addFilter("!isBlank(?height)");
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?height")
+                .addWhere(wb);
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
 
-            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
-            JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
+        JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
 
-            String height = "10.0";
+        String height = "10.0";
 
-            if (!queryResultArray.isEmpty()) {
-                 height = queryResultArray.getJSONObject(0).getString("height");
-            }
-
-            return height;
+        if (!queryResultArray.isEmpty()) {
+             height = queryResultArray.getJSONObject(0).getString("height");
         }
-        catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+
+        return height;
     }
 
     /**
@@ -140,32 +134,28 @@ public class GeometryQueryHelper {
      * @return true if CRS in endpoint is CRS84, false otherwise
      */
     public static boolean checkCRS84(String endpoint) {
-        try {
-            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
-                    .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
-                    .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp));
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
+                .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp));
 
-            wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
-                    .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
-                    .addWhere("?geometry", "geo:asWKT", "?wkt");
+        wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
+                .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
+                .addWhere("?geometry", "geo:asWKT", "?wkt");
 
-            SelectBuilder sb = new SelectBuilder()
-                    .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
-                    .addWhere(wb)
-                    .addVar("geof:getSRID(?wkt)", "?crs")
-                    .setDistinct(true);
+        SelectBuilder sb = new SelectBuilder()
+                .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
+                .addWhere(wb)
+                .addVar("geof:getSRID(?wkt)", "?crs")
+                .setDistinct(true);
 
-            JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
+        JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
 
-            if (!queryResultArray.isEmpty()) {
-                return queryResultArray.length() == 1 && queryResultArray.getJSONObject(0).getString("crs").contains("CRS84");
-            }
-
-            return false;
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        if (!queryResultArray.isEmpty()) {
+            return queryResultArray.length() == 1 && queryResultArray.getJSONObject(0).getString("crs").contains("CRS84");
         }
+
+        return false;
     }
 }
