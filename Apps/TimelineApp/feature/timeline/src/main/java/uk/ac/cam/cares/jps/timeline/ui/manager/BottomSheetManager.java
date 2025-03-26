@@ -21,9 +21,13 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivitySummary;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
@@ -99,14 +103,36 @@ public class BottomSheetManager {
 
     private void initNormalBottomSheet() {
         normalBottomSheet = new NormalBottomSheet(context);
-        configureTrajectoryRetrieval();
         configureDateSelection();
+        configureTrajectoryRetrieval();
+        configureSummary();
     }
 
     private void configureTrajectoryRetrieval() {
         trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
-        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheet::showTrajectoryInfo);
     }
+
+
+    private void configureSummary() {
+
+    trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseSessionSummaries);
+
+    normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
+        List<ActivitySummary> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
+        List<Session> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
+        TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
+
+        if (sessionSummaryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+            normalBottomSheet.updateSummaryView(activityItemSummaryList);
+            normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
+        }
+    });
+
+    trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedId -> {
+        normalBottomSheet.highlightClickedSegment(clickedId);  
+    });
+}
+
 
     private void configureDateSelection() {
         normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view ->
@@ -184,3 +210,4 @@ public class BottomSheetManager {
     }
 
 }
+

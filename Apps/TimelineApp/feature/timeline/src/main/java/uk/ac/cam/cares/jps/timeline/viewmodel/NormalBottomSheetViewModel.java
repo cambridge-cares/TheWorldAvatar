@@ -4,16 +4,28 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.TrajectorySummaryByDate;
+import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
+import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
@@ -24,9 +36,11 @@ public class NormalBottomSheetViewModel extends ViewModel {
     private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
     private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
     private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
+    private MutableLiveData<TrajectorySummaryByDate> _sessionSummary = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
+    public LiveData<TrajectorySummaryByDate> sessionSummary = _sessionSummary;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -59,6 +73,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
         _selectedDate.setValue(date);
     }
 
+
     /**
      * Get dates which has trajectory data from server
      * @param timezone current timezone
@@ -84,4 +99,10 @@ public class NormalBottomSheetViewModel extends ViewModel {
     public long getSelectedDateLong() {
         return selectedDate.getValue().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
+
+    public void parseSessionSummaries(TrajectoryByDate trajectory) {
+
+        _sessionSummary.postValue(trajectory.parseSessionSummaries());
+    }
+    
 }

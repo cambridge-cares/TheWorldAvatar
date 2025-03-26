@@ -40,3 +40,17 @@ BEGIN
     RETURN CONCAT('https://www.theworldavatar.com/kg/sensorloggerapp/sessionID_', device_id);
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_activity_type_iri(device_id VARCHAR)
+RETURNS VARCHAR AS $$
+BEGIN
+    RETURN CONCAT('https://www.theworldavatar.com/kg/sensorloggerapp/activity_type_', device_id);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_confidence_level_iri(device_id VARCHAR)
+RETURNS VARCHAR AS $$
+BEGIN
+    RETURN CONCAT('https://www.theworldavatar.com/kg/sensorloggerapp/confidence_level_', device_id);
+END;
+$$ LANGUAGE plpgsql;
