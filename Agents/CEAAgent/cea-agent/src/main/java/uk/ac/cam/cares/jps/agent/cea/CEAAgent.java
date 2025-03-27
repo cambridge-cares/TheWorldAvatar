@@ -110,34 +110,33 @@ public class CEAAgent extends JPSAgent {
             if (requestUrl.contains(URI_ACTION)) {
                 ArrayList<CEABuildingData> buildingData = new ArrayList<>();
                 ArrayList<String> uriStringArray = new ArrayList<>();
-                String crs = new String();
+                String crs = "";
                 String terrainDb = defaultTerrainDb;
                 String terrainTable = defaultTerrainTable;
                 WeatherHelper weatherHelper = null;
 
+                // Only set route once - assuming all iris passed in same namespace
+                // Will not be necessary if namespace is passed in request params
+
+                // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
+                geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
+                // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
+                usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
+                weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : stackAccessAgentBase + defaultWeatherLabel;
+                ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
+                terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
+                terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainTable;
+
+                if (!RouteHelper.checkEndpoint(ceaRoute)){
+                    throw new JPSRuntimeException("ceaEndpoint not accessible");
+                }
+
+                List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
+                storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
+                weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute);
+
                 for (int i = 0; i < uriArray.length(); i++) {
                     String uri = uriArray.getString(i);
-
-                    // Only set route once - assuming all iris passed in same namespace
-                    // Will not be necessary if namespace is passed in request params
-                    if (i == 0) {
-                        // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                        geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
-                        // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                        usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
-                        weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : stackAccessAgentBase + defaultWeatherLabel;
-                        ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
-                        terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
-                        terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainTable;
-
-                        if (!RouteHelper.checkEndpoint(ceaRoute)){
-                            throw new JPSRuntimeException("ceaEndpoint not accessible");
-                        }
-
-                        List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
-                        storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
-                        weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute);
-                    }
 
                     uriStringArray.add(uri);
 
@@ -149,7 +148,7 @@ public class CEAAgent extends JPSAgent {
                     buildingData.add(new CEABuildingData(footprint, usage));
                 }
 
-                crs = buildingData.get(0).getGeometry().getCrs();
+                crs = buildingData.get(0).getGeometry().getCrs(); // this assumes all buildings have the same CRS
 
                 List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray, ontopUrl);
 
@@ -190,7 +189,7 @@ public class CEAAgent extends JPSAgent {
                 List<OffsetDateTime> times = DataParser.getTimesList(requestParams, KEY_TIMES);
                 TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient);
 
-                // parse times series data;
+                // parse times series data
                 List<List<List<?>>> timeSeries = new ArrayList<>();
                 for (int i = 0; i < uriArray.length(); i++) {
                     List<List<?>> iriList = new ArrayList<>();
