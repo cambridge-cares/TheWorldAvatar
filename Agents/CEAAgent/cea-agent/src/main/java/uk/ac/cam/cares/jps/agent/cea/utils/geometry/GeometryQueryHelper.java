@@ -28,39 +28,10 @@ public class GeometryQueryHelper {
      * @return building geometry related information
      */
     public static CEAGeometryData getBuildingGeometry(String uriString, String endpoint, Boolean flag) {
-        String height = getBuildingHeight(uriString, endpoint);
 
-        CEAGeometryData ceaGeometryData = getLod0Footprint(uriString, endpoint, height, flag);
+        CEAGeometryData ceaGeometryData = getLod0Footprint(uriString, endpoint, flag);
 
         return ceaGeometryData;
-    }
-
-    /**
-     * Retrieves building height for building IRI uriString
-     * @param uriString building IRI
-     * @return returns building height as a string
-     */
-    public static String getBuildingHeight(String uriString, String endpoint) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
-                .addWhere("?s", "bldg:measuredHeight", "?height")
-                .addFilter("!isBlank(?height)");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?height")
-                .addWhere(wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
-
-        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
-
-        JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
-
-        String height = "10.0";
-
-        if (!queryResultArray.isEmpty()) {
-             height = queryResultArray.getJSONObject(0).getString("height");
-        }
-
-        return height;
     }
 
     /**
@@ -71,7 +42,7 @@ public class GeometryQueryHelper {
      * @param flag flag to indicate whether to call GeometryHandler.extractFootprint
      * @return building footprint as CEAGeometryData
      */
-    public static CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height, Boolean flag) {
+    public static CEAGeometryData getLod0Footprint(String uriString, String endpoint, Boolean flag) {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
@@ -80,13 +51,21 @@ public class GeometryQueryHelper {
                     .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
                     .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp));
 
+            // query for WKT of building footprint
+            
             wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
                     .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
                     .addWhere("?geometry", "geo:asWKT", "?wkt");
+            
+            // query for building height
+            
+            wb.addWhere("?building", "bldg:measuredHeight", "?height")
+                    .addFilter("!isBlank(?height)");
 
             SelectBuilder sb = new SelectBuilder()
                     .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
                     .addWhere(wb)
+                    .addVar("?height")
                     .addVar("?wkt")
                     .addVar("geof:getSRID(?wkt)", "?crs");
             sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
@@ -96,6 +75,12 @@ public class GeometryQueryHelper {
             JSONArray queryResultArray = storeClient.executeQuery(query.toString());
 
             String crs = queryResultArray.getJSONObject(0).getString("crs");
+
+            String height = "10.0";
+
+            if (!queryResultArray.isEmpty()) {
+                height = queryResultArray.getJSONObject(0).getString("height");
+            }
 
             if (crs.contains("EPSG")) {
                 crs = crs.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
