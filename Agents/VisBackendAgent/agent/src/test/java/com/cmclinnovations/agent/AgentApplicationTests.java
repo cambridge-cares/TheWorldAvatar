@@ -12,8 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.cmclinnovations.agent.service.FileService;
-import com.cmclinnovations.agent.service.FileServiceTest;
+import com.cmclinnovations.agent.service.core.FileService;
+import com.cmclinnovations.agent.service.core.FileServiceTest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
