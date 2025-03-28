@@ -27,10 +27,9 @@ import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
+import org.cts.op.CoordinateOperation;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import org.locationtech.jts.geom.Coordinate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -124,7 +123,8 @@ public class WeatherHelper extends JPSAgent {
 
         try {
             // coordinate in (longitude, latitude) format
-            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
+            Set<CoordinateOperation> operations = GeometryHandler.getTransformOperations(crs, CRS_4326);
+            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, operations);
 
             Double latitude;
             Double longitude;

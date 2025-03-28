@@ -9,6 +9,7 @@ import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.units.Unit;
 import org.cts.crs.GeodeticCRS;
 import org.cts.op.CoordinateOperation;
+import org.cts.op.CoordinateOperationException;
 import org.cts.op.CoordinateOperationFactory;
 import org.cts.registry.EPSGRegistry;
 import org.cts.registry.RegistryManager;
@@ -115,8 +116,10 @@ public class GeometryHandler {
             return geometry;
         }
 
+        Set<CoordinateOperation> operations = GeometryHandler.getTransformOperations(sourceCRS, targetCRS);
+
         for (int i = 0; i < coordinates.length; i++) {
-            transformed[i] = transformCoordinate(coordinates[i], sourceCRS, targetCRS);
+            transformed[i] = transformCoordinate(coordinates[i], operations);
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
@@ -137,19 +140,10 @@ public class GeometryHandler {
      * @param targetCRS target CRS for coordinate transformation with EPSG prefix
      * @return the transformed coordinate in targetCRS
      */
-    public static Coordinate transformCoordinate(Coordinate coordinate, String sourceCRS, String targetCRS) throws Exception {
-        CRSFactory crsFactory = new CRSFactory();
-        RegistryManager registryManager = crsFactory.getRegistryManager();
-        registryManager.addRegistry(new EPSGRegistry());
-
-        CoordinateReferenceSystem source = crsFactory.getCRS(sourceCRS);
-        CoordinateReferenceSystem target = crsFactory.getCRS(targetCRS);
-
-        Set<CoordinateOperation> operations = CoordinateOperationFactory
-                .createCoordinateOperations((GeodeticCRS) source, (GeodeticCRS) target);
+    public static Coordinate transformCoordinate(Coordinate coordinate, Set<CoordinateOperation> operations) throws Exception {
 
         double[] transform = new double[3];
-        if (operations.size() != 0) {
+        if (!operations.isEmpty()) {
             // Test each transformation method (generally, only one method is available)
             for (CoordinateOperation op : operations) {
                 // Transform coord using the op CoordinateOperation from sourceCRS to targetCRS
@@ -158,6 +152,18 @@ public class GeometryHandler {
         }
 
         return new Coordinate(transform[0], transform[1], transform[2]);
+    }
+
+    public static Set<CoordinateOperation> getTransformOperations(String sourceCRS, String targetCRS) throws CRSException, CoordinateOperationException {
+        CRSFactory crsFactory = new CRSFactory();
+        RegistryManager registryManager = crsFactory.getRegistryManager();
+        registryManager.addRegistry(new EPSGRegistry());
+
+        CoordinateReferenceSystem source = crsFactory.getCRS(sourceCRS);
+        CoordinateReferenceSystem target = crsFactory.getCRS(targetCRS);
+
+        return CoordinateOperationFactory.createCoordinateOperations((GeodeticCRS) source, (GeodeticCRS) target);
+
     }
 
     /**
