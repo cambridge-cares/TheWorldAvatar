@@ -501,7 +501,7 @@ public class RunCEATask implements Runnable {
 
                     args7.add("/bin/bash");
                     args7.add("-c");
-                    args7.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile1 + " " + WORKFLOW_YML1 + " " + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " " + database + " " + solarProperties);
+                    args7.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile1 + " " + WORKFLOW_YML1 + " " + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " " + database + " \'" + solarProperties + "\'");
 
                     args8.add("/bin/bash");
                     args8.add("-c");
@@ -509,7 +509,7 @@ public class RunCEATask implements Runnable {
 
                     args9.add("/bin/bash");
                     args9.add("-c");
-                    args9.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile2 + " " + WORKFLOW_YML2 + " " + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database + " " + solarProperties);
+                    args9.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + createWorkflowFile + " " + workflowFile2 + " " + WORKFLOW_YML2 + " " + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database + " \'" + solarProperties + "\'");
 
                     args10.add("/bin/bash");
                     args10.add("-c");
