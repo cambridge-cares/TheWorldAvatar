@@ -119,11 +119,9 @@ public class CEAAgent extends JPSAgent {
                 // Only set route once - assuming all iris passed in same namespace
                 // Will not be necessary if namespace is passed in request params
 
-                // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to
-                // TheWorldAvatar Blazegraph
+                // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to ontop endpoint
                 geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
-                // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to
-                // TheWorldAvatar Blazegraph
+                // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to ontop endpoint
                 usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
                 weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER)
                         : stackAccessAgentBase + defaultWeatherLabel;
@@ -141,8 +139,7 @@ public class CEAAgent extends JPSAgent {
                 storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                 weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute);
 
-                // Get footprint from ground thematic surface or find from surface geometries
-                // depending on data
+                // Get footprint from building endpoints
                 List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
                         geometryRoute);
 
@@ -178,16 +175,13 @@ public class CEAAgent extends JPSAgent {
 
                 String ceaDatabase = ceaDb.get(0);
 
-                try {
-                    String tempS = GeometryHandler
-                            .getCountry(buildingData.get(0).getGeometry().getFootprint().get(0).getCoordinate());
-                    tempS = tempS.toUpperCase();
+                String tempS = GeometryHandler
+                        .getCountry(buildingData.get(0).getGeometry().getFootprint().get(0).getCoordinate());
 
-                    if (ceaDb.contains(tempS)) {
-                        ceaDatabase = tempS;
-                    }
-                } catch (Exception e) {
-                    // TODO - report properly
+                tempS = tempS.toUpperCase();
+
+                if (ceaDb.contains(tempS)) {
+                    ceaDatabase = tempS;
                 }
 
                 runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase);

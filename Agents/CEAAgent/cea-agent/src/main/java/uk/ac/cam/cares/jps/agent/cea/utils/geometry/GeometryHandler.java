@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -39,6 +40,7 @@ public class GeometryHandler {
 
     /**
      * Parses a WKT string to a geometry object
+     * 
      * @param geometryString WKT string
      * @return geometryString as a geometry object
      */
@@ -48,12 +50,13 @@ public class GeometryHandler {
 
     /**
      * Buffers a geometry object
-     * @param geom geometry object
+     * 
+     * @param geom      geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
-     * @param distance buffer distance
+     * @param distance  buffer distance
      * @return buffered geometry object
      */
-    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance)  {
+    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance) {
         if (distance == 0) {
             return geom;
         }
@@ -80,15 +83,15 @@ public class GeometryHandler {
             result.setSRID(source);
 
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return geom;
         }
     }
 
     /**
      * Inflates a geometry object
-     * @param geom geometry object
+     * 
+     * @param geom     geometry object
      * @param distance buffer distance
      * @return inflated geometry object
      */
@@ -103,7 +106,8 @@ public class GeometryHandler {
 
     /**
      * Transforms a geometry object from sourceCRS to targetCRS
-     * @param geometry geometry object
+     * 
+     * @param geometry  geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
      * @param targetCRS target CRS for geometry transformation with EPSG prefix
      * @return the transformed geometry in targetCRS
@@ -135,26 +139,29 @@ public class GeometryHandler {
 
     /**
      * Transform a coordinate from sourceCRS to targetCRS
+     * 
      * @param coordinate coordinate to be transformed
-     * @param sourceCRS source CRS of coordinate with EPSG prefix
-     * @param targetCRS target CRS for coordinate transformation with EPSG prefix
+     * @param sourceCRS  source CRS of coordinate with EPSG prefix
+     * @param targetCRS  target CRS for coordinate transformation with EPSG prefix
      * @return the transformed coordinate in targetCRS
      */
-    public static Coordinate transformCoordinate(Coordinate coordinate, Set<CoordinateOperation> operations) throws Exception {
+    public static Coordinate transformCoordinate(Coordinate coordinate, Set<CoordinateOperation> operations)
+            throws Exception {
 
         double[] transform = new double[3];
         if (!operations.isEmpty()) {
             // Test each transformation method (generally, only one method is available)
             for (CoordinateOperation op : operations) {
                 // Transform coord using the op CoordinateOperation from sourceCRS to targetCRS
-                transform  = op.transform(new double[] {coordinate.getX(), coordinate.getY(), coordinate.getZ()});
+                transform = op.transform(new double[] { coordinate.getX(), coordinate.getY(), coordinate.getZ() });
             }
         }
 
         return new Coordinate(transform[0], transform[1], transform[2]);
     }
 
-    public static Set<CoordinateOperation> getTransformOperations(String sourceCRS, String targetCRS) throws CRSException, CoordinateOperationException {
+    public static Set<CoordinateOperation> getTransformOperations(String sourceCRS, String targetCRS)
+            throws CRSException, CoordinateOperationException {
         CRSFactory crsFactory = new CRSFactory();
         RegistryManager registryManager = crsFactory.getRegistryManager();
         registryManager.addRegistry(new EPSGRegistry());
@@ -168,6 +175,7 @@ public class GeometryHandler {
 
     /**
      * Checks whether a CRS has meter as the unit of measurement
+     * 
      * @param crs CRS string
      * @return true if crs has meter as the unit of measurement, false otherwise
      */
@@ -180,8 +188,7 @@ public class GeometryHandler {
 
         if (unit.getName().contains(Unit.METER.getName())) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -210,6 +217,7 @@ public class GeometryHandler {
 
     /**
      * Extracts and returns the exterior ring of a polygon object
+     * 
      * @param polygon polygon object
      * @return polygon's exterior ring as a polygon object
      */
@@ -219,6 +227,7 @@ public class GeometryHandler {
 
     /**
      * Swaps the coordinates of a polygon object
+     * 
      * @param polygon polygon object
      * @return polygon with its coordinates swapped
      */
@@ -231,15 +240,17 @@ public class GeometryHandler {
             coordinate.setY(temp);
         }
 
-        coordinates[0] = coordinates[coordinates.length-1];
+        coordinates[0] = coordinates[coordinates.length - 1];
 
         return new GeometryFactory().createPolygon(coordinates);
     }
 
     /**
      * Check if the CEAGeometryDatas in ceaGeometries have the same CRS
+     * 
      * @param ceaGeometries list of CEAGeometryDatas
-     * @return true if CEAGeometryDatas in ceaGeometries have the same CRS, false otherwise
+     * @return true if CEAGeometryDatas in ceaGeometries have the same CRS, false
+     *         otherwise
      */
     private static boolean checkSameCRS(List<CEAGeometryData> ceaGeometries) {
         List<String> crsList = ceaGeometries.stream()
@@ -248,10 +259,10 @@ public class GeometryHandler {
         return crsList.stream().allMatch(s -> s.equals(crsList.get(0)));
     }
 
-    private static List<Geometry> insertHoles(List<Geometry>  geometries, List<LinearRing> holes) {
+    private static List<Geometry> insertHoles(List<Geometry> geometries, List<LinearRing> holes) {
         List<Geometry> result = new ArrayList<>();
 
-        for (LinearRing hole: holes) {
+        for (LinearRing hole : holes) {
             int i = 0;
             while (i < geometries.size()) {
                 Geometry geometry = geometries.get(i);
@@ -259,8 +270,7 @@ public class GeometryHandler {
                     result.add(geometry.difference(hole));
                     geometries.remove(i);
                     break;
-                }
-                else {
+                } else {
                     i++;
                 }
             }
@@ -271,37 +281,40 @@ public class GeometryHandler {
         return result;
     }
 
-    public static String getCountry(Coordinate coordinate) throws Exception {
+    public static String getCountry(Coordinate coordinate) {
         String urlString = String.format(
                 "https://nominatim.openstreetmap.org/reverse?lat=%f&lon=%f&format=json",
-                coordinate.getY(), coordinate.getX()
-        );
+                coordinate.getY(), coordinate.getX());
 
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
 
-        URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
+            conn.setRequestProperty("User-Agent", "CEA agent");
 
-        conn.setRequestProperty("User-Agent", "CEA agent");
+            // Read the response
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
 
-        // Read the response
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
-        }
-        reader.close();
-
-        JSONObject j = new JSONObject(response.toString());
-
-        if (j.has("address")) {
-            if (j.getJSONObject("address").has("country_code")) {
-                return j.getJSONObject("address").getString("country_code");
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
             }
-        }
+            reader.close();
 
-        return "CH";
+            JSONObject j = new JSONObject(response.toString());
+
+            if (j.has("address")) {
+                if (j.getJSONObject("address").has("country_code")) {
+                    return j.getJSONObject("address").getString("country_code");
+                }
+            }
+
+            return "CH";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "CH";
+        }
     }
 }
