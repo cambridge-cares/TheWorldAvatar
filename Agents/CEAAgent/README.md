@@ -139,12 +139,19 @@ The CEA agent provides three routes:
 A `POST` request should be sent to this route for running the CEA simulation. The `/run` route accepts the following request parameters:
 
 - `iris`: array of building IRIs.
-- `geometryEndpoint`: (optional) SPARQL endpoint containing the geospatial information of the corresponding buildings from `iris`; Defaults to Ontop endpoint
-- `usageEndpoint`: (optional) SPARQL endpoint containing the building usage information of the corresponding buildings from `iris`; Defaults to Ontop endpoint
-- `ceaEndpoint`: (optional) Intended SPARQL endpoint for storing CEA output triples, i.e. energy demand and photovoltaic potential information; Defaults to the `cea.label` in [CEAAgentConfig.properties]
-- `weatherEndpoint`: (optional) SPARQL endpoint containing historical weather information; Defaults to the `weather.label` in [CEAAgentConfig.properties]
-- `terrainDatabase` (optional) RDB database containing terrain data; Defaults to `terrain.database` in [CEAAgentConfig.properties]
-- `terrainTable`: (optional) RDB table, inclusive of schema prefix, containing terrain data; Defaults to `terrain.table` in [CEAAgentConfig.properties]
+- `geometryEndpoint`: (optional) SPARQL endpoint containing the geospatial information of the corresponding buildings from `iris`; defaults to Ontop endpoint
+- `usageEndpoint`: (optional) SPARQL endpoint containing the building usage information of the corresponding buildings from `iris`; defaults to Ontop endpoint
+- `ceaEndpoint`: (optional) Intended SPARQL endpoint for storing CEA output triples, i.e. energy demand and photovoltaic potential information; defaults to the `cea.label` in [CEAAgentConfig.properties]
+- `weatherEndpoint`: (optional) SPARQL endpoint containing historical weather information; defaults to the `weather.label` in [CEAAgentConfig.properties]
+- `terrainDatabase` (optional) RDB database containing terrain data; defaults to `terrain.database` in [CEAAgentConfig.properties]
+- `terrainTable`: (optional) RDB table, inclusive of schema prefix, containing terrain data; defaults to `terrain.table` in [CEAAgentConfig.properties]
+- `solarProperties`: (optional) Solar panel related parameters as a single object; defaults to CEA default assumptions
+  - Allowable parameters
+    - `annual-radiation-threshold`: Panels are only considered on surfaces that receive annual radiation threshold above the defined threshold kwh/m2/yr(default:800)
+    - `max-roof-coverage`: Maximum panel coverage of roof surfaces that reach the `annual-radiation-threshold` (valid values between 0 and 1) (default: 1.0)
+    - `panel-tilt-angle`: solar panel tilt angle (degrees) (default: optimal tilt angle, automatically calculated by CEA, will be used)
+    - `t-in-sc`: Inlet temperature of solar collectors (Celsius) (default: 60 for flat plate solar collectors and 75 for evacuated tube solar collectors)
+    - `t-in-pvt`: Inlet temperature of PV-thermal panels (Celsius) (default: 35)
 
 Example `POST` request:
 

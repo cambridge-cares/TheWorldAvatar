@@ -55,6 +55,8 @@ public class CEAAgent extends JPSAgent {
     public static final String KEY_TERRAIN_DB = "terrainDatabase";
     public static final String KEY_TERRAIN_TABLE = "terrainTable";
     public static final String KEY_CEA = "ceaEndpoint";
+    public static final String KEY_SOLAR = "solarProperties";
+    public static final Set<String> SOLAR_PARAMETERS = new HashSet<>(Arrays.asList("annual-radiation-threshold", "max-roof-coverage", "panel-tilt-angle", "t-in-sc", "t-in-pvt"));
 
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
@@ -115,6 +117,27 @@ public class CEAAgent extends JPSAgent {
                 String terrainTable = defaultTerrainTable;
                 WeatherHelper weatherHelper = null;
 
+                JSONObject solar = requestParams.has(KEY_SOLAR) ? requestParams.getJSONObject(KEY_SOLAR) : null;
+
+                if (solar != null) {
+                    Set<String> invalidKeys = new HashSet<>();
+
+                    Iterator<String> keys = solar.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        if (!SOLAR_PARAMETERS.contains(key)) {
+                            invalidKeys.add(key);
+                        }
+                    }
+                    if (!invalidKeys.isEmpty()) {
+                        JSONObject err = new JSONObject();
+                        err.put("error", "Invalid solar parameter(s) provided.");
+                        err.put("invalid_parameters", invalidKeys);
+                        err.put("valid_parameters", SOLAR_PARAMETERS);
+                        return err;
+                    }
+                }
+
                 for (int i = 0; i < uriArray.length(); i++) {
                     String uri = uriArray.getString(i);
 
@@ -151,7 +174,7 @@ public class CEAAgent extends JPSAgent {
 
                 crs = buildingData.get(0).getGeometry().getCrs();
 
-                List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray, ontopUrl);
+                List<CEAGeometryData> surrounding = null;
 
                 List<Object> weather = new ArrayList<>();
 
@@ -183,7 +206,7 @@ public class CEAAgent extends JPSAgent {
                 catch (Exception e) {
                 }
 
-                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase);
+                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar);
             }
             else if (requestUrl.contains(URI_UPDATE)) {
                 // parse times
@@ -450,9 +473,9 @@ public class CEAAgent extends JPSAgent {
      * @param threadNumber int tracking thread that is running
      * @param crs coordinate reference system
      */
-    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase) {
+    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase, JSONObject solar) {
         try {
-            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs, ceaDatabase);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs, ceaDatabase, solar);
             CEAExecutor.execute(task);
         }
         catch(URISyntaxException e){
