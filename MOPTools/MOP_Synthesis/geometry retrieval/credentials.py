@@ -1,0 +1,5 @@
+GEO_FOLDER = ''
+SPARQL_ENDPOINT = ''
+FILE_SERVER = ''
+FS_USER = ''
+FS_PW = ''
