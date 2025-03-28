@@ -67,7 +67,7 @@ public class SurroundingsHelper {
                     .mapToObj(i -> queryResultArray.getJSONObject(i).get("building").toString())
                     .filter(uri -> !buildingIRIs.contains(uri)).collect(Collectors.toList());
 
-            return GeometryQueryHelper.bulkGetBuildingGeometry(newUriList, endpoint, false);
+            return GeometryQueryHelper.bulkGetBuildingGeometry(newUriList, endpoint);
         } catch (Exception e) {
             System.out.println(
                     "No surroundings retrieved, agent will run CEA with CEA's default surroundings retrieved from OpenStreetMap.");

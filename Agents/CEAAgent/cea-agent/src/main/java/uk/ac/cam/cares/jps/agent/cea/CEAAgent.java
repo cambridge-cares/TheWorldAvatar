@@ -144,7 +144,7 @@ public class CEAAgent extends JPSAgent {
                 // Get footprint from ground thematic surface or find from surface geometries
                 // depending on data
                 List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
-                        geometryRoute, true);
+                        geometryRoute);
 
                 List<Map<String, Double>> listUsage = BuildingUsageHelper.bulkGetBuildingUsages(uriStringArray,
                         usageRoute);

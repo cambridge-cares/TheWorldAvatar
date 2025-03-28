@@ -23,58 +23,7 @@ import java.util.Map;
 
 public class GeometryQueryHelper {
 
-    /**
-     * Queries for building geometry related information
-     * 
-     * @param uriString city object id
-     * @param endpoint  SPARQL endpoint
-     * @param flag      flag to indicate whether to call
-     *                  GeometryHandler.extractFootprint
-     * @return building geometry related information
-     */
-    public static CEAGeometryData getBuildingGeometry(String uriString, String endpoint, Boolean flag) {
-
-        try {
-            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
-
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
-                    .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
-                    .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp));
-
-            // query for WKT of building footprint
-
-            wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
-                    .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
-                    .addWhere("?geometry", "geo:asWKT", "?wkt");
-
-            // query for building height
-
-            wb.addWhere("?building", "bldg:measuredHeight", "?height")
-                    .addFilter("!isBlank(?height)");
-
-            SelectBuilder sb = new SelectBuilder()
-                    .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
-                    .addWhere(wb)
-                    .addVar("?height")
-                    .addVar("?wkt")
-                    .addVar("geof:getSRID(?wkt)", "?crs");
-            sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
-
-            Query query = sb.build();
-
-            JSONArray queryResultArray = storeClient.executeQuery(query.toString());
-
-            return processBuildingData(queryResultArray, flag);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException("No geometry data retrievable for building " + uriString);
-        }
-    }
-
-    public static List<CEAGeometryData> bulkGetBuildingGeometry(List<String> uriStringList, String endpoint,
-            Boolean flag) {
+    public static List<CEAGeometryData> bulkGetBuildingGeometry(List<String> uriStringList, String endpoint) {
 
         RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
@@ -128,14 +77,14 @@ public class GeometryQueryHelper {
 
         for (String uri : uriStringList) {
             JSONArray resultJSONArray = queryMap.getOrDefault(uri, new JSONArray());
-            listCeaGeometryData.add(processBuildingData(resultJSONArray, flag));
+            listCeaGeometryData.add(processBuildingData(resultJSONArray));
         }
 
         return listCeaGeometryData;
 
     }
 
-    public static CEAGeometryData processBuildingData(JSONArray queryResultArray, Boolean flag) {
+    public static CEAGeometryData processBuildingData(JSONArray queryResultArray) {
 
         // assume CRS and Height are the same across for the same building
 
@@ -156,23 +105,20 @@ public class GeometryQueryHelper {
 
         List<Geometry> geometry = new ArrayList<>();
 
-        if (flag) {
-            geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
-        } else {
-            for (int i = 0; i < queryResultArray.length(); i++) {
-                String wkt = queryResultArray.getJSONObject(i).getString("wkt");
+        for (int i = 0; i < queryResultArray.length(); i++) {
+            String wkt = queryResultArray.getJSONObject(i).getString("wkt");
 
-                Polygon temp = (Polygon) GeometryHandler.toGeometry(wkt);
+            Polygon temp = (Polygon) GeometryHandler.toGeometry(wkt);
 
-                try {
-                    temp = (Polygon) GeometryHandler.transformGeometry(temp, "EPSG:" + crs, GeometryHandler.EPSG_4326);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new JPSRuntimeException("Cannot transform geometry: " + wkt);
-                }
-                geometry.add(GeometryHandler.extractExterior(temp));
+            try {
+                temp = (Polygon) GeometryHandler.transformGeometry(temp, "EPSG:" + crs, GeometryHandler.EPSG_4326);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new JPSRuntimeException("Cannot transform geometry: " + wkt);
             }
+            geometry.add(GeometryHandler.extractExterior(temp));
         }
+
         return new CEAGeometryData(geometry, "4326", height);
 
     }
