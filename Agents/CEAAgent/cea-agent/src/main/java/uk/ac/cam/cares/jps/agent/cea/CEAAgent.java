@@ -35,7 +35,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @WebServlet(urlPatterns = {
         CEAAgent.URI_ACTION,
@@ -147,12 +146,10 @@ public class CEAAgent extends JPSAgent {
                 List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
                         ontopUrl, true);
 
+                List<Map<String, Double>> listUsage = BuildingUsageHelper.bulkGetBuildingUsages(uriStringArray, usageRoute);
+
                 for (int i = 0; i < uriStringArray.size(); i++) {
-                    String uri = uriStringArray.get(i);
-                    // Get building usage, set default usage of MULTI_RES if not available in
-                    // knowledge graph
-                    Map<String, Double> usage = BuildingUsageHelper.getBuildingUsages(uri, usageRoute);
-                    buildingData.add(new CEABuildingData(listFootprint.get(i), usage));
+                    buildingData.add(new CEABuildingData(listFootprint.get(i), listUsage.get(i)));
                 }
 
                 crs = buildingData.get(0).getGeometry().getCrs(); // this assumes all buildings have the same CRS
