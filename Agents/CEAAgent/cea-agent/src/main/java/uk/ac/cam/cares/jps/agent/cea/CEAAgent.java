@@ -144,9 +144,10 @@ public class CEAAgent extends JPSAgent {
                 // Get footprint from ground thematic surface or find from surface geometries
                 // depending on data
                 List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
-                        ontopUrl, true);
+                        geometryRoute, true);
 
-                List<Map<String, Double>> listUsage = BuildingUsageHelper.bulkGetBuildingUsages(uriStringArray, usageRoute);
+                List<Map<String, Double>> listUsage = BuildingUsageHelper.bulkGetBuildingUsages(uriStringArray,
+                        usageRoute);
 
                 for (int i = 0; i < uriStringArray.size(); i++) {
                     buildingData.add(new CEABuildingData(listFootprint.get(i), listUsage.get(i)));
@@ -155,7 +156,7 @@ public class CEAAgent extends JPSAgent {
                 crs = buildingData.get(0).getGeometry().getCrs(); // this assumes all buildings have the same CRS
 
                 List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray,
-                        ontopUrl);
+                        geometryRoute);
 
                 List<Object> weather = new ArrayList<>();
 
