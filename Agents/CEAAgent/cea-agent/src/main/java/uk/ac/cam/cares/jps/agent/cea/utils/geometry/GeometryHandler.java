@@ -4,6 +4,7 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 
 import org.cts.crs.CRSException;
 import org.cts.CRSFactory;
+import org.cts.IllegalCoordinateException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.units.Unit;
 import org.cts.crs.GeodeticCRS;
@@ -141,9 +142,11 @@ public class GeometryHandler {
      * @param sourceCRS  source CRS of coordinate with EPSG prefix
      * @param targetCRS  target CRS for coordinate transformation with EPSG prefix
      * @return the transformed coordinate in targetCRS
+     * @throws CoordinateOperationException
+     * @throws IllegalCoordinateException
      */
     public static Coordinate transformCoordinate(Coordinate coordinate, Set<CoordinateOperation> operations)
-            throws Exception {
+            throws IllegalCoordinateException, CoordinateOperationException {
 
         double[] transform = new double[3];
         if (!operations.isEmpty()) {

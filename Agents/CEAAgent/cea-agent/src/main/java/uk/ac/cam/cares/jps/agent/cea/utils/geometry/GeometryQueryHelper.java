@@ -12,7 +12,6 @@ import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.sparql.core.Var;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
