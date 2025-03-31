@@ -175,7 +175,7 @@ public class CEAAgent extends JPSAgent {
 
                 String ceaDatabase = ceaDb.get(0);
 
-                String tempS = GeometryHandler
+                String tempS = GeometryQueryHelper
                         .getCountry(buildingData.get(0).getGeometry().getFootprint().get(0).getCoordinate());
 
                 tempS = tempS.toUpperCase();

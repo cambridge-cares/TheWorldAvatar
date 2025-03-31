@@ -5,6 +5,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 
@@ -15,6 +16,11 @@ import org.apache.jena.graph.NodeFactory;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,5 +159,43 @@ public class GeometryQueryHelper {
         }
 
         return false;
+    }
+
+    
+    public static String getCountry(Coordinate coordinate) {
+        String urlString = String.format(
+                "https://nominatim.openstreetmap.org/reverse?lat=%f&lon=%f&format=json",
+                coordinate.getY(), coordinate.getX());
+
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            conn.setRequestProperty("User-Agent", "CEA agent");
+
+            // Read the response
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            JSONObject j = new JSONObject(response.toString());
+
+            if (j.has("address")) {
+                if (j.getJSONObject("address").has("country_code")) {
+                    return j.getJSONObject("address").getString("country_code");
+                }
+            }
+
+            return "CH";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "CH";
+        }
     }
 }
