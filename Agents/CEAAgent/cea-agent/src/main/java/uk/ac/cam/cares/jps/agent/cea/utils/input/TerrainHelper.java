@@ -86,18 +86,7 @@ public class TerrainHelper {
                 bufferDistance = 160.0; // 160 metre buffer
             }
 
-            GeometryFactory geometryFactory = new GeometryFactory();
-
-            GeometryCollection geoCol = geometryFactory.createGeometryCollection(geometries.toArray(new Polygon[0]));
-
-            // create envelope of buildings, and create a polygon with buffer
-
-            Geometry envelope = geoCol.getEnvelope();
-
-            Polygon boundingBoxGeometry = (Polygon) GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs,
-                    bufferDistance);
-
-            String boundingBox = boundingBoxGeometry.toText();
+            String boundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, bufferDistance);
 
             List<byte[]> result = new ArrayList<>();
 

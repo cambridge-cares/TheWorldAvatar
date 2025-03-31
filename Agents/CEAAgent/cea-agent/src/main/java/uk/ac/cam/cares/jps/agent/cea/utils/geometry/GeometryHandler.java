@@ -21,7 +21,6 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 
 import org.json.JSONObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +43,27 @@ public class GeometryHandler {
      */
     public static Geometry toGeometry(String geometryString) {
         return WKTReader.extract(geometryString).getGeometry();
+    }
+
+    /**
+     * Return WKT string of envelope of a list of geometries (building footprint) with buffer
+     * 
+     * @param geometries list of geometry objects
+     * @param crs        source CRS of geometries
+     * @param distance   buffer distance (in metre)
+     * @return WKT string of bounding box
+     */
+
+    public static String getBufferEnvelope(List<Geometry> geometries, String crs, Double distance) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        GeometryCollection geoCol = geometryFactory.createGeometryCollection(geometries.toArray(new Polygon[0]));
+
+        Geometry envelope = geoCol.getEnvelope();
+
+        Polygon boundingBoxGeometry = (Polygon) bufferPolygon(envelope, "EPSG:" + crs, distance);
+
+        return boundingBoxGeometry.toText();
     }
 
     /**
@@ -257,28 +277,6 @@ public class GeometryHandler {
                 .map(CEAGeometryData::getCrs)
                 .collect(Collectors.toList());
         return crsList.stream().allMatch(s -> s.equals(crsList.get(0)));
-    }
-
-    private static List<Geometry> insertHoles(List<Geometry> geometries, List<LinearRing> holes) {
-        List<Geometry> result = new ArrayList<>();
-
-        for (LinearRing hole : holes) {
-            int i = 0;
-            while (i < geometries.size()) {
-                Geometry geometry = geometries.get(i);
-                if (geometry.contains(hole)) {
-                    result.add(geometry.difference(hole));
-                    geometries.remove(i);
-                    break;
-                } else {
-                    i++;
-                }
-            }
-        }
-
-        result.addAll(geometries);
-
-        return result;
     }
 
     public static String getCountry(Coordinate coordinate) {
