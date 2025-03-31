@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 
 import org.cts.crs.CRSException;
@@ -20,14 +19,12 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -120,7 +117,7 @@ public class GeometryHandler {
             return geometry;
         }
 
-        Set<CoordinateOperation> operations = GeometryHandler.getTransformOperations(sourceCRS, targetCRS);
+        Set<CoordinateOperation> operations = getTransformOperations(sourceCRS, targetCRS);
 
         for (int i = 0; i < coordinates.length; i++) {
             transformed[i] = transformCoordinate(coordinates[i], operations);
