@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.lang.Process;
 
 public class RunCEATask implements Runnable {
     private final ArrayList<CEABuildingData> inputs;
@@ -32,10 +31,10 @@ public class RunCEATask implements Runnable {
     private final String crs;
     private final String database;
     private final CEAMetaData metaData;
-    private Double weather_lat;
-    private Double weather_lon;
-    private Double weather_elevation;
-    private Double weather_offset;
+    private Double weatherLat;
+    private Double weatherLon;
+    private Double weatherElevation;
+    private Double weatherOffset;
     public static final String CTYPE_JSON = "application/json";
     private Boolean stop = false;
     private Boolean noSurroundings = true;
@@ -139,10 +138,10 @@ public class RunCEATask implements Runnable {
     /**
      * Writes building geometry and usage data to text file to be read by the Python scripts
      * @param dataInputs ArrayList of the CEA input data
-     * @param directory_path directory path
-     * @param file_path path to store data file
+     * @param directoryPath directory path
+     * @param filePath path to store data file
      */
-    private void parseBuildingData(ArrayList<CEABuildingData> dataInputs, String directory_path, String file_path) {
+    private void parseBuildingData(ArrayList<CEABuildingData> dataInputs, String directoryPath, String filePath) {
         // parse input data to JSON
         String dataString = "[";
 
@@ -159,17 +158,17 @@ public class RunCEATask implements Runnable {
         }
         dataString += "]";
 
-        File dir = new File(directory_path);
+        File dir = new File(directoryPath);
 
         if (!dir.exists() && !dir.mkdirs()) {
-            throw new JPSRuntimeException(new FileNotFoundException(directory_path));
+            throw new JPSRuntimeException(new FileNotFoundException(directoryPath));
         }
 
-        // write building geometry data to file_path
+        // write building geometry data to filePath
         try {
-            BufferedWriter f_writer = new BufferedWriter(new FileWriter(file_path));
-            f_writer.write(dataString);
-            f_writer.close();
+            BufferedWriter fWriter = new BufferedWriter(new FileWriter(filePath));
+            fWriter.write(dataString);
+            fWriter.close();
         } catch (IOException e) {
             throw new JPSRuntimeException(e);
         }
@@ -193,14 +192,14 @@ public class RunCEATask implements Runnable {
     /**
      * Writes surrounding data into text file to be read by create_shapefile.py for shapefile creation
      * @param surroundings list of CEAGeometryData of the surrounding buildings
-     * @param directory_path directory path
-     * @param file_path path to store data file
+     * @param directoryPath directory path
+     * @param filePath path to store data file
      */
-    private void parseSurroundings(List<CEAGeometryData> surroundings, String directory_path, String file_path) {
+    private void parseSurroundings(List<CEAGeometryData> surroundings, String directoryPath, String filePath) {
         //Parse input data to JSON
         String dataString = "[";
 
-        if (surroundings != null) {
+        if (!surroundings.isEmpty()) {
             noSurroundings = false;
 
             for (int i = 0; i < surroundings.size(); i++) {
@@ -215,16 +214,16 @@ public class RunCEATask implements Runnable {
 
             dataString += "]";
 
-            File dir = new File(directory_path);
+            File dir = new File(directoryPath);
 
             if (!dir.exists() && !dir.mkdirs()) {
-                throw new JPSRuntimeException(new FileNotFoundException(directory_path));
+                throw new JPSRuntimeException(new FileNotFoundException(directoryPath));
             }
 
             try {
-                BufferedWriter f_writer = new BufferedWriter(new FileWriter(file_path));
-                f_writer.write(dataString);
-                f_writer.close();
+                BufferedWriter fWriter = new BufferedWriter(new FileWriter(filePath));
+                fWriter.write(dataString);
+                fWriter.close();
             } catch (IOException e) {
                 throw new JPSRuntimeException(e);
             }
@@ -236,10 +235,10 @@ public class RunCEATask implements Runnable {
      * @param weatherTimes timestamps of weather data
      * @param weather weather data
      * @param weatherMetaData weather meta data
-     * @param weatherTimes_path path to store
-     * @param weather_path path to store weather data files
+     * @param weatherTimesPath path to store
+     * @param weatherPath path to store weather data files
      */
-    private void parseWeather(List<OffsetDateTime> weatherTimes, Map<String, List<Double>> weather, List<Double> weatherMetaData, String weatherTimes_path, String weather_path) {
+    private void parseWeather(List<OffsetDateTime> weatherTimes, Map<String, List<Double>> weather, List<Double> weatherMetaData, String weatherTimesPath, String weatherPath) {
         if (weatherTimes != null) {
             List<Map<String, Integer>> timeMap = new ArrayList<>();
 
@@ -258,25 +257,25 @@ public class RunCEATask implements Runnable {
 
             String times = new Gson().toJson(timeMap);
             String weatherData = new Gson().toJson(weather);
-            weather_lat = weatherMetaData.get(0);
-            weather_lon = weatherMetaData.get(1);
-            weather_elevation = weatherMetaData.get(2);
-            weather_offset = weatherMetaData.get(3);
+            weatherLat = weatherMetaData.get(0);
+            weatherLon = weatherMetaData.get(1);
+            weatherElevation = weatherMetaData.get(2);
+            weatherOffset = weatherMetaData.get(3);
 
-            // write timestamps of weather data to weatherTimes_path
+            // write timestamps of weather data to weatherTimesPath
             try {
-                BufferedWriter f_writer = new BufferedWriter(new FileWriter(weatherTimes_path));
-                f_writer.write(times);
-                f_writer.close();
+                BufferedWriter fWriter = new BufferedWriter(new FileWriter(weatherTimesPath));
+                fWriter.write(times);
+                fWriter.close();
             } catch (IOException e) {
                 throw new JPSRuntimeException(e);
             }
 
-            // write weather data to weather_path
+            // write weather data to weatherPath
             try {
-                BufferedWriter f_writer = new BufferedWriter(new FileWriter(weather_path));
-                f_writer.write(weatherData);
-                f_writer.close();
+                BufferedWriter fWriter = new BufferedWriter(new FileWriter(weatherPath));
+                fWriter.write(weatherData);
+                fWriter.close();
             } catch (IOException e) {
                 throw new JPSRuntimeException(e);
             }
@@ -347,47 +346,47 @@ public class RunCEATask implements Runnable {
                 String workflowPath = strTmp + FS + WORKFLOW_YML;
                 String workflowPath1 = strTmp + FS + WORKFLOW_YML1;
                 String workflowPath2 = strTmp + FS + WORKFLOW_YML2;
-                String data_path = strTmp + FS + DATA_FILE;
-                String surroundings_path = strTmp + FS + SURROUNDINGS_FILE;
-                String weatherTimes_path = strTmp + FS + WEATHERTIMES_FILE;
-                String weatherData_path = strTmp + FS + WEATHERDATA_FILE;
-                String tempTerrain_path = strTmp + FS + TEMPTERRAIN_FILE;
+                String dataPath = strTmp + FS + DATA_FILE;
+                String surroundingsPath = strTmp + FS + SURROUNDINGS_FILE;
+                String weatherTimesPath = strTmp + FS + WEATHERTIMES_FILE;
+                String weatherDataPath = strTmp + FS + WEATHERDATA_FILE;
+                String tempTerrainPath = strTmp + FS + TEMPTERRAIN_FILE;
 
                 // write building geometry and usage data to temporary text file
-                parseBuildingData(this.inputs, strTmp, data_path);
+                parseBuildingData(this.inputs, strTmp, dataPath);
                 // write surrounding buildings' geometry data to temporary text file
-                parseSurroundings(this.metaData.getSurrounding(), strTmp, surroundings_path);
+                parseSurroundings(this.metaData.getSurrounding(), strTmp, surroundingsPath);
                 // write weather data to temporary text file
-                parseWeather(this.metaData.getWeatherTimes(), this.metaData.getWeather(), this.metaData.getWeatherMetaData(), weatherTimes_path, weatherData_path);
+                parseWeather(this.metaData.getWeatherTimes(), this.metaData.getWeather(), this.metaData.getWeatherMetaData(), weatherTimesPath, weatherDataPath);
                 // convert terrain bytes data to TIFF
-                bytesToTIFF(this.metaData.getTerrain(), tempTerrain_path);
+                bytesToTIFF(this.metaData.getTerrain(), tempTerrainPath);
 
                 String surroundingsFlag = noSurroundings ? "1" : "0";
                 String weatherFlag = noWeather ? "1" : "0";
                 String terrainFlag = noTerrain ? "1" : "0";
 
                 if(OS.contains("win")){
-                    String f_path;
+                    String fPath;
 
                     args.add("cmd.exe");
                     args.add("/C");
-                    f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(SHAPEFILE_SCRIPT)).toURI()).getAbsolutePath();
-                    args.add("conda activate cea && python " + f_path + " " + data_path + " " + strTmp + " " + crs + " zone.shp");
+                    fPath = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(SHAPEFILE_SCRIPT)).toURI()).getAbsolutePath();
+                    args.add("conda activate cea && python " + fPath + " " + dataPath + " " + strTmp + " " + crs + " zone.shp");
 
                     args1.add("cmd.exe");
                     args1.add("/C");
-                    f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(SHAPEFILE_SCRIPT)).toURI()).getAbsolutePath();
-                    args1.add("conda activate cea && python " + f_path + " " + surroundings_path + " " + strTmp + " " + crs + " surroundings.shp");
+                    fPath = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(SHAPEFILE_SCRIPT)).toURI()).getAbsolutePath();
+                    args1.add("conda activate cea && python " + fPath + " " + surroundingsPath + " " + strTmp + " " + crs + " surroundings.shp");
 
                     args2.add("cmd.exe");
                     args2.add("/C");
-                    f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(TYPOLOGY_SCRIPT)).toURI()).getAbsolutePath();
-                    args2.add("conda activate cea && python " + f_path + " " + data_path + " " + strTmp);
+                    fPath = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(TYPOLOGY_SCRIPT)).toURI()).getAbsolutePath();
+                    args2.add("conda activate cea && python " + fPath + " " + dataPath + " " + strTmp);
 
                     args3.add("cmd.exe");
                     args3.add("/C");
-                    f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(TERRAIN_SCRIPT)).toURI()).getAbsolutePath();
-                    args3.add("conda activate cea && python " + f_path + " " + tempTerrain_path + " " + strTmp + " " + TERRAIN_FILE);
+                    fPath = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(TERRAIN_SCRIPT)).toURI()).getAbsolutePath();
+                    args3.add("conda activate cea && python " + fPath + " " + tempTerrainPath + " " + strTmp + " " + TERRAIN_FILE);
 
                     args4.add("cmd.exe");
                     args4.add("/C");
@@ -411,9 +410,9 @@ public class RunCEATask implements Runnable {
                     if (!noWeather) {
                         args6.add("cmd.exe");
                         args6.add("/C");
-                        f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(WEATHER_SCRIPT)).toURI()).getAbsolutePath();
-                        String defaultEPW_path = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS + "weather.epw";
-                        args6.add("conda activate cea && python " + f_path + " " + weatherTimes_path + " " + weatherData_path + " " + weather_lat + " " + weather_lon + " " + weather_elevation + " " + weather_offset  + " " + strTmp + " " + "weather.epw" + " " + defaultEPW_path);
+                        fPath = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(WEATHER_SCRIPT)).toURI()).getAbsolutePath();
+                        String defaultEPWPath = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS + "weather.epw";
+                        args6.add("conda activate cea && python " + fPath + " " + weatherTimesPath + " " + weatherDataPath + " " + weatherLat + " " + weatherLon + " " + weatherElevation + " " + weatherOffset  + " " + strTmp + " " + "weather.epw" + " " + defaultEPWPath);
                     }
                     
                     args7.add("cmd.exe");
@@ -467,19 +466,19 @@ public class RunCEATask implements Runnable {
 
                     args.add("/bin/bash");
                     args.add("-c");
-                    args.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + shapefile + " " + data_path + " " + strTmp + " " + crs + " zone.shp");
+                    args.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + shapefile + " " + dataPath + " " + strTmp + " " + crs + " zone.shp");
 
                     args1.add("/bin/bash");
                     args1.add("-c");
-                    args1.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + shapefile + " " + surroundings_path + " " + strTmp + " " + crs + " surroundings.shp");
+                    args1.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + shapefile + " " + surroundingsPath + " " + strTmp + " " + crs + " surroundings.shp");
 
                     args2.add("/bin/bash");
                     args2.add("-c");
-                    args2.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + typologyfile + " " + data_path + " " + strTmp);
+                    args2.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + typologyfile + " " + dataPath + " " + strTmp);
 
                     args3.add("/bin/bash");
                     args3.add("-c");
-                    args3.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + terrainScript + " " + tempTerrain_path + " " + strTmp + " " + TERRAIN_FILE);
+                    args3.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + terrainScript + " " + tempTerrainPath + " " + strTmp + " " + TERRAIN_FILE);
 
                     args4.add("/bin/bash");
                     args4.add("-c");
@@ -492,7 +491,7 @@ public class RunCEATask implements Runnable {
                     if (!noWeather) {
                         args6.add("/bin/bash");
                         args6.add("-c");
-                        args6.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + weatherfile + " " + weatherTimes_path + " " + weatherData_path + " " + weather_lat + " " + weather_lon + " " + weather_elevation + " " + weather_offset  + " " + strTmp + " " + "weather.epw" + " " + defaultEPW);
+                        args6.add("export PROJ_LIB=/opt/conda/share/proj && /opt/conda/bin/python3 " + weatherfile + " " + weatherTimesPath + " " + weatherDataPath + " " + weatherLat + " " + weatherLon + " " + weatherElevation + " " + weatherOffset  + " " + strTmp + " " + "weather.epw" + " " + defaultEPW);
                     }
 
                     args7.add("/bin/bash");

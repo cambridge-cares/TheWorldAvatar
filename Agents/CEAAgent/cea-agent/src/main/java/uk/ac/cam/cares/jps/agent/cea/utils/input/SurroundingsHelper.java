@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -61,7 +62,7 @@ public class SurroundingsHelper {
         } catch (Exception e) {
             System.out.println(
                     "No surroundings retrieved, agent will run CEA with CEA's default surroundings retrieved from OpenStreetMap.");
-            return null;
+            return Collections.emptyList();
         }
     }
 

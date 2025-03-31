@@ -5,10 +5,6 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 
 import java.sql.Connection;
@@ -94,8 +90,9 @@ public class TerrainHelper {
             String terrainQuery = getTerrainQuery(boundingBox, Integer.valueOf(crs),
                     postgisCRS, table);
 
-            try (Connection conn = postgisClient.getConnection()) {
-                Statement stmt = conn.createStatement();
+            try (Connection conn = postgisClient.getConnection();
+                    Statement stmt = conn.createStatement();) {
+
                 ResultSet terrainResult = stmt.executeQuery(terrainQuery);
                 while (terrainResult.next()) {
                     byte[] rasterBytes = terrainResult.getBytes("data");
@@ -115,8 +112,7 @@ public class TerrainHelper {
     }
 
     /**
-     * Creates a SQL query string for raster data within a square bounding box of
-     * length 2*radius, center point at (x, y)
+     * Creates a SQL query string for raster data within a bounding box
      * 
      * @param wkt         wkt literal of the bounding box
      * @param originalCRS coordinate reference system of center point
@@ -130,11 +126,11 @@ public class TerrainHelper {
         String query = String.format(
                 "WITH polygon_cte AS (SELECT ST_Transform(ST_GeomFromText('%s', %d), %d) AS geom)%n", wkt, originalCRS,
                 postgisCRS);
-        
+
         query = query + String.format("SELECT ST_AsTIFF(ST_Union(raster_clip.clipped)) AS data FROM (\n" + //
-                        "    SELECT ST_Clip(a.rast, b.geom) AS clipped\n" + //
-                        "    FROM %s a, polygon_cte b\n" + //
-                        "    WHERE ST_Intersects(a.rast, b.geom)) raster_clip;", table);
+                "    SELECT ST_Clip(a.rast, b.geom) AS clipped\n" + //
+                "    FROM %s a, polygon_cte b\n" + //
+                "    WHERE ST_Intersects(a.rast, b.geom)) raster_clip;", table);
 
         return query;
     }

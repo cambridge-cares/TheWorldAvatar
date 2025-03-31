@@ -144,11 +144,11 @@ public class WeatherHelper extends JPSAgent {
 
             Map<String, List<String>> weatherMap = getWeatherIRI(stationIRI, weatherRoute);
 
-            List<Double> lat_lon = getStationCoordinate(stationIRI, weatherRoute);
+            List<Double> latLon = getStationCoordinate(stationIRI, weatherRoute);
 
-            if (!lat_lon.isEmpty()) {
-                latitude = lat_lon.get(0);
-                longitude = lat_lon.get(1);
+            if (!latLon.isEmpty()) {
+                latitude = latLon.get(0);
+                longitude = latLon.get(1);
             }
 
             // if the timestamps of the instantiated weather data does not meet CEA requirements,
