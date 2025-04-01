@@ -62,11 +62,11 @@ public class IndexListener implements MessageListener {
     
             // Perform the corresponding action
             if ("ADD".equalsIgnoreCase(action)) {
-                indexAgent.addValue(key, endpoint, sourceStack);
+                indexAgent.addIndexEntity(key, endpoint, sourceStack);
                 updateReindexFile(key, true);
                 System.out.println("Synced ADD from " + sourceStack + " → " + key + " = " + endpoint);
             } else if ("REMOVE".equalsIgnoreCase(action)) {
-                indexAgent.removeValue(key, endpoint, sourceStack);
+                indexAgent.removeIndexEntity(key, endpoint, sourceStack);
                 updateReindexFile(key, false);
                 System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + endpoint);
             } else {
@@ -108,7 +108,7 @@ public class IndexListener implements MessageListener {
     @EventListener(ContextClosedEvent.class)
     public void onShutdown() {
         try {
-            indexAgent.backupDataToJson();
+            indexAgent.serialiseIndexData();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,7 +117,7 @@ public class IndexListener implements MessageListener {
     @EventListener(ApplicationReadyEvent.class)
     public void onStartup() {
         try {
-            indexAgent.restoreFromBackup();
+            indexAgent.deserialiseIndexData();
         } catch (IOException e) {
             e.printStackTrace();
         }
