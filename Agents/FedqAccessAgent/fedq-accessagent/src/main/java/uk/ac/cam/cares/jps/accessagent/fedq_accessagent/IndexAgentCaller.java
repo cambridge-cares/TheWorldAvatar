@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/index")
 public class IndexAgentCaller {
@@ -53,18 +55,56 @@ public class IndexAgentCaller {
         );
     }
 
+    // /api/index/init reads triples from all endpoints of local blazegraph to create index
+    @PostMapping("/init")
+    public ResponseEntity<String> initIndex() {
+        indexAgent.initializeIndex();
+        return ResponseEntity.ok("Index initialised successfully from local blazegraph server. ");
+    }
+
+    // /api/index/create reads triples from a specific endpoint to create index
+    @PostMapping("/create")
+    public ResponseEntity<String> createIndexFrom(@RequestParam String endpointUrl) {
+        indexAgent.createIndexFrom(endpointUrl);
+        return ResponseEntity.ok("Index created successfully from endpoint: " + endpointUrl);
+    }
+
+
+    @PostMapping("/reindex")
+    public ResponseEntity<String> reindexing() {
+        if(indexAgent.existsReindexFile()){
+            
+        } 
+        return ResponseEntity.ok("Index updated successfully through reindexing.");
+    }
+
+    // /api/index/backup serialise index data in a file and remove reindex-file, if there is any
+    @PostMapping("/backup")
+    public ResponseEntity<String> backup() {
+        try{
+            indexAgent.serialiseIndexData();
+            indexAgent.deleteReindexFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok("Memory Index Backup Successfully.");
+    }
+
+    // /api/index/add adds an index data to dragonfly and broadcast to other nodes
     @PostMapping("/add")
-    public ResponseEntity<String> addValue(@RequestParam String key, @RequestParam String value) {
-        indexAgent.addValue(key, value);
+    public ResponseEntity<String> addIndexEntity(@RequestParam String key, @RequestParam String value) {
+        indexAgent.addIndexEntity(key, value);
         return ResponseEntity.ok("Value added successfully: " + value);
     }
 
+    // /api/index/get gets endpoints from the index
     @GetMapping("/get")
     public ResponseEntity<Set<String>> getEndpoints(@RequestParam String key) {
         Set<String> values = indexAgent.getEndpoints(key);
         return ResponseEntity.ok(values);
     }
 
+    // /api/index/analyse retrieves all endpoints associated to a specific SPARQL
     @PostMapping("/analyse")
     public ResponseEntity<String> analyseSPARQL(@RequestBody String sparql) {
         Set<String> cp_keys=new HashSet<String>();
@@ -80,6 +120,7 @@ public class IndexAgentCaller {
         return ResponseEntity.ok(endpoints.toString());
     }
 
+    // /api/index/query derived results out of a specific SPARQL using FedX
     @PostMapping("/query")
     public ResponseEntity<String> executeQuery(@RequestBody String sparql) {
         Set<String> cp_keys=new HashSet<String>();
@@ -89,6 +130,7 @@ public class IndexAgentCaller {
             cp_keys=extractClassesAndProperties(sparql);
             for (String key : cp_keys) {
                 if(stop_cps.contains(key)) continue;
+                System.out.println(key);
                 endpoints.addAll(indexAgent.getEndpoints(key));
             }
 
