@@ -58,7 +58,7 @@ class PostGISClient:
                     cur.execute(query, val_params)
                 else:
                     cur.execute(query)
-                return pd.DataFrame(cur.fetchall())
+                return pd.DataFrame(cur.fetchall(), columns=[desc[0] for desc in cur.description])
 
     def execute_update(self, query: str, table_mappings: dict, val_params: dict = None):
         query = self.process_table_mapping(query, table_mappings)

@@ -5,6 +5,7 @@ import pandas as pd
 
 from agent.boundary import create_buffer_around_points
 from agent.exposure.intersect import Intersect
+from agent.output.output_as_json import output_as_json
 from agent.output.save_to_table import save_to_table
 from agent.point_selection.point_selection import create_ponits_table_self_defined_area
 from agent.utils.table_name_helper import TableNameHelper
@@ -41,16 +42,12 @@ def register_route(app):
         save_to_table(res, table_name_helper)
         output_format = data.get('output_format')
         if output_format:
-            output = get_output(output_format)
+            output = get_output(output_format, res, table_name_helper)
         else:
             output = 'Result saved to database'
         
         return output
         
-    @app.route("/export")
-    def export():
-        data = json.loads(request.get_json())
-        return get_output(data['output_format'])
 
 def select_points(table_name:str, point_selection: str, data: dict) -> str:
     if point_selection == 'selected_points':
@@ -89,10 +86,10 @@ def exposure_calculation(table_name_helper:TableNameHelper, algorithm: str) -> p
     else:
         abort(400, description="Unsupported calculation algorithm method")
 
-def get_output(output_format: str):
+def get_output(output_format: str, res:pd.DataFrame, table_name_helper:TableNameHelper):
     if output_format == 'csv':
         pass
     elif output_format == 'json':
-        pass
+        return output_as_json(res, table_name_helper)
     else:
         abort(400, description="Unsupported output format")

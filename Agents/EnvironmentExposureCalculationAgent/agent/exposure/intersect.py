@@ -42,25 +42,9 @@ class Intersect:
             # self.res = pd.concat([self.res, self.postgis_client.execute_update(file.read(), table_names)], axis=0, ignore_index=True)
            
         res = self.postgis_client.execute_query("SELECT * FROM \"env_exposure\".\"%(result_table_name)s\"", {"result_table_name": result_table_name})
-        values = " ".join([f'(<{row[0]}> "{row[1]}")' for _, row in res.iterrows()]) 
+        values = " ".join([f'(<{row["iri"]}> "{row["point_id"]}")' for _, row in res.iterrows()]) 
         
         with open(sparql_path, "r") as file:
             kg_res = pd.DataFrame(self.ontop_client.performQuery(file.read() % {"inputs": values}))
 
         return kg_res
-            
-    # def get_result_from_city_building(self,):
-    #     sql_path = os.path.join(self.script_dir, "script_sql", "city_building_intersect.sql")
-    #     result_table_name = self.table_name_helper.get_table_name('city_building')
-    #     with open(sql_path, "r") as file:
-    #         table_names = {"point_table_name": self.points_table_name, "result_table_name": result_table_name}
-    #         self.postgis_client.execute_update(file.read(), table_names)
-        
-    #     res = self.postgis_client.execute_query("SELECT * FROM \"env_exposure\".\"%(result_table_name)s\"", {"result_table_name": result_table_name})
-    #     values = " ".join([f'<{iri}>' for iri in res[0]])
-        
-    #     sparql_path = os.path.join(self.script_dir, "script_kg", "city_building.sparql")
-    #     with open(sparql_path, "r") as file:
-    #         kg_res = pd.DataFrame(self.ontop_client.performQuery(file.read() % {"inputs": values}))
-
-    #     return kg_res

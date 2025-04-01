@@ -3,8 +3,8 @@ import hashlib
 
 class TableNameHelper:
     def __init__(self, data:dict, args:dict):
-        self.data_str = "_".join(list(map(str, data.values())))
-        self.args_str = "_".join(list(map(str, args.values())))
+        self.data_str = "_".join([str(val) for key, val in data.items() if key not in ['output_format']])
+        self.args_str = "_".join([str(val) for key, val in args.items() if key not in ['output_format']])
         
     def get_table_name(self, dataset:str=''):
         hash_byte = hashlib.sha256(f'{self.data_str}_{self.args_str}_{dataset}'.encode()).digest()

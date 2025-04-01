@@ -1,4 +1,3 @@
-import os
 from typing import cast
 from flask import current_app
 import numpy as np
