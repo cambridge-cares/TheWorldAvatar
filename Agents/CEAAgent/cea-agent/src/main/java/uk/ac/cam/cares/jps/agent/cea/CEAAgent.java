@@ -188,7 +188,7 @@ public class CEAAgent extends JPSAgent {
             } else if (requestUrl.contains(URI_UPDATE)) {
                 // parse times
                 List<OffsetDateTime> times = DataParser.getTimesList(requestParams, KEY_TIMES);
-                TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient);
+                TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient, tsDb);
 
                 // parse times series data
                 List<List<List<?>>> timeSeries = new ArrayList<>();

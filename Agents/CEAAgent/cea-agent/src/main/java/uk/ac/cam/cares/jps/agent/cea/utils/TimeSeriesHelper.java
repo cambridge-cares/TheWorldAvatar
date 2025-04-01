@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,9 +24,23 @@ public class TimeSeriesHelper {
     private RemoteRDBStoreClient rdbStoreClient;
     private TimeSeriesClient<OffsetDateTime> tsClient;
 
-    public TimeSeriesHelper(RemoteStoreClient remoteStoreClient, RemoteRDBStoreClient remoteRDBStoreClient) {
+    public TimeSeriesHelper(RemoteStoreClient remoteStoreClient, RemoteRDBStoreClient remoteRDBStoreClient, String dbName) {
         this.storeClient = remoteStoreClient;
         this.rdbStoreClient = remoteRDBStoreClient;
+        ensureDatabaseExist(dbName);
+    }
+
+    private void ensureDatabaseExist(String dbName) {
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            return;
+        } catch (SQLException e) {
+            if ("3D000".equals(e.getSQLState())) {
+                // Database does not exist
+                PostGISClient.getInstance().createDatabase(dbName);
+            } else {
+                throw new RuntimeException("Unexpected SQLstate: " + e.getSQLState(), e);
+            }
+        }
     }
 
     /**
