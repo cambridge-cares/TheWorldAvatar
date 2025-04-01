@@ -346,7 +346,6 @@ public class RunCEATask implements Runnable {
                     strTmp += FS + "thread_" + threadNumber;
                 }
 
-                String OS = System.getProperty("os.name").toLowerCase();
                 ArrayList<String> args = new ArrayList<>();
                 ArrayList<String> args1 = new ArrayList<>();
                 ArrayList<String> args2 = new ArrayList<>();
@@ -382,70 +381,33 @@ public class RunCEATask implements Runnable {
                 String weatherFlag = noWeather ? "1" : "0";
                 String terrainFlag = noTerrain ? "1" : "0";
 
-                // platform-dependent argument preparation
+                // argument preparation
                 ArrayList<String> argsExec = new ArrayList<>();
                 String cmdPrefix = "";
                 String cmdPython = "";
-                String shapefileScript = "";
-                String typologyScript = "";
-                String terrainScript = "";
-                String createWorkflowFile = "";
-                String workflowWeather = "";
-                String weatherScript = "";
-                String defaultEPW = "";
-                String workflowMain = "";
-                String workflowPVT = "";
+                String cmdCEA = cmdPrefix + "cea workflow --workflow ";
+                String defaultEPW = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather"
+                        + FS + "weather.epw";
+                String os = System.getProperty("os.name").toLowerCase();
+                String shapefileScript = getResourcePath(SHAPEFILE_SCRIPT, os);
+                String typologyScript = getResourcePath(TYPOLOGY_SCRIPT, os);
+                String terrainScript = getResourcePath(TERRAIN_SCRIPT, os);
+                String weatherScript = getResourcePath(WEATHER_SCRIPT, os);
+                String createWorkflowScript = getResourcePath(CREATE_WORKFLOW_SCRIPT, os);
+                String refWorkflowWeather = getResourcePath(WORKFLOW_YML_WEATHER, os);
+                String refWorkflowMain = getResourcePath(WORKFLOW_YML_MAIN, os);
+                String refWorkflowPVT = getResourcePath(WORKFLOW_YML_PVT, os);
 
-                if (OS.contains("win")) {
+                if (os.contains("win")) {
                     argsExec.addAll(List.of("cmd.exe", "/C"));
                     cmdPrefix = "conda activate cea && ";
                     cmdPython = cmdPrefix + "python ";
-                    shapefileScript = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(SHAPEFILE_SCRIPT)).toURI())
-                            .getAbsolutePath();
-                    typologyScript = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(TYPOLOGY_SCRIPT)).toURI())
-                            .getAbsolutePath();
-                    terrainScript = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(TERRAIN_SCRIPT)).toURI())
-                            .getAbsolutePath();
-                    createWorkflowFile = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(CREATE_WORKFLOW_SCRIPT))
-                                    .toURI())
-                            .getAbsolutePath();
-                    workflowWeather = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(WORKFLOW_YML_WEATHER))
-                                    .toURI())
-                            .getAbsolutePath();
-                    weatherScript = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(WEATHER_SCRIPT)).toURI())
-                            .getAbsolutePath();
-                    defaultEPW = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS
-                            + "weather" + FS + "weather.epw";
-                    workflowMain = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(WORKFLOW_YML_MAIN)).toURI())
-                            .getAbsolutePath();
-                    workflowPVT = new File(
-                            Objects.requireNonNull(getClass().getClassLoader().getResource(WORKFLOW_YML_PVT)).toURI())
-                            .getAbsolutePath();
                 } else {
                     argsExec.addAll(List.of("/bin/bash", "-c"));
                     cmdPrefix = "export PROJ_LIB=/opt/conda/share/proj && export PATH=/opt/conda/bin:$PATH && ";
                     cmdPython = cmdPrefix + "/opt/conda/bin/python3 ";
-                    String pathTargetClasses = FS + "target" + FS + "classes" + FS; // only used in linux
-                    shapefileScript = pathTargetClasses + SHAPEFILE_SCRIPT;
-                    typologyScript = pathTargetClasses + TYPOLOGY_SCRIPT;
-                    terrainScript = pathTargetClasses + TERRAIN_SCRIPT;
-                    createWorkflowFile = pathTargetClasses + CREATE_WORKFLOW_SCRIPT;
-                    workflowWeather = pathTargetClasses + WORKFLOW_YML_WEATHER;
-                    weatherScript = pathTargetClasses + WEATHER_SCRIPT;
-                    defaultEPW = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS
-                            + "weather.epw";
-                    workflowMain = pathTargetClasses + WORKFLOW_YML_MAIN;
-                    workflowPVT = pathTargetClasses + WORKFLOW_YML_PVT;
                 }
-                // platform-independent argument preparation
-                String cmdCEA = cmdPrefix + "cea workflow --workflow ";
+
                 args.addAll(argsExec);
                 args.add(cmdPython + shapefileScript + " " + dataPath + " " + strTmp + " " + crs + " zone.shp");
                 args1.addAll(argsExec);
@@ -456,29 +418,22 @@ public class RunCEATask implements Runnable {
                 args3.addAll(argsExec);
                 args3.add(cmdPython + terrainScript + " " + tempTerrainPath + " " + strTmp + " " + TERRAIN_FILE);
                 args4.addAll(argsExec);
-                args4.add(cmdPython + createWorkflowFile + " " + workflowWeather + " " + WORKFLOW_YML_WEATHER + " "
+                args4.add(cmdPython + createWorkflowScript + " " + refWorkflowWeather + " " + WORKFLOW_YML_WEATHER + " "
                         + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
                 args5.addAll(argsExec);
                 args5.add(cmdCEA + workflowPath);
-
-                if (!noWeather) {
-                    args6.addAll(argsExec);
-                    args6.add(cmdPython + weatherScript + " "
-                            + weatherTimesPath + " " + weatherDataPath + " " + weatherLat + " " + weatherLon + " "
-                            + weatherElevation + " " + weatherOffset + " " + strTmp + " " + "weather.epw" + " "
-                            + defaultEPW);
-                }
+                args6.addAll(argsExec);
+                args6.add(cmdPython + weatherScript + " " + weatherTimesPath + " " + weatherDataPath + " " + weatherLat
+                        + " " + weatherLon + " " + weatherElevation + " " + weatherOffset + " " + strTmp + " "
+                        + "weather.epw" + " " + defaultEPW);
                 args7.addAll(argsExec);
-                args7.add(cmdPython + createWorkflowFile
-                        + " " + workflowMain + " " + WORKFLOW_YML_MAIN + " " + strTmp + " " + surroundingsFlag
-                        + " "
-                        + weatherFlag + " " + terrainFlag + " " + database);
+                args7.add(cmdPython + createWorkflowScript + " " + refWorkflowMain + " " + WORKFLOW_YML_MAIN + " "
+                        + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " " + database);
                 args8.addAll(argsExec);
                 args8.add(cmdCEA + workflowPath1);
                 args9.addAll(argsExec);
-                args9.add(cmdPython + createWorkflowFile
-                        + " " + workflowPVT + " " + WORKFLOW_YML_PVT + " " + strTmp + " " + "null" + " " + "null"
-                        + " " + "null" + " " + database);
+                args9.add(cmdPython + createWorkflowScript + " " + refWorkflowPVT + " " + WORKFLOW_YML_PVT + " "
+                        + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
                 args10.addAll(argsExec);
                 args10.add(cmdCEA + workflowPath2);
 
@@ -556,6 +511,15 @@ public class RunCEATask implements Runnable {
             } finally {
                 stop();
             }
+        }
+    }
+
+    private String getResourcePath(String filename, String operatingSystem) throws URISyntaxException {
+        if (operatingSystem.contains("win")) {
+            return new File(Objects.requireNonNull(getClass().getClassLoader().getResource(filename)).toURI())
+                    .getAbsolutePath();
+        } else {
+            return FS + "target" + FS + "classes" + FS + filename;
         }
     }
 }
