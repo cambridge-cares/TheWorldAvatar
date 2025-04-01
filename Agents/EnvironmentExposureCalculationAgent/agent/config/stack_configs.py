@@ -34,7 +34,7 @@ def retrieve_stack_settings(stack_client: JPSGateway):
 
         DB_CONF = DBConfig(pg_conf=pg_conf)
         # ONTOP_URL = ontop_conf.getUrl()
-        ONTOP_URL = 'http://sea-level-ontop:8080'
+        ONTOP_URL = 'http://sea-level-ontop:8080/sparql'
 
         return DB_CONF, ONTOP_URL
     except Exception as e:

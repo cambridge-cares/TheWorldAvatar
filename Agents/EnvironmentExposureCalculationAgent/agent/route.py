@@ -1,10 +1,13 @@
 from datetime import date
 import json
 from flask import abort, jsonify, request
+import pandas as pd
 
 from agent.boundary import create_buffer_around_points
-from agent.exposure.intersect import intersect
+from agent.exposure.intersect import Intersect
+from agent.output.save_to_table import save_to_table
 from agent.point_selection.point_selection import create_ponits_table_self_defined_area
+from agent.utils.table_name_helper import TableNameHelper
 
 
 def register_route(app):
@@ -14,7 +17,7 @@ def register_route(app):
         return "<p>Hello, World! test</p>"
 
     @app.route("/calculate", methods=['POST'])
-    def calculate():
+    def calculate():       
         point_selection = request.args.get('point_selection')
         boundary = request.args.get('boundary')
         algorithm = request.args.get('algorithm')
@@ -23,38 +26,41 @@ def register_route(app):
             return jsonify({"error": "Missing required parameters"}), 400
 
         data = request.get_json()
+        
+        table_name_helper = TableNameHelper(data, request.args)
         # step1: point selection
-        points_table_name = select_points(point_selection, data)
+        select_points(table_name_helper.get_table_name(), point_selection, data)
 
         # step2: create boundary around points
-        create_boundary(points_table_name, boundary, data)
+        create_boundary(table_name_helper, boundary, data)
 
         # step3: exposure calculation
-        exposure_calculation(points_table_name, algorithm)
+        res = exposure_calculation(table_name_helper, algorithm)
 
         # step4: (Optional) output result
-        output_format = data['output_format']
+        save_to_table(res, table_name_helper)
+        output_format = data.get('output_format')
         if output_format:
-            get_output(output_format)
+            output = get_output(output_format)
+        else:
+            output = 'Result saved to database'
         
-
+        return output
+        
     @app.route("/export")
     def export():
         data = json.loads(request.get_json())
         return get_output(data['output_format'])
 
-
-def select_points(point_selection: str, data: dict) -> str:
+def select_points(table_name:str, point_selection: str, data: dict) -> str:
     if point_selection == 'selected_points':
         points = data['points']  # list of points
         # todo: need to fix the input
-        table_name = 'points_selected_points'
         # create_points_table(points)
     elif point_selection == 'region':
         # get points in a preset region
         region = data['region']
         # todo: need to add this function
-        table_name = 'points_' + region
         # create_points_table_region()
     elif point_selection == 'self_defined_region':
         lng_start = data.get('lng_start')
@@ -64,13 +70,11 @@ def select_points(point_selection: str, data: dict) -> str:
         lat_end = data.get('lat_end')
         lat_step = data.get('lat_step')
 
-        table_name = 'points_self_defined_region'
         create_ponits_table_self_defined_area(lng_start, lng_end, lng_step,
                             lat_start, lat_end, lat_step, table_name)
     else:
         abort(400, description="Unsupported point selection method")
     return table_name
-
 
 def create_boundary(points_table_name: str, boundary: str, data:dict):
     if boundary == 'buffer':
@@ -79,10 +83,9 @@ def create_boundary(points_table_name: str, boundary: str, data:dict):
     else:
         abort(400, description="Unsupported buffer method")
 
-
-def exposure_calculation(points_table_name: str, algorithm: str):
+def exposure_calculation(table_name_helper:TableNameHelper, algorithm: str) -> pd.DataFrame:
     if algorithm == 'intersect':
-        intersect(points_table_name)
+        return Intersect(table_name_helper).intersect()
     else:
         abort(400, description="Unsupported calculation algorithm method")
 

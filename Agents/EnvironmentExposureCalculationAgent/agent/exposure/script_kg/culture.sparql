@@ -54,9 +54,10 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX bot: <https://w3id.org/bot#>
 PREFIX sea: <https://www.theworldavatar.com/kg/ontosealevel/>
 
-SELECT DISTINCT  *
+SELECT DISTINCT  ?input ?type ?name ?description ?pointid
 WHERE{ 
-  ?input a ?type . 
-  optional {?input sch:name ?name ; rdfs:label ?description. }
+  VALUES (?input ?pointid) { %(inputs)s }
+  ?input a ?type. 
+  optional {?input sch:name ?name.}
+  optional {?input rdfs:label ?description.}
 }
-VALUES ?input { %(inputs)s }

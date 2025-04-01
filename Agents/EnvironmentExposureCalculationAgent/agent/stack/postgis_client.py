@@ -67,6 +67,14 @@ class PostGISClient:
             with conn.cursor() as cur:
                 cur.execute(query, val_params)
                 conn.commit()
+    
+    def execute_updatemany(self, query: str, table_mappings: dict, vals):
+        query = self.process_table_mapping(query, table_mappings)
+
+        with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
+            with conn.cursor() as cur:
+                cur.executemany(query, vals)
+                conn.commit()
 
     def process_table_mapping(self, query: str, table_mappings: dict) -> str:
         if table_mappings:

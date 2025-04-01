@@ -1,3 +1,12 @@
+DO $$ 
+BEGIN
+IF EXISTS (SELECT 1 from information_schema.tables where table_schema = 'env_exposure' AND table_name = '%(result_table_name)s')
+THEN 
+    RAISE NOTICE 'Table %(point_table_name)s already exists. Exiting script.';
+    RETURN;
+END IF;
+
+
 DROP TABLE IF EXISTS "env_exposure"."%(result_table_name)s";
 CREATE TABLE "env_exposure"."%(result_table_name)s" (
     iri TEXT,
@@ -69,3 +78,5 @@ FROM
         p.buffer_geom,
         ST_Transform(ta.wkb_geometry, 4326)
     );
+
+END $$

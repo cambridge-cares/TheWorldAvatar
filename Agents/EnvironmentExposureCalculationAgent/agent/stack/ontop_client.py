@@ -7,7 +7,7 @@ class OntopClient():
 
 #todo: need to double check how is ontop client used in java 
     def __init__(self, query_endpoint: str):
-        logger = agentlogging.get_logger("dev")
+        self.logger = agentlogging.get_logger("dev")
         
         # Initialise OntopClient as RemoteStoreClient
         try:
@@ -24,8 +24,8 @@ class OntopClient():
                 query - SPARQL Query string
         """
         try:
-            response = self.ontop_client.execute(query)
+            response = self.ontop_client.perform_query(query)
         except Exception as ex:
             self.logger.error("SPARQL query not successful")
             raise StackException("SPARQL query not successful.") from ex
-        return json.loads(response)
+        return response

@@ -1,3 +1,11 @@
+DO $$ 
+BEGIN
+IF EXISTS (SELECT 1 from information_schema.tables where table_schema = 'env_exposure' AND table_name = '%(result_table_name)s')
+THEN 
+    RAISE NOTICE 'Table %(point_table_name)s already exists. Exiting script.';
+    RETURN;
+END IF;
+
 DROP TABLE IF EXISTS "env_exposure"."%(result_table_name)s";
 CREATE TABLE "env_exposure"."%(result_table_name)s" (
     iri TEXT,
@@ -30,7 +38,9 @@ union all
             buffer_geom,
             ST_Transform("geometryProperty", 4326)
         )
-)
+);
+
+END $$
 
 -- SELECT column_name, data_type, is_nullable, column_default 
 -- FROM information_schema.columns 
