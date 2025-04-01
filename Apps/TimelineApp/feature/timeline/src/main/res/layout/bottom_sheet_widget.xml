@@ -93,13 +93,17 @@
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sessions_recycler_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true"
-            android:overScrollMode="always"
-            android:scrollbars="vertical"
-            android:fadingEdge="none" />
+    android:id="@+id/sessions_recycler_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:nestedScrollingEnabled="true"
+    android:overScrollMode="always"
+    android:scrollbars="vertical"
+    android:fadingEdge="none"
+    android:scrollbarStyle="insideOverlay"  
+    android:layout_marginBottom="8dp"  
+    />
+
     </LinearLayout>
 
 

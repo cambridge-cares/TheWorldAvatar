@@ -115,14 +115,12 @@ public class BottomSheetManager {
 
     private void configureSummary() {
 
-    trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheetViewModel::parseSessionSummaries);
-
-    normalBottomSheetViewModel.sessionSummary.observe(lifecycleOwner, sessionSummaryByDate -> {
-        List<ActivitySummary> activityItemSummaryList = sessionSummaryByDate.getActivitySummary();
-        List<Session> uniqueSessions = sessionSummaryByDate.getUniqueSessions();
+    trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryByDate -> {
+        List<ActivitySummary> activityItemSummaryList = trajectoryByDate.getActivitySummary();
+        List<Session> uniqueSessions = trajectoryByDate.getSessions();
         TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
 
-        if (sessionSummaryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+        if (trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
             normalBottomSheet.updateSummaryView(activityItemSummaryList);
             normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
         }

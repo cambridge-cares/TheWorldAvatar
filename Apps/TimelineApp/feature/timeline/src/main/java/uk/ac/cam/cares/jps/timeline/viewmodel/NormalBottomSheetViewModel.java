@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
-import uk.ac.cam.cares.jps.timeline.model.bottomsheet.TrajectorySummaryByDate;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
@@ -26,11 +25,11 @@ public class NormalBottomSheetViewModel extends ViewModel {
     private final DatesWithTrajectoryRepository datesWithTrajectoryRepository;
     private final MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
     private final MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
-    private final MutableLiveData<TrajectorySummaryByDate> _sessionSummary = new MutableLiveData<>();
+    private final MutableLiveData<TrajectoryByDate> _sessionSummary = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
-    public LiveData<TrajectorySummaryByDate> sessionSummary = _sessionSummary;
+    public LiveData<TrajectoryByDate> sessionSummary = _sessionSummary;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -88,11 +87,6 @@ public class NormalBottomSheetViewModel extends ViewModel {
      */
     public long getSelectedDateLong() {
         return selectedDate.getValue().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
-    }
-
-    public void parseSessionSummaries(TrajectoryByDate trajectory) {
-
-        _sessionSummary.postValue(trajectory.parseSessionSummaries());
     }
     
 }
