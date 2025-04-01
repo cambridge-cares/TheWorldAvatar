@@ -85,7 +85,7 @@ public class WeatherHelper extends JPSAgent {
         Coordinate centerCoordinate;
         Double elevation = 0.0;
         long count = 0;
-        if (surroundings != null) {
+        if (!surroundings.isEmpty()) {
             for (CEAGeometryData ceaGeometryData : surroundings) {
                 for (Geometry geometry : ceaGeometryData.getFootprint()) {
                     envelope.expandToInclude(geometry.getEnvelopeInternal());
