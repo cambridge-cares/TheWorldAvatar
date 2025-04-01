@@ -7,19 +7,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.mapbox.geojson.Point;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Objects;
-;
 
 import javax.inject.Inject;
 
@@ -77,36 +72,9 @@ public class TrajectoryViewModel extends ViewModel {
         });
     }
 
-    // private boolean isClicked(JSONObject geom, Point clickedPoint) {
-    //     try {
-    //         JSONArray coordinates = geom.getJSONArray("coordinates");
-
-    //         for (int i = 0; i < coordinates.length(); i++) {
-    //             JSONArray point = coordinates.getJSONArray(i);
-    //             double lng = point.getDouble(0);
-    //             double lat = point.getDouble(1);
-
-    //             if (isCloseToClickedPoint(lng, lat, clickedPoint)) {
-    //                 return true;
-    //             }
-    //         }
-    //         return false;
-    //     }
-    //     catch(Exception e) {
-    //         return false;
-    //     }
-    // }
-
-    private boolean isCloseToClickedPoint(double lng, double lat, Point clickedPoint) {
-        double threshold = 0.0001;
-        return Math.abs(lng - clickedPoint.longitude()) < threshold &&
-            Math.abs(lat - clickedPoint.latitude()) < threshold;
-    }
-
-
-    public void setClicked(Point p) {
+    public void setClicked(Integer segmentId) {
         
-        if (p == null) {
+        if (segmentId == null) {
             _clickedSegment.postValue(null);
             Log.d("invalid click", "No point clicked or not on a segment.");
             return;
@@ -119,42 +87,13 @@ public class TrajectoryViewModel extends ViewModel {
             return;
         }
 
-        TrajectorySegment closestSegment = trajectorySegments.get(0);
-        double closestDistance = calculateMinEndpointDistance(closestSegment, p);
-
-        for (TrajectorySegment segment : trajectorySegments) {
-            double distance = calculateMinEndpointDistance(segment, p);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestSegment = segment;
-            }
-
+       for(TrajectorySegment segment:trajectorySegments) {
+        if(segment.id() == segmentId) {
+            _clickedSegment.postValue(segment);
+            return;
         }
-        _clickedSegment.postValue(closestSegment);
-        Log.d("valid click", "clicked segment with id " + closestSegment.id());
-
+       }
         
-    }
-
-    private double calculateMinEndpointDistance(TrajectorySegment segment, Point p) {
-        try {
-            JSONArray coordinates = segment.geom().getJSONArray("coordinates");
-            JSONArray start = coordinates.getJSONArray(0);
-            JSONArray end = coordinates.getJSONArray(coordinates.length() - 1);
-
-            double startDistance = differenceInDistance(start, p);
-            double endDistance = differenceInDistance(end, p);
-
-            return Math.min(startDistance, endDistance);
-        } catch (Exception e) {
-            return Double.MAX_VALUE; 
-        }
-    }
-
-    private double differenceInDistance(JSONArray coord, Point p) throws JSONException {
-        double lng = coord.getDouble(0);
-        double lat = coord.getDouble(1);
-        return Math.sqrt(Math.pow(lng - p.longitude(), 2) + Math.pow(lat - p.latitude(), 2));
     }
 
     public void removeAllClicked() {

@@ -4,28 +4,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
-import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.TrajectorySummaryByDate;
-import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
-import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
-import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
@@ -33,10 +23,10 @@ import uk.ac.cam.cares.jps.utils.RepositoryCallback;
  */
 @HiltViewModel
 public class NormalBottomSheetViewModel extends ViewModel {
-    private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
-    private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
-    private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
-    private MutableLiveData<TrajectorySummaryByDate> _sessionSummary = new MutableLiveData<>();
+    private final DatesWithTrajectoryRepository datesWithTrajectoryRepository;
+    private final MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
+    private final MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
+    private final MutableLiveData<TrajectorySummaryByDate> _sessionSummary = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;

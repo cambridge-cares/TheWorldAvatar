@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * class to represent one segment of activity and its time summary
  */
-public class ActivityItem extends Activity{
+public class ActivityItem extends Activity {
     private final int id;
     private final String timeSummary;
     private boolean clicked;

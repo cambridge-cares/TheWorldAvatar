@@ -22,7 +22,6 @@ import uk.ac.cam.cares.jps.timeline.model.bottomsheet.TrajectorySummaryByDate;
 
 public class TrajectoryByDate {
     private final String trajectoryString;
-    //private final List<TrajectorySegment> segments;
     private final LocalDate date;
     private final List<Session> sessions;
 
@@ -30,38 +29,6 @@ public class TrajectoryByDate {
         this.trajectoryString = trajectoryStr;
         this.sessions = parseForUniqueSessions(trajectoryStr); //sessionId, sessionTitle, List<Segments>
         this.date = date;
-    }
-
-    private List<TrajectorySegment> parseTrajectoryStr(String trajectory) {
-        JSONObject trajectoryStr;
-        List<TrajectorySegment> segments = new ArrayList<>();
-        try {
-            trajectoryStr = new JSONObject(trajectory);
-            JSONArray features = trajectoryStr.getJSONArray("features");
-
-
-
-            for(int i = 0; i < features.length(); i++) {
-                JSONObject feature = features.getJSONObject(i);
-                JSONObject properties = feature.getJSONObject("properties");
-
-                long startTime = properties.optLong("start_time", 0);
-                long endTime = properties.optLong("end_time", 0);
-                int id = properties.optInt("id", 0);
-                String activityType = properties.optString("activity_type", "unknown");
-                String sessionId = properties.optString("session_id", "unknown");
-                JSONObject geom = feature.optJSONObject("geometry");
-                int distanceTraveled = properties.optInt("distance_traveled", 0);
-                String iri = properties.optString("iri", "unknown");
-
-                segments.add(new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, distanceTraveled, iri));
-
-            }
-        }
-        catch(JSONException e) {
-            e.printStackTrace();
-        }
-        return segments;
     }
 
     private List<Session> parseForUniqueSessions(String trajectory) {
@@ -131,9 +98,7 @@ public class TrajectoryByDate {
         List<ActivitySummary> summaryActivityItems = parseActivitySummary();
         LocalDate date = this.date;
 
-        TrajectorySummaryByDate sessionSummary = new TrajectorySummaryByDate(date, summaryActivityItems, uniqueSessions);
-
-        return sessionSummary;
+        return new TrajectorySummaryByDate(date, summaryActivityItems, uniqueSessions);
     }
 
     private List<Session> parseUniqueSessions() {
@@ -141,9 +106,7 @@ public class TrajectoryByDate {
         List<Session> uniqueSessions = new ArrayList<>();
         List<Session> sessions = this.sessions;
 
-        for(Session session : sessions) {
-                uniqueSessions.add(session);
-        }
+        uniqueSessions.addAll(sessions);
 
         return uniqueSessions;
     }
@@ -164,9 +127,7 @@ public class TrajectoryByDate {
 
         Map<String, List<Integer>> distancePerActivityType = new HashMap<>();
         Map<String, List<Long>> timePerActivityType = new HashMap<>();
-        long startTime = 0;
-
-        List<Session> sessions = this.sessions;
+        long startTime;
 
         List<TrajectorySegment> trajectorySegments = getTrajectorySegments();
             for (TrajectorySegment segment : trajectorySegments) {
@@ -186,7 +147,7 @@ public class TrajectoryByDate {
             }
         for (String activity : distancePerActivityType.keySet()) {
             int totalDistance = activity.equals("still") ? 0 : Objects.requireNonNull(distancePerActivityType.get(activity)).stream().mapToInt(Integer::intValue).sum();
-            long totalTime = Objects.requireNonNull(timePerActivityType.get(activity)).stream().mapToLong(Long::longValue).sum();;
+            long totalTime = Objects.requireNonNull(timePerActivityType.get(activity)).stream().mapToLong(Long::longValue).sum();
 
             summaries.add(new ActivitySummary(activity, totalDistance, totalTime));
         }
@@ -204,9 +165,7 @@ public class TrajectoryByDate {
     public List<TrajectorySegment> getTrajectorySegments() {
         List<TrajectorySegment> segments = new ArrayList<>();
         for (Session s : sessions) {
-            for(TrajectorySegment segment : s.getTrajectorySegments()) {
-                segments.add(segment);
-            }
+            segments.addAll(s.getTrajectorySegments());
         }
         return segments;
     }

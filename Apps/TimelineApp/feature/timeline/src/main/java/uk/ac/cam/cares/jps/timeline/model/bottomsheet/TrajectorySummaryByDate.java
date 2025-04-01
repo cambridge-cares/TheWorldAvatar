@@ -1,13 +1,7 @@
 package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
-
 
 public class TrajectorySummaryByDate {
     LocalDate date;

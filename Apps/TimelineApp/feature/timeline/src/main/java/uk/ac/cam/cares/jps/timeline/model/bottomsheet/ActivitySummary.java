@@ -1,11 +1,5 @@
 package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-
-;
-
 /**
  * class that represents the summary of trajectory information over a period of time
  */

@@ -65,11 +65,8 @@ public class Session {
                     return true;
                 }
             }
-            return false;
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
 }
