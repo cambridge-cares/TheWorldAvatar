@@ -142,6 +142,13 @@ public class CEAAgent extends JPSAgent {
                 // Get footprint from building endpoints
                 List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
                         geometryRoute);
+                
+                try {
+                    GeometryHandler.ensureSameCRS(listFootprint);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 List<Map<String, Double>> listUsage = BuildingUsageHelper.bulkGetBuildingUsages(uriStringArray,
                         usageRoute);
@@ -150,10 +157,17 @@ public class CEAAgent extends JPSAgent {
                     buildingData.add(new CEABuildingData(listFootprint.get(i), listUsage.get(i)));
                 }
 
-                crs = buildingData.get(0).getGeometry().getCrs(); // this assumes all buildings have the same CRS
+                crs = buildingData.get(0).getGeometry().getCrs();
 
                 List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray,
                         geometryRoute);
+                
+                try {
+                    GeometryHandler.ensureSameCRS(surrounding);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 List<Object> weather = new ArrayList<>();
 
