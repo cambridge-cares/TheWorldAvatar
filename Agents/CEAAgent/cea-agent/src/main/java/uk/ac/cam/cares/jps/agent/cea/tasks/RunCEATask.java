@@ -36,10 +36,10 @@ public class RunCEATask implements Runnable {
     private Double weatherElevation;
     private Double weatherOffset;
     public static final String CTYPE_JSON = "application/json";
-    private Boolean stop = false;
-    private Boolean noSurroundings = true;
-    private Boolean noWeather = true;
-    private Boolean noTerrain = true;
+    private boolean stop = false;
+    private boolean noSurroundings = true;
+    private boolean noWeather = true;
+    private boolean noTerrain = true;
     private static final String DATA_FILE = "datafile.txt";
     private static final String SURROUNDINGS_FILE = "surroundingdata.txt";
     private static final String WEATHERTIMES_FILE = "weathertimes.txt";
@@ -112,6 +112,12 @@ public class RunCEATask implements Runnable {
             }
             subFile.delete();
         }
+    }
+
+    public void cleanUp(String path) {
+        File file = new File(path);
+        deleteDirectoryContents(file);
+        file.delete();
     }
 
     /**
@@ -303,7 +309,6 @@ public class RunCEATask implements Runnable {
     private void bytesToTIFF(byte[] rasterData, String path) {
         if (rasterData != null) {
             noTerrain = false;
-
             try {
                 Path filePath = Path.of(path);
                 Files.write(filePath, rasterData);
@@ -346,21 +351,9 @@ public class RunCEATask implements Runnable {
                     strTmp += FS + "thread_" + threadNumber;
                 }
 
-                ArrayList<String> args = new ArrayList<>();
-                ArrayList<String> args1 = new ArrayList<>();
-                ArrayList<String> args2 = new ArrayList<>();
-                ArrayList<String> args3 = new ArrayList<>();
-                ArrayList<String> args4 = new ArrayList<>();
-                ArrayList<String> args5 = new ArrayList<>();
-                ArrayList<String> args6 = new ArrayList<>();
-                ArrayList<String> args7 = new ArrayList<>();
-                ArrayList<String> args8 = new ArrayList<>();
-                ArrayList<String> args9 = new ArrayList<>();
-                ArrayList<String> args10 = new ArrayList<>();
-
-                String workflowPath = strTmp + FS + WORKFLOW_YML_WEATHER;
-                String workflowPath1 = strTmp + FS + WORKFLOW_YML_MAIN;
-                String workflowPath2 = strTmp + FS + WORKFLOW_YML_PVT;
+                String workflowPathWeather = strTmp + FS + WORKFLOW_YML_WEATHER;
+                String workflowPathMain = strTmp + FS + WORKFLOW_YML_MAIN;
+                String workflowPathPVT = strTmp + FS + WORKFLOW_YML_PVT;
                 String dataPath = strTmp + FS + DATA_FILE;
                 String surroundingsPath = strTmp + FS + SURROUNDINGS_FILE;
                 String weatherTimesPath = strTmp + FS + WEATHERTIMES_FILE;
@@ -408,100 +401,93 @@ public class RunCEATask implements Runnable {
                     cmdPython = cmdPrefix + "/opt/conda/bin/python3 ";
                 }
 
-                args.addAll(argsExec);
-                args.add(cmdPython + shapefileScript + " " + dataPath + " " + strTmp + " " + crs + " zone.shp");
-                args1.addAll(argsExec);
-                args1.add(cmdPython + shapefileScript + " " + surroundingsPath + " " + strTmp + " " + crs
-                        + " surroundings.shp");
-                args2.addAll(argsExec);
-                args2.add(cmdPython + typologyScript + " " + dataPath + " " + strTmp);
-                args3.addAll(argsExec);
-                args3.add(cmdPython + terrainScript + " " + tempTerrainPath + " " + strTmp + " " + TERRAIN_FILE);
-                args4.addAll(argsExec);
-                args4.add(cmdPython + createWorkflowScript + " " + refWorkflowWeather + " " + WORKFLOW_YML_WEATHER + " "
-                        + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
-                args5.addAll(argsExec);
-                args5.add(cmdCEA + workflowPath);
-                args6.addAll(argsExec);
-                args6.add(cmdPython + weatherScript + " " + weatherTimesPath + " " + weatherDataPath + " " + weatherLat
-                        + " " + weatherLon + " " + weatherElevation + " " + weatherOffset + " " + strTmp + " "
-                        + "weather.epw" + " " + defaultEPW);
-                args7.addAll(argsExec);
-                args7.add(cmdPython + createWorkflowScript + " " + refWorkflowMain + " " + WORKFLOW_YML_MAIN + " "
-                        + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " " + database);
-                args8.addAll(argsExec);
-                args8.add(cmdCEA + workflowPath1);
-                args9.addAll(argsExec);
-                args9.add(cmdPython + createWorkflowScript + " " + refWorkflowPVT + " " + WORKFLOW_YML_PVT + " "
-                        + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
-                args10.addAll(argsExec);
-                args10.add(cmdCEA + workflowPath2);
+                ArrayList<String> argsCreateZone = getArgument(argsExec,
+                        cmdPython + shapefileScript + " " + dataPath + " " + strTmp + " " + crs + " zone.shp");
+                ArrayList<String> argsCreateSurrounding = getArgument(argsExec, cmdPython + shapefileScript + " "
+                        + surroundingsPath + " " + strTmp + " " + crs + " surroundings.shp");
+                ArrayList<String> argsCreateTypology = getArgument(argsExec,
+                        cmdPython + typologyScript + " " + dataPath + " " + strTmp);
+                ArrayList<String> argsCreateTerrain = getArgument(argsExec,
+                        cmdPython + terrainScript + " " + tempTerrainPath + " " + strTmp + " " + TERRAIN_FILE);
+                ArrayList<String> argsCreateDefaultWeatherWorkflow = getArgument(argsExec,
+                        cmdPython + createWorkflowScript + " " + refWorkflowWeather + " " + WORKFLOW_YML_WEATHER + " "
+                                + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
+                ArrayList<String> argsRunDefaultWeatherWorkflow = getArgument(argsExec, cmdCEA + workflowPathWeather);
+                ArrayList<String> argsCreateWeather = getArgument(argsExec,
+                        cmdPython + weatherScript + " " + weatherTimesPath + " " + weatherDataPath + " " + weatherLat
+                                + " " + weatherLon + " " + weatherElevation + " " + weatherOffset + " " + strTmp + " "
+                                + "weather.epw" + " " + defaultEPW);
+                ArrayList<String> argsCreateMainWorkflow = getArgument(argsExec,
+                        cmdPython + createWorkflowScript + " " + refWorkflowMain + " " + WORKFLOW_YML_MAIN + " "
+                                + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " "
+                                + database);
+                ArrayList<String> argsRunMainWorkflow = getArgument(argsExec, cmdCEA + workflowPathMain);
+                ArrayList<String> argsCreatePVTWorkflow = getArgument(argsExec,
+                        cmdPython + createWorkflowScript + " " + refWorkflowPVT + " " + WORKFLOW_YML_PVT + " " + strTmp
+                                + " " + "null" + " " + "null" + " " + "null" + " " + database);
+                ArrayList<String> argsRunPVTWorkflow = getArgument(argsExec, cmdCEA + workflowPathPVT);
 
                 try {
                     // create the shapefile process and run
-                    runProcess(args);
+                    runProcess(argsCreateZone);
                     // if there are surrounding data, create the shapefile process for surroundings
                     // and run
                     if (!noSurroundings) {
-                        runProcess(args1);
+                        runProcess(argsCreateSurrounding);
                     }
                     // create the typology file process and run
-                    runProcess(args2);
+                    runProcess(argsCreateTypology);
                     // create python script and run to create validate terrain file
                     // (ST_Clip can clip inside pixel, which results in nodata value at the border
                     // of the result; the python script trims out the nodata value due to ST_Clip)
                     if (!noTerrain) {
-                        runProcess(args3);
+                        runProcess(argsCreateTerrain);
                     }
 
                     // if there are weather data retrieved, create EPW file from the retrieved
                     // weather data
                     if (!noWeather) {
                         // create the workflow process to get CEA default weather
-                        runProcess(args4);
+                        runProcess(argsCreateDefaultWeatherWorkflow);
                         // run workflow_reference_weather.yml for CEA to get default weather file
-                        runProcess(args5);
+                        runProcess(argsRunDefaultWeatherWorkflow);
 
                         // create the weather file process and run
-                        runProcess(args6);
+                        runProcess(argsCreateWeather);
 
                         // delete the temporary CEA files that were used to create weather file
-                        File file = new File(strTmp + FS + PROJECT_NAME);
-                        deleteDirectoryContents(file);
-                        file.delete();
+                        cleanUp(strTmp + FS + PROJECT_NAME);
                     }
 
                     // create the workflow process and run
-                    runProcess(args7);
+                    runProcess(argsCreateMainWorkflow);
 
                     // CEA output file names for PVT plate collectors and PVT tube collectors are
                     // the same, so one PVT collector type has to be run first then the output files
                     // renamed before running the other PVT collector type
+
                     // run workflow that runs all CEA scripts with PVT plate collectors
-                    runProcess(args8);
+                    runProcess(argsRunMainWorkflow);
+
+                    String pathOutputCEA = strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY;
+                    String pathOutputPVT = pathOutputCEA + FS + "potentials" + FS + "solar";
 
                     // rename PVT output files to PVT plate
-                    renamePVT(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY + FS + "potentials" + FS + "solar", "FP");
+                    renamePVT(pathOutputPVT, "FP");
 
                     // create workflow process for PVT tube collectors
-                    runProcess(args9);
+                    runProcess(argsCreatePVTWorkflow);
                     // run CEA for PVT tube collectors
-                    runProcess(args10);
+                    runProcess(argsRunPVTWorkflow);
 
                     // rename PVT output files to PVT tube
-                    renamePVT(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY + FS + "potentials" + FS + "solar", "ET");
+                    renamePVT(pathOutputPVT, "ET");
 
-                    CEAOutputData result = CEAOutputHandler.extractCEAOutputs(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY,
-                            this.uris);
-                    System.out.println("CEA ran successfully.");
-                    File file = new File(strTmp);
-                    deleteDirectoryContents(file);
-                    file.delete();
+                    CEAOutputData result = CEAOutputHandler.extractCEAOutputs(pathOutputCEA, this.uris);
+                    cleanUp(strTmp);
                     returnOutputs(result);
                 } catch (NullPointerException | IOException e) {
-                    File file = new File(strTmp);
-                    deleteDirectoryContents(file);
-                    file.delete();
+                    cleanUp(strTmp);
                     e.printStackTrace();
                     throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
                 }
@@ -522,4 +508,11 @@ public class RunCEATask implements Runnable {
             return FS + "target" + FS + "classes" + FS + filename;
         }
     }
+
+    private ArrayList<String> getArgument(ArrayList<String> argsExec, String customArgument) {
+        ArrayList<String> args = new ArrayList<>(argsExec);
+        args.add(customArgument);
+        return args;
+    }
+
 }
