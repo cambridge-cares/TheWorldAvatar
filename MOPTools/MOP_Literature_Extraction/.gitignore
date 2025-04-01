@@ -1,0 +1,5 @@
+# ignore backup files if there are any by accident
+*.ttl
+
+# ignore parameters after pushing empty
+parameters.py
