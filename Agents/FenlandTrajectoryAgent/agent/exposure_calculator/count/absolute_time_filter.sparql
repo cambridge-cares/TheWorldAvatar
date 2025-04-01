@@ -1,0 +1,24 @@
+PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+PREFIX ies4: <http://ies.data.gov.uk/ontology/ies4#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?be ?geometry ?wkt ?lat ?long
+WHERE {{
+  BIND("{given_time}"^^xsd:dateTimeStamp AS ?givenTime)
+  BIND(SUBSTR(STR(?givenTime), 1, 4) AS ?timeYear)
+  ?be a fh:BusinessEstablishment ;
+      geo:hasGeometry ?geometry .
+  FILTER(CONTAINS(STR(?geometry), CONCAT("/", ?timeYear)))
+  ?geometry geo:asWKT ?wkt .
+  OPTIONAL {{ ?geometry wgs:lat  ?lat  . }}
+  OPTIONAL {{ ?geometry wgs:long ?long . }}
+  ?startEvent ies4:isStartOf ?be ;
+              ies4:inPeriod  ?startPeriod .
+  ?startPeriod ies4:iso8601PeriodRepresentation ?startTime .
+  ?endEvent ies4:isEndOf ?be ;
+            ies4:inPeriod ?endPeriod .
+  ?endPeriod ies4:iso8601PeriodRepresentation ?endTime .
+  FILTER(?startTime <= ?givenTime && ?endTime >= ?givenTime)
+}}
