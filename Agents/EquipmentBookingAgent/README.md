@@ -1,19 +1,58 @@
 # Equipment Booking Agent
 The Equipment Booking Agent is a standalone application for booking equipment through a browser-based UI. This will require bookable assets as well as eligible persons to be instantiated and annotated with booking intervals. 
 
-## Instructions
+## 1. Instructions
 
-### Installation
+### 1.1 Setup
 Add individual configuration parameters to conf/equipment_booking_agent_conf.py:
 - SPARQL_QUERY_ENDPOINT: URL address of available SPARQL endpoint where assets and users are instantiated
 - SPARQL_UPDATE_ENDPOINT: URL address of available SPARQL endpoint where bookings will be instantiated
 - KG_USERNAME: if required, credentials to access the SPARQL endpoint
 - KG_PASSWORD: if required, credentials to access the SPARQL endpoint
 
-This agent can be built via pip install. Running entry_point.py spins up the agent on http://localhost:5000, waiting for the debugger to attach. To attach to the container and start debugging, please use the provided Python: Debug Flask within Docker debug configuration.
+### 1.2 Debugging
+This agent can be built via pip. All dependencies listed in setup.py will be built accordingly
+```bash
+# Building the editable development version
+pip install -e .
+```
+
+Running entry_point.py spins up the agent on http://localhost:5000, waiting for the debugger to attach. 
+```bash
+# Spinning up agent via entry point
+python .\equipmentbookingagent\entry_point.py
+```
+
+The terminal now shows messages related to the agent usage. A Debugger is started with a PIN displayed. This can be used in an Interactive Console, accessible under http://localhost:5000/console.
+
+### 1.3 Deployment
+First, custom changes to entry_point.py can be made. Most importantly, debug mode needs to be removed. The version used for debugging as described above will look like this:
+```python
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)
+```
+Instead, the production version should look something like this (replace host IP and port number accordingly):
+```python
+if __name__ == '__main__':
+    app = create_app()
+    app.run(host="0.0.0.0", port=8000, debug=False)
+```
+
+The agent can be built via pip.
+```bash
+# Building the non-editable production package
+pip install .
+```
+
+Running entry_point.py spins up the agent on http://localhost:5000. 
+```bash
+# Spinning up agent via entry point
+python .\equipmentbookingagent\entry_point.py
+```
 
 
-### Usage
+### 1.4 Usage
 Go to 'Book Equipment', select user, select equipment, and booking interval. If equipment is not available at the selected interval, you will be informed.
 Go to 'Overview' for a  daily list of all booked assets in 15 minute increments.
 Go to 'Edit bookings' for a list of all active bookings for a certain equipment where they can be deleted.
@@ -22,7 +61,7 @@ Go to 'Add user' to add a new lab user that can make bookings.
 The 'Back' button on each page brings you back to the main menu.
 
 
-## Data model
+## 2. Data model
 **Legend**
 Prefix | Namespace
 --- | ---
@@ -37,7 +76,7 @@ Prefix | Namespace
 [time](https://www.w3.org/TR/owl-time/) | `http://www.w3.org/2006/time#`
 
 
-### Requirements
+### 2.1 Requirements
 A bookable asset is required to which a booking system can be attached to. These can be of type ontodevice:Device, ontotechsystem:TechnicalSystem, or bot:Element. One example is shown in *Figure 1*. In the utils folder, utility scripts are available to add a booking system to an asset or combine existing devices to a system so they can be booked together.
 
 *Figure 1. Bookable asset example ABox*
@@ -76,7 +115,7 @@ An eligible lab user is required to carry out the booking of an asset. These are
     "Role_Instance" {rdfs-label Lab_User}
 ```
 
-### Operating principle
+### 2.2 Operating principle
 Adding a booking to the system attaches a new booking instance to the booking system instance of the asset in question. This will look similar to the example in *Figure 3*.
 
 *Figure 3. Booking example ABox* 
