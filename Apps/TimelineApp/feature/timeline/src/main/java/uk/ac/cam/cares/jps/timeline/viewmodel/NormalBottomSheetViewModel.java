@@ -25,11 +25,9 @@ public class NormalBottomSheetViewModel extends ViewModel {
     private final DatesWithTrajectoryRepository datesWithTrajectoryRepository;
     private final MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
     private final MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
-    private final MutableLiveData<TrajectoryByDate> _sessionSummary = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
-    public LiveData<TrajectoryByDate> sessionSummary = _sessionSummary;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
