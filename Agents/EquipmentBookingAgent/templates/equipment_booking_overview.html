@@ -1,0 +1,98 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>TWA Equipment Booking</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .button {
+                display: inline-block;
+                padding: 20px 40px;
+                font-size: 18px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                margin: 20px;
+                text-decoration: none;
+            }
+            .header-container {
+                padding: 20px;
+                background-color: #f2f2f2;
+                margin-bottom: 20px;
+                display: grid;
+                grid-template-columns: 120px 1fr min-content
+            }
+            .button:hover {
+                background-color: #45a049;
+            }
+            table {
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 5px;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header-container">
+            <img width="100" src="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/a70fb4b4d68a1a315238f7670249ff4f017b78b6/web/media/twa-logo-blue.svg" alt="TWA Logo">
+            <h1 style="font-size: 40px;">Equipment bookings for {{selected_date}}</h1>
+            <a href="/" class="button" >Back</a>
+        </div>
+
+        
+        <label for="date-picker">Select Date:</label>
+        <input type="date" id="date-picker" value="{{selected_date}}">
+        <br> <br>  <br> <br> 
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    {% for time in time_slots %}
+                        <th>{{ time }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipment, bookings in booking_data.items() %}
+                    <tr>
+                        <td>{{ equipment }}</td>
+                        {% for time in time_slots %}
+                            <td>{{ bookings.get(time, '') }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <script>
+            // Function to reload bookings based on selected date
+            function reloadBookings() {
+                var selectedDate = document.getElementById('date-picker').value;
+                window.location.href = '/overview?date=' + selectedDate;
+            }
+    
+            // Add event listener to date picker
+            document.getElementById('date-picker').addEventListener('input', reloadBookings);
+    
+            // Initial load of bookings
+            //reloadBookings();
+        </script>
+
+        <br><br>
+
+        <div>
+            <span>At the moment, only equipment with pre-existing booking system can be booked.
+                <br>Please contact developers of TheWorldAvatar if more features needed.</span><br><br>
+        </div><br><br>
+
+        <br><br>
+
+    </body>
+</html>

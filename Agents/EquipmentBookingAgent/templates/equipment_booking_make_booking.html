@@ -1,0 +1,137 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>TWA Equipment Booking</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .button {
+                display: inline-block;
+                padding: 20px 40px;
+                font-size: 18px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                margin: 20px;
+                text-decoration: none;
+            }
+            .button:hover {
+                background-color: #45a049;
+            }
+            .header-container {
+                padding: 20px;
+                background-color: #f2f2f2;
+                margin-bottom: 20px;
+                display: grid;
+                grid-template-columns: 120px 1fr min-content
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header-container">
+            <img width="100" src="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/a70fb4b4d68a1a315238f7670249ff4f017b78b6/web/media/twa-logo-blue.svg" alt="TWA Logo">
+            <h1 style="font-size: 40px;">TWA Equipment Booking</h1>
+            <a href="/" class="button" >Back</a>
+        </div>
+        
+
+        <form action="booking_confirmation" method="post">
+
+            <!-- booker -->
+            <fieldset class="user-def">
+                <legend>User</legend>
+                <span class="user-def">Please specify the user making the booking:</span><br><br>
+
+                <select name="user_def" id="user_def" class="Input">
+                    <option value="" disabled selected>Please select user</option>
+                    {% for u in lab_users %}
+                    <option value="{{ u.iri }}">{{ u.display }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- equipment -->
+            <fieldset class="equipment-def">
+                <legend>Equipment</legend>
+                <span class="equipment-def">Please select equipment to be booked:</span><br>
+
+                <select name="equipment_def" id="equipment_def" class="Input">
+                    <option value="" disabled selected>Please select asset</option>
+                    {% for a in bookable_assets %}
+                    <option value="{{ a.iri }}" id_info="{{a.id}}" supp_info="{{a.supplier}}" manu_info="{{a.manufacturer}}" loc_info="{{a.location}}" assi_info="{{a.assignee}}" clz_info="{{a.type}}">{{ a.display }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <span id="equipment_id_display"></span><br>
+                <span id="equipment_supp_display"></span><br>
+                <span id="equipment_manu_display"></span><br>
+                <span id="equipment_loc_display"></span><br>
+                <span id="equipment_assi_display"></span><br>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- restrictions -->
+            <fieldset class="restrictions">
+                <legend>Period</legend>
+                <span class="restrictions">Please specify the booking period:</span><br><br>
+
+                <!-- bookingStart -->
+                <label for="bookingStart">Start:</label>
+                <input type="datetime-local" id="bookingStart" name="bookingStart"><br><br>
+
+                <!-- bookingEnd -->
+                <label for="bookingEnd">End:</label>
+                <input type="datetime-local" id="bookingEnd" name="bookingEnd"><br><br>
+            </fieldset>
+
+
+            <br><br><br>
+            
+            <div>
+                <span>At the moment, only equipment with pre-existing booking system can be booked.
+                    <br>Please contact developers of TheWorldAvatar if more features needed.</span>
+            </div>
+
+            <br><br><br>
+
+            <!-- submit button -->
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
+
+<script>
+    document.getElementById('equipment_def').addEventListener('change', function() {
+        var selectedIndex = this.selectedIndex;
+        var selectedOption = this.options[selectedIndex];
+        var optionClass = selectedOption.getAttribute('clz_info');
+
+        if (optionClass == 'http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem' ){
+            document.getElementById('equipment_id_display').textContent = 'Technical system consisting of multiple devices' ;
+            document.getElementById('equipment_supp_display').textContent = '';
+            document.getElementById('equipment_manu_display').textContent = '';
+            document.getElementById('equipment_loc_display').textContent = '';
+            document.getElementById('equipment_assi_display').textContent = '';
+        }
+        else {
+            var equipmentId = selectedOption.getAttribute('id_info');
+            var equipmentSupplier = selectedOption.getAttribute('supp_info');
+            var equipmentManufacturer = selectedOption.getAttribute('manu_info');
+            var equipmentLocation = selectedOption.getAttribute('loc_info');
+            var equipmentAssignee = selectedOption.getAttribute('assi_info');
+            document.getElementById('equipment_id_display').textContent = 'Device with ID: ' + equipmentId;
+            document.getElementById('equipment_supp_display').textContent = 'Supplier: ' + equipmentSupplier;
+            document.getElementById('equipment_manu_display').textContent = 'Manufacturer: ' + equipmentManufacturer;
+            document.getElementById('equipment_loc_display').textContent = 'Location: ' + equipmentLocation;
+            document.getElementById('equipment_assi_display').textContent = 'Assigned to: ' + equipmentAssignee;
+        }
+        
+    });
+</script>
