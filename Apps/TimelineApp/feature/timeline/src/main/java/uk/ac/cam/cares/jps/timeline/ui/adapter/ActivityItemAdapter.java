@@ -29,7 +29,7 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
             if(clickedSegment == null) {
                 item.setClicked(false);
             }
-            else if(item.getId() == clickedSegment.id()) {
+            else if(item.getId() == clickedSegment.getId()) {
                 item.setClicked(!item.getClicked());
             }
             else {

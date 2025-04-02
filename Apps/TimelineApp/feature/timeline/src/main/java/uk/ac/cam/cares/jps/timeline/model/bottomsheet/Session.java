@@ -25,7 +25,7 @@ public class Session {
         List<ActivityItem> activities = new ArrayList<>();
 
         for(TrajectorySegment segment : trajectorySegments) {
-            activities.add(new ActivityItem(segment.id(), segment.activityType(), segment.startTime(), segment.endTime()));
+            activities.add(segment.getActivity());
         }
 
         return activities;
@@ -59,9 +59,9 @@ public class Session {
         if(segment == null) {
             return false;
         }
-        if(sessionId.equals(segment.sessionId())) {
+        if(sessionId.equals(segment.getSessionId())) {
             for (ActivityItem item : this.activityList) {
-                if (item.getId() == segment.id()) {
+                if (item.getId() == segment.getId()) {
                     return true;
                 }
             }

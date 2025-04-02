@@ -47,10 +47,10 @@ public class TrajectoryByDate {
         List<TrajectorySegment> trajectorySegments = getTrajectorySegments();
             for (TrajectorySegment segment : trajectorySegments) {
 
-                String activityType = segment.activityType();
-                startTime = segment.startTime();
-                long endTime = segment.endTime();
-                int distance = segment.distanceTraveled();
+                String activityType = segment.getActivityType();
+                startTime = segment.getStartTime();
+                long endTime = segment.getEndTime();
+                int distance = segment.getDistanceTraveled();
 
                 long minutes = (endTime > startTime) ? differenceInTime(startTime, endTime) : 0;
 

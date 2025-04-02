@@ -88,7 +88,7 @@ public class TrajectoryViewModel extends ViewModel {
         }
 
        for(TrajectorySegment segment:trajectorySegments) {
-        if(segment.id() == segmentId) {
+        if(segment.getId() == segmentId) {
             _clickedSegment.postValue(segment);
             return;
         }
