@@ -1,13 +1,9 @@
 package uk.ac.cam.cares.jps.timeline.ui.bottomsheet;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 /**
  * Base class for bottom sheet in the map fragment

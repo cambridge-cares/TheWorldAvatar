@@ -25,7 +25,7 @@ WORKDIR /root/trajectoryqueryagent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/trajectoryqueryagent/output/trajectoryqueryagent##1.0.2.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/trajectoryqueryagent/output/trajectoryqueryagent##*.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 # Port for Java debugging
