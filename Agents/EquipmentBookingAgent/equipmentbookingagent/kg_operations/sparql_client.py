@@ -148,7 +148,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
 
-    def create_technicalystem_of_devices(self, equipment_iris: list, system_label):
+    def create_technicalsystem_of_devices(self, equipment_iris: list, system_label):
         g=Graph()
         namespace_iri = getNameSpace(equipment_iris[0])
         system_iri=initialiseInstanceIRI(namespace_iri,ONTOCAPE_TECHNICALSYSTEM)

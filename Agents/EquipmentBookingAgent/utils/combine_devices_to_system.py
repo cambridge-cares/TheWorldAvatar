@@ -19,4 +19,4 @@ sparql_client = EquipmentBookingSparqlClient(
 equipment_iris : list
 technicalsystem_label: str
 
-sparql_client.create_technicalystem_of_devices(equipment_iris=equipment_iris,system_label=technicalsystem_label)
+sparql_client.create_technicalsystem_of_devices(equipment_iris=equipment_iris,system_label=technicalsystem_label)
