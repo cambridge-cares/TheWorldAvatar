@@ -73,9 +73,9 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedId) {
+    public void updateUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
         if (sessionList != null && !sessionList.isEmpty()) {
-            sessionsAdapter.setUniqueSessionsList(sessionList, clickedId);
+            sessionsAdapter.setUniqueSessionsList(sessionList, clickedSegment);
             sessionsAdapter.notifyDataSetChanged();
 
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
@@ -87,9 +87,9 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateSummaryView(List<ActivitySummary> summaryActivityItemList) {
+    public void updateSummaryView(List<ActivitySummary> summaryActivityItemList, TrajectorySegment clickedSegment) {
         if (summaryActivityItemList != null && !summaryActivityItemList.isEmpty()) {
-            summaryAdapter.setActivityItemList(summaryActivityItemList);
+            summaryAdapter.setActivityItemList(summaryActivityItemList, clickedSegment);
             summaryAdapter.notifyDataSetChanged();
 
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
@@ -113,5 +113,10 @@ public class NormalBottomSheet extends BottomSheet {
     public void highlightClickedSegment(TrajectorySegment clickedSegment) {
         sessionsAdapter.setClickedSegment(clickedSegment);
         sessionsAdapter.notifyDataSetChanged();
+
+        summaryAdapter.highlightClickedActivity(clickedSegment);
+        summaryAdapter.notifyDataSetChanged();
+
+        sessionsAdapter.scrollToFirstClickedActivity(sessionsRecyclerView);
     }
 }

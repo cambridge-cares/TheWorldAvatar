@@ -30,7 +30,7 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
                 item.setClicked(false);
             }
             else if(item.getId() == clickedSegment.getId()) {
-                item.setClicked(!item.getClicked());
+                item.setClicked(true);
             }
             else {
                 item.setClicked(false);
@@ -82,6 +82,15 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
     public int getItemCount() {
         return activityList.size();
     }
+
+    public int getFirstClickedItemPosition() {
+    for (int i = 0; i < activityList.size(); i++) {
+        if (activityList.get(i).getClicked()) { 
+            return i;
+        }
+    }
+    return RecyclerView.NO_POSITION;
+}
 
     static class ActivityItemViewHolder extends RecyclerView.ViewHolder {
         ImageView activityType;

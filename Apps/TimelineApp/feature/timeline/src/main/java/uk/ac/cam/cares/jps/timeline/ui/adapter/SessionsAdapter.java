@@ -85,6 +85,28 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         }
     }
 
+    public void scrollToFirstClickedActivity(RecyclerView parentRecyclerView) {
+        for (int i = 0; i < getItemCount(); i++) {
+            RecyclerView.ViewHolder viewHolder = parentRecyclerView.findViewHolderForAdapterPosition(i);
+
+            if (viewHolder instanceof SessionsViewHolder) {
+                SessionsViewHolder sessionViewHolder = (SessionsViewHolder) viewHolder;
+                RecyclerView activityRecyclerView = sessionViewHolder.activitySummaryRecyclerView;
+                ActivityItemAdapter adapter = (ActivityItemAdapter) activityRecyclerView.getAdapter();
+
+                if (adapter != null) {
+                    int clickedPosition = adapter.getFirstClickedItemPosition();
+                    if (clickedPosition != RecyclerView.NO_POSITION) {
+                        activityRecyclerView.post(() -> activityRecyclerView.smoothScrollToPosition(clickedPosition));
+                        return; // Stop after the first found clicked item
+                    }
+                }
+            }
+        }
+    }
+
+
+
     public static class SessionsViewHolder extends RecyclerView.ViewHolder {
         TextView sessionTitle;
         RecyclerView activitySummaryRecyclerView;

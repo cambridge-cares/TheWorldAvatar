@@ -121,7 +121,7 @@ public class BottomSheetManager {
         TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
 
         if (trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
-            normalBottomSheet.updateSummaryView(activityItemSummaryList);
+            normalBottomSheet.updateSummaryView(activityItemSummaryList, clickedSegment);
             normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
         }
     });
