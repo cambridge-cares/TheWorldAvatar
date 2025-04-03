@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.timeline.ui.adapter;
 
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +94,10 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
         }
 
         if (summaryItem.isClicked()) {
-            holder.activityType.setBackgroundColor(Color.YELLOW);
+            // holder.activityType.setBackgroundColor(Color.YELLOW);
+            TypedValue typedValue = new TypedValue();
+            holder.itemView.getContext().getTheme().resolveAttribute(R.attr.colorSelected, typedValue, true);
+            holder.activityType.setBackgroundColor(typedValue.data);
         } else {
             holder.activityType.setBackgroundColor(Color.TRANSPARENT);
         }

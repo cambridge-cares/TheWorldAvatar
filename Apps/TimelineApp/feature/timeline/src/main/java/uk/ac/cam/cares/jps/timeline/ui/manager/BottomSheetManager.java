@@ -68,6 +68,7 @@ public class BottomSheetManager {
      * @param bottomSheetContainer Container of the bottom sheet
      */
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
+
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
         connectionViewModel = new ViewModelProvider(fragment).get(ConnectionViewModel.class);
         userPhoneViewModel = new ViewModelProvider(fragment).get(UserPhoneViewModel.class);

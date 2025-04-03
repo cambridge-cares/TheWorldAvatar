@@ -54,6 +54,8 @@
      private final Map<String, String> activityColors = new HashMap<>();
      private String layerId;
 
+
+
      /**
       * Constructor of the class
       * @param fragment Host fragment
@@ -69,6 +71,8 @@
          activityColors.put("bike", getColorHex(fragment.requireContext(), com.google.android.material.R.attr.colorTertiary));
          activityColors.put("default", getColorHex(fragment.requireContext(), R.attr.colorDefault));
 
+         String selectedColor = getColorHex(fragment.requireContext(), R.attr.colorSelected); // Example: Yellow
+
          trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryByDate -> {
              if (!trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
                  trajectoryViewModel.setFetching(true);
@@ -80,7 +84,7 @@
                  trajectoryViewModel.removeAllClicked();
                  if (!trajectoryByDate.getTrajectoryStr().isEmpty()) {
                      paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
-                     addTrajectoryClickListener(mapView);
+                     addTrajectoryClickListener(mapView, selectedColor);
                  }
              });
 
@@ -98,47 +102,77 @@
      /**
       * Adds a click listener to detect which trajectory segment was clicked.
       */
-     private void addTrajectoryClickListener(MapView mapView) {
-         GesturesPlugin gesturesPlugin = GesturesUtils.getGestures(mapView);
+      private void addTrajectoryClickListener(MapView mapView, String selectedColor) {
+            GesturesPlugin gesturesPlugin = GesturesUtils.getGestures(mapView);
 
-         gesturesPlugin.addOnMapClickListener(point -> {
-             Log.d("TrajectoryClick", "Map clicked at: " + point.longitude() + ", " + point.latitude());
+            gesturesPlugin.addOnMapClickListener(point -> {
+                Log.d("TrajectoryClick", "Map clicked at: " + point.longitude() + ", " + point.latitude());
 
-             ScreenCoordinate screenPoint = mapView.getMapboxMap().pixelForCoordinate(point);
-             ScreenBox screenBox = new ScreenBox(
-                     new ScreenCoordinate(screenPoint.getX() - 20, screenPoint.getY() - 20),
-                     new ScreenCoordinate(screenPoint.getX() + 20, screenPoint.getY() + 20)
-             );
+                ScreenCoordinate screenPoint = mapView.getMapboxMap().pixelForCoordinate(point);
+                ScreenBox screenBox = new ScreenBox(
+                        new ScreenCoordinate(screenPoint.getX() - 20, screenPoint.getY() - 20),
+                        new ScreenCoordinate(screenPoint.getX() + 20, screenPoint.getY() + 20)
+                );
 
-             mapView.getMapboxMap().queryRenderedFeatures(
-                     new RenderedQueryGeometry(screenBox),
-                     new RenderedQueryOptions(List.of(this.layerId), null),
-                     result -> {
-                         if (result.getValue() != null && !result.getValue().isEmpty()) {
-                             QueriedFeature clickedFeature = result.getValue().get(0).getQueriedFeature();
-                             Feature feature = clickedFeature.getFeature();
+                mapView.getMapboxMap().queryRenderedFeatures(
+                        new RenderedQueryGeometry(screenBox),
+                        new RenderedQueryOptions(List.of(this.layerId), null),
+                        result -> {
+                            if (result.getValue() != null && !result.getValue().isEmpty()) {
+                                QueriedFeature clickedFeature = result.getValue().get(0).getQueriedFeature();
+                                Feature feature = clickedFeature.getFeature();
+
+                                Integer segmentId = feature.hasProperty("id") ? feature.getNumberProperty("id").intValue() : null;
+
+                                if (segmentId != null) {
+                                    removeHighlightLayer(mapView.getMapboxMap().getStyle()); // Remove any existing highlight
+                                    highlightTrajectorySegment(mapView.getMapboxMap().getStyle(), segmentId, selectedColor);
+                                    trajectoryViewModel.setClicked(segmentId);
+                                } else {
+                                    removeHighlightLayer(mapView.getMapboxMap().getStyle()); // Remove highlight if nothing is clicked
+                                    trajectoryViewModel.setClicked(null);
+                                }
+                            } else {
+                                removeHighlightLayer(mapView.getMapboxMap().getStyle()); // No feature clicked, remove highlight
+                                trajectoryViewModel.setClicked(null);
+                            }
+                        }
+                );
+
+                return true;
+            });
+        }
+
+        private void removeHighlightLayer(Style style) {
+            if (style != null && style.styleLayerExists("highlight_layer")) {
+                style.removeStyleLayer("highlight_layer");
+            }
+        }
 
 
-                             Integer segmentId = feature.hasProperty("id") ? feature.getNumberProperty("id").intValue() : null;
+        private void highlightTrajectorySegment(Style style, int segmentId, String selectedColor) {
+            removeHighlightLayer(style); // Ensure no duplicate highlights
 
-                             if (segmentId != null) {
-                                 Log.d("TrajectoryClick", "Segment clicked: " + segmentId);
-                                 trajectoryViewModel.setClicked(segmentId);
-                             } else {
-                                 Log.d("TrajectoryClick", "Feature clicked but no valid segment ID found.");
-                                 trajectoryViewModel.setClicked(null);
-                             }
-                         } else {
-                             Log.d("TrajectoryClick", "No trajectory segment clicked.");
-                             trajectoryViewModel.setClicked(null);
-                         }
-                     }
-             );
+            try {
+                JSONObject paint = new JSONObject();
+                paint.put("line-color", selectedColor);
+                paint.put("line-width", 8);
 
-             return true;
-         });
-     }
+                JSONObject layerJson = new JSONObject();
+                layerJson.put("id", "highlight_layer");
+                layerJson.put("type", "line");
+                layerJson.put("source", "trajectory_default");
+                layerJson.put("filter", new JSONArray().put("==").put("id").put(segmentId));
+                layerJson.put("paint", paint);
 
+                style.addStyleLayer(
+                        Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()),
+                        new LayerPosition(null, null, null)
+                );
+            } catch (JSONException e) {
+                LOGGER.error("Error highlighting trajectory segment", e);
+            }
+        }
 
      /**
       * Paints the trajectory on the map, ensuring each segment gets a unique ID.
