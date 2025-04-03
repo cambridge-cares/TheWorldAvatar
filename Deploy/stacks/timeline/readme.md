@@ -128,5 +128,12 @@ IMPORT FOREIGN SCHEMA public
 6. Run `docker compose up -d` in [./test/vis/](./test/vis/).
 7. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
 
+
+## Oura Ring data
+
+Create a namespace called `ouraring` in Blazegraph (default namespace defined in [./test/stack-manager/inputs/config/services/ouraring-agent.json](./test/stack-manager/inputs/config/services/ouraring-agent.json)).
+
+Refer to documentation at [../../../Agents/OuraRingAgent](../../../Agents/OuraRingAgent/readme.md) for instructions to instantiate Oura Ring data
+
 [keycloak-test.json]: ./test/stack-manager/inputs/config/services/keycloak-test.json
 [keycloak-prod.json]: ./prod/stack-manager/inputs/config/services/keycloak-prod.json

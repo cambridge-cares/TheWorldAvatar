@@ -1,0 +1,4 @@
+services:
+  ouraring-agent:
+    image: ghcr.io/cambridge-cares/ouraring-agent:1.0.0
+    build: .
