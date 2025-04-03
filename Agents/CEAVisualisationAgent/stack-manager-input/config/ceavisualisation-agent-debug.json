@@ -1,16 +1,9 @@
 {
     "ServiceSpec": {
-        "Name": "cea-agent",
+        "Name": "ceavisualisation-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ceavisualisation-agent:0.1.0",
-                "Mounts": [
-                    {
-                        "Type": "bind",
-                        "Source": "../../../../../../Agents/CEAVisualisationAgent/ceavisualisation-agent/src/main/resources/config.properties",
-                        "Target": "/resources/config.properties"
-                    }
-                ],
+                "Image": "ghcr.io/cambridge-cares/ceavisualisation-agent:0.2.0-SNAPSHOT",
                 "Env": [
                     "DB_NAME=postgres",
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
@@ -29,11 +22,21 @@
                     }
                 ]
             }
+        },
+        "EndpointSpec": {
+          "Ports": [
+            {
+              "Name": "web",
+              "Protocol": "tcp",
+              "TargetPort": "5005",
+              "PublishedPort": "5005"
+            }
+          ]
         }
     },
     "endpoints": {
-        "cea-agent": {
-          "url": "http://localhost:8084/ceavisualisation-agent/",
+        "ceavisualisation-agent": {
+          "url": "http://localhost:8080/ceavisualisation-agent/",
           "externalPath": "/ceavisualisation-agent/"
         }
     }
