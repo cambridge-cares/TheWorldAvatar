@@ -19,7 +19,10 @@
             "pattern": "https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/?"
         },
         {
-            "pattern": "https://twitter.com/?"
+            "pattern": "https?://twitter.com/?"
+        },
+        {
+            "pattern": "https?://www.dropbox.com/?"
         }
       ],
     "aliveStatusCodes": [200, 403, 0]

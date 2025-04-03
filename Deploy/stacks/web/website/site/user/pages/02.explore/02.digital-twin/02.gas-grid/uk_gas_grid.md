@@ -36,4 +36,4 @@ slug: gas-grid
 
 <br>
 
-[plugin:content-inject](/modular/partners)
+[plugin:content-inject](../../../modular/partners)

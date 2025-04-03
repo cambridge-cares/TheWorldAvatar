@@ -58,7 +58,7 @@ Briefly, the app will only require the `Wasgau` and `Toilet` datasets, as well a
 
 ### 2.1.2 Feature Info Agent
 
-The stack will also require the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) service to retrieve metadata. Please read setting up the [built-in service section](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#built-in-containers) for more details on deploying this. This agent will require the following configuration targeted at the toilet class in `fia-config.json`:
+The stack will also require the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) service to retrieve metadata. Please read setting up the [built-in service section](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#built-in-containers) for more details on deploying this. This agent will require the following configuration targeted at the toilet class in `fia-config.json`:
 
 ```json
 {

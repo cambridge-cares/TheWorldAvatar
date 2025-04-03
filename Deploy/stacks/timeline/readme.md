@@ -4,7 +4,7 @@
 
 Stack name should be `timeline-test`.
 
-Prepare these secret files in the [stack secret folder](./stack-manager/test/inputs/secrets)
+Prepare these secret files in the [stack secret folder](./test/stack-manager/inputs/secrets)
 
 - geoserver_password
 - postgis_password
