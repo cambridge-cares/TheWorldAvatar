@@ -72,9 +72,11 @@ public class IndexAgentCaller {
 
     @PostMapping("/reindex")
     public ResponseEntity<String> reindexing() {
-        if(indexAgent.existsReindexFile()){
-            
-        } 
+        try{
+            indexAgent.serialiseIndexData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.ok("Index updated successfully through reindexing.");
     }
 
@@ -83,7 +85,6 @@ public class IndexAgentCaller {
     public ResponseEntity<String> backup() {
         try{
             indexAgent.serialiseIndexData();
-            indexAgent.deleteReindexFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
