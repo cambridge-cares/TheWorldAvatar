@@ -39,13 +39,14 @@ public class CEAVisualisationAgent extends JPSAgent {
     public static final String notCEALayer = "not_cea";
     public static final String geoWorkSpace = "twa_cea";
 
+    private boolean geoserverLayerInitialised = false;
+
     public CEAVisualisationAgent() {
         EndpointConfig endpointConfig = new EndpointConfig();
         DB_USER = endpointConfig.getDbUser();
         DB_PASSWORD = endpointConfig.getDbPassword();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(DB_NAME), DB_USER, DB_PASSWORD);
         initialiseTable();
-        createGeoServerLayer();
     }
 
     @Override
@@ -75,6 +76,11 @@ public class CEAVisualisationAgent extends JPSAgent {
             }
 
             updateTable(visValues);
+        }
+
+        if (!geoserverLayerInitialised) {
+            createGeoServerLayers();
+            geoserverLayerInitialised = true;
         }
 
         return requestParams;
@@ -196,15 +202,12 @@ public class CEAVisualisationAgent extends JPSAgent {
      * Creates two GeoServer layers, one for buildings with CEA outputs, and one for
      * buildings without CEA outputs
      */
-    public void createGeoServerLayer() {
+    public void createGeoServerLayers() {
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
         geoServerClient.createWorkspace(geoWorkSpace);
 
         // creating Geoserver layer for buildings with CEA outputs
-        UpdatedGSVirtualTableEncoder ceaTable = new UpdatedGSVirtualTableEncoder();
-
-        GeoServerVectorSettings ceaLayerSettings = new GeoServerVectorSettings();
 
         String scale = "v.%s / (SELECT MAX(v.%s) FROM " + SCHEMA + "." + TABLE + " v) AS scaled_%s,";
         String building = "v." + IRI
@@ -222,34 +225,33 @@ public class CEAVisualisationAgent extends JPSAgent {
                     annual.getAnnualPerArea());
         }
 
-        String cea = "SELECT " + scales + building + from + join;
+        String ceaSql = "SELECT " + scales + building + from + join;
 
-        ceaTable.setSql(cea);
-        ceaTable.setEscapeSql(true);
-        ceaTable.setName(ceaLayer);
-        ceaTable.addVirtualTableGeometry(geoName, "Geometry", epsg4326);
-
-        ceaLayerSettings.setVirtualTable(ceaTable);
-        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, SCHEMA, ceaLayer, ceaLayerSettings);
+        createGeoServerLayer(geoServerClient, ceaLayer, ceaSql);
 
         // creating GeoServer layer for buildings without CEA outputs
-        String notCEA = "SELECT b.measured_height AS height, public.ST_Transform(sg.geometry, " + epsg4326 + ") AS "
-                + geoName + "\n" +
-                "FROM citydb.cityobject_genericattrib cga\n" +
+        String notCeaSql = "SELECT b.measured_height AS height, public.ST_Transform(sg.geometry, " + epsg4326 + ") AS "
+                + geoName + "\nFROM citydb.cityobject_genericattrib cga\n" +
                 "INNER JOIN citydb.building b ON b.id = cga.cityobject_id\n" +
                 "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id\n" +
                 "WHERE cga.urival NOT IN (SELECT " + IRI + " FROM " + SCHEMA + "." + TABLE + ")";
 
-        UpdatedGSVirtualTableEncoder notCEATable = new UpdatedGSVirtualTableEncoder();
+        createGeoServerLayer(geoServerClient, notCEALayer, notCeaSql);
+    }
 
-        GeoServerVectorSettings notCEALayerSettings = new GeoServerVectorSettings();
+    private void createGeoServerLayer(GeoServerClient geoServerClient, String layerName, String sql) {
 
-        notCEATable.setSql(notCEA);
-        notCEATable.setEscapeSql(true);
-        notCEATable.setName(notCEALayer);
-        notCEATable.addVirtualTableGeometry(geoName, "Geometry", epsg4326);
+        UpdatedGSVirtualTableEncoder table = new UpdatedGSVirtualTableEncoder();
 
-        notCEALayerSettings.setVirtualTable(notCEATable);
-        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, SCHEMA, notCEALayer, notCEALayerSettings);
+        GeoServerVectorSettings settings = new GeoServerVectorSettings();
+
+        table.setSql(sql);
+        table.setEscapeSql(true);
+        table.setName(layerName);
+        table.addVirtualTableGeometry(geoName, "Geometry", epsg4326);
+
+        settings.setVirtualTable(table);
+        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, SCHEMA, layerName, settings);
+
     }
 }
