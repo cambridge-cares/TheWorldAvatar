@@ -36,6 +36,7 @@ public class CEAVisualisationAgent extends JPSAgent {
 
     public static final String ceaStore = "cea";
     public static final String ceaLayer = "cea";
+    public static final String ceaScaledLayer = "scaled_cea";
     public static final String notCEALayer = "not_cea";
     public static final String geoWorkSpace = "twa_cea";
 
@@ -207,15 +208,30 @@ public class CEAVisualisationAgent extends JPSAgent {
 
         geoServerClient.createWorkspace(geoWorkSpace);
 
-        // creating Geoserver layer for buildings with CEA outputs
+        // creating Geoserver layer for buildings with raw CEA outputs
 
-        String scale = "v.%s / (SELECT MAX(v.%s) FROM " + SCHEMA + "." + TABLE + " v) AS scaled_%s,";
+        String raw = "v.%s AS %s,";
         String building = "v." + IRI
                 + " AS iri, b.measured_height AS height, public.ST_Transform(sg.geometry, 4326) AS " + geoName + " ";
         String from = "FROM " + SCHEMA + "." + TABLE + " v ";
         String join = "INNER JOIN citydb.cityobject_genericattrib cga ON v." + IRI + " = cga.urival\n" +
                 "INNER JOIN citydb.building b ON cga.cityobject_id = b.id\n" +
                 "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id";
+
+        String raws = "";
+
+        for (Annual annual : Annual.values()) {
+            raws += String.format(raw, annual.getAnnual(), annual.getAnnual());
+            raws += String.format(raw, annual.getAnnualPerArea(), annual.getAnnualPerArea());
+        }
+
+        String ceaSql = "SELECT " + raws + building + from + join;
+
+        createGeoServerLayer(geoServerClient, ceaLayer, ceaSql);
+
+        // creating Geoserver layer for buildings with scaled CEA outputs
+
+        String scale = "v.%s / (SELECT MAX(v.%s) FROM " + SCHEMA + "." + TABLE + " v) AS scaled_%s,";
 
         String scales = "";
 
@@ -225,9 +241,9 @@ public class CEAVisualisationAgent extends JPSAgent {
                     annual.getAnnualPerArea());
         }
 
-        String ceaSql = "SELECT " + scales + building + from + join;
+        String ceaScaledSql = "SELECT " + scales + building + from + join;
 
-        createGeoServerLayer(geoServerClient, ceaLayer, ceaSql);
+        createGeoServerLayer(geoServerClient, ceaScaledLayer, ceaScaledSql);
 
         // creating GeoServer layer for buildings without CEA outputs
         String notCeaSql = "SELECT b.measured_height AS height, public.ST_Transform(sg.geometry, " + epsg4326 + ") AS "
