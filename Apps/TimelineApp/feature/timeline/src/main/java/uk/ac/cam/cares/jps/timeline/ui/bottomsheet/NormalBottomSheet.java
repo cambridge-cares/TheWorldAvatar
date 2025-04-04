@@ -3,8 +3,12 @@
 package uk.ac.cam.cares.jps.timeline.ui.bottomsheet;
 
 import android.content.Context;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -44,6 +48,20 @@ public class NormalBottomSheet extends BottomSheet {
         sessionsAdapter = new SessionsAdapter();
         sessionsRecyclerView.setAdapter(sessionsAdapter);
         sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        final float maxHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 500, context.getResources().getDisplayMetrics());
+    
+        sessionsRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (sessionsRecyclerView.getHeight() > maxHeightPx) {
+                    ViewGroup.LayoutParams params = sessionsRecyclerView.getLayoutParams();
+                    params.height = (int) maxHeightPx;
+                    sessionsRecyclerView.setLayoutParams(params);
+                }
+                sessionsRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
         summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
 
@@ -114,9 +132,19 @@ public class NormalBottomSheet extends BottomSheet {
         sessionsAdapter.setClickedSegment(clickedSegment);
         sessionsAdapter.notifyDataSetChanged();
 
+        if (clickedSegment != null) {
+            Log.d("SCROLL_DEBUG", "Scrolling to session: " + clickedSegment.getSessionNumber());
+
+            sessionsRecyclerView.post(() -> {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) sessionsRecyclerView.getLayoutManager();
+                if (layoutManager != null) {
+                    layoutManager.scrollToPositionWithOffset(clickedSegment.getSessionNumber(), 0);
+                }
+            });
+        }
+
         summaryAdapter.highlightClickedActivity(clickedSegment);
         summaryAdapter.notifyDataSetChanged();
-
-        sessionsAdapter.scrollToFirstClickedActivity(sessionsRecyclerView);
     }
+
 }

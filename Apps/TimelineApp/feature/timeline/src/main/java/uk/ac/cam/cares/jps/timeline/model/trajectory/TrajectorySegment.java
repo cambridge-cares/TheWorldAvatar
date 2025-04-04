@@ -14,8 +14,10 @@ public class TrajectorySegment {
     private final int distanceTraveled;
     private final String iri;
     private final ActivityItem activity;
+    private final int sessionNumber;
+    private final int numberInSession;
     
-    TrajectorySegment(long startTime, long endTime, int id, String activityType, String sessionId, JSONObject geom, int distanceTraveled, String iri) {
+    TrajectorySegment(long startTime, long endTime, int id, String activityType, String sessionId, JSONObject geom, int distanceTraveled, String iri, int sessionNumber, int numberInSession) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.id = id;
@@ -24,6 +26,8 @@ public class TrajectorySegment {
         this.geom = geom;
         this.distanceTraveled = distanceTraveled;
         this.iri = iri;
+        this.sessionNumber = sessionNumber;
+        this.numberInSession = numberInSession;
         this.activity = new ActivityItem(id, activityType, startTime, endTime);
     }
 
@@ -62,6 +66,14 @@ public class TrajectorySegment {
 
     public ActivityItem getActivity() {
         return this.activity;
+    }
+
+    public int getSessionNumber() {
+        return this.sessionNumber;
+    }
+
+    public int getNumberInSession() {
+        return this.numberInSession;
     }
 
 }

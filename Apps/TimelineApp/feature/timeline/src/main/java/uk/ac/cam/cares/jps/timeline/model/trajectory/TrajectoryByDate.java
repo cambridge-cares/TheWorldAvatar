@@ -80,9 +80,10 @@ public class TrajectoryByDate {
 
             List<String> parsedSessionIds = new ArrayList<>();
             int sessionTitleNumber = 0;
+            int numberInSession = 0;
                             
             for(int i = 0; i < features.length(); i++) {
-                
+
                 JSONObject feature = features.getJSONObject(i);
                 JSONObject properties = feature.getJSONObject("properties");
 
@@ -94,6 +95,7 @@ public class TrajectoryByDate {
 
                     parsedSessionIds.add(sessionId);
                     sessionTitleNumber++;
+                    numberInSession = 0;
                     String sessionTitle = "Trip " + sessionTitleNumber;
                     for(int j = i; j < features.length(); j++) {
 
@@ -101,6 +103,7 @@ public class TrajectoryByDate {
                         JSONObject properties2 = feature2.getJSONObject("properties");
 
                         if(properties2.optString("session_id", "unknown").equals(sessionId)) {
+                            numberInSession++;
                             long startTime = properties2.optLong("start_time", 0);
                             long endTime = properties2.optLong("end_time", 0);
                             int id = properties2.optInt("id", 0);
@@ -109,7 +112,7 @@ public class TrajectoryByDate {
                             int distanceTraveled = properties2.optInt("distance_traveled", 0);
                             String iri = properties2.optString("iri", "unknown");
 
-                            segmentsInSession.add((new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, distanceTraveled, iri)));
+                            segmentsInSession.add((new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, distanceTraveled, iri, sessionTitleNumber, numberInSession)));
                         }
                     }
                     sessions.add(new Session(sessionId, sessionTitle, segmentsInSession));

@@ -41,7 +41,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/activity_items"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="500dp"
         android:fadingEdge="none"
         android:nestedScrollingEnabled="false"
         android:overScrollMode="always"

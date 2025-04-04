@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.timeline.ui.adapter;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,11 +52,39 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         );
         layoutManager.setInitialPrefetchItemCount(session.getShownList().size());
 
-        // Ensure ActivityItemAdapter receives the updated clickedId
         ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getShownList(), clickedSegment);
         holder.activitySummaryRecyclerView.setLayoutManager(layoutManager);
         holder.activitySummaryRecyclerView.setAdapter(activityItemAdapter);
         holder.activitySummaryRecyclerView.setRecycledViewPool(activitySummaryViewPool);
+
+        holder.activitySummaryRecyclerView.post(() -> {
+            int maxHeightPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 500,
+                holder.activitySummaryRecyclerView.getResources().getDisplayMetrics()
+            );
+
+            // Measure content height
+            int totalHeight = 0;
+            for (int i = 0; i < holder.activitySummaryRecyclerView.getChildCount(); i++) {
+                View child = holder.activitySummaryRecyclerView.getChildAt(i);
+                if (child != null) {
+                    totalHeight += child.getMeasuredHeight();
+                }
+            }
+
+            // Set height dynamically
+            ViewGroup.LayoutParams params = holder.activitySummaryRecyclerView.getLayoutParams();
+            params.height = Math.min(totalHeight, maxHeightPx); // Use wrap_content behavior unless >500dp
+            holder.activitySummaryRecyclerView.setLayoutParams(params);
+        });
+
+    
+        // Ensure we scroll to the correct activity within the session
+       if (clickedSegment != null && session.containsSegment(clickedSegment)) {
+           holder.activitySummaryRecyclerView.post(() ->
+                   layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession(), 0)
+           );
+       }
 
         holder.dropdownLayout.setOnClickListener(view -> {
             if (!session.getShownList().isEmpty()) {
@@ -75,32 +104,12 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
     public void setClickedSegment(TrajectorySegment clickedSegment) {
         this.clickedSegment = clickedSegment;
-        // Find which session contains the clicked segment and update only that session
+
         for (int i = 0; i < sessionList.size(); i++) {
             Session session = sessionList.get(i);
-            if (session.containsSegment(clickedSegment) || clickedSegment == null) { // Assuming a helper method
+            if (session.containsSegment(clickedSegment) || clickedSegment == null) {
                 notifyItemChanged(i);
                 return;
-            }
-        }
-    }
-
-    public void scrollToFirstClickedActivity(RecyclerView parentRecyclerView) {
-        for (int i = 0; i < getItemCount(); i++) {
-            RecyclerView.ViewHolder viewHolder = parentRecyclerView.findViewHolderForAdapterPosition(i);
-
-            if (viewHolder instanceof SessionsViewHolder) {
-                SessionsViewHolder sessionViewHolder = (SessionsViewHolder) viewHolder;
-                RecyclerView activityRecyclerView = sessionViewHolder.activitySummaryRecyclerView;
-                ActivityItemAdapter adapter = (ActivityItemAdapter) activityRecyclerView.getAdapter();
-
-                if (adapter != null) {
-                    int clickedPosition = adapter.getFirstClickedItemPosition();
-                    if (clickedPosition != RecyclerView.NO_POSITION) {
-                        activityRecyclerView.post(() -> activityRecyclerView.smoothScrollToPosition(clickedPosition));
-                        return; // Stop after the first found clicked item
-                    }
-                }
             }
         }
     }
