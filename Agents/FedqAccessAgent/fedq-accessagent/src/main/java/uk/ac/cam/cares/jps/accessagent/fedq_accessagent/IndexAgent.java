@@ -45,8 +45,8 @@ import org.apache.jena.graph.Node;
 @Service
 public class IndexAgent {
     private static final String BACKUP_DIRECTORY = "/data";
-    private static final String BACKUP_FILE = BACKUP_DIRECTORY + "/backup.json";
-    private static final String STATUS_FILE = BACKUP_DIRECTORY + "/status.dat";
+    private static final String BASE_BACKUP_FILE = BACKUP_DIRECTORY + "/index-data.json";
+    private static final String DUMP_FILE_PREFIX = BACKUP_DIRECTORY + "/dump";
     private static final String REINDEX_FILE = BACKUP_DIRECTORY + "/reindex.dat"; 
     private static final String BLAZEGRAPH_URL = "http://172.26.15.166:3838/blazegraph/ui/";
     private final RestTemplate restTemplate = new RestTemplate();
@@ -102,7 +102,7 @@ public class IndexAgent {
     private RedisTemplate<String, String> redisTemplate;
 
     // Read stack ID from environment variable or default to "defaultStack"
-    private final String STACK_ID="S001";
+    private final String STACK_ID="S002";
     // public IndexAgent(@Value("${stack.id:defaultStack}") String stackId) {
     //     this.STACK_ID = stackId;
     //     System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
@@ -120,7 +120,8 @@ public class IndexAgent {
             "http://www.w3.org/2000/01/rdf-schema#comment",
             "http://www.w3.org/2002/07/owl#sameAs",
             "http://www.w3.org/2000/01/rdf-schema#sameAs",
-            "http://purl.org/dc/elements/1.1/identifier"
+            "http://purl.org/dc/elements/1.1/identifier",
+            "http://www.w3.org/2002/07/owl#Thing"
         );
     }
 
@@ -272,20 +273,26 @@ public class IndexAgent {
                 return;
             }
 
-            //BACKUP_FILE 
-            File file = new File(BACKUP_FILE);
-            objectMapper.writeValue(file, backupData);
-            System.out.println("Index Data Serialised to: " + BACKUP_FILE);
-            
-            //Create STATUS_FILE when graceful shutdown
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String currentTime = now.format(formatter);
-            File statusfile = new File(STATUS_FILE);
-            objectMapper.writeValue(statusfile, currentTime);
-            System.out.println("Graceful shutdown saved time to: " + STATUS_FILE);
-            
-            //Delete Shutdown Status-File
+            //BASE_BACKUP_FILE 
+            File base_backup_file = new File(BASE_BACKUP_FILE);
+            if (base_backup_file.exists()) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+                String timestamp = LocalDateTime.now().format(formatter);
+
+                // 1. log the old file with timestamp in name
+                File new_dumpFile = new File(DUMP_FILE_PREFIX+ "-" + timestamp + ".json");
+                if (base_backup_file.renameTo(new_dumpFile)) {
+                    System.out.println("Old index-file is dumped as: " + new_dumpFile.getName());
+                }
+
+                // 2. create the base file with current data
+                objectMapper.writeValue(base_backup_file, backupData);
+            }else{
+                objectMapper.writeValue(base_backup_file, backupData);
+            }
+            System.out.println(" New index-data is saved as: " + base_backup_file.getName());
+
+            // 3. remove reindex file
             deleteReindexFile();
         } catch (IOException e) {
             e.printStackTrace();
@@ -295,24 +302,21 @@ public class IndexAgent {
     // Deserialize Dragonfly index from JSON file (restore data)**
     public void deserialiseIndexData() throws IOException {
         try {
-            File backup_file = new File(BACKUP_FILE);
+            File base_backup_file = new File(BASE_BACKUP_FILE);
             
-            if (backup_file.exists()) {
+            if (base_backup_file.exists()) {
                 // Use correct generic types for HashMap
                 ObjectMapper objectMapper = new ObjectMapper();
                 TypeReference<Map<String, Set<String>>> typeRef = new TypeReference<>() {
                 };
 
-                Map<String, Set<String>> backupData = objectMapper.readValue(backup_file, typeRef);
+                Map<String, Set<String>> backupData = objectMapper.readValue(base_backup_file, typeRef);
 
                 // Now safely iterate over the restored backup data
                 for (Map.Entry<String, Set<String>> entry : backupData.entrySet()) {
                     redisTemplate.opsForSet().add(entry.getKey(), entry.getValue().toArray(new String[0]));
                 }
                 System.out.println("Successfully restored Dragonfly index data from backup.");
-
-                //delete status file if it exists
-                deleteShutdownStatusFile();
                  
             } else {
                 System.out.println("No backup file found. Skipping restore and Initializing index from store-endpoints.");
@@ -324,22 +328,6 @@ public class IndexAgent {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    
-    public int deleteShutdownStatusFile(){
-        File status_file = new File(STATUS_FILE);
-        if (status_file.exists()) {
-            if (status_file.delete()) {
-                System.out.println("Shutdown Status-file initialised.");
-                return 1;
-            } else {
-                System.out.println("Error in initialising shutdown status-file.");
-                return -1;
-            }
-        }else{
-            System.out.println("Shutdown Status-file does not exist, i.e previous shutdown was non-graceful.");
-        }
-        return -1;
     }
 
     public int deleteReindexFile(){
@@ -361,10 +349,6 @@ public class IndexAgent {
         return reindexing_file.exists()?true:false;
     }
 
-    public boolean existsShutdownStatusFile(){
-        File status_file = new File(STATUS_FILE);
-        return status_file.exists()?true:false;
-    }
     // Deserialize Dragonfly index from JSON file (restore data)**
     public int reindexing() throws IOException {
         try {
