@@ -16,9 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet(
-        urlPatterns = {
-                CEAVisualisationAgent.URI_RUN})
+@WebServlet(urlPatterns = {
+        CEAVisualisationAgent.URI_RUN })
 public class CEAVisualisationAgent extends JPSAgent {
     public static final String URI_RUN = "/run";
 
@@ -66,7 +65,8 @@ public class CEAVisualisationAgent extends JPSAgent {
                 Map<String, Double> annuals = new HashMap<>();
                 for (Annual annual : Annual.values()) {
 
-                    annuals.put(annual.getAnnual(), Double.valueOf(data.getJSONObject(i).getString(annual.getAnnual())));
+                    annuals.put(annual.getAnnual(),
+                            Double.valueOf(data.getJSONObject(i).getString(annual.getAnnual())));
                 }
 
                 Map<String, Double> ceaValues = visValues(areas, annuals);
@@ -85,14 +85,15 @@ public class CEAVisualisationAgent extends JPSAgent {
         boolean validation = true;
         if (requestParams.has(KEY_DATA)) {
             JSONArray data = requestParams.getJSONArray("data");
-            validation = validation && !data.isEmpty();
-            for (int i = 0; i < data.length(); i++) {
-                for (Annual annual : Annual.values()) {
-                    validation = validation && data.getJSONObject(i).has(annual.getAnnual());
+            validation = !data.isEmpty();
+            if (validation) {
+                for (int i = 0; i < data.length(); i++) {
+                    for (Annual annual : Annual.values()) {
+                        validation = validation && data.getJSONObject(i).has(annual.getAnnual());
+                    }
                 }
             }
-        }
-        else {
+        } else {
             throw new BadRequestException();
         }
 
@@ -105,6 +106,7 @@ public class CEAVisualisationAgent extends JPSAgent {
 
     /***
      * Initialise table to be used for visualisation in TWA-VF
+     * 
      * @return returns the columns in the table as a list
      */
     public void initialiseTable() {
@@ -114,20 +116,21 @@ public class CEAVisualisationAgent extends JPSAgent {
         rdbStoreClient.executeUpdate(createSchema);
 
         // create table
-        String createTable = "CREATE TABLE IF NO EXISTS " + SCHEMA + "." + TABLE + "("
-                + IRI + " VARCHAR(4000),\n";
+        String createTable = "CREATE TABLE IF NOT EXISTS " + SCHEMA + "." + TABLE + "("
+                + IRI + " VARCHAR(4000) UNIQUE,\n";
 
         for (String column : Column.getColumns()) {
             createTable += column + " DOUBLE PRECISION,";
         }
 
-        createTable = createTable.substring(0, createTable.length()-1) + ")";
+        createTable = createTable.substring(0, createTable.length() - 1) + ")";
 
         rdbStoreClient.executeUpdate(createTable);
     }
 
     /**
      * Update table with building IRI and CEA values used for visualisation
+     * 
      * @param visValues list storing building IRI and CEA values
      */
     public void updateTable(List<VisValues> visValues) {
@@ -140,11 +143,11 @@ public class CEAVisualisationAgent extends JPSAgent {
         for (String column : Column.getColumns()) {
             // column names
             insert += column + ",";
-            set += column + "=EXCLUDED." + column +",";
+            set += column + "=EXCLUDED." + column + ",";
         }
 
-        insert = insert.substring(0, insert.length()-1) + ")";
-        set = set.substring(0, set.length()-1);
+        insert = insert.substring(0, insert.length() - 1) + ")";
+        set = set.substring(0, set.length() - 1);
 
         // column values
         for (VisValues vis : visValues) {
@@ -152,13 +155,13 @@ public class CEAVisualisationAgent extends JPSAgent {
             valueRow += vis.getIri() + ",";
             Map<String, Double> ceaValues = vis.getValues();
             for (String column : Column.getColumns()) {
-                valueRow +=  ceaValues.get(column) + ",";
+                valueRow += ceaValues.get(column) + ",";
             }
-            valueRow = valueRow.substring(0, valueRow.length()-1) + "),";
+            valueRow = valueRow.substring(0, valueRow.length() - 1) + "),";
             values += valueRow;
         }
 
-        values = values.substring(0, values.length()-1);
+        values = values.substring(0, values.length() - 1);
 
         String sql = insert + "\n" + values + "\n" + conflict + "\n" + update + "\n" + set;
 
@@ -166,8 +169,10 @@ public class CEAVisualisationAgent extends JPSAgent {
     }
 
     /**
-     * Calculates the annual per area values, and return a map of all the CEA values, i.e. area values, annual values, and annual per area values
-     * @param areas map of area values
+     * Calculates the annual per area values, and return a map of all the CEA
+     * values, i.e. area values, annual values, and annual per area values
+     * 
+     * @param areas   map of area values
      * @param annuals map of annual values
      * @return map of CEA values for updating the table
      */
@@ -188,7 +193,8 @@ public class CEAVisualisationAgent extends JPSAgent {
     }
 
     /**
-     * Creates two GeoServer layers, one for buildings with CEA outputs, and one for buildings without CEA outputs
+     * Creates two GeoServer layers, one for buildings with CEA outputs, and one for
+     * buildings without CEA outputs
      */
     public void createGeoServerLayer() {
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
@@ -201,7 +207,8 @@ public class CEAVisualisationAgent extends JPSAgent {
         GeoServerVectorSettings ceaLayerSettings = new GeoServerVectorSettings();
 
         String scale = "v.%s / (SELECT MAX(v.%s) FROM " + SCHEMA + "." + TABLE + " v) AS scaled_%s,";
-        String building = "v." + IRI + " AS iri, b.measured_height AS height, public.ST_Transform(sg.geometry, 4326) AS " + geoName + " ";
+        String building = "v." + IRI
+                + " AS iri, b.measured_height AS height, public.ST_Transform(sg.geometry, 4326) AS " + geoName + " ";
         String from = "FROM " + SCHEMA + "." + TABLE + " v ";
         String join = "INNER JOIN citydb.cityobject_genericattrib cga ON v." + IRI + " = cga.urival\n" +
                 "INNER JOIN citydb.building b ON cga.cityobject_id = b.id\n" +
@@ -211,7 +218,8 @@ public class CEAVisualisationAgent extends JPSAgent {
 
         for (Annual annual : Annual.values()) {
             scales += String.format(scale, annual.getAnnual(), annual.getAnnual(), annual.getAnnual());
-            scales += String.format(scale, annual.getAnnualPerArea(), annual.getAnnualPerArea(), annual.getAnnualPerArea());
+            scales += String.format(scale, annual.getAnnualPerArea(), annual.getAnnualPerArea(),
+                    annual.getAnnualPerArea());
         }
 
         String cea = "SELECT " + scales + building + from + join;
@@ -222,15 +230,15 @@ public class CEAVisualisationAgent extends JPSAgent {
         ceaTable.addVirtualTableGeometry(geoName, "Geometry", epsg4326);
 
         ceaLayerSettings.setVirtualTable(ceaTable);
-        geoServerClient.createPostGISDataStore(geoWorkSpace, ceaStore, DB_NAME, "public");
-        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, ceaStore, ceaLayerSettings);
+        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, SCHEMA, ceaLayer, ceaLayerSettings);
 
         // creating GeoServer layer for buildings without CEA outputs
-        String notCEA = "SELECT b.measured_height AS height, public.ST_Transform(sg.geometry, " + epsg4326 + ") AS " + geoName + "\n" +
+        String notCEA = "SELECT b.measured_height AS height, public.ST_Transform(sg.geometry, " + epsg4326 + ") AS "
+                + geoName + "\n" +
                 "FROM citydb.cityobject_genericattrib cga\n" +
                 "INNER JOIN citydb.building b ON b.id = cga.cityobject_id\n" +
                 "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id\n" +
-                "WHERE cga.urival NOT IN (SELECT " + IRI + " FROM " + SCHEMA + "." + TABLE")";
+                "WHERE cga.urival NOT IN (SELECT " + IRI + " FROM " + SCHEMA + "." + TABLE + ")";
 
         UpdatedGSVirtualTableEncoder notCEATable = new UpdatedGSVirtualTableEncoder();
 
@@ -241,7 +249,7 @@ public class CEAVisualisationAgent extends JPSAgent {
         notCEATable.setName(notCEALayer);
         notCEATable.addVirtualTableGeometry(geoName, "Geometry", epsg4326);
 
-        notCEALayerSettings.setVirtualTable(ceaTable);
-        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, ceaStore, notCEALayerSettings);
+        notCEALayerSettings.setVirtualTable(notCEATable);
+        geoServerClient.createPostGISLayer(geoWorkSpace, DB_NAME, SCHEMA, notCEALayer, notCEALayerSettings);
     }
 }
