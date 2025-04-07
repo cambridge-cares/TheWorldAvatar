@@ -268,10 +268,9 @@ public class CEAAgent extends JPSAgent {
                         ArrayList<String> result = DataRetriever.getDataIRI(uri, scalar, ceaRoute);
                         if (!result.isEmpty()) {
                             String value = DataRetriever.getNumericalValue(result.get(0), ceaRoute);
-                            if (!(value.equals("0") || value.equals("0.0"))) {
-                                value += " " + DataRetriever.getUnit(result.get(1));
-                                data.put(scalar, value);
-                            }
+                            // Return ALL values
+                            value += " " + DataRetriever.getUnit(result.get(1));
+                            data.put(scalar, value);
                         }
                     }
 
@@ -302,11 +301,10 @@ public class CEAAgent extends JPSAgent {
                                     }
                                 }
 
-                                // Return non-zero values
-                                if (!(value.equals("0") || value.equals("0.0"))) {
-                                    value += " " + DataRetriever.getUnit(result.get(1));
-                                    data.put(measurement, value);
-                                }
+                                // Return ALL values
+
+                                value += " " + DataRetriever.getUnit(result.get(1));
+                                data.put(measurement, value);
                             }
                         }
                     }
