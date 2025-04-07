@@ -17,10 +17,13 @@ def calculate_exposure():
             trajectory_df = exposure_util.fetch_trajectory_data_from_db(trajectoryIRI)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+        reference_time = None
+        if not trajectory_df.empty:
+            reference_time = trajectory_df.iloc[0]['trajectory_start_time']
 
         for env_data_iri in DataIRIs:
             try:
-                env_df, domain_label = exposure_util.fetch_env_data(env_data_iri)
+                env_df, domain_label = exposure_util.fetch_env_data(env_data_iri, reference_time=reference_time)
                 _, feature_type = exposure_util.get_domain_and_featuretype(env_data_iri)
             except Exception as e:
                 return jsonify({"error": str(e)}), 500
@@ -49,3 +52,4 @@ def calculate_exposure_simplified():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     return jsonify(results)
+
