@@ -64,12 +64,12 @@ def process_gps_csv_file(csv_file):
         if not all(column in df.columns for column in required_columns) or df[required_columns].isnull().any().any():
             logger.warning(f"Skipping {csv_file} due to missing or incomplete required columns.")
             return None
-        try:
-            point_class = StackClient.stackClients_view.Point().getClass()
-            logger.info(f"Point class imported successfully")
-        except Exception as e:
-            logger.error(f"Failed to create Point instance: {e}")
-            raise e
+        # try:
+        #     point_class = StackClient.stackClients_view.Point().getClass()
+        #     logger.info(f"Point class imported successfully")
+        # except Exception as e:
+        #     logger.error(f"Failed to create Point instance: {e}")
+        #     raise e
         # point_class = StackClient.stackClients_view.Point
         points = [StackClient.stackClients_view.Point(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
         return {
