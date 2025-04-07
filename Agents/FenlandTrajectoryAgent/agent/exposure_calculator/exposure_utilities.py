@@ -15,7 +15,11 @@ from shapely.ops import unary_union
 from shapely.wkb import loads as wkb_loads
 from pyproj import CRS, Transformer
 from agent.utils.env_configs import DATABASE
-from agent.utils.stack_configs import DB_URL, DB_USER
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+from contextlib import contextmanager
+
 
 
 class ExposureUtils:
@@ -45,30 +49,56 @@ class ExposureUtils:
 
         # Base directory for SQL and SPARQL templates
         self.template_dir = os.path.join(os.path.dirname(__file__), "count")
-
+        
+    def commit_if_psycopg2(self, conn):
+        try:
+            test_cursor = conn.cursor()  # if using JDBC and receive error
+            test_cursor.close()
+            # use => psycopg2
+            conn.commit()
+            self.logger.debug("Committed (psycopg2).")
+        except:
+            self.logger.debug("Skipping commit (TSClient autoCommit).")
+            
     def load_template(self, filename: str) -> str:
         filepath = os.path.join(self.template_dir, filename)
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
         return content
-
+    
     def connect_to_database(self, host: str, port: int, user: str, password: str, database: str) -> psycopg2.extensions.connection:
-        try:
-            self.logger.info(f"Connecting to database {database} at {host}:{port}...")
-            conn = psycopg2.connect(
-                host=host,
-                port=port,
-                user=user,
-                password=password,
-                database=database,
-                connect_timeout=10
-            )
-            self.logger.info("Database connection successful.")
-            return conn
-        except psycopg2.Error as e:
-            self.logger.error(f"Database connection failed: {e}")
-            raise e
-
+        """
+        If TRAJECTORY_DB_HOST or TRAJECTORY_DB_PASSWORD are empty in config.properties，we safely believe external database info is imcompleted or not needed，
+        Then we use TSClient (psycopg2), connect docker swarm's internal postgis container
+        """
+        if not host.strip() or not password.strip():
+            self.logger.info("External DB parameters not provided; using internal TSClient connection via setup_clients().")
+            try:
+                import agent.datainstantiation.gps_client as gdi
+                kg_client, ts_client, double_class, point_class = gdi.setup_clients()
+                conn = ts_client.connection.getConnection()
+                self.logger.info("Internal TSClient connection established successfully.")
+                return conn
+            except Exception as ex:
+                self.logger.error(f"Internal TSClient connection failed: {ex}")
+                raise ex
+        else:
+            self.logger.info(f"Connecting to database {database} at {host}:{port} using external parameters...")
+            try:
+                conn = psycopg2.connect(
+                    host=host,
+                    port=port,
+                    user=user,
+                    password=password,
+                    database=database,
+                    connect_timeout=10
+                )
+                self.logger.info("External DB connection established successfully.")
+                return conn
+            except psycopg2.Error as e:
+                self.logger.error(f"External DB connection failed: {e}")
+                raise e
+            
     def execute_query(self, connection, query: str, params: Optional[tuple] = None):
         try:
             do_fetch = False
@@ -77,18 +107,54 @@ class ExposureUtils:
                 do_fetch = True
 
             start_time = time.time()
-            with connection.cursor() as cursor:
-                self.logger.debug(f"Executing query: {query}, params={params}")
+            try:
+                cursor = connection.cursor()
+                using_psycopg = True
+            except Exception:
+                cursor = connection.createStatement()
+                using_psycopg = False
+
+            self.logger.debug(f"Executing query: {query}, params={params}")
+
+            if using_psycopg:
                 cursor.execute(query, params)
-                elapsed = time.time() - start_time
-                if do_fetch:
-                    rows = cursor.fetchall()
+            else:
+                if params:
+                    safe_params = []
+                    for p in params:
+                        if p is None:
+                            safe_params.append("NULL") 
+                            continue
+                        p_escaped = str(p).replace("'", "''")
+                        safe_params.append(f"'{p_escaped}'")
+                    query = query % tuple(safe_params)
+
+                cursor.execute(query)
+
+            elapsed = time.time() - start_time
+
+            if do_fetch:
+                try:
+                    if using_psycopg:
+                        rows = cursor.fetchall()
+                    else:
+                        rs = cursor.getResultSet()
+                        rows = []
+                        meta = rs.getMetaData()
+                        ncols = meta.getColumnCount()
+                        while rs.next():
+                            row = tuple(rs.getString(i + 1) for i in range(ncols))
+                            rows.append(row)
                     self.logger.info(f"Query returned {len(rows)} rows in {elapsed:.3f}s.")
                     return rows
-                else:
-                    self.logger.info(f"Query executed (no fetch) in {elapsed:.3f}s.")
-                    return None
-        except psycopg2.Error as e:
+                except Exception as fetch_e:
+                    self.logger.error(f"Error fetching query results: {fetch_e}")
+                    raise fetch_e
+            else:
+                self.logger.info(f"Query executed (no fetch) in {elapsed:.3f}s.")
+                return None
+
+        except Exception as e:
             self.logger.error(f"Query execution error: {e}")
             raise e
 
@@ -103,7 +169,10 @@ class ExposureUtils:
         query_template = self.load_template("get_timeseries_data.sql")
         query = query_template.format(table_name=table_name)
         rows = self.execute_query(conn, query)
-        df = pd.DataFrame(rows, columns=["time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"])
+        df = pd.DataFrame(
+            rows,
+            columns=["time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"]
+        )
         return df
 
     def fetch_trajectory_data_from_db(self, trajectory_iri: str) -> pd.DataFrame:
@@ -132,9 +201,20 @@ class ExposureUtils:
             "column6": "LONGITUDE",
             "column7": "POINT"
         })
+
         if 'time' in df.columns:
             df['time'] = pd.to_datetime(df['time'], errors='coerce')
-            df = df.sort_values('time')
+            df = df.sort_values('time').reset_index(drop=True)
+
+        # Find earliest time, store to df['trajectory_start_time']
+        if not df.empty:
+            earliest_dt = df['time'].iloc[0]
+            earliest_str = earliest_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+            df['trajectory_start_time'] = earliest_str
+            self.logger.info(f"Trajectory earliest time = {earliest_str}")
+        else:
+            self.logger.warning("Trajectory DataFrame is empty; no earliest time")
+
         return df
 
     def get_domain_and_featuretype(self, env_data_iri: str, endpoint_url: Optional[str] = None) -> Tuple[str, str]:
@@ -153,7 +233,10 @@ class ExposureUtils:
         self.logger.info(f"For {env_data_iri}, domainName={domain_name}, featureType={feature_type}")
         return domain_name, feature_type
 
-    def fetch_env_data(self, env_data_iri: str, endpoint_url: Optional[str] = None) -> Tuple[pd.DataFrame, str]:
+    # ---- NEW OR MODIFIED ----
+    # => Here we use absolute-time-filter.sparql
+    def fetch_env_data(self, env_data_iri: str, endpoint_url: Optional[str] = None,
+                       reference_time: Optional[str] = None) -> Tuple[pd.DataFrame, str]:
         if endpoint_url is None:
             endpoint_url = self.ENV_DATA_ENDPOINT_URL
 
@@ -162,11 +245,33 @@ class ExposureUtils:
 
         self.logger.info(f"[fetch_env_data] Processing env_data_iri={env_data_iri}, domain_label={domain_label}, feature_type={feature_type}")
 
-        if env_data_iri in self.env_data_cache:
+        if env_data_iri in self.env_data_cache and reference_time is None:
             self.logger.info(f"[fetch_env_data] Cache hit for env_data_iri: {env_data_iri}")
             return self.env_data_cache[env_data_iri]
 
-        if feature_type.upper() == "POINT":
+        if feature_type.upper() == "POINT" and dl_lower.startswith("food hygiene rating") and reference_time is not None:
+            self.logger.info(f"[fetch_env_data] Using absolute-time-filter for {env_data_iri} at {reference_time}")
+            template_file = "absolute_time_filter.sparql"  # absolute-time-filter.sparql is used here
+            sparql_query = self.load_template(template_file).format(given_time=reference_time)
+            headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
+            resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
+            resp.raise_for_status()
+            json_res = resp.json()
+            data = []
+            for b in json_res["results"]["bindings"]:
+                lat = b.get("lat", {}).get("value")
+                lon = b.get("long", {}).get("value")
+                data.append({
+                    "ID": b.get("be", {}).get("value", "N/A"),
+                    "Latitude": lat if lat else "N/A",
+                    "Longitude": lon if lon else "N/A",
+                    "WKT": b.get("wkt", {}).get("value", "N/A"),
+                })
+            df = pd.DataFrame(data)
+            self.logger.info(f"[POINT - TimeFilter] Extracted DataFrame with {len(df)} rows for {env_data_iri}")
+            domain_label_final = domain_label  # 
+
+        elif feature_type.upper() == "POINT":
             if dl_lower.startswith("food hygiene rating"):
                 template_file = "get_food_hygiene_rating.sparql"
             else:
@@ -185,9 +290,9 @@ class ExposureUtils:
                 for b in json_res["results"]["bindings"]
             ]
             df = pd.DataFrame(data)
-            self.logger.info(f"[POINT] Extracted DataFrame for {env_data_iri}:")
-            self.logger.info(f"First 3 rows:\n{df.head(3)}")
-            self.logger.info(f"Last 3 rows:\n{df.tail(3)}")
+            self.logger.info(f"[POINT] Extracted DataFrame with {len(df)} rows for {env_data_iri}")
+            domain_label_final = domain_label
+
         elif feature_type.upper() == "AREA":
             if dl_lower.startswith("greenspace"):
                 template_file = "get_greenspace_area.sparql"
@@ -206,16 +311,17 @@ class ExposureUtils:
                 for b in json_res["results"]["bindings"]
             ]
             df = pd.DataFrame(data)
-            self.logger.info(f"[AREA] Extracted DataFrame for {env_data_iri}:")
-            self.logger.info(f"First 3 rows:\n{df.head(3)}")
-            self.logger.info(f"Last 3 rows:\n{df.tail(3)}")
+            self.logger.info(f"[AREA] Extracted DataFrame with {len(df)} rows for {env_data_iri}")
+            domain_label_final = domain_label
         else:
             self.logger.warning(f"featureType={feature_type} unknown for {env_data_iri}, returning empty df.")
             df = pd.DataFrame([])
+            domain_label_final = domain_label
 
-        self.env_data_cache[env_data_iri] = (df, domain_label)
-        self.logger.info(f"[fetch_env_data] Data cached for env_data_iri: {env_data_iri}")
-        return df, domain_label
+        if reference_time is None:
+            self.env_data_cache[env_data_iri] = (df, domain_label_final)
+
+        return df, domain_label_final
 
     def exposure_calculation(
         self,
@@ -307,42 +413,61 @@ class ExposureUtils:
                 self.TRAJECTORY_DB_PASSWORD,
                 self.DB_NAME
             )
+            # get timeseries IRI's corrsponding table
             table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
+
             safe_label = domain_label.replace(" ", "_").replace("/", "_")
             point_column = f"{safe_label}_point_count"
             area_column = f"{safe_label}_area_count"
             total_area_column = f"{safe_label}_total_area"
-            with conn.cursor() as cursor:
-                # UPDATE and ALTER queries remain hardcoded
-                for column, dtype in [(point_column, "INTEGER"), (area_column, "INTEGER"), (total_area_column, "DOUBLE PRECISION")]:
-                    cursor.execute(f"""
-                    DO $$ BEGIN
-                        IF NOT EXISTS (
-                            SELECT FROM information_schema.columns
-                            WHERE table_name = %s AND column_name = %s
-                        ) THEN
-                            EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{column}" {dtype}';
-                        END IF;
-                    END $$;
-                    """, (table_name, column))
-                cursor.execute(f"""
-                UPDATE "{table_name}"
-                SET "{point_column}" = %s, "{area_column}" = %s, "{total_area_column}" = %s;
-                """, (point_count, area_count, total_area))
-                conn.commit()
-                self.logger.info(f"Database table {table_name} updated successfully.")
+
+            for column, dtype in [
+                (point_column, "INTEGER"),
+                (area_column, "INTEGER"),
+                (total_area_column, "DOUBLE PRECISION")
+            ]:
+                alter_sql = f"""
+                DO $$ BEGIN
+                    IF NOT EXISTS (
+                        SELECT FROM information_schema.columns
+                        WHERE table_name = %s AND column_name = %s
+                    ) THEN
+                        EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{column}" {dtype}';
+                    END IF;
+                END $$;
+                """
+                self.execute_query(conn, alter_sql, (table_name, column))
+
+            update_sql = f"""
+            UPDATE "{table_name}"
+            SET "{point_column}" = %s,
+                "{area_column}" = %s,
+                "{total_area_column}" = %s;
+            """
+            self.execute_query(conn, update_sql, (point_count, area_count, total_area))
+
+            self.commit_if_psycopg2(conn)
         except Exception as e:
             self.logger.error(f"Failed to update the database: {e}")
         finally:
             if conn:
                 conn.close()
-
-        return {
+        
+        result = {
             "envFeatureName": domain_label,
             "type": feature_type,
             "count": point_count if feature_type.upper() == "POINT" else area_count,
-            "totalArea": total_area
         }
+        if feature_type.upper() != "POINT":
+            result["totalArea"] = total_area
+
+        return result
+        # return {
+        #     "envFeatureName": domain_label,
+        #     "type": feature_type,
+        #     "count": point_count if feature_type.upper() == "POINT" else area_count,
+        #     "totalArea": total_area
+        # }
 
     def fetch_domain_and_data_sources(self, env_data_iri: str) -> List[Dict[str, str]]:
         template = self.load_template("get_domain_and_data_sources.sparql")
@@ -466,7 +591,7 @@ class ExposureUtils:
                     SET "{safe_column_name}" = %s
                     '''
                     self.execute_query(conn, update_sql, (row_count,))
-                    conn.commit()
+                    self.commit_if_psycopg2(conn)
 
                     final_results.append({
                         "trajectory_iri": trajectory_iri,
