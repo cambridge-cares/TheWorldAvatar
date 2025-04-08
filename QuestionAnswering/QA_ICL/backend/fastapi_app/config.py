@@ -111,13 +111,6 @@ class SemanticParsingSettings(BaseModel):
     context_augmentation: ContextAugmentationSettings
 
 
-class OntomopsFileserverSettings(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    username: str
-    password: str
-
-
 class AppSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -131,7 +124,6 @@ class AppSettings(BaseModel):
     singapore_endpoints: SingaporeEndpointsSettings
     entity_linking: EntityLinkingSettings
     semantic_parsing: SemanticParsingSettings
-    ontomops_fileserver: OntomopsFileserverSettings
 
 
 def _load_yaml(filepath: str):

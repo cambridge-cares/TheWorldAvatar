@@ -1,64 +1,61 @@
 redis:
-  host: 
+  host: localhost
 text_embedding:
-  backend: 
-  url: ""
-  model: 
+  backend: triton
+  url: "localhost:8001"
+  model: mpnet
 translator:
-  base_url: 
+  base_url: https://api.openai.com/v1/
   api_key: ""
-  model: 
+  model: gpt-4o-mini-2024-07-18
 chat:
-  base_url: 
+  base_url: https://api.openai.com/v1/
   api_key: ""
-  model: 
+  model: gpt-4o-mini-2024-07-18
 qt_recog:
-  base_url: 
+  base_url: https://api.openai.com/v1/
   api_key: ""
-  model: 
+  model: gpt-4o-mini-2024-07-18
 location_iq:
   api_key: ""
 chemistry_endpoints:
-  ontospecies: 
-  ontokin: 
-  ontocompchem: 
-  ontozeolite: 
-  ontomops: 
+  ontospecies: http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql
+  ontokin: http://178.128.105.213:3838/blazegraph/namespace/ontokin/sparql
+  ontocompchem: http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql
+  ontozeolite: http://178.128.105.213:3838/blazegraph/namespace/ontozeolite/sparql
+  ontomops: http://68.183.227.15:3838/blazegraph/namespace/ontomops_ogm_dummy/sparql
 singapore_endpoints:
-  ontop: 
-  ontop_internal: 
-  dispersion: 
-  plot: 
-  company: 
-  carpark: 
-  carpark_internal: 
-  feature_info_agent: 
-  pollutant_concentration: 
+  ontop: http://174.138.23.221:3839/ontop/ui/sparql
+  ontop_internal: http://sg-ontop:8080/sparql
+  dispersion: http://174.138.23.221:3839/blazegraph/namespace/kb/sparql
+  plot: http://174.138.23.221:3839/blazegraph/namespace/plot/sparql
+  company: http://174.138.23.221:3839/blazegraph/namespace/company/sparql
+  carpark: http://174.138.23.221:3839/blazegraph/namespace/carpark/sparql
+  carpark_internal: http://sg-blazegraph:8080/blazegraph/namespace/carpark/sparql
+  feature_info_agent: http://174.138.23.221:3839/feature-info-agent/get
+  pollutant_concentration: http://174.138.23.221:3839/dispersion-interactor/GetPollutantConcentrations
 entity_linking:
   semantic:
-    threshold: 
+    threshold: 0.9
   entries:
-    - cls: 
-      strategy: 
-      k: 
-    - cls: 
-      strategy: 
-      k: 
-    - cls: 
-      strategy: 
-      k: 
-    - cls: 
-      strategy: 
-      k: 
-    - cls: 
-      strategy: 
-      k: 
-    - cls: 
-      strategy": 
+    - cls: pt:Element
+      strategy: fuzzy
+      k: 1
+    - cls: os:ElementClassification
+      strategy: fuzzy
+      k: 1
+    - cls: os:ChemicalClass
+      strategy: semantic
+      k: 3
+    - cls: os:Use
+      strategy: semantic
+      k: 3
+    - cls: ontozoning:LandUseType
+      strategy: semantic
+      k: 5
+    - cls: disp:Ship
+      strategy: fuzzy
 semantic_parsing:
   context_augmentation:
-    example_num: 
-    relation_num: 
-ontomops_fileserver:
-  username: ""
-  password: ""
+    example_num: 10
+    relation_num: 10

@@ -8,7 +8,7 @@ from fastapi import Depends
 from requests import HTTPError
 import requests
 
-from config import AppSettings, OntomopsFileserverSettings, get_app_settings
+from config import AppSettings, get_app_settings
 from constants.namespace import GC, ONTOMOPS, ONTOSPECIES
 from constants.periodictable import ATOMIC_NUMBER_TO_SYMBOL
 from model.pubchem import PubChemPUGResponse
@@ -32,13 +32,9 @@ class XYZManager:
         self,
         ontospecies_endpoint: str,
         ontomops_endpoint: str,
-        ontomops_fileserver_username: str,
-        ontomops_fileserver_password: str,
     ):
         self.ontospecies_client = SparqlClient(ontospecies_endpoint)
         self.ontomops_client = SparqlClient(ontomops_endpoint)
-        self.ontomops_fileserver_username = ontomops_fileserver_username
-        self.ontomops_fileserver_password = ontomops_fileserver_password
 
         self.cid_xyz_cache_path = files("data").joinpath(".xyz_cache/cid")
         os.makedirs(self.cid_xyz_cache_path, exist_ok=True)
@@ -194,7 +190,6 @@ WHERE {{
     def _get_from_url(self, url: str):
         response = requests.get(
             url,
-            auth=(self.ontomops_fileserver_username, self.ontomops_fileserver_password),
         )
         try:
             response.raise_for_status()
@@ -216,23 +211,12 @@ SELECT DISTINCT * WHERE {{
         return [iri2xyz.get(iri) for iri in iris]
 
 
-def get_ontomops_fileserverSettings(
-    settings: Annotated[AppSettings, Depends(get_app_settings)]
-):
-    return settings.ontomops_fileserver
-
-
 @cache
 def get_xyz_manager(
     ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)],
     ontomops_endpoint: Annotated[str, Depends(get_ontomops_endpoint)],
-    ontomops_fileserver_settings: Annotated[
-        OntomopsFileserverSettings, Depends(get_ontomops_fileserverSettings)
-    ],
 ):
     return XYZManager(
         ontospecies_endpoint=ontospecies_endpoint,
         ontomops_endpoint=ontomops_endpoint,
-        ontomops_fileserver_username=ontomops_fileserver_settings.username,
-        ontomops_fileserver_password=ontomops_fileserver_settings.password,
     )
