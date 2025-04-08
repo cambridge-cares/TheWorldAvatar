@@ -1,0 +1,7 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+SELECT ?feature ?geometry
+WHERE {{
+  ?feature geo:isPartOfDomain <{env_data_iri}> .
+  ?geoRef geo:isPartOf ?feature ;
+          geo:hasGeometry ?geometry .
+}}
