@@ -44,15 +44,14 @@ public class CEAOutputUpdater {
             LinkedHashMap<String, List<Double>> scalars) {
         TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient, tsDb);
 
+        List<String> uninitialisedBuilding = DataManager.bulkCheckBuildingInitialised(uriArray, ceaRoute);
+        DataManager.bulkInitialiseBuilding(uninitialisedBuilding, ceaRoute);
+
         for (int i = 0; i < uriArray.length(); i++) {
             LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
             LinkedHashMap<String, String> scalarIris = new LinkedHashMap<>();
 
             String uri = uriArray.getString(i);
-
-            if (!DataManager.checkBuildingInitialised(uri, ceaRoute)) {
-                DataManager.initialiseBuilding(uri, ceaRoute);
-            }
 
             if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, ceaRoute)) {
                 tsHelper.createTimeSeries(tsIris);
