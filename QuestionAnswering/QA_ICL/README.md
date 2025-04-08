@@ -141,9 +141,6 @@ Note: If you need to generate new resources or understand their format, refer to
             api_key: <openai_api_key_for_chat_service>
           location_iq:
             api_key: <location_iq_api_key_for_geocoding_service>
-          ontomops_fileserver:
-            username: <ontomops_fileserver_username>
-            password: <ontomops_fileserver_password>
         ```
     2. Spin up the backend services
         ```bash

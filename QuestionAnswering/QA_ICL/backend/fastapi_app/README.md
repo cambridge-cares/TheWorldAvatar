@@ -80,9 +80,6 @@ chat:
    api_key: <openai_api_key_for_chat_service>
 location_iq:
    api_key: <location_iq_api_key_for_geocoding_service>
-ontomops_fileserver:
-   username: <ontomops_fileserver_username>
-   password: <ontomops_fileserver_password>
 ```
 
 Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
