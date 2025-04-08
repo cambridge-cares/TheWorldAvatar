@@ -94,6 +94,10 @@ public class TimelineFragment extends Fragment {
                 NavHostFragment.findNavController(this).navigate(request);
                 return true;
             }
+            if(menuItem.getItemId() == R.id.tool_tip) {
+                  new ToolTipDialogFragment().show(getParentFragmentManager(), "ToolTipDialog");
+                  return true;
+            }
             return false;
         });
     }
