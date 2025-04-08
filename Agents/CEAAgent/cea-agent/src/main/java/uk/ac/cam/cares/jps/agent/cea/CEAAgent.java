@@ -18,6 +18,7 @@ import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
 import uk.ac.cam.cares.jps.agent.cea.tasks.RunCEATask;
+import uk.ac.cam.cares.jps.agent.cea.tasks.CEAOutputUpdater;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -87,6 +88,7 @@ public class CEAAgent extends JPSAgent {
     private String openmeteoagentUrl;
     private String ontopUrl;
     private List<String> ceaDb;
+    private CEAOutputUpdater updater;
 
     public CEAAgent() {
         readConfig();
@@ -119,9 +121,11 @@ public class CEAAgent extends JPSAgent {
                 // Only set route once - assuming all iris passed in same namespace
                 // Will not be necessary if namespace is passed in request params
 
-                // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to ontop endpoint
+                // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to
+                // ontop endpoint
                 geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
-                // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to ontop endpoint
+                // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to
+                // ontop endpoint
                 usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
                 weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER)
                         : stackAccessAgentBase + defaultWeatherLabel;
@@ -138,11 +142,12 @@ public class CEAAgent extends JPSAgent {
                 List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
                 storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                 weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute);
+                updater = new CEAOutputUpdater(storeClient, rdbStoreClient, tsDb, ceaRoute);
 
                 // Get footprint from building endpoints
                 List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
                         geometryRoute);
-                
+
                 try {
                     GeometryHandler.ensureSameCRS(listFootprint);
                 } catch (Exception e) {
@@ -161,7 +166,7 @@ public class CEAAgent extends JPSAgent {
 
                 List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray,
                         geometryRoute);
-                
+
                 try {
                     GeometryHandler.ensureSameCRS(surrounding);
                 } catch (Exception e) {
@@ -200,9 +205,11 @@ public class CEAAgent extends JPSAgent {
 
                 runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase);
             } else if (requestUrl.contains(URI_UPDATE)) {
+
+                // unpack data from request
+
                 // parse times
                 List<OffsetDateTime> times = DataParser.getTimesList(requestParams, KEY_TIMES);
-                TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient, tsDb);
 
                 // parse times series data
                 List<List<List<?>>> timeSeries = new ArrayList<>();
@@ -214,32 +221,18 @@ public class CEAAgent extends JPSAgent {
                     timeSeries.add(iriList);
                 }
 
+                // parse scalar output
+
                 LinkedHashMap<String, List<Double>> scalars = new LinkedHashMap<>();
 
-                // parse PV area data
                 for (String scalar : CEAConstants.SCALARS) {
                     scalars.put(scalar, DataParser.getList(requestParams, scalar));
                 }
 
-                for (int i = 0; i < uriArray.length(); i++) {
-                    LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
-                    LinkedHashMap<String, String> scalarIris = new LinkedHashMap<>();
+                // update triplestore and relational database
 
-                    String uri = uriArray.getString(i);
+                updater.updateCEA(uriArray, times, timeSeries, scalars);
 
-                    if (!DataManager.checkBuildingInitialised(uri, ceaRoute)) {
-                        DataManager.initialiseBuilding(uri, ceaRoute);
-                    }
-
-                    if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, ceaRoute)) {
-                        tsHelper.createTimeSeries(tsIris);
-                        DataManager.initialiseData(i, scalars, uri, tsIris, scalarIris, ceaRoute);
-                    } else {
-                        DataManager.updateScalars(ceaRoute, scalarIris, scalars, i);
-                    }
-                    tsHelper.addDataToTimeSeries(timeSeries.get(i), times, tsIris);
-                    AnnualValueHelper.instantiateAnnual(timeSeries.get(i), tsIris, ceaRoute);
-                }
             } else if (requestUrl.contains(URI_QUERY)) {
                 for (int i = 0; i < uriArray.length(); i++) {
                     String uri = uriArray.getString(i);
@@ -474,11 +467,13 @@ public class CEAAgent extends JPSAgent {
             Integer threadNumber, String crs, String ceaDatabase) {
         try {
             RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs,
-                    ceaDatabase);
+                    ceaDatabase, updater);
             CEAExecutor.execute(task);
         } catch (URISyntaxException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
     }
+
+    
 }

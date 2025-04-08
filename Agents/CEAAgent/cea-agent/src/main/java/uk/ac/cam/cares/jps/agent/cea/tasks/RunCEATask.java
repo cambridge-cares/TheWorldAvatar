@@ -61,8 +61,10 @@ public class RunCEATask implements Runnable {
     private static final String CEA_OUTPUT_DATA_DIRECTORY = PROJECT_NAME + FS + SCENARIO_NAME + FS + "outputs" + FS
             + "data";
 
+    private CEAOutputUpdater updater;
+
     public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri,
-            ArrayList<String> uris, int thread, String crs, String ceaDatabase) {
+            ArrayList<String> uris, int thread, String crs, String ceaDatabase, CEAOutputUpdater updater) {
         this.inputs = buildingData;
         this.endpointUri = endpointUri;
         this.uris = uris;
@@ -70,6 +72,7 @@ public class RunCEATask implements Runnable {
         this.crs = crs;
         this.metaData = ceaMetaData;
         this.database = ceaDatabase;
+        this.updater = updater;
     }
 
     public void stop() {
@@ -118,31 +121,6 @@ public class RunCEATask implements Runnable {
         File file = new File(path);
         deleteDirectoryContents(file);
         file.delete();
-    }
-
-    /**
-     * Returns output data to CEA Agent via http POST request
-     * 
-     * @param output output data
-     */
-    public void returnOutputs(CEAOutputData output) {
-        try {
-            String jsonOutput = new Gson().toJson(output);
-            if (!jsonOutput.isEmpty()) {
-                HttpResponse<?> response = Unirest.post(endpointUri.toString())
-                        .header(HTTP.CONTENT_TYPE, CTYPE_JSON)
-                        .body(jsonOutput)
-                        .socketTimeout(300000)
-                        .asEmpty();
-                int responseStatus = response.getStatus();
-                if (responseStatus != HttpURLConnection.HTTP_OK) {
-                    throw new HttpException(endpointUri + " " + responseStatus);
-                }
-            }
-
-        } catch (HttpException | UnirestException e) {
-            throw new JPSRuntimeException(e);
-        }
     }
 
     /**
@@ -484,8 +462,8 @@ public class RunCEATask implements Runnable {
                     renamePVT(pathOutputPVT, "ET");
 
                     CEAOutputData result = CEAOutputHandler.extractCEAOutputs(pathOutputCEA, this.uris);
+                    updater.updateCEA(result);
                     cleanUp(strTmp);
-                    returnOutputs(result);
                 } catch (NullPointerException | IOException e) {
                     cleanUp(strTmp);
                     e.printStackTrace();
