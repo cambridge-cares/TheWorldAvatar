@@ -1,0 +1,45 @@
+{
+    "ServiceSpec": {
+      "Name": "rdf4j",
+      "TaskTemplate": {
+        "ContainerSpec": {
+          "Image": "eclipse/rdf4j-workbench:latest",
+          "Mounts": [
+            {
+              "Type": "volume",
+              "Source": "rdf4j-data",
+              "Target": "/var/rdf4j"
+            }
+          ]
+        },
+        "Resources": {
+          "Limits": {
+            "MemoryBytes": 536870912
+          }
+        },
+        "RestartPolicy": {
+          "Condition": "on-failure"
+        }
+      },
+      "EndpointSpec": {
+        "Ports": [
+          {
+            "Protocol": "tcp",
+            "PublishedPort": 8083,
+            "TargetPort": 8083
+          }
+        ]
+      }
+    },
+    "endpoints": {
+      "ui": {
+        "url": "http://localhost:8083/rdf4j-workbench/",
+        "externalPath": "/rdf4j/"
+      },
+      "sparql": {
+        "url": "http://localhost:8083/rdf4j-server/repositories",
+        "externalPath": "/rdf4j-server/"
+      }
+    }
+  }
+  
