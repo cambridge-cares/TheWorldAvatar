@@ -3,14 +3,16 @@ package uk.ac.cam.cares.jps.accessagent.fedq_accessagent;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+//import java.util.Map;
+//import java.util.Set;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import jakarta.annotation.PostConstruct;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -49,6 +53,7 @@ public class IndexAgent {
     private static final String DUMP_FILE_PREFIX = BACKUP_DIRECTORY + "/dump";
     private static final String REINDEX_FILE = BACKUP_DIRECTORY + "/reindex.dat"; 
     private static final String BLAZEGRAPH_URL = "http://172.26.15.166:3838/blazegraph/ui/";
+    private static final String RDF4J_BASE = "http://localhost:8080/rdf4j-server/repositories/";
     private final RestTemplate restTemplate = new RestTemplate();
     private final Gson gson = new Gson();
     private List<String> stop_cps;
@@ -94,7 +99,7 @@ public class IndexAgent {
         """;
     
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON serializer
-
+    
     @Autowired
     private StringRedisTemplate stringRedisTemplate; // Used for Pub/Sub
 
@@ -108,7 +113,15 @@ public class IndexAgent {
     //     System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
     // }
 
-    private static final String CHANNEL_NAME = "stackSyncChannel"; // Pub/Sub channel
+    //@Value("${dragonfly.nodes}") 
+    String nodeList="172.16.15.166:6379,139.59.245.38:6379";
+
+    @Value("${dragonfly.selfnodeindex}")
+    private int SELF_INDEX;
+    Jedis self_jedis;
+
+    private List<Jedis> publishers = new ArrayList<>();
+    private static final String CHANNEL_NAME = "twa_index_channel"; // Pub/Sub channel
 
     public IndexAgent(){
         stop_cps = List.of(
@@ -123,6 +136,49 @@ public class IndexAgent {
             "http://purl.org/dc/elements/1.1/identifier",
             "http://www.w3.org/2002/07/owl#Thing"
         );
+        
+    }
+
+    @PostConstruct
+    public void init() {
+        initPublishers(nodeList);
+        new Thread(this::subscribeMessages).start();
+    }
+
+    private void initPublishers(String nodeList) {
+        String node;
+        List<String> nodes = Arrays.stream(nodeList.split(","))
+                      .map(String::trim)
+                      .collect(Collectors.toList());
+
+        for (int i=0;i<nodes.size();i++) {
+            node=nodes.get(i);
+            String[] parts = node.split(":");
+            Jedis jedis = new Jedis(parts[0], Integer.parseInt(parts[1]));
+            publishers.add(jedis);
+            if(i==SELF_INDEX){
+                self_jedis=jedis;
+            }
+        }
+    }
+
+    public void subscribeMessages(){
+        JedisPubSub subscriber = new JedisPubSub() {
+            @Override
+            public void onMessage(String channel, String message) {
+                System.out.println("Received: " + message + " on channel: " + channel);
+            }
+        };
+
+        self_jedis.subscribe(subscriber, CHANNEL_NAME);
+    }
+
+    private void publishMessage(String message){
+        for (int i = 0; i < publishers.size(); i++) {
+            if (i != SELF_INDEX) {
+                publishers.get(i).publish(CHANNEL_NAME, message);
+            }
+        }
     }
 
     public void addIndexEntity(String key, String endpoint) {
@@ -136,13 +192,12 @@ public class IndexAgent {
                 createdReindexFile();
 
                 // Publish/broadcast JSON-based message
-                message.put("stack", STACK_ID);
+                //message.put("[from=" + SELF_INDEX + "]");
                 message.put("endpoint", endpoint);
                 message.put("key", key);
                 message.put("action", "ADD");
                 String jsonMessage = objectMapper.writeValueAsString(message);
-                stringRedisTemplate.convertAndSend(CHANNEL_NAME, jsonMessage);
-                System.out.println("Published: " + jsonMessage);
+                publishMessage(jsonMessage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -164,8 +219,6 @@ public class IndexAgent {
                 message.put("key", key);
                 message.put("action", "ADD");
                 String jsonMessage = objectMapper.writeValueAsString(message);
-                stringRedisTemplate.convertAndSend(CHANNEL_NAME, jsonMessage);
-                System.out.println("Published: " + jsonMessage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
