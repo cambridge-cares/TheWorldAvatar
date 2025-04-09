@@ -20,6 +20,9 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class DataManager {
+
+    private static final String RDF_TYPE = "rdf:type";
+
     /**
      * Checks if uriString is initialised in KG and is a gml:Building instance
      * 
@@ -34,7 +37,7 @@ public class DataManager {
         wb.addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("ontoBuiltEnv", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                 .addPrefix("gml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.gml))
-                .addWhere("?building", "rdf:type", "gml:Building");
+                .addWhere("?building", RDF_TYPE, "gml:Building");
 
         ab.addWhere(wb);
 
@@ -55,7 +58,7 @@ public class DataManager {
                 .addPrefix("gml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.gml));
 
         sb.addVar(Var.alloc("building"));
-        sb.addWhere("?building", "rdf:type", "gml:Building");
+        sb.addWhere("?building", RDF_TYPE, "gml:Building");
 
         // Add VALUES clause for building IRIs
         for (int i = 0; i < uriArray.length(); i++) {
@@ -73,7 +76,7 @@ public class DataManager {
         // Convert arrayB to a Set for faster lookups
         Set<String> setQueryResult = new HashSet<>();
         for (int j = 0; j < queryResultArray.length(); j++) {
-            setQueryResult.add(queryResultArray.getString(j));
+            setQueryResult.add(queryResultArray.getJSONObject(j).getString("building"));
         }
 
         for (int i = 0; i < uriArray.length(); i++) {
@@ -102,8 +105,8 @@ public class DataManager {
                 .addPrefix("gml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.gml));
 
         for (String buildingUri : buildingUriList) {
-            wb.addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "gml:Building")
-                    .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual");
+            wb.addWhere(NodeFactory.createURI(buildingUri), RDF_TYPE, "gml:Building")
+                    .addWhere(NodeFactory.createURI(buildingUri), RDF_TYPE, "owl:NamedIndividual");
         }
 
         ub.addInsert(wb);
@@ -124,20 +127,31 @@ public class DataManager {
      */
     public static Boolean checkDataInitialised(String building, LinkedHashMap<String, String> tsIris,
             LinkedHashMap<String, String> scalarIris, String route) {
-        ArrayList<String> result;
+
         List<String> allMeasures = new ArrayList<>();
         Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
 
+        JSONArray allDataIRI = DataRetriever.bulkGetDataIRI(building, route);
+
+        if (allDataIRI.length() != allMeasures.size()) {
+            // Note this does not consider partial initialisation
+            return false;
+        }
+
         for (String measurement : allMeasures) {
-            result = DataRetriever.getDataIRI(building, measurement, route);
-            if (!result.isEmpty()) {
-                if (CEAConstants.TIME_SERIES.contains(measurement)) {
-                    tsIris.put(measurement, result.get(0));
-                } else {
-                    scalarIris.put(measurement, result.get(0));
+            // find matching Data IRI
+            String dataIRI = "";
+            for (int i = 0; i < allDataIRI.length(); i++) {
+                dataIRI = allDataIRI.getJSONObject(i).get("measure").toString();
+                if (dataIRI.contains(measurement)) {
+                    break;
                 }
+            }
+
+            if (CEAConstants.TIME_SERIES.contains(measurement)) {
+                tsIris.put(measurement, dataIRI);
             } else {
-                return false;
+                scalarIris.put(measurement, dataIRI);
             }
         }
         return true;
@@ -470,7 +484,7 @@ public class DataManager {
      */
     public static void createFacadeUpdate(WhereBuilder builder, String building, String facade, String facadeType) {
         builder.addWhere(NodeFactory.createURI(building), "obs:hasFacade", NodeFactory.createURI(facade))
-                .addWhere(NodeFactory.createURI(facade), "rdf:type", facadeType);
+                .addWhere(NodeFactory.createURI(facade), RDF_TYPE, facadeType);
     }
 
     /**
@@ -484,12 +498,12 @@ public class DataManager {
      */
     public static void createConsumptionUpdate(WhereBuilder builder, String consumer, String consumptionType,
             String quantity, String measure) {
-        builder.addWhere(NodeFactory.createURI(quantity), "rdf:type", consumptionType)
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual")
+        builder.addWhere(NodeFactory.createURI(quantity), RDF_TYPE, consumptionType)
+                .addWhere(NodeFactory.createURI(quantity), RDF_TYPE, "owl:NamedIndividual")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasDimension", "om:energy-Dimension")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
-                .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
-                .addWhere(NodeFactory.createURI(measure), "rdf:type", "owl:NamedIndividual")
+                .addWhere(NodeFactory.createURI(measure), RDF_TYPE, "om:Measure")
+                .addWhere(NodeFactory.createURI(measure), RDF_TYPE, "owl:NamedIndividual")
                 .addWhere(NodeFactory.createURI(measure), "om:hasUnit", "om:kilowattHour")
                 .addWhere(NodeFactory.createURI(consumer), "ontoubemmp:consumesEnergy",
                         NodeFactory.createURI(quantity));
@@ -509,15 +523,15 @@ public class DataManager {
             String solarGeneratorType, String quantity, String measure, String energySupply) {
         builder.addWhere(NodeFactory.createURI(facade), "ontoubemmp:hasTheoreticalEnergyProduction",
                 NodeFactory.createURI(solarGenerator))
-                .addWhere(NodeFactory.createURI(solarGenerator), "rdf:type", solarGeneratorType)
+                .addWhere(NodeFactory.createURI(solarGenerator), RDF_TYPE, solarGeneratorType)
                 .addWhere(NodeFactory.createURI(solarGenerator), "ontoubemmp:producesEnergy",
                         NodeFactory.createURI(quantity))
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", energySupply)
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual")
+                .addWhere(NodeFactory.createURI(quantity), RDF_TYPE, energySupply)
+                .addWhere(NodeFactory.createURI(quantity), RDF_TYPE, "owl:NamedIndividual")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasDimension", "om:energy-Dimension")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
-                .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
-                .addWhere(NodeFactory.createURI(measure), "rdf:type", "owl:NamedIndividual")
+                .addWhere(NodeFactory.createURI(measure), RDF_TYPE, "om:Measure")
+                .addWhere(NodeFactory.createURI(measure), RDF_TYPE, "owl:NamedIndividual")
                 .addWhere(NodeFactory.createURI(measure), "om:hasUnit", "om:kilowattHour");
     }
 
@@ -534,12 +548,12 @@ public class DataManager {
             String measure, Double value) {
         builder.addWhere(NodeFactory.createURI(facade), "ontoubemmp:hasSolarSuitableArea",
                 NodeFactory.createURI(quantity))
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", "om:Area")
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual")
+                .addWhere(NodeFactory.createURI(quantity), RDF_TYPE, "om:Area")
+                .addWhere(NodeFactory.createURI(quantity), RDF_TYPE, "owl:NamedIndividual")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasDimension", "om:area-Dimension")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
-                .addWhere(NodeFactory.createURI(measure), "rdf:type", "owl:NamedIndividual")
-                .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
+                .addWhere(NodeFactory.createURI(measure), RDF_TYPE, "owl:NamedIndividual")
+                .addWhere(NodeFactory.createURI(measure), RDF_TYPE, "om:Measure")
                 .addWhere(NodeFactory.createURI(measure), "om:hasNumericalValue", value)
                 .addWhere(NodeFactory.createURI(measure), "om:hasUnit", "om:squareMetre");
     }

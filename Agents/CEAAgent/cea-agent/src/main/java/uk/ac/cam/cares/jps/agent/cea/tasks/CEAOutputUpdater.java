@@ -44,6 +44,7 @@ public class CEAOutputUpdater {
             LinkedHashMap<String, List<Double>> scalars) {
         TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient, tsDb);
 
+        // initialise buildings in CEA triplestore if they have not been initialised yet
         List<String> uninitialisedBuilding = DataManager.bulkCheckBuildingInitialised(uriArray, ceaRoute);
         DataManager.bulkInitialiseBuilding(uninitialisedBuilding, ceaRoute);
 
@@ -53,10 +54,12 @@ public class CEAOutputUpdater {
 
             String uri = uriArray.getString(i);
 
+            // initialise time series and scalar outputs if they have not been initialised yet
             if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, ceaRoute)) {
                 tsHelper.createTimeSeries(tsIris);
                 DataManager.initialiseData(i, scalars, uri, tsIris, scalarIris, ceaRoute);
             } else {
+                // if scalar outputs have been intiailised, update them
                 DataManager.updateScalars(ceaRoute, scalarIris, scalars, i);
             }
             tsHelper.addDataToTimeSeries(timeSeries.get(i), times, tsIris);
