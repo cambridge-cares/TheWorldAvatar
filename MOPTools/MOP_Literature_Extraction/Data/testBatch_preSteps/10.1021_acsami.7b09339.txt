@@ -1,0 +1,67 @@
+### General Synthesis Information
+- **Instruments:** 
+  - 1H NMR data recorded on a Mercury 300 spectrometer at the Center for Chemical Characterization and Analysis (CCCA).
+  - FT-IR spectra obtained using an IRAffinity-1 instrument.
+  - TGA data recorded using a TGA-50 (SHIMADZU) thermogravimetric analyzer and Auto Q500 (TA Instruments) with a heating rate of 5 °C min–1 under 25 mL/min N2 flow.
+  - Powder X-ray diffraction patterns (PXRD) recorded using a BRUKER D8-Focus Bragg-Brentano X-ray Powder diffractometer and Empyrean (Panalytical) equipped with a Cu sealed tube (λ = 1.54178 Å) at a scan rate of 0.5 s deg–1.
+  - Gas adsorption isotherms obtained using Micromeritics’ ASAP 2020 with extra-pure quality gases.
+
+- **Chemicals:** 
+  - Copper acetate monohydrate (Cu2(OAc)4·2H2O), chromium chloride hexahydrates (CrCl3•6H2O), isophthalic acid, 5-tert-butylisophthalic acid from Alfa Aesar Chemicals.
+  - N,N-dimethylacetamide (DMAc), N,N-dimethylformamide (DMF), and N,N-diethylformamide from Acros organic, Macron fine chemicals, and TCI, respectively.
+  - Sulfuric acid from EMD.
+  - 99.9% Zinc Powder and Sodium acetate from Sigma-Aldrich.
+  - Ethanol from Koptec.
+
+### Cr2(OAc)4 Synthesis
+1. **Dissolve:** Dissolve 15 g of CrCl3·6H2O in 30 mL of 0.4 N sulfuric acid solution in a vessel 1, resulting in a dark green solution.
+2. **Add:** Add 90 g of sodium acetate to 70 mL of H2O in a vessel 2.
+3. **HeatChill:** Heat the solution in vessel 2 to boiling.
+4. **Sonicate:** Bubble nitrogen through the boiling solution in vessel 2 for 30 minutes.
+5. **Add:** Add the chromium solution from vessel 1 to 10 g of zinc powder in a vessel 3.
+6. **Separate:** Subject vessel 3 to three vacuum/N2 backfill cycles to remove any oxygen above the solution.
+7. **Stirr:** Stir the mixture in vessel 3 for 45 minutes until a deep blue solution is present.
+8. **Transfer:** Dilute the deep blue solution in vessel 3 with 190 mL of degassed H2O via cannula transfer to a new vessel 4.
+9. **Filter:** Rotate vessel 4 to allow the solution to filter through a fritted filter tube into the sodium acetate solution in vessel 2.
+10. **Stirr:** Stir the mixture in vessel 2 overnight to ensure full precipitation of the product.
+11. **Filter:** Filter the product through a fritted filter tube.
+12. **Filter:** Wash the product with 3 x 20 mL degassed H2O.
+13. **Filter:** Wash the product with 3 x 20 mL degassed 200 proof ethanol.
+14. **Dry:** Cap one end of the filter tube and apply a vacuum for 24 hours to ensure total dryness of the solid.
+15. **Transfer:** Transfer the solid into an argon atmosphere glove box for storage.
+
+*Comment: It was not possible to assign this procedure to a specific MOPFormula or CCDC number.*
+
+### Synthesis of Cr-1
+1. **Dissolve:** Dissolve 100 mg of isophthalic acid in 5 mL of DEF in a vessel 1.
+2. **Dissolve:** Dissolve 100 mg of Cr(OAc)2 in 10 mL of DEF in a vessel 2.
+3. **Add:** Mix the solutions from vessel 1 and vessel 2 in a 20 mL glass vial, referred to as vessel 3.
+4. **Stirr:** Allow the mixture in vessel 3 to sit at room temperature for 2 days.
+5. **Separate:** Obtain purple block crystals of Cr-1.
+
+*Comment: Assigned to MOPFormula '[Cr2]12[(C6H4)(CO2)2]24' and CCDC number '974183'.*
+
+### Synthesis of Cr-2
+1. **Dissolve:** Dissolve 200 mg of 5-tert-butylisophthalic acid in 5 mL of DMA in a vessel 1.
+2. **Dissolve:** Dissolve 200 mg of Cr(OAc)2 in 10 mL of DMA in a vessel 2.
+3. **Add:** Mix the solutions from vessel 1 and vessel 2 in a 20 mL glass vial, referred to as vessel 3.
+4. **Stirr:** Allow the mixture in vessel 3 to sit at room temperature for 2 days.
+5. **Separate:** Obtain purple block crystals of Cr-2.
+
+*Comment: Assigned to MOPFormula '[Cr2]12[((C6H3)C(CH3)3)(CO2)2]24' and CCDC number '974181'.*
+
+### Synthesis of Cr-3 (Rhombic Space Group)
+1. **Dissolve:** Dissolve 100 mg of H2TEI in 5 mL of DEF in a vessel 1.
+2. **Dissolve:** Dissolve 50 mg of Cr(OAc)2 in 10 mL of DEF in a vessel 2.
+3. **Add:** Mix the solutions from vessel 1 and vessel 2 in a 20 mL glass vial, referred to as vessel 3.
+4. **Stirr:** Allow the mixture in vessel 3 to sit at room temperature for 2 days.
+5. **Separate:** Obtain purple diamond shape crystals of Cr-3.
+
+### Synthesis of Cr-3 (Tetragonal Space Group)
+1. **Dissolve:** Dissolve 100 mg of H2TEI in 3 mL of DEF in a vessel 1.
+2. **Dissolve:** Dissolve 50 mg of Cr(OAc)2 in 5 mL of DEF in a vessel 2.
+3. **Add:** Mix the solutions from vessel 1 and vessel 2 in a 20 mL glass vial, referred to as vessel 3.
+4. **Stirr:** Allow the mixture in vessel 3 to sit at room temperature for 2 days.
+5. **Separate:** Obtain purple octahedral shape crystals of Cr-3.
+
+*Comment: Assigned to MOPFormula '[Cr2]12[C6H3C2Si(C3H7)3(CO2)2]24' and CCDC number '974182'.*
