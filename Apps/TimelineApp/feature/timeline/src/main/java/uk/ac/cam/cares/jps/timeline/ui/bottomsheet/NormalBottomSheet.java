@@ -105,9 +105,9 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateSummaryView(List<ActivitySummary> summaryActivityItemList, TrajectorySegment clickedSegment) {
+    public void updateSummaryView(List<ActivitySummary> summaryActivityItemList) {
         if (summaryActivityItemList != null && !summaryActivityItemList.isEmpty()) {
-            summaryAdapter.setActivityItemList(summaryActivityItemList, clickedSegment);
+            summaryAdapter.setActivityItemList(summaryActivityItemList);
             summaryAdapter.notifyDataSetChanged();
 
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
@@ -142,9 +142,7 @@ public class NormalBottomSheet extends BottomSheet {
                 }
             });
         }
-
-        summaryAdapter.highlightClickedActivity(clickedSegment);
-        summaryAdapter.notifyDataSetChanged();
+        
     }
 
 }
