@@ -71,17 +71,19 @@
          activityColors.put("bike", getColorHex(fragment.requireContext(), com.google.android.material.R.attr.colorTertiary));
          activityColors.put("default", getColorHex(fragment.requireContext(), R.attr.colorDefault));
 
-         String selectedColor = getColorHex(fragment.requireContext(), R.attr.colorSelected); // Example: Yellow
+         String selectedColor = getColorHex(fragment.requireContext(), R.attr.colorSelected); 
 
          trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryByDate -> {
+            trajectoryViewModel.removeAllClicked();
              if (!trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                // trajectoryViewModel.setClicked(null);
                  trajectoryViewModel.setFetching(true);
                  return;
              }
 
              mapView.getMapboxMap().getStyle(style -> {
+                // trajectoryViewModel.setClicked(null);
                  removeAllLayers(style);
-                 trajectoryViewModel.removeAllClicked();
                  if (!trajectoryByDate.getTrajectoryStr().isEmpty()) {
                      paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
                      addTrajectoryClickListener(mapView, selectedColor);
@@ -268,23 +270,39 @@
          }
      }
 
-     private void removeAllLayers(Style style) {
-         List<String> failureLayers = new ArrayList<>();
-         List<String> failureSources = new ArrayList<>();
+    private void removeAllLayers(Style style) {
+        try {
 
-         for (String name : layerNames) {
-             Expected<String, None> successLayer = style.removeStyleLayer("trajectory_layer_" + name);
-             Expected<String, None> successSource = style.removeStyleSource("trajectory_" + name);
+            List<String> failureLayers = new ArrayList<>();
+            List<String> failureSources = new ArrayList<>();
 
-             if (successLayer.isError()) failureLayers.add("trajectory_layer_" + name);
-             if (successSource.isError()) failureSources.add("trajectory_" + name);
-         }
+            if (style.styleLayerExists("highlight_layer")) {
+                style.removeStyleLayer("highlight_layer");
+                LOGGER.debug("Removed highlight_layer");
+            }
 
-         if (!failureLayers.isEmpty() || !failureSources.isEmpty()) {
-             LOGGER.error("Failed to remove layers: " + String.join(", ", failureLayers));
-             LOGGER.error("Failed to remove sources: " + String.join(", ", failureSources));
-         }
+            for (String name : layerNames) {
+                String layerName = "trajectory_layer_" + name;
+                String sourceName = "trajectory_" + name;
 
-         layerNames.clear();
-     }
+                Expected<String, None> layerResult = style.removeStyleLayer(layerName);
+                Expected<String, None> sourceResult = style.removeStyleSource(sourceName);
+
+                if (layerResult.isError()) failureLayers.add(layerName);
+                if (sourceResult.isError()) failureSources.add(sourceName);
+                else LOGGER.debug("Removed layer and source: " + layerName + ", " + sourceName);
+            }
+
+            if (!failureLayers.isEmpty() || !failureSources.isEmpty()) {
+                LOGGER.error("Failed to remove layers: " + String.join(", ", failureLayers));
+                LOGGER.error("Failed to remove sources: " + String.join(", ", failureSources));
+            }
+            
+            layerNames.clear();
+
+        } catch (Exception e) {
+            LOGGER.error("Exception while removing layers and sources", e);
+        }
+
+    }
  }
