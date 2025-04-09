@@ -45,62 +45,7 @@ public class IndexListener implements MessageListener {
 
             String receivedMessage = new String(message.getBody(), StandardCharsets.UTF_8);
             System.out.println("Received Broadcast: " + receivedMessage);
-    
-            // Parse JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> data = objectMapper.readValue(receivedMessage, Map.class);
-    
-            String sourceStack = data.get("stack");
-            String action = data.get("action");
-            String key = data.get("key");
-            String endpoint = data.get("endpoint");
-    
-            // Ignore messages from this stack to prevent duplicates
-            if (STACK_ID.equals(sourceStack)) {
-                return;
-            }
-    
-            // Perform the corresponding action
-            if ("ADD".equalsIgnoreCase(action)) {
-                indexAgent.addIndexEntity(key, endpoint, sourceStack);
-                updateReindexFile(key, true);
-                System.out.println("Synced ADD from " + sourceStack + " → " + key + " = " + endpoint);
-            } else if ("REMOVE".equalsIgnoreCase(action)) {
-                indexAgent.removeIndexEntity(key, endpoint, sourceStack);
-                updateReindexFile(key, false);
-                System.out.println("Synced REMOVE from " + sourceStack + " → " + key + " = " + endpoint);
-            } else {
-                System.err.println("Unknown action: " + action);
-            }
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private synchronized void updateReindexFile(String key, boolean isAdd) {
-        try {
-            File file = new File(REINDEX_FILE);
-            Map<String, Set<String>> reindexData = new HashMap<>();
-
-            // Load existing data if the file exists
-            if (file.exists()) {
-                reindexData = objectMapper.readValue(file, HashMap.class);
-            }
-
-            if (isAdd) {
-                // Add key values from Redis
-                Set<String> jsonSet = redisTemplate.opsForSet().members(key);
-                reindexData.put(key, jsonSet);
-            } else {
-                // Remove key
-                reindexData.remove(key);
-            }
-
-            // Write back to file
-            objectMapper.writeValue(file, reindexData);
-            System.out.println("Updated backup.json successfully.");
-
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
