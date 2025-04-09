@@ -106,15 +106,7 @@ public class TimeSeriesHelper {
         TimeSeries<Instant> currentTimeSeries = new TimeSeries<>(instants, iris, values);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            Instant endDataTime = tsClient.getMaxTime(currentTimeSeries.getDataIRIs().get(0), conn);
-            Instant beginDataTime = tsClient.getMinTime(currentTimeSeries.getDataIRIs().get(0), conn);
-
-            // Delete old data if exists
-            if (endDataTime != null) {
-                for (Integer i = 0; i < currentTimeSeries.getDataIRIs().size(); i++) {
-                    tsClient.deleteTimeSeriesHistory(currentTimeSeries.getDataIRIs().get(i), beginDataTime, endDataTime, conn);
-                }
-            }
+            
             // Add New data
             tsClient.addTimeSeriesData(currentTimeSeries, conn);
         }
