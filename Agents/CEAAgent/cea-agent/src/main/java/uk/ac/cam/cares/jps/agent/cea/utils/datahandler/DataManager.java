@@ -447,31 +447,36 @@ public class DataManager {
      */
     public static void updateScalars(String route, LinkedHashMap<String, String> scalarIris,
             LinkedHashMap<String, List<Double>> scalars, Integer uriCounter) {
+        
+        UpdateBuilder ub = new UpdateBuilder()
+        .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+
+        boolean addAsUnion = false;
+        
         for (String measurement : CEAConstants.SCALARS) {
             WhereBuilder wb1 = new WhereBuilder()
                     .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
-            UpdateBuilder ub1 = new UpdateBuilder()
-                    .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                    .addWhere(wb1);
 
             WhereBuilder wb2 = new WhereBuilder()
                     .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue",
                             scalars.get(measurement).get(uriCounter));
-            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om",
-                    OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
-            ub1.addDelete(wb1);
-            ub2.addInsert(wb2);
+            ub.addDelete(wb1);
+            ub.addInsert(wb2);
 
-            UpdateRequest ur1 = ub1.buildRequest();
-            UpdateRequest ur2 = ub2.buildRequest();
-
-            // Use access agent
-            AccessAgentCaller.updateStore(route, ur1.toString());
-            AccessAgentCaller.updateStore(route, ur2.toString());
+            if (addAsUnion) {
+                ub.addUnion(wb1);
+            } else {
+                ub.addWhere(wb1);
+                addAsUnion = true;
+            }
+            
         }
+
+        UpdateRequest ur = ub.buildRequest();
+        AccessAgentCaller.updateStore(route, ur.toString());
     }
 
     /**
