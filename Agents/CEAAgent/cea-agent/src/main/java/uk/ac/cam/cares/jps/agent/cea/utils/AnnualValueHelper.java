@@ -259,36 +259,8 @@ public class AnnualValueHelper {
 
     private static JSONObject checkAnnualObject(String dataIRI, String route) {
 
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
-        
-        WhereBuilder optionalWb = new WhereBuilder()
-                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
-        
-        wb.addWhere("?quantity", "om:hasValue", NodeFactory.createURI(dataIRI));
-
-        // Base on dataIRI, determine types of quantity. This assumes dataIRI is of
-        // certain format
-        String[] split = dataIRI.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
-        String dataType = split[1].split("_")[0];
-        String predicate = (dataType.contains("Consumption")) ? "ub:consumesEnergy" : "ub:producesEnergy";
-
-        wb.addWhere("?building", predicate, "?quantity");
-        optionalWb.addWhere("?building", predicate, "?otherQuantity");
-
-        // up to this point, we know the building associdated with this particular dataIRI
-        // now try to see if it has the annual value
-
-        String energyType = "Annual" + dataType;
-        optionalWb.addWhere("?otherQuantity", "rdf:type", "ub:" + energyType);
-        optionalWb.addWhere("?otherQuantity", "om:hasValue", "?measure");
-
-        wb.addOptional(optionalWb);
-
+        String energyType = getEnergyType(dataIRI);
+        WhereBuilder wb = getAnnualObjectWhere(dataIRI, energyType);
         SelectBuilder sb = new SelectBuilder().addWhere(wb).addVar("?building").addVar("?measure");
 
         JSONArray queryResultArray = AccessAgentCaller.queryStore(route, sb.build().toString());
@@ -301,6 +273,41 @@ public class AnnualValueHelper {
             return new JSONObject();
         }
 
+    }
+
+    private static WhereBuilder getAnnualObjectWhere(String dataIRI, String energyType) {
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+        
+        WhereBuilder optionalWb = new WhereBuilder()
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+        
+        wb.addWhere("?quantity", "om:hasValue", NodeFactory.createURI(dataIRI));
+
+        String predicate = (energyType.contains("Consumption")) ? "ub:consumesEnergy" : "ub:producesEnergy";
+
+        wb.addWhere("?building", predicate, "?quantity");
+        optionalWb.addWhere("?building", predicate, "?otherQuantity");
+
+        // up to this point, we know the building associdated with this particular dataIRI
+        // now try to see if it has the annual value
+        
+        optionalWb.addWhere("?otherQuantity", "rdf:type", "ub:" + energyType);
+        optionalWb.addWhere("?otherQuantity", "om:hasValue", "?measure");
+
+        wb.addOptional(optionalWb);
+
+        return wb;
+    }
+
+    private static String getEnergyType(String dataIRI) {
+        String[] split = dataIRI.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
+        String dataType = split[1].split("_")[0];
+        return "Annual" + dataType;
     }
 
     /**
