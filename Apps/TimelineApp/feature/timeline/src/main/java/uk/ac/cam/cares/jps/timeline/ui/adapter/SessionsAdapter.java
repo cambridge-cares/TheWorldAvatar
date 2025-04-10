@@ -54,10 +54,30 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         holder.activityRecyclerView.setRecycledViewPool(sharedViewPool);
         holder.activityRecyclerView.setHasFixedSize(false);
 
+        holder.activityRecyclerView.post(() -> {
+            int maxHeightPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 500,
+                holder.activityRecyclerView.getResources().getDisplayMetrics()
+            );
+
+            // Measure content height
+            int totalHeight = 0;
+            for (int i = 0; i < holder.activityRecyclerView.getChildCount(); i++) {
+                View child = holder.activityRecyclerView.getChildAt(i);
+                if (child != null) {
+                    totalHeight += child.getMeasuredHeight();
+                }
+            }
+
+            ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
+            params.height = Math.min(totalHeight, maxHeightPx); // Use wrap_content behavior unless >500dp
+            holder.activityRecyclerView.setLayoutParams(params);
+        });
+
         // Ensure we scroll to the correct activity within the session
         if (clickedSegment != null && session.containsSegment(clickedSegment)) {
             holder.activityRecyclerView.post(() ->
-                    layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession(), 0)
+                    layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession() - 1, 0)
             );
         }
 
