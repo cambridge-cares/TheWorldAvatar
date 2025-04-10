@@ -45,17 +45,17 @@ public class IndexConfig {
     }
 
     // Pub/Sub Message Listener
-    @Bean
-    public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter listenerAdapter) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, new PatternTopic("stackSyncChannel"));
-        return container;
-    }
-
-    @Bean
-    public MessageListenerAdapter listenerAdapter(IndexListener listener) {
-        return new MessageListenerAdapter(listener);
-    }
+    // @Bean
+    // public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
+    //         MessageListenerAdapter listenerAdapter) {
+    //     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+    //     container.setConnectionFactory(connectionFactory);
+    //     container.addMessageListener(listenerAdapter, new PatternTopic("stackSyncChannel"));
+    //     return container;
+    // }
+    //
+    // @Bean
+    // public MessageListenerAdapter listenerAdapter(IndexListener listener) {
+    //     return new MessageListenerAdapter(listener);
+    // }
 }
