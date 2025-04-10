@@ -10,6 +10,7 @@ import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -18,9 +19,10 @@ import java.util.regex.Pattern;
 public class AnnualValueHelper {
     /**
      * Instantiate annual value triples for CEA time series
+     * 
      * @param values CEA time series values
      * @param iriMap map of the CEA data IRIs
-     * @param route route to the IRIs in iriMap
+     * @param route  route to the IRIs in iriMap
      */
     public static void instantiateAnnual(List<List<?>> values, LinkedHashMap<String, String> iriMap, String route) {
         WhereBuilder wb = new WhereBuilder()
@@ -35,56 +37,54 @@ public class AnnualValueHelper {
         int i = 0;
 
         List<WhereBuilder> deletes = new ArrayList<>();
-        deletes.add(new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
+        deletes.add(
+                new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
 
-        for (String ts: CEAConstants.TIME_SERIES) {
-            if ((i+1) % 10 == 0) {
-                deletes.add(new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
+        for (String ts : CEAConstants.TIME_SERIES) {
+            if ((i + 1) % 10 == 0) {
+                deletes.add(new WhereBuilder().addPrefix("om",
+                        OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
             }
             List<Double> value = (List<Double>) values.get(i);
             Double annualValue = 0.0;
             for (Double v : value) {
                 annualValue += v;
             }
-            annualValue = Math.round(annualValue*Math.pow(10,2))/Math.pow(10,2);
+            annualValue = Math.round(annualValue * Math.pow(10, 2)) / Math.pow(10, 2);
             String dataIRI = iriMap.get(ts);
-            String energyType = getType(dataIRI, route);
-            String attachedIRI = getInfo(dataIRI, ts, route);
-            String measureIRI = checkAnnual(attachedIRI, energyType, route);
+            JSONObject annualObject = checkAnnualObject(dataIRI, route);
 
-            if (!measureIRI.isEmpty()) {
+            if (annualObject.has("measure")) {
                 // if annual value already instantiated, update value
-                updateAnnual(deletes.get(deletes.size()-1), wb2, measureIRI, annualValue, i);
-            }
-            else {
+                updateAnnual(deletes.get(deletes.size() - 1), wb2, annualObject.getString("measure"), annualValue, i);
+            } else {
                 // if no previously instantiated annual value, insert update
-                insertUpdate(wb, attachedIRI, ts, energyType, annualValue);
+                insertUpdate(wb, annualObject.getString("building"), ts, annualObject.getString("energyType"), annualValue);
             }
             i++;
         }
 
-        // check if WhereBuilders have only white space characters in its where statement
-        UpdateBuilder ub = new UpdateBuilder()
-                .addInsert(wb);
+        // check if WhereBuilders have only white space characters in its where
+        // statement
+        UpdateBuilder ub = new UpdateBuilder().addInsert(wb);
 
         Pattern pattern = Pattern.compile("\\{\\s*\\}");
 
-        Matcher m =  pattern.matcher(wb.buildString());
+        Matcher m = pattern.matcher(wb.buildString());
 
         m.matches();
 
         boolean flag = m.find();
 
-        UpdateBuilder ub2 = new UpdateBuilder()
-                .addInsert(wb2);
+        UpdateBuilder ub2 = new UpdateBuilder().addInsert(wb2);
 
-        Matcher m1 =  pattern.matcher(deletes.get(0).buildString());
+        Matcher m1 = pattern.matcher(deletes.get(0).buildString());
 
         m1.matches();
 
         boolean flag1 = m1.find();
 
-        Matcher m2 =  pattern.matcher(wb2.buildString());
+        Matcher m2 = pattern.matcher(wb2.buildString());
 
         m2.matches();
 
@@ -98,14 +98,12 @@ public class AnnualValueHelper {
         // if there are previously existing annual values
         if (!flag1 && !flag2) {
             for (WhereBuilder wb1 : deletes) {
-                Matcher md =  pattern.matcher(wb1.buildString());
+                Matcher md = pattern.matcher(wb1.buildString());
 
                 md.matches();
 
                 if (!md.find()) {
-                    UpdateBuilder ub1 = new UpdateBuilder()
-                            .addDelete(wb1)
-                            .addWhere(wb1);
+                    UpdateBuilder ub1 = new UpdateBuilder().addDelete(wb1).addWhere(wb1);
                     AccessAgentCaller.updateStore(route, ub1.buildRequest().toString());
                 }
             }
@@ -115,12 +113,14 @@ public class AnnualValueHelper {
 
     /**
      * Update WhereBuilders for updating existing annual value IRI
+     * 
      * @param deleteWB WhereBuilder to delete old annual value
      * @param updateWB WhereBuilder to insert new annual value
-     * @param iri annual value IRI
-     * @param value annual value
+     * @param iri      annual value IRI
+     * @param value    annual value
      */
-    public static void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value, Integer counter) {
+    public static void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value,
+            Integer counter) {
         deleteWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", "?o" + counter);
 
         updateWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", value);
@@ -128,6 +128,7 @@ public class AnnualValueHelper {
 
     /**
      * Return a query that will retrieve the quantity type of iri
+     * 
      * @param iri data IRI
      * @return query string that will retrieve the quantity type of iri
      */
@@ -147,7 +148,8 @@ public class AnnualValueHelper {
         String energyType = "";
 
         for (int j = 0; j < queryResultArray.length(); j++) {
-            if (queryResultArray.getJSONObject(j).getString("type").contains(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))) {
+            if (queryResultArray.getJSONObject(j).getString("type")
+                    .contains(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))) {
                 energyType = queryResultArray.getJSONObject(j).getString("type");
                 String[] split = energyType.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
                 energyType = "Annual" + split[1];
@@ -158,9 +160,12 @@ public class AnnualValueHelper {
     }
 
     /**
-     * Returns a query that will retrieve the type of energy, i.e. heat or electricity, attached to iri
-     * @param iri data IRI
-     * @param energy string stating whether the data IRI is attached to a consumption or supply device
+     * Returns a query that will retrieve the type of energy, i.e. heat or
+     * electricity, attached to iri
+     * 
+     * @param iri    data IRI
+     * @param energy string stating whether the data IRI is attached to a
+     *               consumption or supply device
      * @return query string that will retrieve the type of energy attached to iri
      */
     public static String getInfo(String iri, String energy, String route) {
@@ -172,8 +177,7 @@ public class AnnualValueHelper {
 
         if (energy.contains("Consumption")) {
             wb.addWhere("?s", "ub:consumesEnergy", "?quantity");
-        }
-        else {
+        } else {
             wb.addWhere("?s", "ub:producesEnergy", "?quantity");
         }
 
@@ -186,20 +190,23 @@ public class AnnualValueHelper {
 
     /**
      * Update WhereBuilder with update statements for annual value triples
-     * @param wb WhereBuilder
-     * @param iri data IRI
-     * @param energy string stating whether the data IRI is attached to a consumption or supply device
+     * 
+     * @param wb         WhereBuilder
+     * @param iri        data IRI
+     * @param energy     string stating whether the data IRI is attached to a
+     *                   consumption or supply device
      * @param energyType energy type, electricity or heat
-     * @param value annual value
+     * @param value      annual value
      */
     public static void insertUpdate(WhereBuilder wb, String iri, String energy, String energyType, Double value) {
-        String quantity = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Quantity_" + UUID.randomUUID();
-        String measure = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Value_" + UUID.randomUUID();
+        String quantity = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy
+                + "Quantity_" + UUID.randomUUID();
+        String measure = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Value_"
+                + UUID.randomUUID();
 
         if (energy.contains("Consumption")) {
             wb.addWhere(NodeFactory.createURI(iri), "ub:consumesEnergy", NodeFactory.createURI(quantity));
-        }
-        else {
+        } else {
             wb.addWhere(NodeFactory.createURI(iri), "ub:producesEnergy", NodeFactory.createURI(quantity));
         }
 
@@ -216,9 +223,10 @@ public class AnnualValueHelper {
 
     /**
      * Check if annual value exists
+     * 
      * @param attachedIri IRI to which the quantity IRI is attached to
-     * @param energyType energy type, electricity or heat
-     * @param route route to attachedIri
+     * @param energyType  energy type, electricity or heat
+     * @param route       route to attachedIri
      * @return IRI to annual value if exists, empty string if not exists
      */
     public static String checkAnnual(String attachedIri, String energyType, String route) {
@@ -229,8 +237,7 @@ public class AnnualValueHelper {
 
         if (energyType.contains("Consumption")) {
             wb.addWhere(NodeFactory.createURI(attachedIri), "ub:consumesEnergy", "?quantity");
-        }
-        else {
+        } else {
             wb.addWhere(NodeFactory.createURI(attachedIri), "ub:producesEnergy", "?quantity");
         }
 
@@ -245,17 +252,63 @@ public class AnnualValueHelper {
 
         if (!queryResultArray.isEmpty()) {
             return queryResultArray.getJSONObject(0).getString("measure");
-        }
-        else {
+        } else {
             return "";
         }
     }
 
+    private static JSONObject checkAnnualObject(String dataIRI, String route) {
+
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+        
+        WhereBuilder optionalWb = new WhereBuilder()
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+        
+        wb.addWhere("?quantity", "om:hasValue", NodeFactory.createURI(dataIRI));
+
+        // Base on dataIRI, determine types of quantity. This assumes dataIRI is of
+        // certain format
+        String[] split = dataIRI.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
+        String dataType = split[1].split("_")[0];
+        String predicate = (dataType.contains("Consumption")) ? "ub:consumesEnergy" : "ub:producesEnergy";
+
+        wb.addWhere("?building", predicate, "?quantity");
+        optionalWb.addWhere("?building", predicate, "?otherQuantity");
+
+        // up to this point, we know the building associdated with this particular dataIRI
+        // now try to see if it has the annual value
+
+        String energyType = "Annual" + dataType;
+        optionalWb.addWhere("?otherQuantity", "rdf:type", "ub:" + energyType);
+        optionalWb.addWhere("?otherQuantity", "om:hasValue", "?measure");
+
+        wb.addOptional(optionalWb);
+
+        SelectBuilder sb = new SelectBuilder().addWhere(wb).addVar("?building").addVar("?measure");
+
+        JSONArray queryResultArray = AccessAgentCaller.queryStore(route, sb.build().toString());
+
+        if (!queryResultArray.isEmpty()) {
+            JSONObject result = queryResultArray.getJSONObject(0);
+            result.put("energyType", energyType);
+            return result;
+        } else {
+            return new JSONObject();
+        }
+
+    }
+
     /**
      * Retrieves the annual value associated with attachedIri and energyType
+     * 
      * @param attachedIri IRI to which the quantity IRI is attached to
-     * @param energyType energy type, electricity or heat
-     * @param route route to attachedIri
+     * @param energyType  energy type, electricity or heat
+     * @param route       route to attachedIri
      * @return annual value as string
      */
     public static String retrieveAnnualValue(String attachedIri, String energyType, String route) {
@@ -275,12 +328,10 @@ public class AnnualValueHelper {
 
             if (!queryResultArray.isEmpty()) {
                 return queryResultArray.getJSONObject(0).getString("value");
-            }
-            else {
+            } else {
                 return "0.0";
             }
-        }
-        else {
+        } else {
             return "0.0";
         }
     }

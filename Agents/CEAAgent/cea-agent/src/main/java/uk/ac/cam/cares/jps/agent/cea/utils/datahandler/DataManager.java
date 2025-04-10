@@ -14,8 +14,6 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -48,7 +46,7 @@ public class DataManager {
         return queryResultArray.getJSONObject(0).getBoolean("ASK");
     }
 
-    public static List<String> bulkCheckBuildingInitialised(JSONArray uriArray, String route) {
+    public static List<String> bulkCheckUninitialisedBuilding(JSONArray uriArray, String route) {
 
         SelectBuilder sb = new SelectBuilder();
 
@@ -73,7 +71,7 @@ public class DataManager {
 
         List<String> missingUri = new ArrayList<>();
 
-        // Convert arrayB to a Set for faster lookups
+        // Convert to a Set for faster lookups
         Set<String> setQueryResult = new HashSet<>();
         for (int j = 0; j < queryResultArray.length(); j++) {
             setQueryResult.add(queryResultArray.getJSONObject(j).getString("building"));
@@ -81,7 +79,7 @@ public class DataManager {
 
         for (int i = 0; i < uriArray.length(); i++) {
             String uri = uriArray.getString(i);
-            if (!setQueryResult.contains(uri)) { // Faster lookup in the Set
+            if (!setQueryResult.contains(uri)) {
                 missingUri.add(uri);
             }
         }
@@ -125,7 +123,7 @@ public class DataManager {
      * @param route      route to pass to access agent
      * @return if CEA output data are initialised
      */
-    public static Boolean checkDataInitialised(String building, LinkedHashMap<String, String> tsIris,
+    public static boolean checkDataInitialised(String building, LinkedHashMap<String, String> tsIris,
             LinkedHashMap<String, String> scalarIris, String route) {
 
         List<String> allMeasures = new ArrayList<>();

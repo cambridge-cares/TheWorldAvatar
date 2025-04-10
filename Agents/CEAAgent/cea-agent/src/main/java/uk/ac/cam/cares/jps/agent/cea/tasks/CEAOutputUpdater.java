@@ -45,7 +45,7 @@ public class CEAOutputUpdater {
         TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient, tsDb);
 
         // initialise buildings in CEA triplestore if they have not been initialised yet
-        List<String> uninitialisedBuilding = DataManager.bulkCheckBuildingInitialised(uriArray, ceaRoute);
+        List<String> uninitialisedBuilding = DataManager.bulkCheckUninitialisedBuilding(uriArray, ceaRoute);
         DataManager.bulkInitialiseBuilding(uninitialisedBuilding, ceaRoute);
 
         for (int i = 0; i < uriArray.length(); i++) {
