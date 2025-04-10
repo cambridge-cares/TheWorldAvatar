@@ -106,18 +106,11 @@ public class IndexAgent {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    // Read stack ID from environment variable or default to "defaultStack"
-    private final String STACK_ID="S002";
-    // public IndexAgent(@Value("${stack.id:defaultStack}") String stackId) {
-    //     this.STACK_ID = stackId;
-    //     System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
-    // }
-
     //@Value("${dragonfly.nodes}") 
-    String nodeList="172.16.15.166:6379,139.59.245.38:6379";
+    String nodeList="172.26.15.166:6379,139.59.245.38:6379";
 
-    @Value("${dragonfly.selfnodeindex}")
-    private int SELF_INDEX;
+    //@Value("${dragonfly.selfnodeindex}")
+    private int SELF_INDEX=0;
     Jedis self_jedis;
 
     private List<Jedis> publishers = new ArrayList<>();
@@ -169,7 +162,6 @@ public class IndexAgent {
                 System.out.println("Received: " + message + " on channel: " + channel);
             }
         };
-
         self_jedis.subscribe(subscriber, CHANNEL_NAME);
     }
 
@@ -204,27 +196,6 @@ public class IndexAgent {
         }
     }
 
-    public void addIndexEntity(String key, String endpoint, String source_stack) {
-        if (key != null && endpoint != null) {
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                Map<String, String> message = new HashMap<>();
-                //insert into the dragonfly memory
-                redisTemplate.opsForSet().add(key, endpoint); 
-                createdReindexFile();
-
-                // Publish/broadcast JSON-based message
-                message.put("stack", source_stack);
-                message.put("endpoint", endpoint);
-                message.put("key", key);
-                message.put("action", "ADD");
-                String jsonMessage = objectMapper.writeValueAsString(message);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     // Load/not-a-new-add a endpoint 
     public void addIndexEntityWithoutBroadcasting(String key, String endpoint) {
         if (key != null && endpoint != null) {
@@ -234,7 +205,7 @@ public class IndexAgent {
     }
 
     // Remove endpoint & broadcast
-    public void removeIndexEntity(String key, String endpoint, String source_stack) {
+    public void removeIndexEntity(String key, String endpoint) {
         try{
             if (key != null && endpoint != null) {
                 redisTemplate.opsForSet().remove(key, endpoint);
@@ -242,14 +213,12 @@ public class IndexAgent {
 
                 // Broadcast the REMOVE JSON-based message
                 Map<String, String> message = new HashMap<>();
-                message.put("stack", STACK_ID);
                 message.put("endpoint", endpoint);
                 message.put("key", key);
                 message.put("action", "REMOVE");
 
                 String jsonMessage = objectMapper.writeValueAsString(message);
-                stringRedisTemplate.convertAndSend(CHANNEL_NAME, jsonMessage);
-                System.out.println("Synced REMOVE: " + jsonMessage);
+                publishMessage(jsonMessage);
             }
         } catch (Exception e) {
             e.printStackTrace();
