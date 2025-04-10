@@ -20,45 +20,15 @@ import android.widget.TextView;
 
 public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummaryAdapter.ActivitySummaryViewHolder> {
     private List<ActivitySummary> summaryList;
-    private TrajectorySegment clickedSegment;
+
 
     public ActivitySummaryAdapter() {
         this.summaryList = new ArrayList<>();
     }
 
-    public void setActivityItemList(List<ActivitySummary> summaryList, TrajectorySegment clickedSegment) {
+    public void setActivityItemList(List<ActivitySummary> summaryList) {
         this.summaryList = new ArrayList<>(summaryList);
-        this.clickedSegment = clickedSegment;
-
-         for(ActivitySummary activity : summaryList) {
-            if(clickedSegment == null) {
-                activity.setClicked(false);
-            }
-            else if(activity.getActivityType().equals(clickedSegment.getActivityType())) {
-                activity.setClicked(true);
-            }
-            else {
-                activity.setClicked(false);
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    private void setClickedSegment(TrajectorySegment clickedSegment) {
-        this.clickedSegment = clickedSegment;
-
-         for(ActivitySummary activity : summaryList) {
-            if(clickedSegment == null) {
-                activity.setClicked(false);
-            }
-            else if(activity.getActivityType().equals(clickedSegment.getActivityType())) {
-                activity.setClicked(true);
-            }
-            else {
-                activity.setClicked(false);
-            }
-        }
-        notifyDataSetChanged();
+        
     }
 
     @NonNull
@@ -92,15 +62,6 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
             holder.totalDistance.setVisibility(View.GONE);
             holder.timeSummary.setVisibility(View.GONE);
         }
-
-        if (summaryItem.isClicked()) {
-            // holder.activityType.setBackgroundColor(Color.YELLOW);
-            TypedValue typedValue = new TypedValue();
-            holder.itemView.getContext().getTheme().resolveAttribute(R.attr.colorSelected, typedValue, true);
-            holder.activityType.setBackgroundColor(typedValue.data);
-        } else {
-            holder.activityType.setBackgroundColor(Color.TRANSPARENT);
-        }
     
     }
 
@@ -108,19 +69,6 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
     public int getItemCount() {
         return summaryList.size();
     }
-
-    public void highlightClickedActivity(TrajectorySegment clickedSegment) {
-        setClickedSegment(clickedSegment);
-
-        for (int i = 0; i < summaryList.size(); i++) {
-            ActivitySummary summary = summaryList.get(i);
-            if (clickedSegment == null || summary.getActivityType().equals(clickedSegment.getActivityType())) {
-                notifyItemChanged(i);
-                return;
-            }
-        }
-    }
-
 
     static class ActivitySummaryViewHolder extends RecyclerView.ViewHolder {
         ImageView activityType;

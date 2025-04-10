@@ -64,8 +64,7 @@ public class BottomSheetManager {
 
     /**
      * Constructor of the class
-     *
-     * @param fragment             Fragment that hosts the bottom sheet
+     * @param fragment Fragment that hosts the bottom sheet
      * @param bottomSheetContainer Container of the bottom sheet
      */
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
@@ -123,7 +122,7 @@ public class BottomSheetManager {
             TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
 
             if (trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
-                normalBottomSheet.updateSummaryView(activityItemSummaryList, clickedSegment);
+                normalBottomSheet.updateSummaryView(activityItemSummaryList);
                 normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
             }
         });
