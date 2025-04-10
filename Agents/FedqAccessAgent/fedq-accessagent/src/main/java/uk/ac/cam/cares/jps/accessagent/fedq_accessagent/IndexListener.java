@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 @Service
-public class IndexListener implements MessageListener {
+public class IndexListener {
     private static final String DATA_DIRECTORY = "/data";
     private static final String REINDEX_FILE = DATA_DIRECTORY + "/reindex.json";
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -39,16 +39,15 @@ public class IndexListener implements MessageListener {
         System.out.println("Initialized IndexAgent for Stack: " + STACK_ID);
     }
 
-    @Override
-    public void onMessage(Message message, byte[] pattern) {
-        try{
-
-            String receivedMessage = new String(message.getBody(), StandardCharsets.UTF_8);
-            System.out.println("Received Broadcast: " + receivedMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    // @Override
+    // public void onMessage(Message message, byte[] pattern) {
+    //     try{
+    //         String receivedMessage = new String(message.getBody(), StandardCharsets.UTF_8);
+    //         System.out.println("Received Broadcast: " + receivedMessage);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     @EventListener(ContextClosedEvent.class)
     public void onShutdown() {
