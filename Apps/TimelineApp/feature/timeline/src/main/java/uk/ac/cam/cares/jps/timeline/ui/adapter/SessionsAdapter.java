@@ -55,10 +55,13 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         holder.activityRecyclerView.setHasFixedSize(false);
 
         holder.activityRecyclerView.post(() -> {
-            int maxHeightPx = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 500,
-                holder.activityRecyclerView.getResources().getDisplayMetrics()
-            );
+        ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
+
+            if (clickedSegment != null) {
+                int maxHeightPx = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 500,
+                    holder.activityRecyclerView.getResources().getDisplayMetrics()
+                );
 
             // Measure content height
             int totalHeight = 0;
@@ -69,10 +72,13 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
                 }
             }
 
-            ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
-            params.height = Math.min(totalHeight, maxHeightPx); // Use wrap_content behavior unless >500dp
-            holder.activityRecyclerView.setLayoutParams(params);
-        });
+            params.height = Math.min(totalHeight, maxHeightPx); // Dynamic sizing
+        } else {
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT; // Full height if no clickedSegment
+        }
+
+        holder.activityRecyclerView.setLayoutParams(params);
+    });
 
         // Ensure we scroll to the correct activity within the session
         if (clickedSegment != null && session.containsSegment(clickedSegment)) {
