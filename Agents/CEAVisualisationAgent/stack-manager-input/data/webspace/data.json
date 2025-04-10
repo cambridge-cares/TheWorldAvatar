@@ -7,26 +7,21 @@
       "sources": [
         {
           "id": "cea",
-          "type": "geojson",
-          "cluster": false,
-          "clusterMaxZoom": 14,
-          "clusterRadius": 100,
-          "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Ascaled&outputFormat=application%2Fjson"
+          "type": "vector",
+          "tiles": ["http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Acea&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&styles=&format=application%2Fvnd.mapbox-vector-tile"]
         },
         {
           "id": "not_cea",
-          "type": "geojson",
-          "cluster": false,
-          "clusterMaxZoom": 14,
-          "clusterRadius": 100,
-          "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Anot_cea&outputFormat=application%2Fjson"
+          "type": "vector",
+          "tiles": ["http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Anot_cea&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&styles=&format=application%2Fvnd.mapbox-vector-tile"]
         }
       ],
       "layers": [
         {
-          "id": "heat",
-          "name": "Heating demand",
+          "id": "cea",
+          "name": "All buildings with CEA results",
           "source": "cea",
+          "source-layer": "cea",
           "type": "fill-extrusion",
           "minzoom": 8,
           "order": 23,
@@ -34,9 +29,32 @@
             "visibility": "visible"
           },
           "paint": {
+            "fill-extrusion-color": "#FFD700",
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "measured_height"],
+              ["get", "measured_height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "heat",
+          "name": "Heating demand",
+          "source": "cea",
+          "source-layer": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
             "fill-extrusion-color": [
               "interpolate", ["linear"],
-              ["number", ["get", "scaled_heat"]],
+              ["number", ["get", "scaled_heating"]],
               0, "#ffffb2",
               1, "#bd0026"
             ],
@@ -44,8 +62,36 @@
             "fill-extrusion-base": 0,
             "fill-extrusion-height": [
               "case",
-              ["has", "height"],
-              ["get", "height"],
+              ["has", "measured_height"],
+              ["get", "measured_height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "heat_area",
+          "name": "Heating demand per GFA",
+          "source": "cea",
+          "source-layer": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_heating_per_gfa"]],
+              0, "#ffffb2",
+              1, "#bd0026"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "measured_height"],
+              ["get", "measured_height"],
               8
             ]
           }
@@ -54,25 +100,54 @@
           "id": "electricity",
           "name": "Electricity demand",
           "source": "cea",
+          "source-layer": "cea",
           "type": "fill-extrusion",
           "minzoom": 8,
           "order": 23,
           "layout": {
-            "visibility": "visible"
+            "visibility": "none"
           },
           "paint": {
             "fill-extrusion-color": [
               "interpolate", ["linear"],
               ["number", ["get", "scaled_electricity"]],
-              0, "#d4e5f4",
-              1, "#0c2952"
+              0, "#d9f0d3",
+              1, "#023415"
             ],
             "fill-extrusion-opacity": 0.9,
             "fill-extrusion-base": 0,
             "fill-extrusion-height": [
               "case",
-              ["has", "height"],
-              ["get", "height"],
+              ["has", "measured_height"],
+              ["get", "measured_height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "electricity_area",
+          "name": "Electricity demand per GFA",
+          "source": "cea",
+          "source-layer": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_electricity_per_gfa"]],
+              0, "#d9f0d3",
+              1, "#023415"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "measured_height"],
+              ["get", "measured_height"],
               8
             ]
           }
@@ -81,31 +156,116 @@
           "id": "pv",
           "name": "Roof potential PV supply",
           "source": "cea",
+          "source-layer": "cea",
           "type": "fill-extrusion",
           "minzoom": 8,
           "order": 23,
           "layout": {
-            "visibility": "visible"
+            "visibility": "none"
           },
           "paint": {
             "fill-extrusion-color": [
               "interpolate", ["linear"],
-              ["number", ["get", "scaled_pv"]],
-              0, "#d9f0d3",
-              1, "#023415"
+              ["number", ["get", "scaled_pv_roof"]],
+              0, "#d4e5f4",
+              1, "#0c2952"
             ],
             "fill-extrusion-opacity": 0.9,
             "fill-extrusion-base": 0,
             "fill-extrusion-height": [
               "case",
-              ["has", "height"],
-              ["get", "height"],
+              ["has", "measured_height"],
+              ["get", "measured_height"],
               8
             ]
           }
         },
         {
-          "id": "no_cea",
+          "id": "pv_area",
+          "name": "Roof potential PV supply per area",
+          "source": "cea",
+          "source-layer": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_pv_roof_per_area"]],
+              0, "#d4e5f4",
+              1, "#0c2952"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "measured_height"],
+              ["get", "measured_height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "sc",
+          "name": "Roof potential solar collector supply",
+          "source": "cea",
+          "source-layer": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_sc_plate_roof"]],
+              0, "#d4e5f4",
+              1, "#0c2952"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "measured_height"],
+              ["get", "measured_height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "sc_area",
+          "name": "Roof potential solar collector supply per area",
+          "source": "cea",
+          "source-layer": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_sc_plate_roof_per_area"]],
+              0, "#d4e5f4",
+              1, "#0c2952"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "measured_height"],
+              ["get", "measured_height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "not_cea",
           "name": "Buildings without CEA results",
           "source": "not_cea",
           "type": "fill-extrusion",
@@ -120,8 +280,8 @@
             "fill-extrusion-base": 0,
             "fill-extrusion-height": [
               "case",
-              ["has", "height"],
-              ["get", "height"],
+              ["has", "measured_height"],
+              ["get", "measured_height"],
               8
             ]
           }
