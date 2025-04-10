@@ -2,18 +2,26 @@
 
 package uk.ac.cam.cares.jps.timeline.ui.bottomsheet;
 
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED;
+
 import android.content.Context;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.List;
 
@@ -33,10 +41,14 @@ public class NormalBottomSheet extends BottomSheet {
     private ActivitySummaryAdapter summaryAdapter;
     private RecyclerView sessionsRecyclerView;
     private SessionsAdapter sessionsAdapter;
+    private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
 
-    public NormalBottomSheet(Context context) {
+
+    public NormalBottomSheet(Context context, BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior) {
         super(context);
         init(context);
+
+        this.bottomSheetBehavior = bottomSheetBehavior;
     }
 
     @Override
@@ -48,9 +60,34 @@ public class NormalBottomSheet extends BottomSheet {
         sessionsAdapter = new SessionsAdapter();
         sessionsRecyclerView.setAdapter(sessionsAdapter);
         sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        sessionsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (!sessionsRecyclerView.canScrollVertically(-1) && dy < 0) {
+                    // session list at the top, collapse bottomsheet
+                    if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_DRAGGING &&
+                            bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_SETTLING) {
+                        switch (bottomSheetBehavior.getState()) {
+                            case STATE_HALF_EXPANDED ->
+                                    bottomSheetBehavior.setState(STATE_COLLAPSED);
+                            case STATE_EXPANDED ->
+                                    bottomSheetBehavior.setState(STATE_HALF_EXPANDED);
+                        }
+                    }
+                    return;
+                }
+                if (dy > 10 && bottomSheetBehavior.getState() != STATE_EXPANDED && bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_DRAGGING &&
+                        bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_SETTLING) {
+                    bottomSheetBehavior.setState(STATE_EXPANDED);
+                    return;
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
 
         final float maxHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 500, context.getResources().getDisplayMetrics());
-    
+
         sessionsRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -64,6 +101,7 @@ public class NormalBottomSheet extends BottomSheet {
         });
 
         summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
+
 
         summaryAdapter = new ActivitySummaryAdapter();
         summaryRecyclerView.setAdapter(summaryAdapter);
@@ -94,7 +132,6 @@ public class NormalBottomSheet extends BottomSheet {
     public void updateUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
         if (sessionList != null && !sessionList.isEmpty()) {
             sessionsAdapter.setUniqueSessionsList(sessionList, clickedSegment);
-            sessionsAdapter.notifyDataSetChanged();
 
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
             if (trajectoryTextView != null) {
@@ -108,7 +145,6 @@ public class NormalBottomSheet extends BottomSheet {
     public void updateSummaryView(List<ActivitySummary> summaryActivityItemList, TrajectorySegment clickedSegment) {
         if (summaryActivityItemList != null && !summaryActivityItemList.isEmpty()) {
             summaryAdapter.setActivityItemList(summaryActivityItemList, clickedSegment);
-            summaryAdapter.notifyDataSetChanged();
 
             TextView trajectoryTextView = getBottomSheet().findViewById(R.id.trajectory_info_tv);
             if (trajectoryTextView != null) {
@@ -130,7 +166,6 @@ public class NormalBottomSheet extends BottomSheet {
 
     public void highlightClickedSegment(TrajectorySegment clickedSegment) {
         sessionsAdapter.setClickedSegment(clickedSegment);
-        sessionsAdapter.notifyDataSetChanged();
 
         if (clickedSegment != null) {
             Log.d("SCROLL_DEBUG", "Scrolling to session: " + clickedSegment.getSessionNumber());
@@ -144,7 +179,6 @@ public class NormalBottomSheet extends BottomSheet {
         }
 
         summaryAdapter.highlightClickedActivity(clickedSegment);
-        summaryAdapter.notifyDataSetChanged();
     }
 
 }

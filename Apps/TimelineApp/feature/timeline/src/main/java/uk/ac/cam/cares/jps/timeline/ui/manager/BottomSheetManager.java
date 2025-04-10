@@ -64,7 +64,8 @@ public class BottomSheetManager {
 
     /**
      * Constructor of the class
-     * @param fragment Fragment that hosts the bottom sheet
+     *
+     * @param fragment             Fragment that hosts the bottom sheet
      * @param bottomSheetContainer Container of the bottom sheet
      */
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
@@ -103,7 +104,7 @@ public class BottomSheetManager {
     }
 
     private void initNormalBottomSheet() {
-        normalBottomSheet = new NormalBottomSheet(context);
+        normalBottomSheet = new NormalBottomSheet(context, bottomSheetBehavior);
         configureDateSelection();
         configureTrajectoryRetrieval();
         configureSummary();
@@ -116,21 +117,21 @@ public class BottomSheetManager {
 
     private void configureSummary() {
 
-    trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryByDate -> {
-        List<ActivitySummary> activityItemSummaryList = trajectoryByDate.getActivitySummary();
-        List<Session> uniqueSessions = trajectoryByDate.getSessions();
-        TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
+        trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryByDate -> {
+            List<ActivitySummary> activityItemSummaryList = trajectoryByDate.getActivitySummary();
+            List<Session> uniqueSessions = trajectoryByDate.getSessions();
+            TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
 
-        if (trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
-            normalBottomSheet.updateSummaryView(activityItemSummaryList, clickedSegment);
-            normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
-        }
-    });
+            if (trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                normalBottomSheet.updateSummaryView(activityItemSummaryList, clickedSegment);
+                normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
+            }
+        });
 
-    trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedId -> {
-        normalBottomSheet.highlightClickedSegment(clickedId);  
-    });
-}
+        trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedId -> {
+            normalBottomSheet.highlightClickedSegment(clickedId);
+        });
+    }
 
 
     private void configureDateSelection() {
