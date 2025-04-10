@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
-        android:overScrollMode="never"
+        android:overScrollMode="always"
         app:layout_constraintTop_toBottomOf="@id/session_dropdown_layout" />
 
     <View

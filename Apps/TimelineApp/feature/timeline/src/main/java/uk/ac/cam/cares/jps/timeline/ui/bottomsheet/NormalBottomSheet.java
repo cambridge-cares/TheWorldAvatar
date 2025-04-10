@@ -173,7 +173,7 @@ public class NormalBottomSheet extends BottomSheet {
             sessionsRecyclerView.post(() -> {
                 LinearLayoutManager layoutManager = (LinearLayoutManager) sessionsRecyclerView.getLayoutManager();
                 if (layoutManager != null) {
-                    layoutManager.scrollToPositionWithOffset(clickedSegment.getSessionNumber(), 0);
+                    layoutManager.scrollToPositionWithOffset(clickedSegment.getSessionNumber() - 1, 0);
                 }
             });
         }
