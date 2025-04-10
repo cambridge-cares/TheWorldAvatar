@@ -29,7 +29,7 @@ enum Column {
     private final Area area;
     private final Set<Annual> annuals;
 
-     Column(Area area, Set<Annual> annuals) {
+    Column(Area area, Set<Annual> annuals) {
         this.area = area;
         this.annuals = annuals;
     }
