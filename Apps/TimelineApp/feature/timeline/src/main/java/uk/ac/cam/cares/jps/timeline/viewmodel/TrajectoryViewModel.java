@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.data.TrajectoryRepository;
  *
  */
 @HiltViewModel
-public class TrajectoryViewModel extends ViewModel {
+public class TrajectoryViewModel extends ViewModel implements SegmentClickInterface{
 
     private final TrajectoryRepository trajectoryRepository;
     private final MutableLiveData<TrajectoryByDate> _trajectory = new MutableLiveData<>();
@@ -72,8 +72,8 @@ public class TrajectoryViewModel extends ViewModel {
         });
     }
 
-    public void setClicked(Integer segmentId, String sessionId) {
-        
+    @Override
+    public void setClickedSegment(Integer segmentId, String sessionId) {
         if (segmentId == null || sessionId == null) {
             _clickedSegment.postValue(null);
             Log.d("invalid click", "No point clicked or not on a segment.");
@@ -87,13 +87,12 @@ public class TrajectoryViewModel extends ViewModel {
             return;
         }
 
-       for(TrajectorySegment segment:trajectorySegments) {
-        if(segment.getId() == segmentId && segment.getSessionId().equals(sessionId)) {
-            _clickedSegment.postValue(segment);
-            return;
+        for(TrajectorySegment segment:trajectorySegments) {
+            if(segment.getId() == segmentId && segment.getSessionId().equals(sessionId)) {
+                _clickedSegment.postValue(segment);
+                return;
+            }
         }
-       }
-        
     }
 
     public void removeAllClicked() {

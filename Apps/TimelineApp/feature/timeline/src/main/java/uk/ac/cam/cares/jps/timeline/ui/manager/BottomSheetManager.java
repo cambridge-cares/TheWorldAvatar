@@ -102,7 +102,7 @@ public class BottomSheetManager {
     }
 
     private void initNormalBottomSheet() {
-        normalBottomSheet = new NormalBottomSheet(context, bottomSheetBehavior);
+        normalBottomSheet = new NormalBottomSheet(context, trajectoryViewModel);
         configureDateSelection();
         configureTrajectoryRetrieval();
         configureSummary();

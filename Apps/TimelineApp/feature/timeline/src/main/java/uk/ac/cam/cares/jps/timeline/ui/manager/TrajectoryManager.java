@@ -6,6 +6,7 @@
  import android.util.Log;
 
  import androidx.fragment.app.Fragment;
+ import androidx.lifecycle.LifecycleOwner;
  import androidx.lifecycle.ViewModelProvider;
 
 
@@ -39,6 +40,7 @@
  import java.util.Objects;
 
  import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
+ import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
  import uk.ac.cam.cares.jps.timeline.viewmodel.NormalBottomSheetViewModel;
  import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
  import uk.ac.cam.cares.jps.timelinemap.R;
@@ -86,7 +88,7 @@
                  removeAllLayers(style);
                  if (!trajectoryByDate.getTrajectoryStr().isEmpty()) {
                      paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
-                     addTrajectoryClickListener(mapView, selectedColor);
+                     addTrajectoryClickListener(mapView, selectedColor, fragment.getViewLifecycleOwner());
                  }
              });
 
@@ -104,7 +106,7 @@
      /**
       * Adds a click listener to detect which trajectory segment was clicked.
       */
-      private void addTrajectoryClickListener(MapView mapView, String selectedColor) {
+      private void addTrajectoryClickListener(MapView mapView, String selectedColor, LifecycleOwner lifecycleOwner) {
             GesturesPlugin gesturesPlugin = GesturesUtils.getGestures(mapView);
 
             gesturesPlugin.addOnMapClickListener(point -> {
@@ -128,21 +130,25 @@
                                 String sessionId = feature.hasProperty("session_id") ? feature.getStringProperty("session_id") : null;
 
                                 if (segmentId != null && sessionId != null) {
-                                    removeHighlightLayer(mapView.getMapboxMap().getStyle()); // Remove any existing highlight
-                                    highlightTrajectorySegment(mapView.getMapboxMap().getStyle(), segmentId, sessionId, selectedColor);
-                                    trajectoryViewModel.setClicked(segmentId, sessionId);
+                                    trajectoryViewModel.setClickedSegment(segmentId, sessionId);
                                 } else {
-                                    removeHighlightLayer(mapView.getMapboxMap().getStyle()); // Remove highlight if nothing is clicked
-                                    trajectoryViewModel.setClicked(null, null);
+                                    trajectoryViewModel.setClickedSegment(null, null);
                                 }
                             } else {
-                                removeHighlightLayer(mapView.getMapboxMap().getStyle()); // No feature clicked, remove highlight
-                                trajectoryViewModel.setClicked(null, null);
+                                trajectoryViewModel.setClickedSegment(null, null);
                             }
                         }
                 );
 
                 return true;
+            });
+
+            trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedSegment -> {
+                removeHighlightLayer(mapView.getMapboxMap().getStyle());
+                if (clickedSegment != null) {
+                    highlightTrajectorySegment(mapView.getMapboxMap().getStyle(), clickedSegment, selectedColor);
+                    resetCameraCentre(mapView, clickedSegment.getBbox());
+                }
             });
         }
 
@@ -152,8 +158,7 @@
             }
         }
 
-
-        private void highlightTrajectorySegment(Style style, int segmentId, String sessionId, String selectedColor) {
+        private void highlightTrajectorySegment(Style style, TrajectorySegment clickedSegment, String selectedColor) {
             removeHighlightLayer(style); // Ensure no duplicate highlights
 
             try {
@@ -167,12 +172,12 @@
                 JSONArray idFilter = new JSONArray();
                 idFilter.put("==");
                 idFilter.put("id");
-                idFilter.put(segmentId);
+                idFilter.put(clickedSegment.getId());
 
                 JSONArray sessionFilter = new JSONArray();
                 sessionFilter.put("==");
                 sessionFilter.put("session_id");
-                sessionFilter.put(sessionId);
+                sessionFilter.put(clickedSegment.getSessionId());
 
                 filter.put(idFilter);
                 filter.put(sessionFilter);
@@ -255,23 +260,27 @@
          layerNames.add(mode);
      }
 
+     private void resetCameraCentre(MapView mapView, JSONArray bbox) {
+         mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
+             Point newCenter = getBBoxCenter(bbox);
+             if (newCenter == null) {
+                 return null;
+             }
+             plugin.flyTo(new CameraOptions.Builder()
+                             .center(newCenter)
+                             .build(),
+                     new MapAnimationOptions.Builder().duration(2000).build(),
+                     null);
+             return null;
+         });
+     }
+
      private void resetCameraCentre(MapView mapView, TrajectoryByDate trajectoryByDate) {
          try {
              JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
              JSONArray bbox = jsonObject.getJSONArray("bbox");
 
-             mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
-                 Point newCenter = getBBoxCenter(bbox);
-                 if (newCenter == null) {
-                     return null;
-                 }
-                 plugin.flyTo(new CameraOptions.Builder()
-                                 .center(newCenter)
-                                 .build(),
-                         new MapAnimationOptions.Builder().duration(2000).build(),
-                         null);
-                 return null;
-             });
+             resetCameraCentre(mapView, bbox);
          } catch (JSONException e) {
              LOGGER.info("No trajectory retrieved, no need to reset camera");
          }

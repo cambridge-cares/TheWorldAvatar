@@ -31,6 +31,7 @@ import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.ActivitySummaryAdapter;
 import uk.ac.cam.cares.jps.timeline.ui.adapter.SessionsAdapter;
+import uk.ac.cam.cares.jps.timeline.viewmodel.SegmentClickInterface;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 /**
@@ -42,23 +43,23 @@ public class NormalBottomSheet extends BottomSheet {
     private ActivitySummaryAdapter summaryAdapter;
     private RecyclerView sessionsRecyclerView;
     private SessionsAdapter sessionsAdapter;
-    private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
+    private SegmentClickInterface segmentClickInterface;
 
 
-    public NormalBottomSheet(Context context, BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior) {
+    public NormalBottomSheet(Context context,
+                             SegmentClickInterface segmentClickInterface) {
         super(context);
         init(context);
 
-        this.bottomSheetBehavior = bottomSheetBehavior;
+        this.segmentClickInterface = segmentClickInterface;
     }
 
     @Override
     void init(Context context) {
         bottomSheet = (LinearLayoutCompat) LayoutInflater.from(context).inflate(R.layout.bottom_sheet_widget, null);
 
+        sessionsAdapter = new SessionsAdapter(segmentClickInterface);
         sessionsRecyclerView = bottomSheet.findViewById(R.id.sessions_recycler_view);
-
-        sessionsAdapter = new SessionsAdapter();
         sessionsRecyclerView.setAdapter(sessionsAdapter);
         sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
@@ -76,17 +77,15 @@ public class NormalBottomSheet extends BottomSheet {
             }
         });
 
-        summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
-
-
         summaryAdapter = new ActivitySummaryAdapter();
+        summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
         summaryRecyclerView.setAdapter(summaryAdapter);
         summaryRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     }
 
     public void showFetchingAnimation(boolean isFetching) {
         if (isFetching) {
-            sessionsAdapter = new SessionsAdapter();
+            sessionsAdapter = new SessionsAdapter(segmentClickInterface);
             sessionsRecyclerView.setAdapter(sessionsAdapter);
 
             summaryAdapter = new ActivitySummaryAdapter();
