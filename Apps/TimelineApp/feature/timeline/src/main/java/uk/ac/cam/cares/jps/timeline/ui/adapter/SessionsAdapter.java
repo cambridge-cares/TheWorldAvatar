@@ -63,38 +63,40 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         holder.activityRecyclerView.setRecycledViewPool(sharedViewPool);
         holder.activityRecyclerView.setHasFixedSize(false);
 
-        holder.activityRecyclerView.post(() -> {
-            ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
+        // TODO: height measurement will break the scroll of recyclerview
+//        holder.activityRecyclerView.post(() -> {
+//            ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
+//
+//            if (clickedSegment != null) {
+//                int maxHeightPx = (int) TypedValue.applyDimension(
+//                        TypedValue.COMPLEX_UNIT_DIP, 500,
+//                        holder.activityRecyclerView.getResources().getDisplayMetrics()
+//                );
+//
+//                // Measure content height
+//                int totalHeight = 0;
+//                for (int i = 0; i < holder.activityRecyclerView.getChildCount(); i++) {
+//                    View child = holder.activityRecyclerView.getChildAt(i);
+//                    if (child != null) {
+//                        totalHeight += child.getMeasuredHeight();
+//                    }
+//                }
+//
+//                params.height = Math.min(totalHeight, maxHeightPx); // Dynamic sizing
+//            } else {
+//                params.height = ViewGroup.LayoutParams.MATCH_PARENT; // Full height if no clickedSegment
+//            }
+//
+//            holder.activityRecyclerView.setLayoutParams(params);
+//        });
 
-            if (clickedSegment != null) {
-                int maxHeightPx = (int) TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, 500,
-                        holder.activityRecyclerView.getResources().getDisplayMetrics()
-                );
-
-                // Measure content height
-                int totalHeight = 0;
-                for (int i = 0; i < holder.activityRecyclerView.getChildCount(); i++) {
-                    View child = holder.activityRecyclerView.getChildAt(i);
-                    if (child != null) {
-                        totalHeight += child.getMeasuredHeight();
-                    }
-                }
-
-                params.height = Math.min(totalHeight, maxHeightPx); // Dynamic sizing
-            } else {
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT; // Full height if no clickedSegment
-            }
-
-            holder.activityRecyclerView.setLayoutParams(params);
-        });
-
+        // TODO: scrollTo not really work without height measurement
         // Ensure we scroll to the correct activity within the session
-        if (clickedSegment != null && session.containsSegment(clickedSegment)) {
-            holder.activityRecyclerView.post(() ->
-                    layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession() - 1, 0)
-            );
-        }
+//        if (clickedSegment != null && session.containsSegment(clickedSegment)) {
+//            holder.activityRecyclerView.post(() ->
+//                    layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession() - 1, 0)
+//            );
+//        }
     }
 
     @Override

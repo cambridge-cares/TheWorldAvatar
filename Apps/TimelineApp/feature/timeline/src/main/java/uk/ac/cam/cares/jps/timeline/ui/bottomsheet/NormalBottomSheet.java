@@ -63,19 +63,20 @@ public class NormalBottomSheet extends BottomSheet {
         sessionsRecyclerView.setAdapter(sessionsAdapter);
         sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        final float maxHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 500, context.getResources().getDisplayMetrics());
-
-        sessionsRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (sessionsRecyclerView.getHeight() > maxHeightPx) {
-                    ViewGroup.LayoutParams params = sessionsRecyclerView.getLayoutParams();
-                    params.height = (int) maxHeightPx;
-                    sessionsRecyclerView.setLayoutParams(params);
-                }
-                sessionsRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
+        // TODO: not sure whether height measurement can break the scrolling
+//        final float maxHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 500, context.getResources().getDisplayMetrics());
+//
+//        sessionsRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                if (sessionsRecyclerView.getHeight() > maxHeightPx) {
+//                    ViewGroup.LayoutParams params = sessionsRecyclerView.getLayoutParams();
+//                    params.height = (int) maxHeightPx;
+//                    sessionsRecyclerView.setLayoutParams(params);
+//                }
+//                sessionsRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//            }
+//        });
 
         summaryAdapter = new ActivitySummaryAdapter();
         summaryRecyclerView = bottomSheet.findViewById(R.id.summary_recycler_view);
