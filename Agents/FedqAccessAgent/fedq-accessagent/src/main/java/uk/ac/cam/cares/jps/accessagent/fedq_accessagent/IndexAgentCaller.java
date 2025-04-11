@@ -98,6 +98,13 @@ public class IndexAgentCaller {
         return ResponseEntity.ok("Value added successfully: " + value);
     }
 
+    // /api/index/remove adds an index data to dragonfly and broadcast to other nodes
+    @PostMapping("/remove")
+    public ResponseEntity<String> removeIndexEntity(@RequestParam String key, @RequestParam String value) {
+        indexAgent.removeIndexEntity(key, value);
+        return ResponseEntity.ok("Value removed successfully: " + value);
+    }
+
     // /api/index/get gets endpoints from the index
     @GetMapping("/get")
     public ResponseEntity<Set<String>> getEndpoints(@RequestParam String key) {
