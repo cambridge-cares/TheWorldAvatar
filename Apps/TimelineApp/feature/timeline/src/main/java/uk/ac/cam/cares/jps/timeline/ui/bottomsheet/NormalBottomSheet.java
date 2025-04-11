@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -60,31 +61,6 @@ public class NormalBottomSheet extends BottomSheet {
         sessionsAdapter = new SessionsAdapter();
         sessionsRecyclerView.setAdapter(sessionsAdapter);
         sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        sessionsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (!sessionsRecyclerView.canScrollVertically(-1) && dy < 0) {
-                    // session list at the top, collapse bottomsheet
-                    if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_DRAGGING &&
-                            bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_SETTLING) {
-                        switch (bottomSheetBehavior.getState()) {
-                            case STATE_HALF_EXPANDED ->
-                                    bottomSheetBehavior.setState(STATE_COLLAPSED);
-                            case STATE_EXPANDED ->
-                                    bottomSheetBehavior.setState(STATE_HALF_EXPANDED);
-                        }
-                    }
-                    return;
-                }
-                if (dy > 10 && bottomSheetBehavior.getState() != STATE_EXPANDED && bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_DRAGGING &&
-                        bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_SETTLING) {
-                    bottomSheetBehavior.setState(STATE_EXPANDED);
-                    return;
-                }
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
-
 
         final float maxHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 500, context.getResources().getDisplayMetrics());
 
@@ -129,7 +105,7 @@ public class NormalBottomSheet extends BottomSheet {
         }
     }
 
-    public void updateUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
+    public void updateSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
         if (sessionList != null && !sessionList.isEmpty()) {
             sessionsAdapter.setUniqueSessionsList(sessionList, clickedSegment);
 
