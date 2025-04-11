@@ -98,14 +98,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
     public void setClickedSegment(TrajectorySegment clickedSegment) {
         this.clickedSegment = clickedSegment;
-
-        for (int i = 0; i < sessionList.size(); i++) {
-            Session session = sessionList.get(i);
-            if (session.containsSegment(clickedSegment) || clickedSegment == null) {
-                notifyItemChanged(i);
-                return;
-            }
-        }
+        notifyDataSetChanged();
     }
 
     public class NonScrollableLinearLayoutManager extends LinearLayoutManager {
