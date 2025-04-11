@@ -68,7 +68,6 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
 
         holder.timeSummary.setText(activityItem.getTimeSummary());
 
-        holder.clicked.setImageResource(R.drawable.baseline_keyboard_double_arrow_left_24);
         if(activityItem.getClicked()) {
             holder.clicked.setVisibility(View.VISIBLE);
         }

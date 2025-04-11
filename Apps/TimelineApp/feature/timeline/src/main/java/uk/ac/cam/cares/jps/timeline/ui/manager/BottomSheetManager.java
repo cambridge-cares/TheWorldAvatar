@@ -27,7 +27,6 @@ import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivitySummary;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
-import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
@@ -119,11 +118,12 @@ public class BottomSheetManager {
         trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectoryByDate -> {
             List<ActivitySummary> activityItemSummaryList = trajectoryByDate.getActivitySummary();
             List<Session> uniqueSessions = trajectoryByDate.getSessions();
-            TrajectorySegment clickedSegment = trajectoryViewModel.clickedSegment.getValue();  // Get the clicked segment ID
 
             if (trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
                 normalBottomSheet.updateSummaryView(activityItemSummaryList);
-                normalBottomSheet.updateUniqueSessionsList(uniqueSessions, clickedSegment);
+
+                // no clickedSegment when trajectory just loaded
+                normalBottomSheet.updateSessionsList(uniqueSessions, null);
             }
         });
 
