@@ -125,18 +125,19 @@
                                 Feature feature = clickedFeature.getFeature();
 
                                 Integer segmentId = feature.hasProperty("id") ? feature.getNumberProperty("id").intValue() : null;
+                                String sessionId = feature.hasProperty("session_id") ? feature.getStringProperty("session_id") : null;
 
-                                if (segmentId != null) {
+                                if (segmentId != null && sessionId != null) {
                                     removeHighlightLayer(mapView.getMapboxMap().getStyle()); // Remove any existing highlight
-                                    highlightTrajectorySegment(mapView.getMapboxMap().getStyle(), segmentId, selectedColor);
-                                    trajectoryViewModel.setClicked(segmentId);
+                                    highlightTrajectorySegment(mapView.getMapboxMap().getStyle(), segmentId, sessionId, selectedColor);
+                                    trajectoryViewModel.setClicked(segmentId, sessionId);
                                 } else {
                                     removeHighlightLayer(mapView.getMapboxMap().getStyle()); // Remove highlight if nothing is clicked
-                                    trajectoryViewModel.setClicked(null);
+                                    trajectoryViewModel.setClicked(null, null);
                                 }
                             } else {
                                 removeHighlightLayer(mapView.getMapboxMap().getStyle()); // No feature clicked, remove highlight
-                                trajectoryViewModel.setClicked(null);
+                                trajectoryViewModel.setClicked(null, null);
                             }
                         }
                 );
@@ -152,7 +153,7 @@
         }
 
 
-        private void highlightTrajectorySegment(Style style, int segmentId, String selectedColor) {
+        private void highlightTrajectorySegment(Style style, int segmentId, String sessionId, String selectedColor) {
             removeHighlightLayer(style); // Ensure no duplicate highlights
 
             try {
@@ -160,11 +161,27 @@
                 paint.put("line-color", selectedColor);
                 paint.put("line-width", 8);
 
+                JSONArray filter = new JSONArray();
+                filter.put("all");
+
+                JSONArray idFilter = new JSONArray();
+                idFilter.put("==");
+                idFilter.put("id");
+                idFilter.put(segmentId);
+
+                JSONArray sessionFilter = new JSONArray();
+                sessionFilter.put("==");
+                sessionFilter.put("session_id");
+                sessionFilter.put(sessionId);
+
+                filter.put(idFilter);
+                filter.put(sessionFilter);
+
                 JSONObject layerJson = new JSONObject();
                 layerJson.put("id", "highlight_layer");
                 layerJson.put("type", "line");
                 layerJson.put("source", "trajectory_default");
-                layerJson.put("filter", new JSONArray().put("==").put("id").put(segmentId));
+                layerJson.put("filter", filter);
                 layerJson.put("paint", paint);
 
                 style.addStyleLayer(

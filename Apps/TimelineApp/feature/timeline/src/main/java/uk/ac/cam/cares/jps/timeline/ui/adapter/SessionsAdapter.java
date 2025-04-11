@@ -51,7 +51,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
         NonScrollableLinearLayoutManager layoutManager = new NonScrollableLinearLayoutManager(holder.activityRecyclerView.getContext());
 
-        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getActivityList(), clickedSegment);
+        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getActivityList(), session.getSessionId(), clickedSegment);
         holder.activityRecyclerView.setLayoutManager(layoutManager);
         holder.activityRecyclerView.setAdapter(activityItemAdapter);
         holder.activityRecyclerView.setRecycledViewPool(sharedViewPool);
@@ -89,14 +89,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
                     layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession() - 1, 0)
             );
         }
-
-        holder.dropdownLayout.setOnClickListener(view -> {
-            if (holder.activityRecyclerView.getVisibility() == VISIBLE) {
-                holder.activityRecyclerView.setVisibility(GONE);
-            } else {
-                holder.activityRecyclerView.setVisibility(VISIBLE);
-            }
-        });
     }
 
     @Override
@@ -138,6 +130,14 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
             sessionTitle = sessionView.findViewById(R.id.session_id);
             activityRecyclerView = sessionView.findViewById(R.id.activity_items);
             dropdownLayout = sessionView.findViewById(R.id.session_dropdown_layout);
+
+            dropdownLayout.setOnClickListener(view -> {
+                if (activityRecyclerView.getVisibility() == VISIBLE) {
+                    activityRecyclerView.setVisibility(GONE);
+                } else {
+                    activityRecyclerView.setVisibility(VISIBLE);
+                }
+            });
         }
     }
 }

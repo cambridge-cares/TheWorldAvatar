@@ -22,14 +22,14 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapter.ActivityItemViewHolder> {
     private final List<ActivityItem> activityList;
 
-    public ActivityItemAdapter(List<ActivityItem> activityList, TrajectorySegment clickedSegment) {
+    public ActivityItemAdapter(List<ActivityItem> activityList, String sessionId, TrajectorySegment clickedSegment) {
         this.activityList = activityList;
 
         for(ActivityItem item : activityList) {
             if(clickedSegment == null) {
                 item.setClicked(false);
             }
-            else if(item.getId() == clickedSegment.getId()) {
+            else if(item.getId() == clickedSegment.getId() && sessionId.equals(clickedSegment.getSessionId())) {
                 item.setClicked(true);
             }
             else {

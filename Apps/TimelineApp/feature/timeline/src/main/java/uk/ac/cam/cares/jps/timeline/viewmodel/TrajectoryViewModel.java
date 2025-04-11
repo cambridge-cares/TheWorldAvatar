@@ -72,9 +72,9 @@ public class TrajectoryViewModel extends ViewModel {
         });
     }
 
-    public void setClicked(Integer segmentId) {
+    public void setClicked(Integer segmentId, String sessionId) {
         
-        if (segmentId == null) {
+        if (segmentId == null || sessionId == null) {
             _clickedSegment.postValue(null);
             Log.d("invalid click", "No point clicked or not on a segment.");
             return;
@@ -88,7 +88,7 @@ public class TrajectoryViewModel extends ViewModel {
         }
 
        for(TrajectorySegment segment:trajectorySegments) {
-        if(segment.getId() == segmentId) {
+        if(segment.getId() == segmentId && segment.getSessionId().equals(sessionId)) {
             _clickedSegment.postValue(segment);
             return;
         }
