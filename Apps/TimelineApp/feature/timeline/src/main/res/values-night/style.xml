@@ -7,6 +7,7 @@
 
     <item name="colorQuaternary" type="color">@color/md_theme_dark_quaternary</item>
     <item name="colorDefault" type="color">@color/md_theme_dark_default</item>
+    <item name="colorSelected" type="color">@color/md_theme_dark_selected</item>
     <item name="rippleColor" type="color">@color/md_theme_dark_outline</item>
     <item name="app_bar_background" type="drawable">@drawable/gradient_app_bar_background_night</item>
 </resources>

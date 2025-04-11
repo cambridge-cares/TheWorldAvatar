@@ -10,14 +10,11 @@ public class Session {
     private final String sessionTitle;
     private final List<TrajectorySegment> trajectorySegments;
     private final List<ActivityItem> activityList;
-    private List<ActivityItem> shownList;
-    private final List<ActivityItem> EMPTY_LIST = new ArrayList<>();
 
     public Session(String sessionId, String sessionTitle, List<TrajectorySegment> trajectorySegments) {
         this.sessionId = sessionId;
         this.trajectorySegments = trajectorySegments;
         this.activityList = parseTrajectorySegment(trajectorySegments);
-        this.shownList = activityList;
         this.sessionTitle = sessionTitle;
     }
 
@@ -37,18 +34,6 @@ public class Session {
 
     public String getSessionId() {
         return sessionId;
-    }
-
-    public List<ActivityItem> getShownList() {
-        return shownList;
-    }
-
-    public void setShownListAsActivityList() {
-        this.shownList = this.activityList;
-    }
-
-    public void setShownListAsEmptyList() {
-        this.shownList = EMPTY_LIST;
     }
 
     public String getSessionTitle() {
