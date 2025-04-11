@@ -161,9 +161,9 @@ public class IndexAgent {
             @Override
             public void onMessage(String channel, String message) {
                 JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
-                if(jsonObject.get("action").getAsString()=="ADD"){
+                if(jsonObject.get("action").getAsString().equalsIgnoreCase("ADD")){
                     redisTemplate.opsForSet().add(jsonObject.get("key").getAsString(), jsonObject.get("endpoint").getAsString());
-                }else if(jsonObject.get("action").getAsString()=="REMOVE"){
+                }else if(jsonObject.get("action").getAsString().equalsIgnoreCase("REMOVE")){
                     redisTemplate.opsForSet().remove(jsonObject.get("key").getAsString(), jsonObject.get("endpoint").getAsString());
                 }
                 System.out.println("Received & Locally Operated: " + message + " on channel: " + channel);
