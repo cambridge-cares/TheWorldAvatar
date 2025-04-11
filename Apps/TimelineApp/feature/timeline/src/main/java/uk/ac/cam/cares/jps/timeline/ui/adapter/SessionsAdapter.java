@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.timeline.ui.adapter;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -48,37 +51,37 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
         NonScrollableLinearLayoutManager layoutManager = new NonScrollableLinearLayoutManager(holder.activityRecyclerView.getContext());
 
-        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getShownList(), clickedSegment);
+        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getActivityList(), clickedSegment);
         holder.activityRecyclerView.setLayoutManager(layoutManager);
         holder.activityRecyclerView.setAdapter(activityItemAdapter);
         holder.activityRecyclerView.setRecycledViewPool(sharedViewPool);
         holder.activityRecyclerView.setHasFixedSize(false);
 
         holder.activityRecyclerView.post(() -> {
-        ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
+            ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
 
             if (clickedSegment != null) {
                 int maxHeightPx = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, 500,
-                    holder.activityRecyclerView.getResources().getDisplayMetrics()
+                        TypedValue.COMPLEX_UNIT_DIP, 500,
+                        holder.activityRecyclerView.getResources().getDisplayMetrics()
                 );
 
-            // Measure content height
-            int totalHeight = 0;
-            for (int i = 0; i < holder.activityRecyclerView.getChildCount(); i++) {
-                View child = holder.activityRecyclerView.getChildAt(i);
-                if (child != null) {
-                    totalHeight += child.getMeasuredHeight();
+                // Measure content height
+                int totalHeight = 0;
+                for (int i = 0; i < holder.activityRecyclerView.getChildCount(); i++) {
+                    View child = holder.activityRecyclerView.getChildAt(i);
+                    if (child != null) {
+                        totalHeight += child.getMeasuredHeight();
+                    }
                 }
+
+                params.height = Math.min(totalHeight, maxHeightPx); // Dynamic sizing
+            } else {
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT; // Full height if no clickedSegment
             }
 
-            params.height = Math.min(totalHeight, maxHeightPx); // Dynamic sizing
-        } else {
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT; // Full height if no clickedSegment
-        }
-
-        holder.activityRecyclerView.setLayoutParams(params);
-    });
+            holder.activityRecyclerView.setLayoutParams(params);
+        });
 
         // Ensure we scroll to the correct activity within the session
         if (clickedSegment != null && session.containsSegment(clickedSegment)) {
@@ -88,13 +91,11 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         }
 
         holder.dropdownLayout.setOnClickListener(view -> {
-            if (!session.getShownList().isEmpty()) {
-                session.setShownListAsEmptyList();
-                setClickedSegment(null);
+            if (holder.activityRecyclerView.getVisibility() == VISIBLE) {
+                holder.activityRecyclerView.setVisibility(GONE);
             } else {
-                session.setShownListAsActivityList();
+                holder.activityRecyclerView.setVisibility(VISIBLE);
             }
-            notifyItemChanged(position);
         });
     }
 
