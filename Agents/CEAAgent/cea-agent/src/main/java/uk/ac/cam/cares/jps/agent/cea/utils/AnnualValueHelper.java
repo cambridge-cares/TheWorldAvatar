@@ -5,16 +5,19 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-
+import org.apache.jena.graph.Node;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class AnnualValueHelper {
     /**
@@ -40,6 +43,12 @@ public class AnnualValueHelper {
         deletes.add(
                 new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology)));
 
+        // query triplestore to check if there are existing annual values for each time series
+        
+        List<String> dataIRIList = CEAConstants.TIME_SERIES.stream().map(iriMap::get).collect(Collectors.toList());
+
+        Map<String, JSONObject> annualObjectMap = bulkCheckAnnualObject(dataIRIList, route);
+
         for (String ts : CEAConstants.TIME_SERIES) {
             if ((i + 1) % 10 == 0) {
                 deletes.add(new WhereBuilder().addPrefix("om",
@@ -52,14 +61,15 @@ public class AnnualValueHelper {
             }
             annualValue = Math.round(annualValue * Math.pow(10, 2)) / Math.pow(10, 2);
             String dataIRI = iriMap.get(ts);
-            JSONObject annualObject = checkAnnualObject(dataIRI, route);
+            JSONObject annualObject = annualObjectMap.get(dataIRI);
 
             if (annualObject.has("measure")) {
                 // if annual value already instantiated, update value
                 updateAnnual(deletes.get(deletes.size() - 1), wb2, annualObject.getString("measure"), annualValue, i);
             } else {
                 // if no previously instantiated annual value, insert update
-                insertUpdate(wb, annualObject.getString("building"), ts, annualObject.getString("energyType"), annualValue);
+                insertUpdate(wb, annualObject.getString("building"), ts, getEnergyType(dataIRI),
+                        annualValue);
             }
             i++;
         }
@@ -212,7 +222,7 @@ public class AnnualValueHelper {
 
         wb.addWhere(NodeFactory.createURI(quantity), "om:hasDimension", "om:energy-Dimension")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", "ub:" + energyType)
+                .addWhere(NodeFactory.createURI(quantity), "rdf:type", "ub:"+energyType)
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual");
 
         wb.addWhere(NodeFactory.createURI(measure), "om:hasUnit", "om:kilowattHour")
@@ -275,17 +285,87 @@ public class AnnualValueHelper {
 
     }
 
+    private static Map<String, JSONObject> bulkCheckAnnualObject(List<String> dataIRIList, String route) {
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+
+        // VALUES clause
+
+        Var dataIRIVar = Var.alloc("dataIRI");
+        Var energyTypeVar = Var.alloc("energyType");
+        Var predicateVar = Var.alloc("predicate");
+
+        Map<Var, Collection<?>> valuesMap = new HashMap<>();
+        List<Node> dataIRINodeList = new ArrayList<>(); 
+        List<String> energyTypeList = new ArrayList<>();
+        List<String> predicateList = new ArrayList<>();
+
+        for (String dataIRI : dataIRIList) {
+            String energyType = getEnergyType(dataIRI);
+            String predicate = (energyType.contains("Consumption")) ? "ub:consumesEnergy" : "ub:producesEnergy";
+            dataIRINodeList.add(NodeFactory.createURI(dataIRI));
+            energyTypeList.add("ub:" + energyType);
+            predicateList.add(predicate);
+        }
+
+        valuesMap.put(dataIRIVar, dataIRINodeList);
+        valuesMap.put(energyTypeVar, energyTypeList);
+        valuesMap.put(predicateVar, predicateList);
+
+        wb.addWhereValueVars(valuesMap);
+
+        wb.addWhere("?quantity", "om:hasValue", "?dataIRI");
+        wb.addWhere("?building", "?predicate", "?quantity");
+
+        SelectBuilder sb = new SelectBuilder().addWhere(wb).addVar("?building").addVar("?dataIRI").addVar("?measure")
+                .addVar("?energyType").addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+        
+        // optional where statement
+        WhereBuilder optionalWb = new WhereBuilder()
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+        optionalWb.addWhere("?building", "?predicate", "?otherQuantity");
+
+
+        optionalWb.addWhere("?otherQuantity", "rdf:type", "?energyType");
+        optionalWb.addWhere("?otherQuantity", "om:hasValue", "?measure");
+
+        // combine queries explicitly to ensure the order
+        // VALUES clause must appear before OPTIONAL in this case
+        String mainQuery = sb.buildString();
+
+        String optionalQuery = "OPTIONAL " + optionalWb.buildString().split("WHERE")[1]; // only keep curly bracket content
+
+        int lastCurlyIndex = mainQuery.lastIndexOf("}");
+        String finalQuery = mainQuery.substring(0, lastCurlyIndex) + optionalQuery + "}";
+
+        JSONArray queryResultArray = AccessAgentCaller.queryStore(route, finalQuery);
+
+        if (!queryResultArray.isEmpty()) {
+            // return result as a 
+            return StreamSupport.stream(queryResultArray.spliterator(), false)
+                .map(JSONObject.class::cast).collect(Collectors.toMap(node -> node.getString("dataIRI"), node -> node));
+        } else {
+            return Map.of();
+        }
+
+    }
+
     private static WhereBuilder getAnnualObjectWhere(String dataIRI, String energyType) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
-        
+
         WhereBuilder optionalWb = new WhereBuilder()
                 .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
-        
+
         wb.addWhere("?quantity", "om:hasValue", NodeFactory.createURI(dataIRI));
 
         String predicate = (energyType.contains("Consumption")) ? "ub:consumesEnergy" : "ub:producesEnergy";
@@ -293,9 +373,10 @@ public class AnnualValueHelper {
         wb.addWhere("?building", predicate, "?quantity");
         optionalWb.addWhere("?building", predicate, "?otherQuantity");
 
-        // up to this point, we know the building associdated with this particular dataIRI
+        // up to this point, we know the building associdated with this particular
+        // dataIRI
         // now try to see if it has the annual value
-        
+
         optionalWb.addWhere("?otherQuantity", "rdf:type", "ub:" + energyType);
         optionalWb.addWhere("?otherQuantity", "om:hasValue", "?measure");
 
