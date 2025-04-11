@@ -160,7 +160,7 @@ public class IndexAgent {
         JedisPubSub subscriber = new JedisPubSub() {
             @Override
             public void onMessage(String channel, String message) {
-                JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
                 if(jsonObject.get("action").getAsString()=="ADD"){
                     redisTemplate.opsForSet().add(jsonObject.get("key").getAsString(), jsonObject.get("endpoint").getAsString());
                 }else if(jsonObject.get("action").getAsString()=="REMOVE"){
