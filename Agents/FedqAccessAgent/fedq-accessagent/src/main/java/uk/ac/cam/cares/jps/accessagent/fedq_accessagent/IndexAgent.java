@@ -29,6 +29,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
 import com.google.gson.*;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
@@ -159,7 +160,13 @@ public class IndexAgent {
         JedisPubSub subscriber = new JedisPubSub() {
             @Override
             public void onMessage(String channel, String message) {
-                System.out.println("Received: " + message + " on channel: " + channel);
+                JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+                if(jsonObject.get("action").getAsString()=="ADD"){
+                    redisTemplate.opsForSet().add(jsonObject.get("key").getAsString(), jsonObject.get("endpoint").getAsString());
+                }else if(jsonObject.get("action").getAsString()=="REMOVE"){
+                    redisTemplate.opsForSet().remove(jsonObject.get("key").getAsString(), jsonObject.get("endpoint").getAsString());
+                }
+                System.out.println("Received & Locally Operated: " + message + " on channel: " + channel);
             }
         };
         self_jedis.subscribe(subscriber, CHANNEL_NAME);
