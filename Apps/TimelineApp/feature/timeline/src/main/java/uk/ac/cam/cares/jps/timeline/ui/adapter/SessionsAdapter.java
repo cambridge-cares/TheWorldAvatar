@@ -19,6 +19,7 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
+import uk.ac.cam.cares.jps.timeline.viewmodel.SegmentClickInterface;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 
@@ -26,9 +27,11 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
     private List<Session> sessionList;
     private TrajectorySegment clickedSegment;
     private final RecyclerView.RecycledViewPool sharedViewPool = new RecyclerView.RecycledViewPool();
+    private final SegmentClickInterface segmentClickInterface;
 
-    public SessionsAdapter() {
+    public SessionsAdapter(SegmentClickInterface segmentClickInterface) {
         this.sessionList = new ArrayList<>();
+        this.segmentClickInterface = segmentClickInterface;
     }
 
     public void setUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
@@ -51,7 +54,10 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
         NonScrollableLinearLayoutManager layoutManager = new NonScrollableLinearLayoutManager(holder.activityRecyclerView.getContext());
 
-        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getActivityList(), session.getSessionId(), clickedSegment);
+        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getActivityList(),
+                session.getSessionId(),
+                clickedSegment,
+                segmentClickInterface);
         holder.activityRecyclerView.setLayoutManager(layoutManager);
         holder.activityRecyclerView.setAdapter(activityItemAdapter);
         holder.activityRecyclerView.setRecycledViewPool(sharedViewPool);

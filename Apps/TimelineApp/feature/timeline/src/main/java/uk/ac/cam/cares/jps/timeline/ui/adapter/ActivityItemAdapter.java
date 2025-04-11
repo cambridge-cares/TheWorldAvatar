@@ -15,15 +15,23 @@ import java.util.ArrayList;
 
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
+import uk.ac.cam.cares.jps.timeline.viewmodel.SegmentClickInterface;
 import uk.ac.cam.cares.jps.timelinemap.R;
 /**
  * Adapter class for recyclerview to view activity summary information.
  */
 public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapter.ActivityItemViewHolder> {
     private final List<ActivityItem> activityList;
+    private final SegmentClickInterface segmentClickInterface;
+    private String sessionId;
 
-    public ActivityItemAdapter(List<ActivityItem> activityList, String sessionId, TrajectorySegment clickedSegment) {
+    public ActivityItemAdapter(List<ActivityItem> activityList,
+                               String sessionId,
+                               TrajectorySegment clickedSegment,
+                               SegmentClickInterface segmentClickInterface) {
         this.activityList = activityList;
+        this.segmentClickInterface = segmentClickInterface;
+        this.sessionId = sessionId;
 
         for(ActivityItem item : activityList) {
             if(clickedSegment == null) {
@@ -75,6 +83,8 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
             holder.clicked.setVisibility(View.GONE);
         }
 
+        holder.view.setOnClickListener(v -> segmentClickInterface.setClickedSegment(activityItem.getId(), sessionId));
+
     }
 
     @Override
@@ -95,6 +105,7 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         ImageView activityType;
         TextView timeSummary;
         ImageView clicked;
+        View view;
 
         public ActivityItemViewHolder(@NonNull View activityView) {
             super(activityView);
@@ -102,6 +113,8 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
             activityType = activityView.findViewById(R.id.activityType);
             timeSummary = activityView.findViewById(R.id.timeSummary);
             clicked = activityView.findViewById(R.id.clicked);
+
+            view = activityView;
         }
     }
 

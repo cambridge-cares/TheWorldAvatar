@@ -109,10 +109,11 @@ public class TrajectoryByDate {
                             int id = properties2.optInt("id", 0);
                             String activityType = properties2.optString("activity_type", "unknown");
                             JSONObject geom = feature2.optJSONObject("geometry");
+                            JSONArray bbox = feature2.optJSONArray("bbox");
                             int distanceTraveled = properties2.optInt("distance_traveled", 0);
                             String iri = properties2.optString("iri", "unknown");
 
-                            segmentsInSession.add((new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, distanceTraveled, iri, sessionTitleNumber, numberInSession)));
+                            segmentsInSession.add((new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, bbox, distanceTraveled, iri, sessionTitleNumber, numberInSession)));
                         }
                     }
                     sessions.add(new Session(sessionId, sessionTitle, segmentsInSession));
