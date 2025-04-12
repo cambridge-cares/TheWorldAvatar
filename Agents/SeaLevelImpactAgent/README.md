@@ -28,7 +28,7 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 
 ## 3. Agent Configuration
 ### 3.1 Config Properties
-The [Config.properties](inputs/config.properties) file contain the table name for the different datasets. A default value is set for each parameters following the stack-data-uploader table names specified in [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise).
+The [Config.properties](inputs/config.properties) file contain the table name for the different datasets. A default value is set for each parameters following the stack-data-uploader table names specified in [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore-sea-level-rise).
 1) `dbName` - Specify the postgresql database
 2) `buildingsMatViewName` - Specify the table name for CityDB buildings footprint
 3) `heritagetreesTable` - Specify the table name for heritage tree

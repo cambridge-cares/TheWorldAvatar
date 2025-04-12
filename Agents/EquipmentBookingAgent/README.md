@@ -67,12 +67,12 @@ Prefix | Namespace
 --- | ---
 [bot](https://w3c-lbd-cg.github.io/bot/) | `https://w3id.org/bot#`
 [fibo](https://github.com/edmcouncil/fibo/tree/master/FND/AgentsAndPeople) | `https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/`
-[ontoam](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoassetmanagement) | `https://www.theworldavatar.com/kg/ontoassetmanagement/`
-[ontobim](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim) | `https://www.theworldavatar.com/kg/ontobim/`
-[ontodevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) | `https://www.theworldavatar.com/kg/ontodevice/`
-[ontolab](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontolab) | `https://www.theworldavatar.com/kg/ontolab/`
-[ontotechsystem](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotechnicalsystem) | `https://www.theworldavatar.com/kg/ontotechnicalsystem/`
-[ontotimeseries](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries) | `https://www.theworldavatar.com/kg/ontotimeseries/`
+[ontoam](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoassetmanagement) | `https://www.theworldavatar.com/kg/ontoassetmanagement/`
+[ontobim](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobim) | `https://www.theworldavatar.com/kg/ontobim/`
+[ontodevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice) | `https://www.theworldavatar.com/kg/ontodevice/`
+[ontolab](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontolab) | `https://www.theworldavatar.com/kg/ontolab/`
+[ontotechsystem](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotechnicalsystem) | `https://www.theworldavatar.com/kg/ontotechnicalsystem/`
+[ontotimeseries](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries) | `https://www.theworldavatar.com/kg/ontotimeseries/`
 [time](https://www.w3.org/TR/owl-time/) | `http://www.w3.org/2006/time#`
 
 

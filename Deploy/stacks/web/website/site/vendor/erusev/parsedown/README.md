@@ -1,4 +1,4 @@
-> I also make [Caret](https://caret.io?ref=parsedown) - a Markdown editor for Mac and PC.
+> I also make [Caret](https://caret.io?ref=parsedown) - a Markdown editor for Mac and PC.<!-- markdown-link-check-disable-line -->
 
 ## Parsedown
 

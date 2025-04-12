@@ -213,7 +213,7 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2023
 [chained derivations markup]: https://lucid.app/publicSegments/view/de4041e1-aee2-44d9-82ca-fffca25f5133/image.png
 [OntoTimeSeries]: https://miro.com/app/board/uXjVPFaO5As=/
 [OntoHeatNet]: https://miro.com/app/board/uXjVOhnB9_4=/
-[stack deployment]: https://github.com/cambridge-cares/pirmasens/tree/main/districtheating_stack
+[stack deployment]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/psdt
 
 <!-- files -->
 [docker compose file]: ./docker-compose.yml

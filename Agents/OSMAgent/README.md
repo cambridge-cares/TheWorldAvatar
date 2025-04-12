@@ -69,7 +69,7 @@ Once the OSM data is uploaded, it will appear in PostgreSQL tables. The agent as
 
 #### 2.4.2. Digitales Landschaftsmodell (DLM) Land Use Data
 DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
-The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
+The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
 
 #### 2.4.3. Other Land Use Data
@@ -99,7 +99,7 @@ In the [config.properties](osmagent/src/main/resources/config.properties) file, 
 Default value - `postgres` is set to according to the database name specified in [osmagent_data.json](stack-data-uploader-inputs/config/osmagent_data.json). Change `db.name` if [osmagent_data.json](stack-data-uploader-inputs/config/osmagent_data.json) database value is changed.
 - `osm.schema` - Schema name containing OSM data. 
 Default value - `public` is set to the schema specified in [osmagent_data.json](stack-data-uploader-inputs/config/osmagent_data.json). Change `osm.schema` and [`building_usage.obda`](osmagent/src/main/resources/building_usage.obda) if [osmagent_data.json](stack-data-uploader-inputs/config/osmagent_data.json) schema is changed.
-- `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded via psdt [here](https://github.com/cambridge-cares/pirmasens/blob/main/psdt/stack-data-uploader-inputs/config/dlm.json). Leave empty if there is no land use data available, no land use matching will be run.
+- `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded via psdt [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/psdt/stack-data-uploader-inputs/config/dlm.json). Leave empty if there is no land use data available, no land use matching will be run.
 
 ## 4. Deployment
 ### 4.1 Retrieving OSMAgent's image
