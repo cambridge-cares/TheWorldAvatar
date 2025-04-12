@@ -1,11 +1,11 @@
 # 
 # This workflow contains a job to check for broken links within Markdown files in the repository.
 # 
-name: TWA Markdown Push
+name: TWA Markdown Merge
 
-# Trigger this workflow during pushes to the 'main' branch if changes to Markdown files
+# Trigger this workflow during pull requests to the 'main' branch if changes to Markdown files
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
@@ -13,7 +13,7 @@ on:
       - '**.MD'
 
 jobs:
-  # Check for broken links within all Markdown files
+  # Check for broken links only within Markdown files changed by the pull request
   markdown-link-check:
     name: Check markdown files for broken links
     runs-on: ubuntu-latest
@@ -24,3 +24,4 @@ jobs:
         uses: ruzickap/action-my-markdown-link-checker@v1
         with:
           config_file: .github/workflows/twa-md-push.json
+          check-modified-files-only: 'yes'
