@@ -22,8 +22,27 @@
             "pattern": "https?://twitter.com/?"
         },
         {
+            "pattern": "https?://www.w3.org/?"
+        },
+        {
+            "pattern": "https?://www.ontology-of-units-of-measure.org/?"
+        },
+        {
+            "pattern": "https?://kg.cmclinnovations.com/mods-agent(/[^ ]*)?"
+        },
+        {
+            "pattern": "https?://github.com/[^\/]+/[^\/]+/issues(/[^ ]*)?"
+        },
+        {
             "pattern": "https?://www.dropbox.com/?"
+        },
+        {
+            "pattern": "https?://docs.unity3d.com/?"
         }
-      ],
-    "aliveStatusCodes": [200, 403, 0]
+    ],
+    "aliveStatusCodes": [
+        200,
+        403,
+        0
+    ]
 }

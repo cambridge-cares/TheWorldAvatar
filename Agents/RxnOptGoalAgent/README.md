@@ -4,7 +4,7 @@ The folder contains the source, resource, and Docker setup files for the Reactio
 
 &nbsp;
 ## 1. Purpose
-The Reaction Optimisation Goal (ROG) Agent is designed to take goal requests, monitor the progress in goal iterations, make decisions based on the latest results, visualise progress in goal iterations, and notify users about the status change throughout the process. It does so by translating the goal request to actionable ontological representations based on concepts defined in [`OntoGoal`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontogoal). These expressions will then be picked up by [`RxnOptGoalIterAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RxnOptGoalIterAgent) to orchestrate the actual performance of the reaction experiment.
+The Reaction Optimisation Goal (ROG) Agent is designed to take goal requests, monitor the progress in goal iterations, make decisions based on the latest results, visualise progress in goal iterations, and notify users about the status change throughout the process. It does so by translating the goal request to actionable ontological representations based on concepts defined in [`OntoGoal`](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontogoal). These expressions will then be picked up by [`RxnOptGoalIterAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RxnOptGoalIterAgent) to orchestrate the actual performance of the reaction experiment.
 
 
 &nbsp;
@@ -227,7 +227,7 @@ pytest tests/test_rxn_opt_dockerised.py --docker-compose=./docker-compose-test-d
 ### 4.3 Physical test
 #### 4.3.1 Local test
 The local integration test using physical equipment is provided in `test_rxn_lab_physical.py`. To run physical test in the lab, please follow below steps:
-1. (**ONLY IF** you would like to receive email notifications about the agents operations) Set up email configuration in relevant `tests/env_files/*.env.test`, for details, see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent#set-up-email-notification-for-exceptions)
+1. (**ONLY IF** you would like to receive email notifications about the agents operations) Set up email configuration in relevant `tests/env_files/*.env.test`, for details, see [here](https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent#set-up-email-notification-for-exceptions)
 2. Manually spin up docker containers in `tests/docker-compose.test.kg.yml` (this design prevents the test triples being deleted by the teardown function)
 3. Open FlowCommander in Windows host machine, load the correct experiment file (`.fcexp`) - you may contact the maintainer of this repo to get it
 4. Open HPLC software in Windows host machine, load the correct HPLC method, turn on the hardware, queue the analysis sequence, obtain the report folder path

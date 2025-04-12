@@ -154,8 +154,11 @@ Kok Foong Lee (kokfoong.lee@cares.cam.ac.uk), November 2023
 [grafana-prep readme]: ./stack-manager/inputs/data/grafana-prep/readme.txt
 
 [chained derivations]: https://lucid.app/publicSegments/view/8dfdf102-bb7d-47de-bb52-c22d86a50bcf/image.jpeg
+<!-- markdown-link-check-disable -->
+<!-- These links are dead, files should be replaced and linked -->
 [timeseries.properties]: https://github.com/cambridge-cares/pirmasens/blob/main/districtheating/resources/timeseries.properties
 [dataproperties.py]: https://github.com/cambridge-cares/pirmasens/blob/main/districtheating/resources/dataproperties.py
+<!-- markdown-link-check-enable-->
 
 <!-- Agent -->
 [Forecasting Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent
@@ -163,4 +166,4 @@ Kok Foong Lee (kokfoong.lee@cares.cam.ac.uk), November 2023
 [DH Emission Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DistrictHeatingEmissionEstimationAgent
 [Aermod Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_VIRTUALSENSOR/AermodAgent
 [DH Optimisation Trigger Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DistrictHeatingOptimisationTriggerAgent
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md

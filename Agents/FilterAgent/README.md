@@ -20,7 +20,7 @@ A stack-manager config similar to the following will deploy this agent:
 }
 ```
 
-Spin up a stack as per the [documented workflow](../../Deploy/stacks/dynamic/stack-manager/README.md). 
+Spin up a stack as per the [documented workflow](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md). 
 The filter agent should be spun up along with the entire stack. 
 There is no need to build or deploy the filter agent and its image separately.
 

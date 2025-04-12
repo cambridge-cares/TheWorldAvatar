@@ -205,9 +205,9 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2023
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
+[Derived Information Framework]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation
+[Stack manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[derivation agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
 [preprint 275]: https://como.ceb.cam.ac.uk/preprints/275/
 [chained derivations]: https://lucid.app/publicSegments/view/a00b553e-d9d1-4845-97b7-f480e980898e/image.png
 [chained derivations markup]: https://lucid.app/publicSegments/view/de4041e1-aee2-44d9-82ca-fffca25f5133/image.png

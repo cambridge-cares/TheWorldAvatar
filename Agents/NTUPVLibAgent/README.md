@@ -2,7 +2,7 @@
 
 The NTUPVLib Agent is a modified version of the [PVLibAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PVLibAgent) developed to work with the PV data available for the NTU use case. The agent assumes a standard PV for the purpose of running PVLib and then scales the output by the PV area for the building. An additional scale factor is included to scale the data to a magnitude appropriate for the 15-bus NTU test system.
 
-This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
+This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
 
 ## 1. Property files
 
@@ -155,10 +155,10 @@ config/
    |_ ...
 |_ <STACK NAME>.json
 ```
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+More information about adding custom containers to the stack can be found [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#adding-custom-containers).
 
 ##### Spin Up Stack
-Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
+Follow the [steps](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) to spin up the stack.
 
 ##### Run the agent
 

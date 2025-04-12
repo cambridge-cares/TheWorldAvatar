@@ -63,7 +63,7 @@ The default namespace of the forecasting agent in ```forecasting-agent.json``` i
 
 #### Spinning up
 
-Now, follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack. The stack manager should bring up 12 containers in total. Activate the [Historical NTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) by sending the specified curl request for the agent to instantiate the knowledge graph of the NTU power network.
+Now, follow the [steps](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) to spin up the stack. The stack manager should bring up 12 containers in total. Activate the [Historical NTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) by sending the specified curl request for the agent to instantiate the knowledge graph of the NTU power network.
 
 # 2. Usage of the agent
 

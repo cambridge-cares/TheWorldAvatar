@@ -1,6 +1,6 @@
 # PVLib Agent
 
-This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
+This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
 
 For the agent to read data, three property files are required:
 - One [property file for DC and AC Power instantiation](#dataIRIs-properties) defining the IRIs for each of the keys.
@@ -49,7 +49,7 @@ The model_parameters properties contains the parameters required to create a sol
 - `strings_per_inverter` the number of strings per inverter
 
 ####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
-Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
+Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
 
 ## 2. Weather Data Preparation
 The agent is designed to work with data from one of three sources: weather stations, irradiance sensors, and the OpenMeteo API. It is necessary to have one of the above data retrieved and instantiated on the knowledge graph before running the agent.
@@ -62,7 +62,7 @@ In the event that the weather data is retrieved from the weather station, the re
 <http://test_parameter> rdf:type ontoems:AirTemperature .
 <http://test_parameter> om:hasValue <air temperature data IRI> .
 ```
-see [OntoEMS ontology](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoems) for more information. The [NUSDavisWeatherStation Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/NUSDavisWeatherStationAgent) provides an example of the instantiation.
+see [OntoEMS ontology](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoems) for more information. The [NUSDavisWeatherStation Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/NUSDavisWeatherStationAgent) provides an example of the instantiation.
 
 The PVLib Agent will query for the latest air temperature, wind speed and global horizontal irradiance values from the knowledge graph.
 
@@ -196,10 +196,10 @@ config/
    |_ ...
 |_ <STACK NAME>.json
 ```
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+More information about adding custom containers to the stack can be found [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#adding-custom-containers).
 
 ##### Spin Up Stack
-Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
+Follow the [steps](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) to spin up the stack.
 
 ##### Run the agent
 Select from one of the following to read weather data:

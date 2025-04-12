@@ -2,7 +2,7 @@
 ## 1. Description
 The OSMAgent is an agent that works with OpenStreetMap (OSM) data to link them to existing building IRI and instantiate the semantic representation of building usage information from OSM data.
 The workflow of the agent can be broadly outlined in the following steps:
-1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
+1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobuiltenv) concept. 
 2) Identify and match OSM data with the 3D buildings uploaded as CityGML data and LoD0 footprint. This is performed by assigning building IRI to OSM data through matching the geometry of the OSM data to the 3D buildings' footprint. 
 3) Calculate building usage share for all OSM data with tagged building IRI and non-null usage information.
 4) If land use data is available, for 3D buildings without tagged OSM usage, the agent will tag it with the corresponding land use.
@@ -13,11 +13,11 @@ After running the OSMAgent, the results can be retrieved through:
 
 - `building_iri` - Refers to the IRI of the building.
 - `propertyusage_iri` - Refers to the IRI of the propertyusage.
-- `ontobuilt` - Refers to the [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) usage category of the building.
+- `ontobuilt` - Refers to the [OntoBuiltEnvironment](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobuiltenv) usage category of the building.
 - `usageshare` - Refers to the usage proportion of each `ontobuilt` in a building. 
 - `name` - Refers to the name of the building derived from OSM data.
 
-2) A geoserver layer with the workspace name `twa` and layer name `building_usage`, this layer contains all the information to display the buildings with [TWA-VF](https://github.com/cambridge-cares/TheWorldAvatar/tree/1671-dev-update-osmagent-to-new-building-workflow/web/twa-vis-framework) using the [data.json](stack-manager-config/data/webspace/data.json).
+2) A geoserver layer with the workspace name `twa` and layer name `building_usage`, this layer contains all the information to display the buildings with [TWA-VF](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework) using the [data.json](stack-manager-config/data/webspace/data.json).
 
 
 ## 2. Prerequisites
@@ -30,7 +30,7 @@ In the [resource folder](osmagent/src/main/resources/), there are two CSV files 
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
 
 ### 2.3. CityDb
-The agent works with 3D buildings uploaded from CityGML data, follow the instructions in the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data)'s README.
+The agent works with 3D buildings uploaded from CityGML data, follow the instructions in the [stack-data-uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader#citydb-data)'s README.
 
 ### 2.4. Uploading Raw Data
 #### 2.4.1. OSM Data
@@ -142,14 +142,14 @@ The debugger port will be available at 5005.
 The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. 
 
 #### Setting up FIAgent
-1) Place [`building_usage.sparql`](stack-manager-config/data/fia-queries/queries/building_usage.sparql) and [`fia-config.json`](stack-manager-config/data/fia-queries/queries/fia-config.json) inside [`stack-manager/inputs/data/queries`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data) as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
-2) Spin FeatureInfoAgent up along with the [stack-manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-the-feature-info-agent).
+1) Place [`building_usage.sparql`](stack-manager-config/data/fia-queries/queries/building_usage.sparql) and [`fia-config.json`](stack-manager-config/data/fia-queries/queries/fia-config.json) inside [`stack-manager/inputs/data/queries`](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/data) as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/TheWorldAvatar/Feature-Info-Agent/blob/main/sample/feature-info-agent.json).
+2) Spin FeatureInfoAgent up along with the [stack-manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#adding-the-feature-info-agent).
 
 #### Setting up TWA-VF
-1) Place [`data.json`](stack-manager-config/data/webspace/data.json) inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation) in the stack-manager.
+1) Place [`data.json`](stack-manager-config/data/webspace/data.json) inside [`stack-manager/inputs/data/webspace`](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/data), following instruction [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#example---including-a-visualisation) in the stack-manager.
 
 
-[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-data-uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services
 [stack-data-uploader-inputs]: stack-data-uploader-inputs/

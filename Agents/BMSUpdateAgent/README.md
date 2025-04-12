@@ -53,10 +53,10 @@ config/
    |_ ...
 |_ <STACK NAME>.json
 ```
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+More information about adding custom containers to the stack can be found [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#specifying-custom-containers).
 
 ## 1.3. Spin Up Stack
-Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
+Follow these [steps](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) to spin up the stack.
 
 ## 2. Client Properties File
 Each of the route requires a client.properties file containing specific keys and values. The client.properties file are then mapped to an environment variable in the docker container. Refer to the `ENV` section in `stack-manager-input-config-service/bms-update-agent.json` for more information.
@@ -104,13 +104,13 @@ More information can be found in the example property file `updateTriplesClient.
 
 # 3. Authorization Setup
 ## 3.1 Setup Stack and Keycloak
-Please refer to [Deploy/stacks/dynamic/examples/services/keycloak](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/examples/services/keycloak) for setup guide.
+Please refer to [Deploy/stacks/dynamic/examples/services/keycloak](https://github.com/TheWorldAvatar/stack/tree/main/examples/services/keycloak) for setup guide.
 
 ## 3.2 Configure Client
 After BMSUpdateAgent client has been registered in Keycloak,
 
 1. Download client adapter from keycloak admin console.
-2. Copy [stack-manager-input/secets/bms_updateagent_keycloak.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/stack-manager-input/secrets/bms-update-agent-keycloak.json) to the stack manager's input secrets folder.
+2. Copy [stack-manager-input/secets/bms_updateagent_keycloak.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/stack-manager-input/config/services/bms-update-agent.json) to the stack manager's input secrets folder.
 3. Replace `realm`, `resource` and `secret` in the copied secret file
 4. Replace `STACK_NAME` in the copied secret file
 5. (DEVELOPER) Update src/main/webapp/WEB-INF/web.xml to set up authorization on more endpoints.
@@ -159,7 +159,7 @@ In order for the agent to query for `bacnetObjectId` and `bacnetDeviceId`, the [
 - `dataIRI` the data IRI that is linked to the `bacnetObjectId` and `bacnetDeviceId`.
 - `value` the value to write to the Bacnet object
 
- The query run by the agent is structured based on [OntoBMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontobms/OntoBMS.owl):
+ The query run by the agent is structured based on [OntoBMS](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontobms/OntoBMS.owl):
 
 ```
 <data IRI> ontobms:hasBacnetObjectID "bacnetObjectId" ; 

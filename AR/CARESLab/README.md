@@ -105,7 +105,7 @@ A complete guide of setting up **new** MRTK3 project can be found at [here](http
 Run in Unity is the most easy and convenient way to test during development. Check [here](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-input/packages/input/input-simulation#how-to-use-mrtk3-input-simulation-mrtk3-input-simulator-default-controls) for keys to control.
 
 Other resources:
-- [Debug C# code in Unity](https://docs.unity3d.com/Manual/ManagedCodeDebugging.html)
+- [Debug C# code in Unity](https://docs.unity3d.com/Manual/managed-code-debugging.html)
 
 ### Test and Deploy on Device or Emulator
 

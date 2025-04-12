@@ -144,7 +144,7 @@ Once the Agent is deployed, it periodically (defined by `DERIVATION_PERIODIC_TIM
 Details about how to use the agent please see the [home page] of this agent
 
 ## Upper level instances instatiation
-If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. Therefore it is required to run the [upper_level_ontology_update.py](./inequalityindexcalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
+If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. Therefore it is required to run the [upper_level_ontology_update.py](./inequalityindexagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
 
 ```bash
 py ./inequalityindexcalculationagent/upper_level_ontology_update.py
@@ -168,7 +168,7 @@ Details can be refered to the individual [README.md](./python_scripts/README.md)
 # Authors 
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
-[markup.py]:./inequalityindexcalculationagent/markup.py
+[markup.py]:./inequalityindexagent/markup.py
 [home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/InequalityIndexCalculationAgent/index.html
 [CopCalculationAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CopCalculationAgent
 [OntoCAPE]:http://theworldavatar.com/ontology/ontocape/
@@ -187,16 +187,16 @@ Jieyang Xu (jx309@cam.ac.uk), May 2023
 
 <!-- TWA github -->
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Derivation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
-[Derivation Agent configuration]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Derivation Agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
+[Derivation Agent configuration]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent/pyderivationagent/conf/agent_conf.py
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
 [OntoRegionalAnalysis]: http://www.theworldavatar.com/ontology/ontoregionalanlysis/OntoRegionalAnalysis.owl
 [HM Land Registry Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertySalesInstantiationAgent/Agents/HMLandRegistryAgent
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md#spinning-up-a-stack
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent
 

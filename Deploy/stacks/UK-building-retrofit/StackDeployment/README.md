@@ -135,7 +135,7 @@ The [Feature Info Agent] serves as an access point for the visualisation, enabli
 [Feature Info Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
 
 <!-- Stack references -->
-[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
 [Stack data uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
 [Stack manager]: https://github.com/TheWorldAvatar/stack/blob/main/stack-manager/README.md
 [fia_queries]: ./Stack-manager/inputs/data/fia-queries

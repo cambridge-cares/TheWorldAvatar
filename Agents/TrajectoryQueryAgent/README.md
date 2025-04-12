@@ -113,7 +113,7 @@ Response given in the form of
 {"result":[{"month":1,"year":2024,"days":"{1,2,3}"}],"message":"Succeed"}
 ```
 
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services
 [line layer (device id)]: ./trajectoryqueryagent/src/main/resources/line_layer_device_id.sql
 [line layer (user id)]: ./trajectoryqueryagent/src/main/resources/line_layer_user_id.sql
