@@ -15,6 +15,7 @@ on:
 jobs:
   # Check for broken links only within Markdown files changed by the pull request
   markdown-link-check:
+    on: [pull_request]
     name: Check markdown files for broken links
     runs-on: ubuntu-latest
     steps:
