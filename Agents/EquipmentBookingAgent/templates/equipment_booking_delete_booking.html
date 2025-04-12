@@ -1,0 +1,138 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>TWA Equipment Booking</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .button {
+                display: inline-block;
+                padding: 20px 40px;
+                font-size: 18px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                margin: 20px;
+                text-decoration: none;
+            }
+            .header-container {
+                padding: 20px;
+                background-color: #f2f2f2;
+                margin-bottom: 20px;
+                display: grid;
+                grid-template-columns: 120px 1fr min-content
+            }
+            .button:hover {
+                background-color: #45a049;
+            }
+            table {
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 5px;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header-container">
+            <img width="100" src="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/a70fb4b4d68a1a315238f7670249ff4f017b78b6/web/media/twa-logo-blue.svg" alt="TWA Logo">
+            
+            {% if selected_equipment==None %}
+            <h1 style="font-size: 40px;">View bookings</h1>
+            {% endif %}
+
+            {% for a in bookable_assets %}
+            {% if a.iri == selected_equipment %}
+            <h1 style="font-size: 40px;">View bookings of {{ a.display }}</h1>
+            {% endif %}
+            {% endfor %}
+            
+            <a href="/" class="button" >Back</a>
+        </div>
+
+        
+        <label for="equipment-def">Select Equipment:</label>
+        <select name="equipment_def" id="equipment-def" class="Input" value="{{selected_equipment}}">
+            <option value="" disabled selected>Please select asset</option>
+            {% for a in bookable_assets %}
+            <option value="{{ a.iri }}" {% if selected_equipment == a.iri %}selected{% endif %}>{{ a.display }}</option>
+            {% endfor %}
+        </select>
+
+
+        <br><br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Booker</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking_iri, booking_data in active_bookings.items() %}
+                <tr>
+                    <td>{{ booking_data.booker }}</td>
+                    <td>{{ booking_data.start }}</td>
+                    <td>{{ booking_data.end }}</td>
+                    <td>
+                        <button class="delete-button" data-iri="{{ booking_iri }}">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+        <script>
+            // Function to reload bookings based on selected equipment
+            function reloadBookings() {
+                var selectedDate = document.getElementById('equipment-def').value;
+                window.location.href = '/view?eq=' + selectedDate;
+            }
+    
+            // Add event listener to date picker
+            document.getElementById('equipment-def').addEventListener('input', reloadBookings);
+    
+            // Initial load of bookings
+            //reloadBookings();
+
+            // Add event listener to delete buttons
+            document.querySelectorAll('.delete-button').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var iri = this.getAttribute('data-iri');
+                    // Send POST request with booking iri
+                    fetch('/delete_booking', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ iri: iri })
+                    })
+                    .then(response => response.text()) // Get response body as text
+                    .then(html => {
+                        // Replace the current page content with the response HTML
+                        document.documentElement.innerHTML = html;
+                    })
+                });
+            });
+        </script>
+
+        <br><br><br><br>
+
+        <div>
+            <span>At the moment, only equipment with pre-existing booking system can be booked.
+                <br>Please contact developers of TheWorldAvatar if more features needed.</span><br><br>
+        </div>
+
+        <br><br>
+
+    </body>
+</html>
