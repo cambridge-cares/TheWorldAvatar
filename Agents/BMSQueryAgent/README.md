@@ -9,7 +9,7 @@ To achieve a balance between response speed and body size, the agent breaks the 
 - Once the room is determined, users can send `retrieve/equipment?RoomIRI=<selected room iri>` to get all the equipment in the selected room.
 
 # 1. Setup
-This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). 
+This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager). 
 A successful setup will result in 9 containers (optional 10):
 - Default containers
   - Stack Manager (exits when spins up all other containers)
@@ -25,7 +25,7 @@ A successful setup will result in 9 containers (optional 10):
 
 For the BMSQueryAgent to return results, it is assumed that there is already knowledge graph in the Blazegraph.
 
-BMSQueryAgent does not depend on [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), but they are used together to create time series visualisation in the [BMS Query App](https://github.com/cambridge-cares/TheWorldAvatar/tree/1502-android-app-for-data-visualisation/Apps/BMSQueryApp).
+BMSQueryAgent does not depend on [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), but they are used together to create time series visualisation in the [BMS Query App](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/BMSQueryApp).
 
 ## 1.1 Config BMSQueryAgent in Stack
 
@@ -54,10 +54,10 @@ config/
    |_ ...
 |_ <STACK NAME>.json
 ```
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+More information about adding custom containers to the stack can be found [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#adding-custom-containers).
 
 ## 1.2 Spin Up Stack
-Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack. 
+Follow the [steps](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) to spin up the stack. 
 
 # 2. Usage
 The agent accepts three paths:

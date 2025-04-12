@@ -18,12 +18,7 @@ $ composer require php-http/message-factory
 
 ## Documentation
 
-Please see the [official documentation](http://php-http.readthedocs.org/en/latest/message-factory/).
-
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+Please see the [official documentation](https://docs.php-http.org/en/latest/message/message-factory.html).
 
 
 ## Security

@@ -66,7 +66,7 @@ will install an earlier version of the package.
 
 `(<venv_name>) $ pip install pyuploader`
 
-More details at the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_uploader).
+More details at the [TWA web-site](https://github.com/TheWorldAvatar/baselib/tree/main/python_uploader).
 
 ### Prepare and run the code
 Copy the code and bat scripts to the current directory.

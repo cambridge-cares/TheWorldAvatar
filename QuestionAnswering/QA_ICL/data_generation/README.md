@@ -406,13 +406,12 @@ Most scripts in this directory are in Python. The command line arguments support
 
 - Generate lexicons specific to an entity type:
   - Entities of `purl:Element` type: [lexicon/Element_lexicon.py](lexicon/Element_lexicon.py).
-  - Entities of `disp:Ship` type: [lexicon/Ship_lexicon.py](lexicon/Ship_lexicon.py).
 
 ### KG Schema Extraction
 
-- Extract edge type info from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_edgetypes_from_tbox.py](simplified_schema/extract_edgetypes_from_abox.py).
-- Extract relation type info from OWL files: [simplified_schema/extract_relations_from_tbox.py](simplified_schema/extract_schema_from_tbox.py).
-- Extract relation type info from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_relations_from_abox.py](simplified_schema/extract_schema_from_abox.py)
+- Extract edge type info from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_edgetypes_from_tbox.py](simplified_schema/extract_edgetypes_from_tbox.py).
+- Extract relation type info from OWL files: [simplified_schema/extract_relations_from_tbox.py](simplified_schema/extract_relations_from_tbox.py).
+- Extract relation type info from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_relations_from_abox.py](simplified_schema/extract_relations_from_abox.py)
 
 ### CSV-to-JSON Conversion of Data Request Generation Examples
 

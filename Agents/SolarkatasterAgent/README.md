@@ -36,7 +36,7 @@ curl -X POST --header "Content-Type: application/json" -d "{'table':'stadt_pirma
 ## Build Instructions
 
 ### Stack set up
-The agent has been implemented to work with stack, which requires the stack to be [set up](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) and for the Solarkataster data to be [uploaded to stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader), before building and running the agent.
+The agent has been implemented to work with stack, which requires the stack to be [set up](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) and for the Solarkataster data to be [uploaded to stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader), before building and running the agent.
 
 Before building, change the placeholder `<STACK-NAME>` in `./solarkataster_agent/src/main/resources/config.properties` and `./docker-compose.yml` to the name of your stack.
 

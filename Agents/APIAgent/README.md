@@ -4,7 +4,7 @@ This `API Agent` can be used to manage the automatic instantiation and updating 
 
 The agent is integrated with the [Derived Information Framework]'s (DIF) to ensure proper data provenance. API information and API-Data-to-TimeSeries mappings are defined under a meta-data instance in KG. TS data is then considered as the derived quantity of the meta-data. The required meta-data triples to derive an API-downloaded TS instance are described in the [required derivation markup](#12-required-derivation-markup) section below.
 
-Once a API is registered using the [`DerivationClient`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation), API agent automatically manages a periodical re-downloading of the data from that API.
+Once a API is registered using the [`DerivationClient`](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation), API agent automatically manages a periodical re-downloading of the data from that API.
 
 Ontology definition of API meta-data relies on  [Web of Things (WoT) Hypermedia Controls Ontology]. We also extend [RDF Mapping Language (RML)] for TimeSeries data as `rml4ts Ontology`.
 
@@ -135,25 +135,25 @@ One may notice the agent, once started, creates a property file named `APIAgent.
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [py4jps]: https://pypi.org/project/py4jps/#description
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[TimeSeriesClient]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [Darts]: https://unit8co.github.io/darts/index.html
 [Prophet]: https://unit8co.github.io/darts/generated_api/darts.models.forecasting.prophet_model.html
 [Facebook Prophet]: https://github.com/facebook/prophet
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
+[Derived Information Framework]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation
+[Stack manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[derivation agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
 
-[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
-[OntoDerivation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoderivation
-[rml4ts.owl]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/rml4ts/rml4ts.owl
+[OntoTimeSeries]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries
+[OntoDerivation]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoderivation
+[rml4ts.owl]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/rml4ts/rml4ts.owl
 <!-- files -->
 [docker compose file]: ./docker-compose.yml
 [Web of Things (WoT) Hypermedia Controls Ontology]:https://www.w3.org/2019/wot/hypermedia
 [RDF Mapping Language (RML)]:https://rml.io/specs/rml/
 [test_triples]: ./test_triples
 
-[api_temperature.ttl]: ./tbox_dev/test_triples/api_temperature.ttl
+[api_temperature.ttl]: ./test_triples/api_temperature.ttl
 [calculations module]: ./data_classes/calculations.py
-[api_pvcapacity.ttl]: ./tbox_dev/test_triples/api_pvcapacity.ttl
+[api_pvcapacity.ttl]: ./test_triples/api_pvcapacity.ttl

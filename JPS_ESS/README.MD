@@ -57,7 +57,7 @@
 - Second, check if the test `testCreateScenarioAndCallESSCoordinate` is working. This calls C as a whole, thus errors can come from there. 
 - Third, if both of the above conditions run without errors, then it's most likely due to the visualization being broken. It could be that you are reading from the wrong location (at which case, look at \web\CO2Web\public\javascripts\pwBaseFile.js, Line 2. Enable it to Line 3, and it should be reading from Claudius rather than local deployment. 
 - Possible errors on the backend could include: 
-  1. Check if the domain name is available on Claudius. If it fails at BatteryCreator or OptimizationAgent, than it's most likely that. So access [J-ParkSimulator](www.jparksimulator.com).
+  1. Check if the domain name is available on Claudius. If it fails at BatteryCreator or OptimizationAgent, than it's most likely that. So access [J-ParkSimulator](http://www.jparksimulator.com).<!-- markdown-link-check-disable-line -->
   2. JPS-POWSYS components. This program depends on POWSYS war file being available, and utilizes ENAgent and retrofitAgents from the retrofit package. 
   3. GAMS not being installed and hidden under GAMS DIR. If you don't want to change your directory name, then Line 105 of EnergyStorageSystem should be changed to where your GAMS is installed. 
   4. Python not being installed

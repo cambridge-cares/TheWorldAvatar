@@ -5,7 +5,7 @@ This agent has been developed to compute the Gross Floor Area (GFA) and GFA cost
 2) Calculate the GFA cost of buildings by GFA and standard unit price of GFA cost.
 
 ### 1.1 Requirements
-1) The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data).
+1) The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader#citydb-data).
 2) The agent requires number of floors data. Therefore, the Building Floor Agent should be run firstly.
 3) GFA cost standard unit price: The latest standard GFA cost should be integrated in csv file named as [ais_cost.csv](https://github.com/cambridge-cares/TheWorldAvatar/blob/4a5b2b6eaf60be88f95e1561da24b043943fec83/Agents/GFAAgent/stack-data-uploader-input-config/ais_cost.csv), which need to upload to postgresql by stack-data-uploader first.
 4) Building usage matching: The mathcing of building cost standard and OntobBuiltEnv, which stores in the [cost_ontobuiltenv.csv](https://github.com/cambridge-cares/TheWorldAvatar/blob/4a5b2b6eaf60be88f95e1561da24b043943fec83/Agents/GFAAgent/src/main/resources/cost_ontobuiltenv.csv).

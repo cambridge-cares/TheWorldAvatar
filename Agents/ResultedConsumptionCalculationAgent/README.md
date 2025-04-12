@@ -168,7 +168,7 @@ If you started from an empty namespace, or have not instantiate upper level inst
 
 Please check if you have created a namespace in the blazegraph, and entered the correct environmental variables in the [agent.env.example](./agent.env.example). 
 
-Afterwards, run the [upper_level_ontology_update.py](./copcalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
+Afterwards, run the [upper_level_ontology_update.py](./resultedconsumptioncalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
 
 ```bash
 py ./resultedconsumptioncalculationagent/upper_level_ontology_update.py
@@ -201,16 +201,16 @@ Jieyang Xu (jx309@cam.ac.uk), May 2023
 
 <!-- TWA github -->
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Derivation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
-[Derivation Agent configuration]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Derivation Agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
+[Derivation Agent configuration]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent/pyderivationagent/conf/agent_conf.py
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
 [OntoRegionalAnalysis]: http://www.theworldavatar.com/ontology/ontoregionalanlysis/OntoRegionalAnalysis.owl
 [HM Land Registry Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertySalesInstantiationAgent/Agents/HMLandRegistryAgent
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md#spinning-up-a-stack
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent
 

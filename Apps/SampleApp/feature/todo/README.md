@@ -3,7 +3,7 @@
 A module demonstrates in module navigation with action, data binding and the complete workflow of retrieving data from internet and displaying in the app.
 
 ## 1. Workflow
-The workflow of data transfer has been discussed in [SampleApp/README.md](https://github.com/cambridge-cares/TheWorldAvatar/blob/1786-android-documentation/Apps/SampleApp/README.md#22-data-transfer). Please refer to it for more details.
+The workflow of data transfer has been discussed in [SampleApp/README.md](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Apps/SampleApp/README.md#22-data-transfer). Please refer to it for more details.
 
 ## 2. In Module Navigation
 In module navigation has been discussed in [SampleApp/README.md](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Apps/SampleApp/README.md#213-action). Please refer to it for more details.

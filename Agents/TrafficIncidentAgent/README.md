@@ -52,6 +52,6 @@ Sun Xin Yu (https://github.com/Echomo-Xinyu) <br>
 October 2024 
 
 
-[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-data-uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services

@@ -119,13 +119,13 @@ We map three Mackay inputs data to quantity instances in TWA KG. A proposed vers
 
 <!-- Links -->
 <!-- websites -->
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[TimeSeriesClient]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
-[derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
-[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
-[OntoDerivation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoderivation
+[Derived Information Framework]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation
+[derivation agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
+[OntoTimeSeries]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries
+[OntoDerivation]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoderivation
 [API Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/APIAgent
 [Forecasting Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent
 <!-- files -->

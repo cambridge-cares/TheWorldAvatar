@@ -1,7 +1,7 @@
 # Developing an Ontology Based Data Access (OBDA) Project
 ### Authors
-* [Nenad Krdzavac](caresssd@hermes.cam.ac.uk)
-* [Feroz Farazi](msff2@cam.ac.uk)
+* [Nenad Krdzavac](mailto:caresssd@hermes.cam.ac.uk)
+* [Feroz Farazi](mailto:msff2@cam.ac.uk)
 
 OBDA is a means to access and query data stored in databases using SPARQL. This short document aims to describe the steps required to develop an OBDA project using Java and PostgreSQL relational database management system.
 
@@ -84,7 +84,7 @@ For adding these data to the *tb_books* table, you can use the following INSERT 
 
 You can either copy the *exampleBooks.owl* ontology from [here](https://www.dropbox.com/home/IRP3%20CAPRICORN%20shared%20folder/_JPS%20Development/data) to the *resources* (src/main/resources) folder in the Maven project you created or develop the same ontology by following the steps below and put this under the same folder. If you already have copied the ontology into the resourced folder, you can go to the next section.
 
-* Create an ontology with the OntologyIRI *http://theworldavatar.com/ontology/obda/exampleBooks.owl*. Include the classes from the following hierarchy in this ontology. Classes which have the same indentation are siblings, and classes which have different indentations are connected with subclass of relations. Classes indented to the right are subclasses of the class which is indented to the left and above. For example, Author and Book are siblings, AudioBook and E-Book are siblings, AudioBook is a subclass of Book and E-Book is a subclass of Book.
+* Create an ontology with the OntologyIRI *https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/thermo/obda-thermochemistry/resources/books/exampleBooks.owl*. Include the classes from the following hierarchy in this ontology. Classes which have the same indentation are siblings, and classes which have different indentations are connected with subclass of relations. Classes indented to the right are subclasses of the class which is indented to the left and above. For example, Author and Book are siblings, AudioBook and E-Book are siblings, AudioBook is a subclass of Book and E-Book is a subclass of Book.
 
     Author
         EmergingWriter
@@ -125,7 +125,7 @@ It is important to remember that the expressivity of the ontology used in OBDA s
 
 The following SPARQL query extracts the code and title of books. Save this query in a file called *book_code_title.rq* and put this file under the resources folder of the Maven project.
 
-	PREFIX books: <http://theworldavatar.com/ontology/obda/exampleBooks.owl#>
+	PREFIX books: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/thermo/obda-thermochemistry/resources/books/exampleBooks.owl#>
 	SELECT DISTINCT ?book ?title
 	WHERE { 
 	?book a books:Book .  
@@ -138,7 +138,7 @@ The following SPARQL query extracts the code and title of books. Save this query
 Create a mapping file called *books_all.obda* in the resources folder of the Maven project and put the following three blocks of code into this file by maintaining the order of their appearance. This file establishes mapping(s) between a SPARQL query and the database via the ontology.
 
 	[PrefixDeclaration]
-	:   		http://theworldavatar.com/ontology/obda/exampleBooks.owl#
+	:   		https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/thermo/obda-thermochemistry/resources/books/exampleBooks.owl#
 	owl:		http://www.w3.org/2002/07/owl#
 	rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	rdfs:		http://www.w3.org/2000/01/rdf-schema#
@@ -166,7 +166,7 @@ Do not forget to provide your user name and password for PostgreSQL in the Sourc
 
 The mapping file contains three blocks.
 
-* It can be understood from the name *PrefixDeclaration* that the *first block* includes prefix declarations including *owl*, *rdf*, and *:*, which represents the prefix of the default namespace (the Ontology IRI followed by #) and in this particular example project it is *http://theworldavatar.com/ontology/obda/exampleBooks.owl#*.
+* It can be understood from the name *PrefixDeclaration* that the *first block* includes prefix declarations including *owl*, *rdf*, and *:*, which represents the prefix of the default namespace (the Ontology IRI followed by #) and in this particular example project it is *https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/thermo/obda-thermochemistry/resources/books/exampleBooks.owl#*.
 
 
 * The *second block* is called *SourceDeclaration*, which includes information about *sourceUri*	that is the name of database. The feature *connectionUrl* represents  the Java Database Connectivity (*JDBC*) for the target database. *username* and *password*  are credentials for accessing the database. The *driverClass* is the driver class for the database. 

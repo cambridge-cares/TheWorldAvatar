@@ -12,8 +12,8 @@ The OntoCrystal ontology provides a semantic representation of crystallographic 
 
 ### Download
 
-- [OntoZeolite.owl](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontozeolite/ontozeolite.owl)
-- [OntoCrystal.owl](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontozeolite/ontocrystal.owl)
+- [OntoZeolite.owl](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontozeolite/ontozeolite.owl)
+- [OntoCrystal.owl](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontozeolite/ontocrystal.owl)
 
 ### Access
 

@@ -19,16 +19,16 @@ The SeaLevelImpactAgent is an agent that
 3) Create geoserver layer for each sealevelprojections
 
 ## 2. Prerequisites
-This agent is developed as part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise). 
+This agent is developed as part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore-sea-level-rise). 
 
-Data in the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise) needs to be uploaded by stack-data-uploader before running this agent.
+Data in the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore-sea-level-rise) needs to be uploaded by stack-data-uploader before running this agent.
 
 ### 2.1. Stack Set Up
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
 
 ## 3. Agent Configuration
 ### 3.1 Config Properties
-The [Config.properties](inputs/config.properties) file contain the table name for the different datasets. A default value is set for each parameters following the stack-data-uploader table names specified in [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise).
+The [Config.properties](inputs/config.properties) file contain the table name for the different datasets. A default value is set for each parameters following the stack-data-uploader table names specified in [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore-sea-level-rise).
 1) `dbName` - Specify the postgresql database
 2) `buildingsMatViewName` - Specify the table name for CityDB buildings footprint
 3) `heritagetreesTable` - Specify the table name for heritage tree

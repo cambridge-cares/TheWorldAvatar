@@ -2,7 +2,7 @@
 
 Prerequisites
 
-- Linux OS (recommended) . It is not advisable to run this project on Windows as [`bitsandbytes` is not supported on Windows]((https://github.com/TimDettmers/bitsandbytes/issues/30)).
+- Linux OS (recommended) . It is not advisable to run this project on Windows as [`bitsandbytes` is not supported on Windows](https://github.com/TimDettmers/bitsandbytes/issues/30).
 - [conda](https://conda.io/projects/conda/en/latest/index.html) (recommended).
 - `python==3.10`.
 - CUDA
@@ -69,7 +69,7 @@ Additional dependencies:
   - ONNX Runtime for GPU: `pip install optimum==1.12.0 && pip install optimum[onnxruntime-gpu]`
     - TensorRT: 
     - [CUDA toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
-    - [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
+    - [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/archives/cudnn-860/install-guide/index.html)
     - [TensorRT](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html) (installation from tar ball recommended)
 - To enable memory profiling with the command line argument `--do_profile`, run `pip install memory-profiler==0.61.0`.
 

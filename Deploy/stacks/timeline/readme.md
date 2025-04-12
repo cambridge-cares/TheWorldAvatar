@@ -4,7 +4,7 @@
 
 Stack name should be `timeline-test`.
 
-Prepare these secret files in the [stack secret folder](./stack-manager/test/inputs/secrets)
+Prepare these secret files in the [stack secret folder](./test/stack-manager/inputs/secrets)
 
 - geoserver_password
 - postgis_password
@@ -53,7 +53,7 @@ then restart stack manager again:
 
 Stack name should be `timeline`.
 
-Prepare these secret files in [](./stack-manager/prod/inputs/secrets)
+Prepare these secret files in [](./test/stack-manager/inputs/secrets)
 
 - geoserver_password
 - postgis_password
@@ -124,9 +124,10 @@ IMPORT FOREIGN SCHEMA public
 3. Replace <KEYCLOAK_URL> in vis-files/keycloak.json with the URL of the KeyCloak server, needs to be an address that can be accessed from client and the server.
    1. The configuration assumes a realm called `timeline` exists and a client called `desktop-vis` is set up correctly with the correct redirect urls.
 4. Upload [./shacl/timeline.ttl](./shacl/timeline.ttl) to the kb namespace on Blazegraph
-5. Download contents of [https://github.com/TheWorldAvatar/viz/tree/main/code/public/images/defaults] into [./test/vis/vis-files/public/images/defaults](./test/vis/vis-files/public/images/defaults).
+5. Download contents of https://github.com/TheWorldAvatar/viz/tree/main/code/public/images/defaults into [./test/vis/vis-files/public/images/defaults](./test/vis/vis-files/public/images/defaults).
 6. Run `docker compose up -d` in [./test/vis/](./test/vis/).
 7. Visualisation will be accessible at port 3000, e.g. http://[IP_ADDRESS]:3000
+
 
 ## Oura Ring data
 
@@ -134,5 +135,5 @@ Create a namespace called `ouraring` in Blazegraph (default namespace defined in
 
 Refer to documentation at [../../../Agents/OuraRingAgent](../../../Agents/OuraRingAgent/readme.md) for instructions to instantiate Oura Ring data
 
-[keycloak-test.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
-[keycloak-prod.json]: ./stack-manager/test/inputs/config/services/keycloak-prod.json
+[keycloak-test.json]: ./test/stack-manager/inputs/config/services/keycloak-test.json
+[keycloak-prod.json]: ./prod/stack-manager/inputs/config/services/keycloak-prod.json

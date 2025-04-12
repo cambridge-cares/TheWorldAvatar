@@ -13,7 +13,7 @@ This section is relevant to all uses of the TWA-VF, regardless of the selected m
 | Issue/Question       | Solution/Answer    |
 | ----------- | ----------- |
 | Do my data files have to be hosted online? | Both mapping providers require a valid URL to load data files, this does mean that they have to be accessible online. However, data files can be included within the visualisation container (which uses Apache to host a web server) so that they can be accessed via a URL relative to the visualisation's hosted directory (i.e. "/data/tileset.json"). |
-| Visualisation not updating after changes | Try clearing ([or disabling](https://www.webinstinct.com/faq/how-to-disable-browser-cache#:~:text=When%20you're%20in%20Google,close%20out%20of%20Developer%20Tools.)) your browser cache before reloading the page. |
+| Visualisation not updating after changes | Try clearing ([or disabling](https://stackoverflow.com/a/7000899)) your browser cache before reloading the page. |
 | Visualisation not updating after changes | If running the visualisation within a Docker container, you may need to rebuild the Docker image and run a new container to see recent file changes. |
 | No data is shown | If no data is shown _and_ no layer tree is built then this suggests that one (or more) of the user defined JSON files is invalid. Please use an external validator tool (or website) to ensure that the JSON is valid. |
 | Hovering over a feature does nothing | The framework supports mouse hovering effects if the input data contains certain metadata fields. To show a small description box the geospatial data needs to contain a `name` and `description` field. |

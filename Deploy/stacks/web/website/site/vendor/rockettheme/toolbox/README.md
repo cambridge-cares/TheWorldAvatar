@@ -3,9 +3,9 @@
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 [![Latest Version](http://img.shields.io/packagist/v/rockettheme/toolbox.svg?style=flat)](https://packagist.org/packages/rockettheme/toolbox)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
-[![Build Status](https://img.shields.io/travis/rockettheme/toolbox/master.svg?style=flat)](https://travis-ci.org/rockettheme/toolbox)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/rockettheme/toolbox.svg?style=flat)](https://scrutinizer-ci.com/g/rockettheme/toolbox/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/rockettheme/toolbox.svg?style=flat)](https://scrutinizer-ci.com/g/rockettheme/toolbox)
+<!-- markdown-link-check-disable-line -->[![Build Status](https://img.shields.io/travis/rockettheme/toolbox/master.svg?style=flat)](https://travis-ci.org/rockettheme/toolbox)
+<!-- markdown-link-check-disable-line -->[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/rockettheme/toolbox.svg?style=flat)](https://scrutinizer-ci.com/g/rockettheme/toolbox/code-structure)
+<!-- markdown-link-check-disable-line -->[![Quality Score](https://img.shields.io/scrutinizer/g/rockettheme/toolbox.svg?style=flat)](https://scrutinizer-ci.com/g/rockettheme/toolbox)
 [![Total Downloads](https://img.shields.io/packagist/dt/rockettheme/toolbox.svg?style=flat)](https://packagist.org/packages/rockettheme/toolbox)
 
 RocketTheme\Toolbox package contains a set of reusable PHP interfaces, classes and traits.

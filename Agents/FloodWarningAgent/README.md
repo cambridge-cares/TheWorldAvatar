@@ -121,15 +121,15 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 
 [Environment Agency Real Time flood-monitoring API]: https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
 [FloodAssessmentAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAssessmentAgent
-[OntoFlood]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoflood
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
+[OntoFlood]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoflood
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 
 <!-- Files -->

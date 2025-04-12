@@ -1,5 +1,5 @@
 # Doctrine Cache
-
+<!-- markdown-link-check-disable-next-line -->
 [![Build Status](https://img.shields.io/travis/doctrine/cache/master.svg?style=flat-square)](http://travis-ci.org/doctrine/cache) 
 [![Code Coverage](https://codecov.io/gh/doctrine/dbal/branch/cache/graph/badge.svg)](https://codecov.io/gh/doctrine/dbal/branch/master)
 

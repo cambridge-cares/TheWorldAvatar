@@ -1,6 +1,6 @@
 # Dashboard Agent
 The Dashboard Agent is designed to set up and populate dashboards within a stack. These dashboards will require both spatial topological and time series data to be available within the stack.
-Namely, it will require the concept of buildings, facilities, rooms, elements and connected sensors/devices from at minimal the [OntoBIM](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim) and [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontologies.
+Namely, it will require the concept of buildings, facilities, rooms, elements and connected sensors/devices from at minimal the [OntoBIM](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobim) and [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice) ontologies.
 
 ## Instructions
 Before you can use the Dashboard Agent, there are some requirements you need to meet. Follow the steps below to ensure you have everything you need to successfully run the agent.
@@ -21,12 +21,12 @@ repo_username.txt should contain your Github username. repo_password.txt should 
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
 ##### Stack containers
-This agent requires the following tools, which **MUST** run on the same stack. Please read more from the [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for setting these containers up.
+This agent requires the following tools, which **MUST** run on the same stack. Please read more from the [stack manager page](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for setting these containers up.
 
 (1) [Grafana](https://grafana.com/docs/grafana/latest/) dashboard
 - Requires the deployment of the built-in optional `grafana` service on the stack to configure and set up dashboards
 - For deploying the service,
-  - include `grafana` as a service following the [stack-manager configuration file](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration)
+  - include `grafana` as a service following the [stack-manager configuration file](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#stack-configuration)
   - include a `grafana_password` with your password as a Docker Secret in the `stack-manager/inputs/secrets` directory.
 - Once deployed, the service can be accessed at the `/analytics` route with a default username of admin. 
 - The following Plugin must be installed:
@@ -42,7 +42,7 @@ This agent requires the following tools, which **MUST** run on the same stack. P
 - Contains triples linking time series to facilities and/or assets
 - Mandatory structure:
   - A name must be appended to all buildings, facilities, rooms, assets, sensors, and measures/dataIRIs through the `Instance rdfs:label "name"^^xsd:string` triple.
-  - All sensor measures are attached according to the [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontology.
+  - All sensor measures are attached according to the [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice) ontology.
   - Units can be included into the dashboard through the `MeasureInstance om:hasUnit UnitInstance. UnitInstance om:symbol "symbols"^^xsd:string.` triples but are **OPTIONAL**.
   - Only temperature and relative humidity can be currently retrieved for any room measures. Do note to include a min and max threshold triples for the facility holding these rooms.
 - ABox samples are documented [here](#3-data-model-requirements).
@@ -57,8 +57,8 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 **PRODUCTION ENVIRONMENT**
 - Build this agent's image by issuing `docker compose build` within this folder. Do not start the container.
 - Copy the `dashboard-agent.json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required. 
-Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
-- Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#bind-mounts) for the configuration syntax.
+- Start the stack manager as usual following [these instructions](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ### 2. Agent Route
 The agent currently offers two API routes:
@@ -95,7 +95,7 @@ If the agent ran successfully, a JSON Object would be returned as follows.
 ```
 
 ### 3. Data model requirements
-This agent can retrieve the measures and their time series associated with a facility from the knowledge graph. Please ensure that the measure and time series triples conform to [TWA's time series standards](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-cities-ontologies/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and the standard `OM` model as illustrated in Figure 1.
+This agent can retrieve the measures and their time series associated with a facility from the knowledge graph. Please ensure that the measure and time series triples conform to [TWA's time series standards](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and the standard `OM` model as illustrated in Figure 1.
 
 *Figure 1. Standard Time Series Measure ABox*
 ```mermaid
@@ -113,12 +113,12 @@ The legend for the prefix-namespace is available below.
 Prefix | Namespace
 --- | ---
 [bot](https://w3c-lbd-cg.github.io/bot/) | `https://w3id.org/bot#`
-[ontoam](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoassetmanagement) | `https://www.theworldavatar.com/kg/ontoassetmanagement/`
-[ontobim](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim) | `https://www.theworldavatar.com/kg/ontobim/`
-[ontodevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) | `https://www.theworldavatar.com/kg/ontodevice/`
-[ontotechsystem](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotechnicalsystem) | `https://www.theworldavatar.com/kg/ontotechnicalsystem/`
-[ontotimeseries](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries) | `https://www.theworldavatar.com/kg/ontotimeseries/`
-[ontoubemmp](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoubemmp) | `https://www.theworldavatar.com/kg/ontoubemmp/`
+[ontoam](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoassetmanagement) | `https://www.theworldavatar.com/kg/ontoassetmanagement/`
+[ontobim](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobim) | `https://www.theworldavatar.com/kg/ontobim/`
+[ontodevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice) | `https://www.theworldavatar.com/kg/ontodevice/`
+[ontotechsystem](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotechnicalsystem) | `https://www.theworldavatar.com/kg/ontotechnicalsystem/`
+[ontotimeseries](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries) | `https://www.theworldavatar.com/kg/ontotimeseries/`
+[ontoubemmp](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoubemmp) | `https://www.theworldavatar.com/kg/ontoubemmp/`
 [om](https://github.com/HajoRijgersberg/OM) | `http://www.ontology-of-units-of-measure.org/resource/om-2/`
 [omgCD](https://www.omg.org/spec/COMMONS/Designators) | `https://www.omg.org/spec/Commons/Designators/`
 [saref](https://saref.etsi.org/core/) | `https://saref.etsi.org/core/`

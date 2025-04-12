@@ -153,20 +153,20 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2023
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Github container registry]: https://ghcr.io
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [http://localhost:5002/airqualityagent]: http://localhost:5002/airqualityagent
 [Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[OntoEMS]: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
+[OntoEMS]: https://raw.githubusercontent.com/TheWorldAvatar/ontology/refs/heads/main/ontology/ontoems/OntoEMS.owl
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar

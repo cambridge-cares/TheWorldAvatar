@@ -3,7 +3,7 @@ This repository contains the instructions, directory structure, and configuratio
 
 ## 1. Preparations
 ### Knowledge of the stack tools adopted in The World Avatar
-Please read through the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) to set up your stack accordingly.
+Please read through the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) to set up your stack accordingly.
 
 ## 2. Deployment Workflow
 ### Stack manager

@@ -11,7 +11,7 @@ For the agent to process opf results a power system must be instantiated by the 
 
 #### NTU Power System Knowledge Graph
 - For details to instantiate the NTU Power System Knowledge Graph, pleaes refer to the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent).
-- Both NTUEnergyClusterAgent and HistoricalNTUEnergyAgent should run in the same stack in which they interact with the same Blazegraph and Postgres endpoints. For details to spin up a stack, please refer to the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+- Both NTUEnergyClusterAgent and HistoricalNTUEnergyAgent should run in the same stack in which they interact with the same Blazegraph and Postgres endpoints. For details to spin up a stack, please refer to the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 # 2. Build & Run
 This part of the README explain the instruction to build the agent.
@@ -59,13 +59,13 @@ config/
    |_ ...
 |_ <STACK NAME>.json
 ```
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+More information about adding custom containers to the stack can be found [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#adding-custom-containers).
 
 
 ### [Step 3] Spin up a Docker Stack
 **Note: The docker container must run within the same stack as the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) to get access and query the NTU Power Network Knowledge Graph for calculation.**
 
-Running this agent in a docker stack can facilitate interactions between other agents and endpoints (Postgres, Blazegraph, etc,.) for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+Running this agent in a docker stack can facilitate interactions between other agents and endpoints (Postgres, Blazegraph, etc,.) for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 A successful setup will result in 10 containers (optional 11):
 - Default containers
   - Stack Manager (exits when spins up all other containers)

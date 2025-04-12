@@ -2,7 +2,7 @@ Negotiation
 ===========
 
 [![Build
-Status](https://travis-ci.org/willdurand/Negotiation.svg?branch=master)](http://travis-ci.org/willdurand/Negotiation)
+<!-- markdown-link-check-disable-line -->Status](https://travis-ci.org/willdurand/Negotiation.svg?branch=master)](http://travis-ci.org/willdurand/Negotiation)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/6tbe8j3gofdlfm4v?svg=true)](https://ci.appveyor.com/project/willdurand/negotiation)
 [![Total
@@ -170,7 +170,7 @@ Run it using PHPUnit:
 Contributing
 ------------
 
-See [CONTRIBUTING](CONTRIBUTING.md) file.
+<!-- markdown-link-check-disable-line -->See [CONTRIBUTING](CONTRIBUTING.md) file.
 
 
 Credits
