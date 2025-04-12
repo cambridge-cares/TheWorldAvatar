@@ -38,54 +38,6 @@
         },
         {
             "pattern": "https?://docs.unity3d.com/?"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoassetmanagement"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontolab"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotechnicalsystem"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/pirmasens/tree/main/districtheating_stack"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/pirmasens/tree/main/psdt/stack\\-data\\-uploader\\-inputs/data/dlm"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/pirmasens/blob/main/psdt/stack\\-data\\-uploader\\-inputs/config/dlm\\.json"
-        },
-        {
-            "pattern": "https://caret\\.io\\?ref=parsedown"
-        },
-        {
-            "pattern": "http://caret\\.io\\?ref=parsedown"
-        },
-        {
-            "pattern": "tjl47@cam.ac.uk"
-        },
-        {
-            "pattern": "sh2000@cam.ac.uk"
-        },
-        {
-            "pattern": "msff2@cam.ac.uk"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv"
-        },
-        {
-            "pattern": "https://github\\.com/cambridge\\-cares/TheWorldAvatar/tree/dev\\-sea\\-level\\-rise\\-singapore/Deploy/stacks/Singapore\\-sea\\-level\\-rise"
         }
     ],
     "aliveStatusCodes": [
