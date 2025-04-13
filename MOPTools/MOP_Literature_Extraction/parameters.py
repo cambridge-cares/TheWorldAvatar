@@ -8,3 +8,5 @@ MODEL_NAME          = "gpt-4o-2024-08-06"
 DATA_FOLDER         = "PathToTWALocation/TheWorldAvatar/MOPTools/MOP_Literature_Extraction/Data"
 # Debug mode flag (set to True to enable debug logging and verbose output)
 DEBUGER_MODE        = Boolean
+# GPT token cost for cost estimation in processdirectory.py
+TOKEN_COST          = 5e-6

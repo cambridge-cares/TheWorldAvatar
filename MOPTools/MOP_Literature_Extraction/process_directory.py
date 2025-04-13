@@ -147,7 +147,7 @@ def count_tokens_and_calculate_cost(file_path:str, output_dir:str) -> dict:
     print(file_path, base_name)
     with open(file_path, 'r') as file:
                 text        = file.read()
-    cost                    = 5e-6
+    cost                    = para.TOKEN_COST
     model_name              = para.MODEL_NAME
     # Get the appropriate encoding for the specified model
     encoding                = tiktoken.encoding_for_model(model_name)
