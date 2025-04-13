@@ -2,6 +2,7 @@ import re
 import os
 from OntoSyn_ontology import *
 import utils
+import predefine_iris as piris
 
 import uuid
 
@@ -20,15 +21,15 @@ def match_element(element_name, client):
     # Match the element symbol to its corresponding IRI from the ontology
     match element_name:
         case 'C':                       # Carbon
-            element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_f1a5025b-7e20-4a6a-821e-a7b6c0473b8c"
+            element_iri                          = piris.CARBON
         case 'O':                       # Oxygen
-            element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_6a6be1ce-2021-4634-aed4-6a77488765df"
+            element_iri                          = piris.OXYGEN
         case 'H':                       # Hydrogen
-            element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_43cfac3b-81db-4338-bfb1-b0b3386f7473"
+            element_iri                          = piris.HYDROGEN
         case 'N':                       # Nitrogen
-            element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_a9a7806c-f077-4eb2-b5b0-099d51033b7b"
+            element_iri                          = piris.NITROGEN
         case _:                         # Default case for unknown elements
-            element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_e253b6ca-c169-4e60-b6be-46b95e045a85"
+            element_iri                          = piris.UNKNOWN_ELEMENT
     # Retrieve the element from the knowledge graph using the specified IRI
     element                                      = Element.pull_from_kg(element_iri, client,recursive_depth=-1)[0]
     return element
@@ -48,15 +49,15 @@ def match_separation(separation_name, client):
     # Match the separation technique name to its corresponding IRI in the ontology
     match separation_name:
         case 'centrifuge':              # Centrifuge-based separation
-            separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8"
+            separation_iri                          = piris.CENTRIFUGE
         case 'column':                  # Column chromatography
-            separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_aea2a49f-067f-4818-8abc-544dd8696ba8"
+            separation_iri                          = piris.COLUMN
         case 'washing':                 # Washing with solvent
-            separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_61233c76-a0e5-4cb0-8c5c-ab8347955ea6"
+            separation_iri                          = piris.WASH
         case 'extraction':              # Liquid-liquid or solid-liquid extraction
-            separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_c6d7ff74-4bdb-47b8-bcd8-fc40d9fbfb87"
+            separation_iri                          = piris.EXTRACTION
         case _:                         # Default case for unknown separation techniques
-            separation_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0"
+            separation_iri                          = piris.UNKNOWN_SEP
      # Retrieve the separation technique details from the knowledge graph using the specified IRI
     separation                                      = SeparationType.pull_from_kg(separation_iri, client,recursive_depth=-1)[0]
     return separation
@@ -76,13 +77,13 @@ def match_atmosphere(atmosphere, client):
     # Match the atmosphere type to its corresponding IRI in the ontology
     match atmosphere:
         case 'N2':                      # Nitrogen atmosphere
-            atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_434aa6e1-3ac6-4a08-a208-fbc23e78a758"
+            atmosphere_iri                          = piris.N2_ATMO
         case 'Ar':                      # Argon atmosphere
-            atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_65b5af5d-349d-467c-bd14-b239d4e94376"
+            atmosphere_iri                          = piris.AR_ATMO
         case 'Air':                     # Ambient air
-            atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_bd2ef29a-1c5c-40eb-a9b2-84f1a3fda734"
+            atmosphere_iri                          = piris.AIR_ATMO
         case _:                         # Default case for unknown or unspecified atmospheres
-            atmosphere_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_1f70dc2c-5a37-491a-89ec-0897f9dcb7b8"
+            atmosphere_iri                          = piris.UNKNOWN_ATMO
     # Retrieve the atmospheric environment details from the knowledge graph using the specified IRI
     atmosphere                                      = VesselEnvironment.pull_from_kg(atmosphere_iri, client, recursive_depth=-1)[0]
     return atmosphere
@@ -102,21 +103,21 @@ def match_vessel(vessel_name, client):
     # Match the vessel type name to its corresponding IRI in the ontology
     match vessel_name:
         case 'Teflon-lined stainless-steel vessel':     # High-temperature, high-pressure reaction vessel
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_eb0f5942-d36b-47b1-86f0-725c1549fa2e"
+            vessel_iri                          = piris.VESSEL_SS_TEFLON
         case 'glass vial':                              # Small-scale reaction or storage container
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_90589d23-44e8-4698-acdf-bee3e44df96f"
+            vessel_iri                          = piris.GLASS_VIAL
         case 'quartz tube':                             # High-temperature reaction vessel, often for thermal decomposition
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_06304c23-7926-45d2-841d-690b5de16ed0"
+            vessel_iri                          = piris.QUARTZ_TUBE
         case 'round bottom flask':                      # Common vessel for reflux and heating reactions
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_5a7d7ec9-44d5-4280-8467-f9f624374a9d"
+            vessel_iri                          = piris.ROUND_BOTTOM_FLASK
         case 'glass scintillation vial':                # Typically used for sample storage or small-scale reactions
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_b67ea47b-7849-4aac-b0fd-e2715a4ac034"
+            vessel_iri                          = piris.GLASS_SCINTILATION_VIAL
         case 'pyrex tube':                              # Resistant to thermal shock, used for heating or storing solutions
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_080ad74b-950d-4651-a87c-5aa96d5ffb52"
+            vessel_iri                          = piris.PYREX_TUBE
         case 'schlenk flask':                           # Designed for air-sensitive reactions under inert atmosphere
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_080zd54b-230c-4341-e87g-5ta46d2fgh91"
+            vessel_iri                          = piris.SCHLENK
         case _:                                         # Default case for unknown or unspecified vessels
-            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/VesselType_183ad74b-950d-4631-a47c-5aa91d5ffb12"
+            vessel_iri                          = piris.UNDEFINED_VESSEL
     # Retrieve the vessel details from the knowledge graph using the specified IRI
     vessel                                      = VesselType.pull_from_kg(vessel_iri, client,recursive_depth=-1)[0]
     return vessel
@@ -141,60 +142,55 @@ def get_unit(unit_name, client):
     match unit_name:
         # Temperature units
         case "°C" | "C" | "degC" | "ºC" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", client, recursive_depth=-1)[0]
+            unit                = UnitOfMeasure.pull_from_kg(piris.DEGREE_CELSIUS, client, recursive_depth=-1)[0]
         case "K" | "Kelvin":
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin", client, recursive_depth=-1)[0]
+            unit                = UnitOfMeasure.pull_from_kg(piris.KELVIN, client, recursive_depth=-1)[0]
         
         # Temperature change rate units
         case "°C/h" | "C/h" | "degC/h" | "°C/hour" | "C/hour" | "degC/hour":
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerHour", client, recursive_depth=-1)[0]
+            unit                = UnitOfMeasure.pull_from_kg(piris.DEGREE_CELSIUS_HOUR, client, recursive_depth=-1)[0]
         case "°C/min" | "C/min" | "degC/min" | "°C/minute" | "C/minute" | "degC/minute":
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerMinute-Time", client, recursive_depth=-1)[0]    
+            unit                = UnitOfMeasure.pull_from_kg(piris.DEGREE_CELSIUS_MIN, client, recursive_depth=-1)[0]    
         
         # Time units
         case "hour" | "hours" | "h" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/hour", client, recursive_depth=-1)[0]    
+            unit                = UnitOfMeasure.pull_from_kg(piris.DURATION_H, client, recursive_depth=-1)[0]    
         case "day" | "days" | "d" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/day", client, recursive_depth=-1)[0]    
+            unit                = UnitOfMeasure.pull_from_kg(piris.DURATION_DAY, client, recursive_depth=-1)[0]    
         case "week" | "weeks":
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/week", client, recursive_depth=-1)[0]    
+            unit                = UnitOfMeasure.pull_from_kg(piris.DURATION_WEEK, client, recursive_depth=-1)[0]    
         case "seconds" | "second" | "s" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time", client, recursive_depth=-1)[0]                      
+            unit                = UnitOfMeasure.pull_from_kg(piris.DURATION_S, client, recursive_depth=-1)[0]                      
         case "min" | "minute" | "minutes" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/minute-Time", client, recursive_depth=-1)[0]                      
+            unit                = UnitOfMeasure.pull_from_kg(piris.DURATION_MIN, client, recursive_depth=-1)[0]                      
         
         # Mass units
         case "g" | "gram" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/gram", client, recursive_depth=-1)[0]                      
+            unit                = UnitOfMeasure.pull_from_kg(piris.GRAMS, client, recursive_depth=-1)[0]                      
         case "mg" | "miligram" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/milligram", client, recursive_depth=-1)[0]                      
+            unit                = UnitOfMeasure.pull_from_kg(piris.MILI_GRAMS, client, recursive_depth=-1)[0]                      
         
         # Molar units
         case "mol" | "mole" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/mole", client, recursive_depth=-1)[0]                                  
+            unit                = UnitOfMeasure.pull_from_kg(piris.MOLE, client, recursive_depth=-1)[0]                                  
         case "mmol" | "milimole" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millimole", client, recursive_depth=-1)[0]  
+            unit                = UnitOfMeasure.pull_from_kg(piris.MMOLE, client, recursive_depth=-1)[0]  
         
         # Volume units
         case "mL" | "mililitre" | "mL" | "ml"  :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", client, recursive_depth=-1)[0]                                  
+            unit                = UnitOfMeasure.pull_from_kg(piris.MLITRE, client, recursive_depth=-1)[0]                                  
         
         # Miscellaneous units
         case "drop" | "drops" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/drop", client, recursive_depth=-1)[0]                                  
+            unit                = UnitOfMeasure.pull_from_kg(piris.DROP, client, recursive_depth=-1)[0]                                  
         case "M" | "mol/L" | "mol/l":
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre",  client, recursive_depth=-1)[0]  
+            unit                = UnitOfMeasure.pull_from_kg(piris.MOLE_PER_LITRE,  client, recursive_depth=-1)[0]  
         
         # Default case for unknown units
         case _: 
             print(f"Unit was not recognized. Check the following unit: {unit_name} \n")            
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/unknown", client, recursive_depth=-1)[0]                                  
+            unit                = UnitOfMeasure.pull_from_kg(piris.UNKNOWN_UNIT, client, recursive_depth=-1)[0]                                  
        
-
-    """
-    mole_per_litre                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre", rdfs_label="mole per litre")
-    revolutions_per_minute                      = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/revolutionPerMinute-Time", rdfs_label="revolutions per minute")
-    """
     return unit
 def extract_numbers_and_units(text, pattern_type, multiplier_flag=2):
     """
@@ -491,7 +487,7 @@ def steps_preupload(standard_step, synthesis_client, vessel_list):
     id_hash_value                               = str(uuid.uuid4())
     # Convert the extracted duration unit into a structured format
     duration_unit                               = get_unit(time_unit[0], synthesis_client)      # Retrieve the appropriate unit from KG
-    duration_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StepDuration_{id_hash_value}", hasNumericalValue=step_time[0], hasUnit=duration_unit)
+    duration_value                              = Measure(instance_iri=f"{piris.ONTOSYN_BASE}StepDuration_{id_hash_value}", hasNumericalValue=step_time[0], hasUnit=duration_unit)
     duration                                    = Duration(hasValue=duration_value)
     # Retrieve the atmosphere type for the step from the knowledge graph
     atmosphere                                  = match_atmosphere(standard_step["atmosphere"], synthesis_client)

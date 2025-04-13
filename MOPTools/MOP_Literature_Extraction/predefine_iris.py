@@ -1,4 +1,8 @@
 # -----------------------------------------------
+# Base iri for the ontologies
+# -----------------------------------------------
+ONTOSYN_BASE        = "https://www.theworldavatar.com/kg/OntoSyn/"
+# -----------------------------------------------
 # Characteristic Peaks (NMR & IR Spectroscopy)
 # -----------------------------------------------
 IR_NA               = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_f6cce625-9d69-4491-bd9d-b096114db7af"
