@@ -1,7 +1,7 @@
 # 
 # This workflow contains a job to check for broken links within Markdown files in the repository.
 # 
-name: TWA Markdown Push
+name: Check Markdown links
 
 # Trigger this workflow during pushes to the 'main' branch if changes to Markdown files
 on:
