@@ -12,3 +12,5 @@ We address this gap using existing timestamped measures of physical activity, lo
 Results will be relevant to local authorities, including more detailed understanding of how people use space and the duration and timing of health-related exposures. Long term, this research could facilitate real-time nudges of health behaviours using smartphones.
 
 This visualisation shows an example of our work in progress.
+
+test
