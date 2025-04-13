@@ -20,15 +20,6 @@ Ensure you have the following installed:
 - Python 3.8+
 - `pip` package manager
 
-### Setup
-
-Clone the repository and install dependencies:
-
-```bash
-git clone https://github.com/your-repo/MOP_Literature_Extraction.git
-cd MOP_Literature_Extraction
-pip install -r requirements.txt
-```
 
 ## Usage
 1. **Configure parameters:**  
