@@ -5,6 +5,7 @@ PROCESSING_DIR      = os.path.abspath(os.path.join(os.path.dirname(__file__), os
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
 import upload_utils as uputils
+import predefine_iris as piris
 
 def query_characterisation(doi:str):
     """
@@ -21,13 +22,13 @@ def query_characterisation(doi:str):
     updater                             = utils.get_client("OntoSynthesisConnection")
     # Define SPARQL query with necessary prefixes and structured selection of relevant chemical characterization data
     query                               = f"""
-    PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX bibo: <http://purl.org/ontology/bibo/>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
+    PREFIX osyn: <{piris.ONTOSYN_BASE}>  
+    PREFIX skos: <{piris.SKOS_BASE}>
+    PREFIX om: <{piris.ONTOMEASURE_BASE}>
+    PREFIX rdfs: <{piris.RDFS_BASE}>
+    PREFIX bibo: <{piris.BIBO_BASE}>
+    PREFIX os: <{piris.SPECIES_BASE}>
+    PREFIX mop: <{piris.MOPS_BASE}>
 
     SELECT ?ChemicalOutput
         (GROUP_CONCAT(DISTINCT ?Plabel; separator=", ") AS ?Plabels) 
@@ -97,7 +98,7 @@ def query_characterisation(doi:str):
             ?EleAnal os:isBasedOnMolecularFormula ?molForm	.
             ?molForm os:value ?molecularFormula .
         }}
-        ?doc <http://purl.org/ontology/bibo/doi> ?doi .
+        ?doc <{piris.BIBO_BASE}doi> ?doi .
     }}
 
     # Group results by chemical output, yield number, and yield unit
@@ -126,7 +127,7 @@ def get_literature(doi:str) -> dict:
     updater                             = utils.get_client("OntoMOPConnection")
     # Define the SPARQL query to retrieve literature details using the provided DOI
     query                               = f"""  
-                                        PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
+                                        PREFIX mop: <{piris.MOPS_BASE}>
                                         SELECT ?Formula ?CCDCNum
                                         WHERE   {{
                                                 ?MOPIRI         mop:hasProvenance            ?ProvenanceIRI                  ;
@@ -155,20 +156,20 @@ def get_input_species(doi:str) -> dict:
     updater                             = utils.get_client("OntoSynthesisConnection")
     # Define SPARQL query to retrieve species labels linked to the given DOI
     query                               = f"""
-    PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX osyn: <{piris.ONTOSYN_BASE}>  
+    PREFIX skos: <{piris.SKOS_BASE}>
+    PREFIX rdfs: <{piris.RDFS_BASE}>
 
     SELECT (GROUP_CONCAT(DISTINCT ?label; SEPARATOR=", ") AS ?labels) 
     WHERE {{	
         ?Species (<http://www.w3.org/2000/01/rdf-schema/label> | rdfs:label) ?label .
-        ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
-        ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
-        ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
+        ?PhaseComponent <{piris.ONTOCAPE_BASE}material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
+        ?SinglePhase <{piris.ONTOCAPE_BASE}upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
+        ?Material <{piris.ONTOCAPE_BASE}material/material.owl#thermodynamicBehaviour> ?SinglePhase .
         ?InputChemical osyn:referencesMaterial ?Material                .   
       	?ChemicalSynthesis osyn:hasChemicalInput ?InputChemical         .
         ?ChemicalSynthesis osyn:retrievedFrom ?doc                      .
-        ?doc <http://purl.org/ontology/bibo/doi> "{doi}"                .
+        ?doc <{piris.BIBO_BASE}doi> "{doi}"                .
     }}
     group by ?Species
                                               """       
@@ -210,12 +211,12 @@ def input_for_cbu(doi:str) -> dict:
       cbu_list.append({utils.extract_bracket_substrings(mop["Formula"])})
       # Construct SPARQL query to retrieve species labels linked to the current MOP
       query                               = f"""
-      PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-      PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-      PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX bibo: <http://purl.org/ontology/bibo/>
-      PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>	
+      PREFIX osyn: <{piris.ONTOSYN_BASE}>  
+      PREFIX skos: <{piris.SKOS_BASE}>
+      PREFIX om: <{piris.ONTOMEASURE_BASE}>
+      PREFIX rdfs: <{piris.RDFS_BASE}>
+      PREFIX bibo: <{piris.BIBO_BASE}>
+      PREFIX mop: <{piris.MOPS_BASE}>	
 
 
       SELECT distinct 
@@ -223,7 +224,7 @@ def input_for_cbu(doi:str) -> dict:
       WHERE {{
       ?ChemicalSynthesis 	osyn:retrievedFrom 			?doc 			.
         ?doc				bibo:doi					?provenance 	.
-      ?doc <http://purl.org/ontology/bibo/doi> 		?doi 			.
+      ?doc <{piris.BIBO_BASE}doi> 		?doi 			.
         ?transform  osyn:isDescribedBy 	?ChemicalSynthesis ;
                     osyn:hasChemicalOutput ?output 			. 
         ?output 	osyn:isRepresentedBy 	?MOP	.
@@ -233,13 +234,13 @@ def input_for_cbu(doi:str) -> dict:
         
         ?InputChemical osyn:referencesMaterial ?Material 	.
         ?Species skos:altLabel ?label .
-        ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
-        ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
-        ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
-        ?PhaseComponent	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty>	?PhaseComponentConc	.
+        ?PhaseComponent <{piris.ONTOCAPE_BASE}material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
+        ?SinglePhase <{piris.ONTOCAPE_BASE}upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
+        ?Material <{piris.ONTOCAPE_BASE}material/material.owl#thermodynamicBehaviour> ?SinglePhase .
+        ?PhaseComponent	<{piris.ONTOCAPE_BASE}upper_level/system.owl#hasProperty>	?PhaseComponentConc	.
         ?PhaseComponentConc om:hasValue		?concval					.
         ?concval	om:hasNumericalValue ?concnum			;
-                  <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure>	?cunit					.
+                  <{piris.ONTOCAPE_BASE}upper_level/system.owl#hasUnitOfMeasure>	?cunit					.
         ?cunit	rdfs:label		?concunit				.
         }}
         GROUP BY ?Species  ?doi ?ChemicalSynthesis """  
@@ -273,12 +274,12 @@ def query_mop_names(doi:str):
     updater                             = utils.get_client("OntoSynthesisConnection")
     # Construct SPARQL query to retrieve MOP names (alternative labels) linked to the given DOI
     query                               = f"""
-    PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-    PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX mops:    <https://www.theworldavatar.com/kg/ontomops/>
-    PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>  
+    PREFIX skos:    <{piris.SKOS_BASE}>
+    PREFIX os:      <{piris.SPECIES_BASE}>
+    PREFIX rdfs:    <{piris.RDFS_BASE}>
+    PREFIX rdf:     <{piris.RDF_BASE}>
+    PREFIX mops:    <{piris.MOPS_BASE}>
+    PREFIX osyn:    <{piris.ONTOSYN_BASE}>  
     SELECT ?lab
     WHERE {{
       
@@ -286,7 +287,7 @@ def query_mop_names(doi:str):
                                 osyn:isDescribedBy		        ?chemicalSynthesis 	.
       ?chemicalOutput	          skos:altLabel                    ?lab             .
       ?chemicalSynthesis	      osyn:retrievedFrom 		        ?document			      . 
-      ?document 			          <http://purl.org/ontology/bibo/doi>   "{doi}"		  .
+      ?document 			          <{piris.BIBO_BASE}doi>   "{doi}"		  .
           }}
                                               """   
     # Execute the SPARQL query using the knowledge graph client     
@@ -319,13 +320,13 @@ def query_characterisation(doi:str):
     updater                             = utils.get_client("OntoSynthesisConnection")
     # Construct SPARQL query to retrieve characterization data related to the given DOI
     query                               = f"""
-    PREFIX osyn:        <https://www.theworldavatar.com/kg/OntoSyn/>  
-    PREFIX skos:        <http://www.w3.org/2004/02/skos/core#>
-    PREFIX om:          <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX rdfs:        <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX bibo:        <http://purl.org/ontology/bibo/>
-    PREFIX os:          <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX mop:         <https://www.theworldavatar.com/kg/ontomops/>
+    PREFIX osyn:        <{piris.ONTOSYN_BASE}>  
+    PREFIX skos:        <{piris.SKOS_BASE}>
+    PREFIX om:          <{piris.ONTOMEASURE_BASE}>
+    PREFIX rdfs:        <{piris.RDFS_BASE}>
+    PREFIX bibo:        <{piris.BIBO_BASE}>
+    PREFIX os:          <{piris.SPECIES_BASE}>
+    PREFIX mop:         <{piris.MOPS_BASE}>
 
     SELECT ?ChemicalOutput
             (GROUP_CONCAT(DISTINCT ?Plabel; separator=", ") AS ?Plabels) 
@@ -384,7 +385,7 @@ def query_characterisation(doi:str):
             ?EleAnal os:isBasedOnMolecularFormula ?molForm	.
             ?molForm os:value ?molecularFormula .
         }}
-        ?doc <http://purl.org/ontology/bibo/doi> ?doi .
+        ?doc <{piris.BIBO_BASE}doi> ?doi .
     }}
 
     GROUP BY ?ChemicalOutput ?yieldnum ?yieldUnit
@@ -416,13 +417,13 @@ def query_synthesis_full(doi:str) -> dict:
     updater                             = utils.get_client("OntoSynthesisConnection")
     # Construct SPARQL query to retrieve synthesis details related to the given DOI
     query                               = f"""
-    PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX bibo: <http://purl.org/ontology/bibo/>
-    PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
-    PREFIX os:  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX osyn: <{piris.ONTOSYN_BASE}>  
+    PREFIX skos: <{piris.SKOS_BASE}>
+    PREFIX om: <{piris.ONTOMEASURE_BASE}>
+    PREFIX rdfs: <{piris.RDFS_BASE}>
+    PREFIX bibo: <{piris.BIBO_BASE}>
+    PREFIX mop: <{piris.MOPS_BASE}>
+    PREFIX os:  <{piris.SPECIES_BASE}>
 
     SELECT DISTINCT ?provenance ?Output 
        (GROUP_CONCAT(DISTINCT ?Plabel; separator=", ") AS ?Plabels) 
@@ -448,7 +449,7 @@ def query_synthesis_full(doi:str) -> dict:
         ?step osyn:hasOrder ?stepnumber ;
             osyn:hasVesselEnvironment ?envi.
         ?envi rdfs:label ?environment.
-        ?doc <http://purl.org/ontology/bibo/doi> "{doi}" .
+        ?doc <{piris.BIBO_BASE}doi> "{doi}" .
         
         # Retrieve molecular organic polyhedra (MOPs) and chemical outputs
         OPTIONAL {{
@@ -542,17 +543,17 @@ def query_synthesis_full(doi:str) -> dict:
     ?step a ?type .
     VALUES ?type {{ osyn:Filter osyn:Add osyn:Evaporate osyn:Dissolve }}
     ?InputChemical osyn:referencesMaterial ?Material .
-    ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
-    ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
+    ?Material <{piris.ONTOCAPE_BASE}material/material.owl#thermodynamicBehaviour> ?SinglePhase .
+    ?SinglePhase <{piris.ONTOCAPE_BASE}upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
     
-    ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?species .
+    ?PhaseComponent <{piris.ONTOCAPE_BASE}material/phase_system/phase_system.owl#representsOccurenceOf> ?species .
     ?species ?labelProp ?speciesLabel .
     VALUES ?labelProp {{ rdfs:label skos:altLabel }}
    
-    ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty> ?PhaseComponentConc .
+    ?PhaseComponent <{piris.ONTOCAPE_BASE}upper_level/system.owl#hasProperty> ?PhaseComponentConc .
     ?PhaseComponentConc om:hasValue ?concVal .
     ?concVal om:hasNumericalValue ?concNumVal ;
-             <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure> ?concUnit .
+             <{piris.ONTOCAPE_BASE}upper_level/system.owl#hasUnitOfMeasure> ?concUnit .
     ?concUnit rdfs:label ?concUnitLabel .
     }}
     }}
@@ -598,10 +599,10 @@ def species_querying(client, species_label):
             insert_string += f""" "{label}" """
     # Construct the SPARQL query to retrieve species based on various identifiers (IUPAC name, formula, SMILES, etc.)
     query = f"""
-        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX skos:    <{piris.SKOS_BASE}>
+        PREFIX os:      <{piris.SPECIES_BASE}>
+        PREFIX rdfs:    <{piris.RDFS_BASE}>
+        PREFIX rdf:     <{piris.RDF_BASE}>
         SELECT distinct ?Species WHERE {{
         ?Species a os:Species .
 
@@ -644,10 +645,10 @@ def species_querying_ontosyn(client, species_label):
             insert_string += f""" "{label}" """     # Standard double quotes for regular labels
     # Construct the SPARQL query to fetch species matching the given labels
     query = f"""
-        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX skos:    <{piris.SKOS_BASE}>
+        PREFIX os:      <{piris.SPECIES_BASE}>
+        PREFIX rdfs:    <{piris.RDFS_BASE}>
+        PREFIX rdf:     <{piris.RDF_BASE}>
         SELECT distinct ?Species WHERE {{
         ?Species a os:Species .
         VALUES ?Text {{{insert_string}}}
@@ -692,17 +693,17 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     print("mop querying: ", insert_string)
     # Construct the SPARQL query
     query = f"""
-        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        PREFIX skos:    <{piris.SKOS_BASE}>
+        PREFIX om:      <{piris.MOPS_BASE}>
+        PREFIX os:      <{piris.SPECIES_BASE}>
+        PREFIX rdfs:    <{piris.RDFS_BASE}>
+        PREFIX xsd: 	<{piris.XSD_BASE}>
         SELECT distinct ?MOPIRI
         WHERE {{
-        ?MOPIRI a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>     .
+        ?MOPIRI a <{piris.MOPS_BASE}MetalOrganicPolyhedron>     .
         # The VALUES clause allows querying using multiple possible identifiers                   
         VALUES ?Text {{"{CCDC_number}" "{mop_formula}" {insert_string}}}
-        ?MOPIRI (<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula>|skos:altLabel|<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber>) ?Text .  
+        ?MOPIRI (<{piris.MOPS_BASE}hasMOPFormula>|skos:altLabel|<{piris.MOPS_BASE}hasCCDCNumber>) ?Text .  
         }}
         GROUP BY ?MOPIRI"""
     
@@ -734,14 +735,14 @@ def CBU_querying(client, cbu_formula):
     print("querying for cbu: ", cbu_formula)
     # Construct the SPARQL query to search for CBUs matching the given formula
     query = f"""
-        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        PREFIX skos:    <{piris.SKOS_BASE}>
+        PREFIX om:      <{piris.MOPS_BASE}>
+        PREFIX os:      <{piris.SPECIES_BASE}>
+        PREFIX rdfs:    <{piris.RDFS_BASE}>
+        PREFIX xsd: 	<{piris.XSD_BASE}>
         SELECT distinct ?CBUIRI
         WHERE {{
-        ?CBUIRI a <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> .
+        ?CBUIRI a <{piris.MOPS_BASE}ChemicalBuildingUnit> .
         
         ?CBUIRI om:hasCBUFormula "{cbu_formula}" .  
         }}
@@ -767,12 +768,12 @@ def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
                 insert_string += f""" "{label}" """
     # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
     query = f"""
-        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
-        PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>
+        PREFIX skos:    <{piris.SKOS_BASE}>
+        PREFIX om:      <{piris.MOPS_BASE}>
+        PREFIX os:      <{piris.SPECIES_BASE}>
+        PREFIX rdfs:    <{piris.RDFS_BASE}>
+        PREFIX xsd: 	<{piris.XSD_BASE}>
+        PREFIX osyn:    <{piris.ONTOSYN_BASE}>
         SELECT distinct ?chemicalOutput
         WHERE {{
         ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .
@@ -801,18 +802,18 @@ def doi_querying(client, doi):
     """
     # Construct the SPARQL query to retrieve documents based on the given DOI
     query = f"""
-        PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-        PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX bibo: <http://purl.org/ontology/bibo/>
-        PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX osyn: <{piris.ONTOSYN_BASE}>  
+        PREFIX skos: <{piris.SKOS_BASE}>
+        PREFIX om: <{piris.ONTOMEASURE_BASE}>
+        PREFIX rdfs: <{piris.RDFS_BASE}>
+        PREFIX bibo: <{piris.BIBO_BASE}>
+        PREFIX mop: <{piris.MOPS_BASE}>
 
         SELECT distinct ?doc
         WHERE {{
             ?ChemicalSynthesis osyn:retrievedFrom ?doc .
             ?doc bibo:doi ?provenance .
-            ?doc <http://purl.org/ontology/bibo/doi> "{doi}" .
+            ?doc <{piris.BIBO_BASE}doi> "{doi}" .
         }}
         group by ?doc"""
     # Execute the query using the provided client
@@ -849,12 +850,11 @@ def transformation_querying(client, mop_name):
     print("mop querying: ", insert_string)
     # Construct the SPARQL query to retrieve chemical transformations
     query = f"""
-        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-        PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
-        PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>
+        PREFIX skos:    <{piris.SKOS_BASE}>
+        PREFIX os:      <{piris.SPECIES_BASE}>
+        PREFIX rdfs:    <{piris.RDFS_BASE}>
+        PREFIX xsd: 	<{piris.XSD_BASE}>
+        PREFIX osyn:    <{piris.ONTOSYN_BASE}>
         SELECT ?chemicalTrans
         WHERE {{
         ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .

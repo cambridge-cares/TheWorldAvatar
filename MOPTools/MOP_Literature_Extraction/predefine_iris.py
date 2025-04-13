@@ -2,6 +2,15 @@
 # Base iri for the ontologies
 # -----------------------------------------------
 ONTOSYN_BASE        = "https://www.theworldavatar.com/kg/OntoSyn/"
+SKOS_BASE           = "http://www.w3.org/2004/02/skos/core#"
+ONTOMEASURE_BASE    = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
+RDFS_BASE           = "http://www.w3.org/2000/01/rdf-schema#"
+BIBO_BASE           = "http://purl.org/ontology/bibo/"
+SPECIES_BASE        = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+MOPS_BASE           = "https://www.theworldavatar.com/kg/ontomops/"
+XSD_BASE            = "http://www.w3.org/2001/XMLSchema#"
+RDF_BASE            = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ONTOCAPE_BASE       = "http://www.theworldavatar.com/ontology/ontocape/"
 # -----------------------------------------------
 # Characteristic Peaks (NMR & IR Spectroscopy)
 # -----------------------------------------------
