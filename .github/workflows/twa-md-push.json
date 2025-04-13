@@ -47,6 +47,9 @@
         },
         {
             "pattern": "/explore(/[^ ]*)?"
+        },
+        {
+            "pattern": "./images/defaults(/[^ ]*)?"
         }
     ],
     "aliveStatusCodes": [
