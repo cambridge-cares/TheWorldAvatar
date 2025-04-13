@@ -241,7 +241,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["addedChemical"] != []:
             chemical_input                                      = upload_inputChem(standard_step["addedChemical"], synthesis_client, species_client)
         else:
-            chemical_input                                      = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74",
+            chemical_input                                      = ChemicalInput.pull_from_kg(f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74",
                                                                                               synthesis_client, recursive_depth=-1)
         # Create Add instance
         add_class                                               = Add(hasOrder=standard_step['stepNumber'],
@@ -281,14 +281,14 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         id_hash_value                               = str(uuid.uuid4())
         # Instantiate temperature and rate measures
         temperature_value                           = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",
+            instance_iri=f"{preiri.ONTOSYN_BASE}TemperatureValue_{id_hash_value}",
             hasNumericalValue=temp[0], 
             hasUnit=temperature_unit)
         target_temperature                          = Temperature(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetTemperature_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}TargetTemperature_{id_hash_value}", 
             hasValue=temperature_value)
         rate_value                                  = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureRate_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}TemperatureRate_{id_hash_value}", 
             hasNumericalValue=heat_rate[0], 
             hasUnit=rate_unit)
         
@@ -326,7 +326,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["washingSolvent"] != []:
             chemical_input                                  = upload_inputChem(standard_step["washingSolvent"], synthesis_client, species_client)
         else:
-            chemical_input                                  = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
+            chemical_input                                  = ChemicalInput.pull_from_kg(f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
         # Create Filter instance
         filter_class                                        = Filter(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, isRepeated=standard_step["numberOfFiltrations"], isVacuumFiltration=standard_step["vacuumFiltration"],hasWashingSolvent=chemical_input, rdfs_comment=standard_step["comment"], hasVessel=vessel)  
         # Push the components to the KG
@@ -348,8 +348,8 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
             temperature_unit                        = uputil.get_unit(temp_unit[0], synthesis_client) 
             print("temperature: ", temp, temp_unit)
         # Instantiate temperature measure
-        temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
-        target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StirTemperature_{id_hash_value}", hasValue=temperature_value)
+        temperature_value                           = Measure(instance_iri=f"{preiri.ONTOSYN_BASE}TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
+        target_temperature                          = Temperature(instance_iri=f"{preiri.ONTOSYN_BASE}StirTemperature_{id_hash_value}", hasValue=temperature_value)
         # Create Stir instance
         stir                                        = Stir(hasStepDuration=duration, isWait=standard_step["wait"], hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasStirringTemperature=target_temperature)
         # Push the components to the KG
@@ -373,11 +373,11 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
             print("temperature: ", temp, temp_unit)
         # Instantiate temperature measure
         temperature_value                           = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",
+            instance_iri=f"{preiri.ONTOSYN_BASE}TemperatureValue_{id_hash_value}",
             hasNumericalValue=temp[0], 
             hasUnit=temperature_unit)
         target_temperature                          = Temperature(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetTemperature_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}TargetTemperature_{id_hash_value}", 
             hasValue=temperature_value)
         # Create Crystallization instance
         crystallization                             = Crystallize(
@@ -403,24 +403,24 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
             chemical_input                          = upload_inputChem(standard_step["dryingAgent"], synthesis_client, species_client)
         else:
             chemical_input                          = ChemicalInput.pull_from_kg(
-                "https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", 
+                f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", 
                 synthesis_client, 
                 recursive_depth=-1)[0]
         
         chemicals_list.append(chemical_input)
         # Instantiate drying temperature measure
         temperature_value                           = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",
+            instance_iri=f"{preiri.ONTOSYN_BASE}TemperatureValue_{id_hash_value}",
             hasNumericalValue=temp[0], 
             hasUnit=temperature_unit, 
             rdfs_comment=standard_step["temperature"])
         # Instantiate drying temperature
         drying_temperature                          = Temperature(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/DryingTemperature_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}DryingTemperature_{id_hash_value}", 
             hasValue=temperature_value)
         # Instantiate drying pressure
         drying_pressure                             = Pressure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/DryingPressure_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}DryingPressure_{id_hash_value}", 
             rdfs_label=standard_step["pressure"])
         # Create Dry instance
         dry                                         = Dry(
@@ -447,30 +447,30 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         
         # Instantiate temperature measure
         temperature_value                           = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",
+            instance_iri=f"{preiri.ONTOSYN_BASE}TemperatureValue_{id_hash_value}",
             hasNumericalValue=temp[0], 
             hasUnit=temperature_unit, 
             rdfs_comment=standard_step["temperature"])
         evap_temperature                            = Temperature(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/EvaporationTemperature_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}EvaporationTemperature_{id_hash_value}", 
             hasValue=temperature_value)
         # Instantiate pressure
         evap_pressure                               = Pressure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/EvaporationPressure_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}EvaporationPressure_{id_hash_value}", 
             rdfs_label=standard_step["pressure"])
         
         if standard_step["removedSpecies"] != []:
             chemical_input                          = upload_inputChem(standard_step["removedSpecies"], synthesis_client, species_client)
         else:
-            chemical_input                          = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
+            chemical_input                          = ChemicalInput.pull_from_kg(f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
         
         # add chemical input so it can be properly connected once all inputs are established
         chemicals_list.append(chemical_input)
         # Instantiate volume 
         vol, vol_unit                               = uputil.extract_numbers_and_units(standard_step["targetVolume"], "temp")
         volume_unit                                 = uputil.get_unit(vol_unit[0], synthesis_client) 
-        volume_value                                = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/VolumeValue_{id_hash_value}",hasNumericalValue=vol[0], hasUnit=volume_unit, rdfs_comment=standard_step["targetVolume"])
-        target_volume                               = Volume(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetVolume_{id_hash_value}", hasValue=volume_value)
+        volume_value                                = Measure(instance_iri=f"{preiri.ONTOSYN_BASE}VolumeValue_{id_hash_value}",hasNumericalValue=vol[0], hasUnit=volume_unit, rdfs_comment=standard_step["targetVolume"])
+        target_volume                               = Volume(instance_iri=f"{preiri.ONTOSYN_BASE}TargetVolume_{id_hash_value}", hasValue=volume_value)
         evaporate                                   = Evaporate(
             hasStepDuration=duration, isEvaporatedToVolume=target_volume, 
             removesSpecies=chemical_input, hasRotaryEvaporator=standard_step["rotaryEvaporator"],
@@ -496,11 +496,11 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         volume_unit                                 = uputil.get_unit(vol_unit[0], synthesis_client) 
         # Instantiate volume measure
         volume_value                                = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/VolumeValue_{id_hash_value}",
+            instance_iri=f"{preiri.ONTOSYN_BASE}VolumeValue_{id_hash_value}",
             hasNumericalValue=vol[0], 
             hasUnit=volume_unit)
         target_volume                               = Volume(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetVolume_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}TargetVolume_{id_hash_value}", 
             hasValue=volume_value)
         # Create Transfer instance
         transfer                                    = Transfer(
@@ -523,7 +523,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["solvent"] != []:
             chemical_input                                              = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
         else:
-            chemical_input                                              = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
+            chemical_input                                              = ChemicalInput.pull_from_kg(f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
         # Create Dissolve instance
         dissolve                                                        = Dissolve(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSolventDissolve=chemical_input, rdfs_comment=standard_step["comment"])
         # Push the components to the KG
@@ -546,7 +546,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
                 species_client)
         else:
             chemical_input                                              = ChemicalInput.pull_from_kg(
-                "https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", 
+                f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", 
                 synthesis_client, 
                 recursive_depth=-1)[0]
         # Extract separation type
@@ -570,7 +570,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
     # Default case: If no valid step type is found
     else:
         standard_class                                                  = SynthesisStep.pull_from_kg(
-            "https://www.theworldavatar.com/kg/OntoSyn/SynthesisStep_ddb7ceda-13d2-461a-a63e-9e7df3116882", 
+            f"{preiri.ONTOSYN_BASE}SynthesisStep_ddb7ceda-13d2-461a-a63e-9e7df3116882", 
             synthesis_client, 
             recursive_depth=-1)[0]
         return standard_class, vessel_list, chemicals_list
@@ -682,7 +682,7 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
         if mop_iri == []:
             # couldn't link with a mop, instantiate unknown mop to indicate failed linkage:
             mop                             = MetalOrganicPolyhedron.pull_from_kg(
-                "https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_1d981ba2-4072-47ef-9ecd-b9f5cc06a50a", 
+                f"{preiri.MOPS_BASE}MetalOrganicPolyhedra_1d981ba2-4072-47ef-9ecd-b9f5cc06a50a", 
                 client_synthesis, 
                 recursive_depth=-1)[0]
         else:
@@ -711,7 +711,7 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
     uuid_id                                     = str(uuid.uuid4())
     # Retrieve the unit of measurement (percent) from KG
     unit                                        = UnitOfMeasure.pull_from_kg(
-        "http://www.ontology-of-units-of-measure.org/resource/om-2/percent", 
+        preiri.PERCENTAGE, 
         client_synthesis, 
         recursive_depth=-1)[0]
     print("yield number", yield_str)
@@ -720,7 +720,7 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
     # Handle missing yield values by linking to a predefined "unknown" yield instance
     if yield_str == "-1" or yield_str == "N/A":
         yield_instance                          = AmountOfSubstanceFraction.pull_from_kg(
-            "https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", 
+            f"{preiri.ONTOSYN_BASE}Yield_3ed5e18b-5206-405d-ada0-382071f73f74", 
             client_synthesis, 
             recursive_depth=-1)[0]
         print("unknown yield: ", yield_instance)
@@ -728,14 +728,14 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
         # Attempt to convert the yield value to a float and create a new instance
         try:
             yield_val                               = float(yield_str)
-            yield_value                             = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_{uuid_id}", hasNumericalValue=yield_val, hasUnit=unit)
+            yield_value                             = Measure(instance_iri=f"{preiri.ONTOSYN_BASE}YieldValue_{uuid_id}", hasNumericalValue=yield_val, hasUnit=unit)
             yield_instance                          = AmountOfSubstanceFraction(
-                instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/Yield_{uuid_id}", 
+                instance_iri=f"{preiri.ONTOSYN_BASE}Yield_{uuid_id}", 
                 hasValue=yield_value)
         except:
             # If conversion fails, link to the predefined "unknown" yield instance
             yield_instance                          = AmountOfSubstanceFraction.pull_from_kg(
-                "https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", 
+                f"{preiri.ONTOSYN_BASE}Yield_3ed5e18b-5206-405d-ada0-382071f73f74", 
                 client_synthesis, 
                 recursive_depth=-1)[0]
         
@@ -821,7 +821,7 @@ def chemicals_upload(input_path, output_path):
             else:
                 # Use a predefined "unknown" chemical input instance if no chemical data is provided
                 chemical_input                                              = ChemicalInput.pull_from_kg(
-                    "https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", 
+                    f"{preiri.ONTOSYN_BASE}ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", 
                     client_synthesis, 
                     recursive_depth=-1)[0]
             # If supplier information and purity are provided, create supplier and associate purity level
@@ -1194,10 +1194,10 @@ def parse_element_string(element_string, syn_client):
         # Generate a unique identifier for the instance
         id_hash_value                                           = str(uuid.uuid4())
         # Retrieve the unit of measurement (percentage) from the knowledge graph
-        unit                                                    = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", syn_client, recursive_depth=-1)[0]
+        unit                                                    = UnitOfMeasure.pull_from_kg(preiri.PERCENTAGE, syn_client, recursive_depth=-1)[0]
         # Create a `Measure` instance to store the numerical value and its unit
         measure                                                 = Measure(
-            instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/MassFractionValue_{id_hash_value}", 
+            instance_iri=f"{preiri.ONTOSYN_BASE}MassFractionValue_{id_hash_value}", 
             hasNumericalValue=value, 
             hasUnit=unit)
         # Create a `MassFraction` instance that references the `Measure`
@@ -1265,7 +1265,7 @@ def upload_steps(input_path, output_path):
             mop_name=mop_name)
         # Default to unknown yield
         yield_instance                                          = AmountOfSubstanceFraction.pull_from_kg(
-            "https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", 
+            f"{preiri.ONTOSYN_BASE}Yield_3ed5e18b-5206-405d-ada0-382071f73f74", 
             sparql_client_synthesis, 
             recursive_depth=-1)[0]
         print("transformation iri: ", transformation_iri)
