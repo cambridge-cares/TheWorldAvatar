@@ -1,8 +1,8 @@
 # An agent to represent and query solar data reported by the Newcastle Urban Observatory.
 ### Authors
-* [Toby Latcham](tjl47@cam.ac.uk)
-* [Sophie Hall](sh2000@cam.ac.uk)
-* [Feroz Farazi](msff2@cam.ac.uk)
+* [Toby Latcham](mailto:tjl47@cam.ac.uk)
+* [Sophie Hall](mailto:sh2000@cam.ac.uk)
+* [Feroz Farazi](mailto:msff2@cam.ac.uk)
 
 The agent processes wind energy data consumed across the UK to represent it in the World Avatar Knowledge Graph (KG) to make it accessible and queryable. The data includes annual electricity consumption statistics and daily electricity consumption patterns for each month at a postcode.
 
