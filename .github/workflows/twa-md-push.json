@@ -49,12 +49,17 @@
             "pattern": "/explore(/[^ ]*)?"
         },
         {
-            "pattern": "./images/defaults(/[^ ]*)?"
+            "pattern": "/images/defaults(/[^ ]*)?"
+        },
+        {
+            "pattern": "mailto:(/[^ ]*)?"
         }
     ],
+    "retryCount": 3,
     "aliveStatusCodes": [
         200,
         403,
+        503,
         0
     ]
 }
