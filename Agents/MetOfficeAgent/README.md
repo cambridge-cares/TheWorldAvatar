@@ -234,8 +234,8 @@ Markus Hofmeister (mh807@cam.ac.uk), January 2022
 <!-- files -->
 [Dockerfile]: Dockerfile
 [docker compose file]: docker-compose.yml
-[docker-compose.test.yml]: tests\docker-compose.test.yml
-[example retrieve all request]: resources\HTTPRequest_retrieve_all.http
+[docker-compose.test.yml]: tests/docker-compose.test.yml
+[example retrieve all request]: resources/HTTPRequest_retrieve_all.http
 [resources]: resources
 [stack.sh]: stack.sh
 [tests]: tests

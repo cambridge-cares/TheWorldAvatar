@@ -38,6 +38,18 @@
         },
         {
             "pattern": "https?://docs.unity3d.com/?"
+        },
+        {
+            "pattern": "#(/[^ ]*)?"
+        },
+        {
+            "pattern": "/user(/[^ ]*)?"
+        },
+        {
+            "pattern": "/explore(/[^ ]*)?"
+        },
+        {
+            "pattern": "./images/defaults(/[^ ]*)?"
         }
     ],
     "aliveStatusCodes": [
