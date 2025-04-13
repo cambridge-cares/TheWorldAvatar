@@ -23,7 +23,7 @@ Please see the [official documentation](https://docs.php-http.org/en/latest/mess
 
 ## Security
 
-If you discover any security related issues, please contact us at [security@php-http.org](mailto:security@php-http.org).
+If you discover any security related issues, please contact us at [security@php-http.org](mailto:security@php-http.org).<!-- markdown-link-check-disable-line -->
 
 
 ## License

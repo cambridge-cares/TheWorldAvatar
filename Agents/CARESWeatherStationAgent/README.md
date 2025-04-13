@@ -22,7 +22,7 @@ The actual endpoint has the following structure:
 https://api.weather.com/v2/pws/observations/all/1day?stationId=[<stationId>]&format=json&units=s&numericPrecision=decimal&apiKey=[<apiKey>]
 ```
 where `[stationId]` is the id of the weather station which is taking the physical readings.  The `[apiKey]` is the key needed to access the API. By setting `units=s` one ensures that the values of the readings correspond to SI units. 
-Finally, the option `numericPrecision=decimal` enables the numerical readings to be returned in decimal values (unless according to the API the field under observation can only return an integer. See also the [API documentation](#Weather-Station-API)).
+Finally, the option `numericPrecision=decimal` enables the numerical readings to be returned in decimal values (unless according to the API the field under observation can only return an integer. See also the [API documentation](#weather-station-api)).
 The endpoint controls what type of data is retrieved and its form.
 
 #### Example readings
@@ -88,7 +88,7 @@ The time-series client property file needs to contain all credentials and endpoi
 More information can be found in the example property file `client.properties` in the `config` folder.
 
 #### API properties
-The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#Weather-Station-API)),
+The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#weather-station-api)),
 as well as, the url of the API and the identifier of the weather station. More specifically, the API properties file should contain the following keys:
 - `weather.api_key` the key needed to access the API.
 - `weather.stationId` the stationId associated with the sensor.

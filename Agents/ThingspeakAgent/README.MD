@@ -73,7 +73,7 @@ The time-series client property file needs to contain all credentials and endpoi
 More information can be found in the example property file `client.properties` in the `config` folder.
 
 #### API properties
-The API properties contains the parameters needed to access the Thingspeak API (see the [API description](#Thingspeak-API)). It should contain the following keys:
+The API properties contains the parameters needed to access the Thingspeak API (see the [API description](#thingspeak-api)). It should contain the following keys:
 - `thingspeak.channelNumber` the ID of the channel.
 - `thingspeak.apiKey` the API Key needed to read data from a private channel, a public channel do not require an API Key and this key can be set to equal to "None".
 - `thingspeak.results` the number of results to retrieve from the Thingspeak server.

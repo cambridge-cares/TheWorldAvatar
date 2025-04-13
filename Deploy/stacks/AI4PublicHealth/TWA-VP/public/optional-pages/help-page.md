@@ -5,7 +5,7 @@ slug: help
 
 <link rel="stylesheet" href="https://fonts.google.com/icons?icon.set=Material+Icons">
 
-<h1><img src="./images/defaults/icons/twa.svg" width="60" height="60">&nbsp;Help</h1>
+<h1><img src="../../../../../../web/augmented-uk/public/images/defaults/icons/twa.svg" width="60" height="60">&nbsp;Help</h1>
 
 ## Getting Started
 
@@ -16,12 +16,12 @@ The platform offers a web map and dashboard tool for data exploration and trend 
 Users can navigate the platform by clicking on buttons or the navigation bar at the top of the screen.
 
 <figure style="text-align:center;">
-    <img src="./images/defaults/help/return.svg" width="20" height="20">
+    <img src="../../../../../../web/augmented-uk/public/images/defaults/help/return.svg" width="20" height="20">
     <figcaption style="font-size:0.8rem">Fig 1a: Button to return to previous page</figcaption>
 </figure>
 
 <figure style="text-align:center;">
-    <img src="./images/defaults/help/navbar.svg" width="300" height="30">
+    <img src="../../../../../../web/augmented-uk/public/images/defaults/help/navbar.svg" width="300" height="30">
     <figcaption style="font-size:0.8rem">Fig 1b: Navigation bar at top of the screen</figcaption>
 </figure>
 
@@ -31,9 +31,9 @@ Interaction is enabled for mouse or pointing device, but keyboard shortcuts are 
 
 <figure style="text-align: center;">
     <div>
-        <img src="./images/defaults/help/pan.svg" width="150" height="150">
-        <img src="./images/defaults/help/rotate.svg" width="150" height="150">
-        <img src="./images/defaults/help/zoom.svg" width="150" height="150">
+        <img src="../../../../../../web/augmented-uk/public/images/defaults/help/pan.svg" width="150" height="150">
+        <img src="../../../../../../web/augmented-uk/public/images/defaults/help/rotate.svg" width="150" height="150">
+        <img src="../../../../../../web/augmented-uk/public/images/defaults/help/zoom.svg" width="150" height="150">
     </div>
     <figcaption style="font-size:0.8rem">Fig 2: Mouse controls</figcaption>
 </figure>

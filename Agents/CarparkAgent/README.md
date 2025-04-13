@@ -15,7 +15,7 @@ The second API allows the retrieval of carpark ratings. More information can be 
 ## Property files
 For running the agent, three property files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
-- One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
+- One [property file for the time-series client](#client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the carpark APIs](#api-properties) defining the properties needed to access the API.
 
 ### Agent properties
