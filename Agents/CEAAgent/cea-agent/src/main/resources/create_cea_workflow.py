@@ -5,9 +5,10 @@ create_cea_workflow replaces generic path names in workflow file with actual fil
 import argparse
 import os
 import yaml
+import json
 
 
-def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, noWeather, noTerrain):
+def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, noWeather, noTerrain, database, solar):
     """
     :param workflow_file: input workflow file to be modified
 
@@ -26,6 +27,11 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
     find_and_replace = {a: z, b: y, c: x, d: w}
 
     output_yaml = filepath+os.sep+workflow_name
+
+    if solar == 'null':
+        solar_properties = {}
+    else:
+        solar_properties = json.loads(solar)
 
     with open(workflow_file) as stream:
         data = yaml.safe_load(stream)
@@ -48,11 +54,20 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
         data.insert(3, dic)
 
     for i in data:
-        for j in i:
-            if j == "parameters":
-                for key in i[j]:
-                    if isinstance(i[j][key], str):
-                        i[j][key] = find_and_replace.get(i[j][key], i[j][key])
+        if 'parameters' in i.keys():
+            for key in i['parameters']:
+                if isinstance(i['parameters'][key], str):
+                    i['parameters'][key] = find_and_replace.get(i['parameters'][key], i['parameters'][key])
+        if 'script' in i.keys():
+            if i['script'] == 'data-initializer':
+                i['parameters']['databases-path'] = database
+            if i['script'] == 'photovoltaic' or i['script'] == 'photovoltaic-thermal' or i['script'] == 'solar-collector' :
+                for k, v in solar_properties.items():
+                    i['parameters'][k] = v
+                    if v == 'panel-tilt-angle':
+                        i['parameters']['custom-tilt-angle'] = True
+
+
 
     with open(output_yaml, 'wb') as stream:
         yaml.safe_dump(data, stream, default_flow_style=False,
@@ -60,9 +75,8 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
 
 
 def main(argv):
-
     try:
-        write_workflow_file(argv.workflow_file, argv.workflow_name, argv.cea_file_path, argv.noSurroundings, argv.noWeather, argv.noTerrain)
+        write_workflow_file(argv.workflow_file, argv.workflow_name, argv.cea_file_path, argv.noSurroundings, argv.noWeather, argv.noTerrain, argv.database, argv.solar)
     except IOError:
         print('Error while processing file: ' + argv.worflow_file)
 
@@ -77,6 +91,8 @@ if __name__ == '__main__':
     parser.add_argument("noSurroundings")
     parser.add_argument("noWeather")
     parser.add_argument("noTerrain")
+    parser.add_argument("database")
+    parser.add_argument("solar")
 
     # parse the arguments
     args = parser.parse_args()

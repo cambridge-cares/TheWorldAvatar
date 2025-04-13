@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
@@ -21,9 +22,9 @@ import uk.ac.cam.cares.jps.utils.RepositoryCallback;
  */
 @HiltViewModel
 public class NormalBottomSheetViewModel extends ViewModel {
-    private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
-    private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
-    private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
+    private final DatesWithTrajectoryRepository datesWithTrajectoryRepository;
+    private final MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
+    private final MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
@@ -59,6 +60,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
         _selectedDate.setValue(date);
     }
 
+
     /**
      * Get dates which has trajectory data from server
      * @param timezone current timezone
@@ -84,4 +86,5 @@ public class NormalBottomSheetViewModel extends ViewModel {
     public long getSelectedDateLong() {
         return selectedDate.getValue().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
+    
 }

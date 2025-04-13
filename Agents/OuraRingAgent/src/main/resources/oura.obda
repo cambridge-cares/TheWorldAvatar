@@ -1,0 +1,20 @@
+[PrefixDeclaration]
+mon:		 https://w3id.org/MON/person.owl#
+ouraring:    https://www.theworldavatar.com/kg/ouraring/
+om:          http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+# The user IRI mon:person_{user_id} needs to match the obda added by the UserAgent
+mappingId   ouraring
+target      mon:person_{user_id} ouraring:hasOuraRing ouraring:ring_{user_id}.
+            ouraring:ring_{user_id} a ouraring:OuraRing;
+                ouraring:measures ouraring:heartrate_{user_id}.
+            ouraring:heartrate_{user_id} a ouraring:HeartRate;
+                ouraring:hasBPM ouraring:bpm_{user_id};
+                ouraring:hasSource ouraring:source_{user_id}.
+            ouraring:bpm_{user_id} a ouraring:BPM;
+                om:hasValue ouraring:bpm_measure_{user_id}.
+            ouraring:bpm_measure_{user_id} a om:Measure.
+            ouraring:source_{user_id} a ouraring:HeartRateSource.
+source      SELECT user_id FROM timeline."ouraRing"
+]]

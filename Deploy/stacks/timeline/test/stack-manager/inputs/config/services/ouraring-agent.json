@@ -1,0 +1,38 @@
+{
+    "ServiceSpec": {
+        "Name": "ouraring-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/ouraring-agent:1.0.0",
+                "Env": [
+                    "NAMESPACE=ouraring"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/OuraRingAgent/",
+            "externalPath": "/ouraring-agent/"
+        }
+    }
+}

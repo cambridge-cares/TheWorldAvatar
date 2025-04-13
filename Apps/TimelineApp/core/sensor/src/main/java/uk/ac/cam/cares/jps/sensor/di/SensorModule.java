@@ -32,8 +32,9 @@ public class SensorModule {
     @Provides
     @Singleton
     public SensorNetworkSource provideSensorNetworkSource(@ApplicationContext Context applicationContext,
-                                                          RequestQueue requestQueue) {
-        return new SensorNetworkSource(applicationContext, requestQueue);
+                                                          RequestQueue requestQueue,
+                                                          SensorLocalSource sensorLocalSource) {
+        return new SensorNetworkSource(applicationContext, requestQueue, sensorLocalSource);
     }
 
     @Provides

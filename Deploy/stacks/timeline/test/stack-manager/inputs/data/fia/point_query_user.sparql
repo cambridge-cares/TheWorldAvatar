@@ -1,0 +1,13 @@
+PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+PREFIX sensorloggerapp: <https://www.theworldavatar.com/kg/sensorloggerapp/>
+
+SELECT DISTINCT ?point
+WHERE {
+  SERVICE [ONTOP] { 
+    [IRI] sensorloggerapp:hasA ?device .
+    ?device <https://saref.etsi.org/core/consistsOf> ?gps.
+    ?gps a ontodevice:GPSDevice;
+         ontodevice:hasGeoLocation ?point.
+    ?point a <http://www.opengis.net/ont/sf#Point>.
+  }
+}
