@@ -25,12 +25,17 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "themes",
+                        "Source": "keycloak/themes",
                         "Target": "/opt/keycloak/themes"
                     },
                     {
                         "Type": "bind",
-                        "Source": "keycloak_start.sh",
+                        "Source": "keycloak/data",
+                        "Target": "/opt/keycloak/data/import"
+                    },
+                    {
+                        "Type": "bind",
+                        "Source": "keycloak_start_test.sh",
                         "Target": "/keycloak_start.sh"
                     }
                 ],
