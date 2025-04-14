@@ -1,9 +1,5 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
-import javax.servlet.annotation.WebServlet;
-import javax.ws.rs.BadRequestException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +14,16 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
+
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @WebServlet(urlPatterns = "/update")
 
@@ -36,15 +34,15 @@ public class IsochroneAgent extends JPSAgent {
     private static int timeInterval;
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private static final Path obdaFile = Path.of("/inputs/isochrone.obda");
-    private final String FUNCTION_KEY = "function";
-    private final String TIMETHRESHOLD_KEY = "timethreshold";
-    private final String TIMEINTERVAL_KEY = "timeinterval";
+    private static final String FUNCTION_KEY = "function";
+    private static final String TIMETHRESHOLD_KEY = "timethreshold";
+    private static final String TIMEINTERVAL_KEY = "timeinterval";
 
     private static final Logger LOGGER = LogManager.getLogger(IsochroneAgent.class);
 
-    private EndpointConfig endpointConfig = new EndpointConfig();
+    private final EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
-    private static String populationTables;
+    private String populationTables;
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
@@ -63,6 +61,7 @@ public class IsochroneAgent extends JPSAgent {
     /**
      * Initialise agent
      */
+    @Override
     public void init() {
         readConfig();
 
@@ -84,7 +83,7 @@ public class IsochroneAgent extends JPSAgent {
      * Read configuration settings from config.properties
      */
     public void readConfig() {
-        try (InputStream input = FileReader.getStream(PROPETIES_PATH)) {
+        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
@@ -148,6 +147,9 @@ public class IsochroneAgent extends JPSAgent {
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
+        int timeInterval;
+        int timeThreshold;
+        String isochroneFunction = null;
 
         if (!validateInput(requestParams)) {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
@@ -255,6 +257,15 @@ public class IsochroneAgent extends JPSAgent {
             throw new JPSRuntimeException(e);
         }
         return response;
+    }
+
+    private void tryToUpdateMapping() {
+        try {
+            OntopClient ontopClient = OntopClient.getInstance();
+            ontopClient.updateOBDA(obdaFile);
+        } catch (Exception e) {
+            System.out.println("Could not retrieve isochrone .obda file.");
+        }
     }
 
     /**
