@@ -30,12 +30,7 @@
                     },
                     {
                         "Type": "bind",
-                        "Source": "keycloak/data",
-                        "Target": "/opt/keycloak/data/import"
-                    },
-                    {
-                        "Type": "bind",
-                        "Source": "keycloak_start_test.sh",
+                        "Source": "keycloak_start.sh",
                         "Target": "/keycloak_start.sh"
                     }
                 ],
