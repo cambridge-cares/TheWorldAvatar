@@ -20,10 +20,12 @@ Ensure you have the following installed:
 - Python 3.8+
 - `pip` package manager
 
+Furthermore update the required parameters and iris in parameters.py and predefined_iris.py.
 
 ## Usage
 1. **Configure parameters:**  
    Populate the `parameters.py` file with information specific to your set up.  
+   Also make sure to check the hard coded Iris in the predefined_iris.py file. 
 
 2. **Set up environment files:**  
    For each required Knowledge Graph (KG) connection, fill out the corresponding `.env` file. Use `OntoMOPConnectionExample.env` as a reference.  

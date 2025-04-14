@@ -613,7 +613,7 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
         if triples == None or triples == []:
             species                                         = Species(label=chemical_formula, altLabel=species_name)
             # Generate an instance IRI following the OntoSpecies format
-            species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
+            species.instance_iri                            = f"{preiri.SPECIES_NEW_BASE}Species_{species_iri}"
         else:
             try:
                 # Retrieve species information from OntoSpecies KG
