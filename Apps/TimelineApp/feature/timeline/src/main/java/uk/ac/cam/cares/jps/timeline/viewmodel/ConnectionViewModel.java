@@ -24,6 +24,7 @@ public class ConnectionViewModel extends ViewModel {
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
+     *
      * @param context fragment context
      */
     @Inject
@@ -47,6 +48,7 @@ public class ConnectionViewModel extends ViewModel {
 
     /**
      * Get hasConnection object
+     *
      * @return hasConnection object
      */
     public LiveData<Boolean> getHasConnection() {

@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.timeline.ui.adapter;
 
+import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivitySummary;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timelinemap.R;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,7 +28,7 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
 
     public void setActivityItemList(List<ActivitySummary> summaryList) {
         this.summaryList = new ArrayList<>(summaryList);
-        notifyDataSetChanged();
+
     }
 
     @NonNull
@@ -47,26 +51,23 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
         validActivities.add("vehicle");
 
 
-
-
         holder.totalDistance.setText(summaryItem.getTotalDistance());
         holder.timeSummary.setText(summaryItem.getTimeSummary());
 
-        if(validActivities.contains(summaryItem.getActivityType())) {
+        if (validActivities.contains(summaryItem.getActivityType())) {
             holder.activityType.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             holder.activityType.setVisibility(View.GONE);
             holder.totalDistance.setVisibility(View.GONE);
             holder.timeSummary.setVisibility(View.GONE);
         }
+
     }
 
     @Override
     public int getItemCount() {
         return summaryList.size();
     }
-
 
     static class ActivitySummaryViewHolder extends RecyclerView.ViewHolder {
         ImageView activityType;

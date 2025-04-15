@@ -155,6 +155,7 @@ public class TrajectoryNetworkSource {
                         }
                     };
 
+                    fallbackRequest.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                     requestQueue.add(fallbackRequest);
                 } else {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());

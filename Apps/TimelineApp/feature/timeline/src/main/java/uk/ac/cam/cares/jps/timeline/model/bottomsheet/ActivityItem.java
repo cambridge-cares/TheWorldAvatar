@@ -16,9 +16,10 @@ public class ActivityItem extends Activity {
 
     /**
      * Constructor for ActivityItem class
+     *
      * @param activityType the type of activity as an image
-     * @param startTime the start timestamp of the segment
-     * @param endTime the end timestamp of the segment
+     * @param startTime    the start timestamp of the segment
+     * @param endTime      the end timestamp of the segment
      */
     public ActivityItem(int id, String activityType, long startTime, long endTime) {
         super(activityType);
@@ -43,7 +44,7 @@ public class ActivityItem extends Activity {
     private String toTimeSummary(long start_time, long end_time) {
         return toHoursAndMinutes(start_time) + " - " + toHoursAndMinutes(end_time);
     }
-    
+
 
     public String getTimeSummary() {
         return timeSummary;

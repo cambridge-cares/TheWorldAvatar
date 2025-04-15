@@ -31,6 +31,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
+     *
      * @param datesWithTrajectoryRepository
      */
     @Inject
@@ -54,6 +55,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     /**
      * Set the selected date
+     *
      * @param date selected date
      */
     public void setDate(LocalDate date) {
@@ -63,6 +65,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     /**
      * Get dates which has trajectory data from server
+     *
      * @param timezone current timezone
      */
     public void getDatesWithTrajectory(String timezone) {
@@ -81,10 +84,11 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     /**
      * Get the user selected date in millisecond
+     *
      * @return selected date in millisecond
      */
     public long getSelectedDateLong() {
         return selectedDate.getValue().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
-    
+
 }
