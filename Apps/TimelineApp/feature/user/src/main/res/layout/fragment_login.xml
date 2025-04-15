@@ -67,7 +67,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="@dimen/component_margin"
+        android:layout_marginBottom="@dimen/component_margin_large"
         android:id="@+id/version_tv"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,17 +9,6 @@
     android:paddingHorizontal="@dimen/component_margin"
     android:paddingTop="@dimen/component_margin_xs">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical"-->
-<!--        android:background="?attr/colorSurfaceVariant"-->
-<!--        android:focusable="true"-->
-<!--        android:clickable="true">-->
-
-
-<!--    </LinearLayout>-->
-
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/drag_handle"
         android:layout_width="match_parent"
@@ -112,7 +101,7 @@
         android:id="@+id/sessions_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/component_margin_large"
         android:overScrollMode="never"
         android:scrollbars="vertical" />
 
