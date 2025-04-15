@@ -27,10 +27,9 @@ public class ActivitySummary extends Activity {
     String toHoursAndMinutes(long totalTimeInMinutes) {
         int hours = (int) (totalTimeInMinutes / 60);
         int minutes = (int) (totalTimeInMinutes - (hours * 60));
-        if(hours > 0) {
+        if (hours > 0) {
             return hours + " hr " + minutes + " min";
-        }
-        else return  minutes + " min";
+        } else return minutes + " min";
     }
 
     public String getTotalDistance() {

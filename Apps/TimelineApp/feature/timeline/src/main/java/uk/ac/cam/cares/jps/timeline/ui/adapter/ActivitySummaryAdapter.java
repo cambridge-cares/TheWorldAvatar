@@ -15,12 +15,12 @@ import java.util.List;
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivitySummary;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timelinemap.R;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummaryAdapter.ActivitySummaryViewHolder> {
     private List<ActivitySummary> summaryList;
-
 
     public ActivitySummaryAdapter() {
         this.summaryList = new ArrayList<>();
@@ -28,7 +28,7 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
 
     public void setActivityItemList(List<ActivitySummary> summaryList) {
         this.summaryList = new ArrayList<>(summaryList);
-        
+
     }
 
     @NonNull
@@ -54,15 +54,14 @@ public class ActivitySummaryAdapter extends RecyclerView.Adapter<ActivitySummary
         holder.totalDistance.setText(summaryItem.getTotalDistance());
         holder.timeSummary.setText(summaryItem.getTimeSummary());
 
-        if(validActivities.contains(summaryItem.getActivityType())) {
+        if (validActivities.contains(summaryItem.getActivityType())) {
             holder.activityType.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             holder.activityType.setVisibility(View.GONE);
             holder.totalDistance.setVisibility(View.GONE);
             holder.timeSummary.setVisibility(View.GONE);
         }
-    
+
     }
 
     @Override

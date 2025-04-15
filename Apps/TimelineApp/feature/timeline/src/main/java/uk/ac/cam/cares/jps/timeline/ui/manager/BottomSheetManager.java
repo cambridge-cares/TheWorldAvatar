@@ -63,7 +63,8 @@ public class BottomSheetManager {
 
     /**
      * Constructor of the class
-     * @param fragment Fragment that hosts the bottom sheet
+     *
+     * @param fragment             Fragment that hosts the bottom sheet
      * @param bottomSheetContainer Container of the bottom sheet
      */
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {

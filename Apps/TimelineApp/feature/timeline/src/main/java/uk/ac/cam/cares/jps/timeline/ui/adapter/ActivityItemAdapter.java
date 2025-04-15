@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,11 +13,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.viewmodel.SegmentClickInterface;
 import uk.ac.cam.cares.jps.timelinemap.R;
+
 /**
  * Adapter class for recyclerview to view activity summary information.
  */
@@ -33,14 +34,12 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         this.segmentClickInterface = segmentClickInterface;
         this.sessionId = sessionId;
 
-        for(ActivityItem item : activityList) {
-            if(clickedSegment == null) {
+        for (ActivityItem item : activityList) {
+            if (clickedSegment == null) {
                 item.setClicked(false);
-            }
-            else if(item.getId() == clickedSegment.getId() && sessionId.equals(clickedSegment.getSessionId())) {
+            } else if (item.getId() == clickedSegment.getId() && sessionId.equals(clickedSegment.getSessionId())) {
                 item.setClicked(true);
-            }
-            else {
+            } else {
                 item.setClicked(false);
             }
         }
@@ -67,19 +66,17 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         validActivities.add("unknown");
 
 
-        if(validActivities.contains(activityItem.getActivityType())) {
+        if (validActivities.contains(activityItem.getActivityType())) {
             holder.activityType.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             holder.activityType.setVisibility(View.GONE);
         }
 
         holder.timeSummary.setText(activityItem.getTimeSummary());
 
-        if(activityItem.getClicked()) {
+        if (activityItem.getClicked()) {
             holder.clicked.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             holder.clicked.setVisibility(View.GONE);
         }
 
@@ -93,13 +90,13 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
     }
 
     public int getFirstClickedItemPosition() {
-    for (int i = 0; i < activityList.size(); i++) {
-        if (activityList.get(i).getClicked()) { 
-            return i;
+        for (int i = 0; i < activityList.size(); i++) {
+            if (activityList.get(i).getClicked()) {
+                return i;
+            }
         }
+        return RecyclerView.NO_POSITION;
     }
-    return RecyclerView.NO_POSITION;
-}
 
     static class ActivityItemViewHolder extends RecyclerView.ViewHolder {
         ImageView activityType;

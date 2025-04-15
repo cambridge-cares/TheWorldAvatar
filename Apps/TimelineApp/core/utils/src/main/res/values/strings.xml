@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="tool_tips">Tool Tips\n</string>
-    <string name="click_lines_tips" />
-    <string name="expand_trips_tips" />
-    <string name="tips_information" />
-</resources>

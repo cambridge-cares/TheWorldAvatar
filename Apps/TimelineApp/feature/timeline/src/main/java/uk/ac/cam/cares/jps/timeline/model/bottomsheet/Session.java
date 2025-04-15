@@ -21,16 +21,20 @@ public class Session {
     private List<ActivityItem> parseTrajectorySegment(List<TrajectorySegment> trajectorySegments) {
         List<ActivityItem> activities = new ArrayList<>();
 
-        for(TrajectorySegment segment : trajectorySegments) {
+        for (TrajectorySegment segment : trajectorySegments) {
             activities.add(segment.getActivity());
         }
 
         return activities;
     }
 
-    public List<TrajectorySegment> getTrajectorySegments() { return this.trajectorySegments;}
+    public List<TrajectorySegment> getTrajectorySegments() {
+        return this.trajectorySegments;
+    }
 
-    public List<ActivityItem> getActivityList() { return this.activityList;}
+    public List<ActivityItem> getActivityList() {
+        return this.activityList;
+    }
 
     public String getSessionId() {
         return sessionId;
@@ -41,10 +45,10 @@ public class Session {
     }
 
     public boolean containsSegment(TrajectorySegment segment) {
-        if(segment == null) {
+        if (segment == null) {
             return false;
         }
-        if(sessionId.equals(segment.getSessionId())) {
+        if (sessionId.equals(segment.getSessionId())) {
             for (ActivityItem item : this.activityList) {
                 if (item.getId() == segment.getId()) {
                     return true;

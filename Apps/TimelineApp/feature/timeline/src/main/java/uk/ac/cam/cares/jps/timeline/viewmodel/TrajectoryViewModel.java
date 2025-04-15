@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import uk.ac.cam.cares.jps.data.TrajectoryRepository;
  *
  */
 @HiltViewModel
-public class TrajectoryViewModel extends ViewModel implements SegmentClickInterface{
+public class TrajectoryViewModel extends ViewModel implements SegmentClickInterface {
 
     private final TrajectoryRepository trajectoryRepository;
     private final MutableLiveData<TrajectoryByDate> _trajectory = new MutableLiveData<>();
@@ -87,8 +88,8 @@ public class TrajectoryViewModel extends ViewModel implements SegmentClickInterf
             return;
         }
 
-        for(TrajectorySegment segment:trajectorySegments) {
-            if(segment.getId() == segmentId && segment.getSessionId().equals(sessionId)) {
+        for (TrajectorySegment segment : trajectorySegments) {
+            if (segment.getId() == segmentId && segment.getSessionId().equals(sessionId)) {
                 _clickedSegment.postValue(segment);
                 return;
             }
