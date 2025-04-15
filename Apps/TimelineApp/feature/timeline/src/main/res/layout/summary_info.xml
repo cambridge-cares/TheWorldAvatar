@@ -4,48 +4,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingVertical="10dp"
-    android:layout_marginEnd = "10dp"
+    android:layout_margin="@dimen/component_margin_small"
     android:gravity="left"
     android:orientation="horizontal">
 
 
     <ImageView
         android:id="@+id/activity_type"
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="50dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:src="@drawable/baseline_directions_walk_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
         
     <TextView
         android:id="@+id/total_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
         app:layout_constraintStart_toEndOf="@id/activity_type"
-        android:gravity="start"
-        android:textAlignment="viewStart"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/total_time"
+        android:layout_marginStart="@dimen/component_margin"
         android:text="0 m"
-        android:textColor="#121212"
-        android:textSize="16sp" />
+        android:textAppearance="?attr/textAppearanceBody1" />
 
     <TextView
         android:id="@+id/total_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="@dimen/component_margin_xs"
+        android:layout_marginStart="@dimen/component_margin"
         app:layout_constraintTop_toBottomOf="@id/total_distance"
         app:layout_constraintStart_toEndOf="@id/activity_type"
-        android:gravity="start"
-        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:text="0 min"
-        android:textColor="#121212"
-        android:textSize="16sp" />
+        android:textAppearance="?attr/textAppearanceBody1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
