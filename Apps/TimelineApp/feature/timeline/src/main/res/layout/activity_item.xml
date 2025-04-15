@@ -4,16 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="10dp">
+    android:paddingVertical="@dimen/component_margin_small">
 
     <ImageView
         android:id="@+id/activityType"
-        android:layout_width="120dp"
+        android:layout_width="32dp"
         android:layout_height="32dp"
         android:src="@drawable/baseline_directions_walk_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/timeSummary"
+        android:layout_marginEnd="@dimen/component_margin"
         android:contentDescription="Activity Icon" />
 
     <TextView
@@ -21,21 +23,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00 - 00:00"
-        android:textColor="#121212"
-        android:textSize="16sp"
-        android:gravity="center_vertical"
-        app:layout_constraintStart_toEndOf="@id/activityType"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/activityType"
-        app:layout_constraintBottom_toBottomOf="@id/activityType" />
+        app:layout_constraintBottom_toBottomOf="@id/activityType"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/clicked"
-        android:layout_width="112dp"
-        android:layout_height="31dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/baseline_keyboard_double_arrow_left_24"
-        app:layout_constraintStart_toEndOf="@id/timeSummary"
         app:layout_constraintTop_toTopOf="@id/timeSummary"
         app:layout_constraintBottom_toBottomOf="@id/timeSummary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/timeSummary"
+        android:layout_marginStart="@dimen/component_margin"
         android:contentDescription="Click Icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="start"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingTop="@dimen/component_margin_small"
+    android:paddingBottom="@dimen/component_margin_small">
 
     <LinearLayout
         android:id="@+id/session_dropdown_layout"
@@ -19,11 +19,10 @@
             android:id="@+id/session_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginStart="@dimen/component_margin"
+            android:layout_marginTop="@dimen/component_margin_xs"
             android:text="Trip 1"
             android:textAppearance="?attr/textAppearanceHeadline6"
-            android:textSize="20sp"
             android:textStyle="bold" />
 
         <ImageView
@@ -31,9 +30,9 @@
             android:layout_width="50dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="@dimen/component_margin_xs"
+            android:layout_marginTop="@dimen/component_margin_xs"
+            android:layout_marginEnd="@dimen/component_margin"
             android:src="@drawable/baseline_arrow_drop_down_24" />
     </LinearLayout>
 
