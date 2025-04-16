@@ -3,7 +3,7 @@
     "Name": "asset-manager-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/asset-manager-agent:1.0.2",
+        "Image": "docker.io/library/asset-manager-agent:1.1.0",
         "Mounts": [
           {
             "Type": "bind",

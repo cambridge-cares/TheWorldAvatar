@@ -3,7 +3,7 @@
     "Name": "asset-manager-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/asset-manager-agent:1.0.2",
+        "Image": "ghcr.io/cambridge-cares/asset-manager-agent:1.1.0",
         "Mounts": [
           {
             "Type": "bind",
