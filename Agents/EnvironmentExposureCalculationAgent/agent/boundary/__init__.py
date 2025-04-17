@@ -1,15 +1,11 @@
-import os
-from typing import cast
-from flask import current_app
+from flask import abort
 
-from agent.stack.postgis_client import PostGISClient
-from agent.utils.table_name_helper import TableNameHelper
+from agent.boundary.buffer import create_buffer_around_points
 
+def create_boundary(points_table_name: str, boundary: str, data:dict):
+    if boundary == 'buffer':
+        boundary_radius = float(data['boundary_radius'])
+        create_buffer_around_points(points_table_name, boundary_radius)
+    else:
+        abort(400, description="Unsupported buffer method")
 
-def create_buffer_around_points(table_name_helper: TableNameHelper, buffer_radius: float):
-    postgis_client = cast(PostGISClient, current_app.extensions['postgis_client'])
-    
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    buffer_sql_path = os.path.join(script_dir, "script", "buffer.sql")
-    with open(buffer_sql_path, "r") as file:
-        postgis_client.execute_update(file.read(), {"point_table_name": table_name_helper.get_points_table_name()}, {"buffer_radius": buffer_radius})
