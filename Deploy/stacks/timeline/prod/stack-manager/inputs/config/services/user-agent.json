@@ -10,6 +10,11 @@
                         "Type": "bind",
                         "Source": "user.obda",
                         "Target": "/inputs/user.obda"
+                    },
+                    {
+                      "Type": "bind",
+                      "Source": "user_agent_keycloak.json",
+                      "Target": "/usr/local/tomcat/webapps/user-agent/WEB-INF/classes/keycloak.json"
                     }
                 ],
                 "Configs": [
