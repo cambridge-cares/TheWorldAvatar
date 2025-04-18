@@ -171,10 +171,10 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2023
 [HM Land Registry SPARQL endpoint]: http://landregistry.data.gov.uk/landregistry/query
 
 <!-- github -->
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EnergyPerformanceCertificateAgent
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry

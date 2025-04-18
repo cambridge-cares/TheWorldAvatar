@@ -1,6 +1,6 @@
 # Blazegraph Project
 ### Authors
-* [Feroz Farazi](msff2@cam.ac.uk)
+* [Feroz Farazi](mailto:msff2@cam.ac.uk)
 
 ### Ontology Upload
 

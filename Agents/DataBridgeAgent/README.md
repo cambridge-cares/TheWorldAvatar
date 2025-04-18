@@ -44,12 +44,12 @@ docker-compose up -d
 ```
 docker build -t data-bridge-agent:versionNo .
 ```
-  2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services) directory
+  2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services) directory
      - Please ensure the version numbers are targeted at the right image. If you are building it, please update the version number accordingly.
   3) Modify the absolute path of the agent's `config` folder to your absolute file path
      - For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`
   4) Include this agent service into the stack configuration file at `stack-manager/inputs/config/<STACK-NAME>.json`
-     - Read more in the [Stack Configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) section
+     - Read more in the [Stack Configuration](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) section
   5) Start the stack as per normal
 
 If the agent is successfully started, the endpoint at `http://localhost:3838/data-bridge-agent/status` should return the following message.
@@ -69,7 +69,7 @@ There are currently four routes available:
       - `source`: The source SPARQL endpoint containing the triples to be transferred 
       - `target`: The target SPARQL endpoint intended to store the transferred triples
     - Sample SPARQL endpoints for Blazegraph are [listed here](#4-sample-blazegraph-endpoints)
-    - **WARNING**: The transfer of triples may fail for large (>1 million) numbers of triples as it is dependent on the available RAM. The [JPS Base library's cloning tool](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/tools/cloning/CloningTool.java) can be used in that situation.
+    - **WARNING**: The transfer of triples may fail for large (>1 million) numbers of triples as it is dependent on the available RAM. The [JPS Base library's cloning tool](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/tools/cloning/CloningTool.java) can be used in that situation.
     - A sample `POST` request using curl on a CLI:
 ```
 curl -X POST --header 'Content-Type: application/json' -d '{
@@ -99,13 +99,13 @@ curl -X GET 'localhost:3838/data-bridge-agent/sql?srcDbName=db'
 ```
 
 4. `<base>/timeseries` route:
-    - Execute the agent's task through an HTTP `POST` request using the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). This route will instantiate the time series inputs sent in the request into the stack's knowledge graph.
+    - Execute the agent's task through an HTTP `POST` request using the [time series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries). This route will instantiate the time series inputs sent in the request into the stack's knowledge graph.
     - The request will require the following parameters:
-      - `timeClass` : Refers to the time series classes as written in the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries#instantiation-in-kg).
+      - `timeClass` : Refers to the time series classes as written in the [time series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries#instantiation-in-kg).
       - `timestamp` : A JSONArray containing the time stamp as strings in the format of `YYYY-MM-DD'T'HH:MM:SS`.
       - `values` : A JSONObject containing the time series values. A data IRI is inserted as the key and paired with their values as a JSONArray. For example: `{"dataIRI": [1, 2, 3]}`.
       - `namespace`: Specifies the SPARQL endpoint to store the instantiated time series data.  See [Sample Blazegraph endpoints](#4-sample-blazegraph-endpoints)
-      - `database` : Specifies the database name within the same stack. Do note that this agent is not intended to instantiate data for non-stack databases. If required, please use the [Timeseries Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) in your agent instead. 
+      - `database` : Specifies the database name within the same stack. Do note that this agent is not intended to instantiate data for non-stack databases. If required, please use the [Timeseries Client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries) in your agent instead. 
     - A sample `POST` request using curl on a CLI:
 ```
 curl -X POST --header 'Content-Type: application/json' -d '{

@@ -24,7 +24,7 @@ docker build -t geosegment_agent:1.0.0 .
 This will use the Dockerfile to build an image named `geosegment_agent` tagged with `1.0.0`.
 
 ### Note: The GeoSegment Agent can only run within a Docker stack.
-The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), which is beyond the scope of this README.
+The stack is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager), which is beyond the scope of this README.
 
 A successful setup will result in 9 containers (or more):
 - Default containers

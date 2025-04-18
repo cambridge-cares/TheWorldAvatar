@@ -480,15 +480,15 @@ HAVING(?streets > 1)
 [MetOffice My Account]: https://register.metoffice.gov.uk/MyAccountClient/account/view
 
 <!-- Stack references -->
-[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Stack data uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[Stack manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
 
 <!-- Agents -->
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
+[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
 [Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent/README.md
@@ -503,13 +503,13 @@ HAVING(?streets > 1)
 [AirQuality Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AirQualityAgent
 
 <!-- Repositories -->
-[data.json]: /StackDeployment/inputs/stack-manager/inputs/data/visualisation/data.json
-[Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
-[resources]: /StackDeployment/resources
-[river_level_agent input folder]: /StackDeployment/inputs/river_level_agent
+[data.json]: inputs/stack-manager/inputs/data/visualisation/data.json
+[Agent docker-compose file folder]: inputs/docker_compose_files
+[resources]: resources
+[river_level_agent input folder]: inputs/river_level_agent
 [UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
 [Utilities]: ../Utilities
 
 <!-- Files -->
-[routing.json]: /StackDeployment/inputs/access_agent/routing.json
+[routing.json]: inputs/access_agent/routing.json
 [CKG config.properties]: https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/src/main/resources/config.properties

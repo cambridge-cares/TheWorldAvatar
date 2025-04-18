@@ -3,7 +3,7 @@
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the AQMesh air 
 quality measuring station. It's only purpose is to retrieve new/historical data from excel files and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
-agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
+agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS base lib to interact with both the KG and database.
 
 ### Data retrieval and pre-processing

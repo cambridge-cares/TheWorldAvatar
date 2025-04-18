@@ -32,7 +32,7 @@ Image::open('in.png')
      ->negate()
      ->save('out.jpg');
 ```
-
+<!-- markdown-link-check-disable -->
 Here are the resize methods:
 
 * `resize($width, $height, $background)`: resizes the image, will preserve scale and never
@@ -127,6 +127,7 @@ You can also create image from scratch using:
 ```
 
 Where 200 is the width and 100 the height
+<!-- markdown-link-check-enable -->
 
 ## Saving the image
 

@@ -41,7 +41,7 @@ If building a new version of the image, the new image should be pushed to the Gi
 docker push ghcr.io/cambridge-cares/access-agent:X.Y.Z
 ```
 
-where X.Y.Z is the new version number. Please also ensure that you are logged in to the docker registry. Follow [step 1 of this](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) for clarity.
+where X.Y.Z is the new version number. Please also ensure that you are logged in to the docker registry. Follow [step 1 of this](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) for clarity.
 
 #### Integration tests
 
@@ -54,7 +54,7 @@ This will test the agent in a production environment including connections to th
 
 ## 2. Deployment Instructions
 
-The Access Agent can be deployed in a standalone Docker container or as part of The World Avatar [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+The Access Agent can be deployed in a standalone Docker container or as part of The World Avatar [stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ### 2.1 Standalone Container
 

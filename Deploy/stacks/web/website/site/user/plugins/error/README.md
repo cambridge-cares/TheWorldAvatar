@@ -12,7 +12,7 @@ Installing the Error plugin can be done in one of two ways. Our GPM (Grav Packag
 
 ## GPM Installation (Preferred)
 
-The simplest way to install this plugin is via the [Grav Package Manager (GPM)](http://learn.getgrav.org/advanced/grav-gpm) through your system's Terminal (also called the command line).  From the root of your Grav install type:
+The simplest way to install this plugin is via the [Grav Package Manager (GPM)](https://learn.getgrav.org/16/cli-console/grav-cli-gpm) through your system's Terminal (also called the command line).  From the root of your Grav install type:
 
     bin/gpm install error
 
@@ -75,7 +75,7 @@ As development for the Error plugin continues, new versions may become available
 
 ## GPM Update (Preferred)
 
-The simplest way to update this plugin is via the [Grav Package Manager (GPM)](http://learn.getgrav.org/advanced/grav-gpm). You can do this with this by navigating to the root directory of your Grav install using your system's Terminal (also called command line) and typing the following:
+The simplest way to update this plugin is via the [Grav Package Manager (GPM)](https://learn.getgrav.org/16/cli-console/grav-cli-gpm). You can do this with this by navigating to the root directory of your Grav install using your system's Terminal (also called command line) and typing the following:
 
     bin/gpm update error
 

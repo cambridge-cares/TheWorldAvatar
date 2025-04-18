@@ -1,6 +1,6 @@
 # Visualisation of Augmented UK
 
-The augmented UK visualisation has been put together as a single stack with no requirements on any external services. Both the data required for the visualisation, and the visualisation itself are hosted within the stack instance. For more information on the stack, read the [documentation here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+The augmented UK visualisation has been put together as a single stack with no requirements on any external services. Both the data required for the visualisation, and the visualisation itself are hosted within the stack instance. For more information on the stack, read the [documentation here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 This directory contains the documentation, configuration files, and associated scripts for a visualisation window into the base world of The World Avatar (focusing on assets within the United Kingdom). Whilst other data and capabilities related to the project may exist elsewhere in The World Avatar, this documentation only covers the steps needed to acquire, upload, and visualise data used in the deployed visualisation currently available from [The World Avatar's website](https://theworldavatar.io).
 
@@ -51,7 +51,7 @@ To support metadata for the visualisation, the related stack needs to also launc
 
 ### 2.3 Deploying the stack
 
-Before following the deployment steps, please read the following section to get a better understanding of the workflow. Once the correct files for each data source have been acquired, we need to first spin up an instance of the stack (see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for details on how to do this). Once ready, we have to upload data using the [data uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader) into a relational database. Please read the [uploader's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader) before commencing upload as this file will not detail the generic upload process.
+Before following the deployment steps, please read the following section to get a better understanding of the workflow. Once the correct files for each data source have been acquired, we need to first spin up an instance of the stack (see [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for details on how to do this). Once ready, we have to upload data using the [data uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader) into a relational database. Please read the [uploader's documentation](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader) before commencing upload as this file will not detail the generic upload process.
 
 With each data set come a number of pre-written associated files (configurations, queries, styles etc.). These files are documented along with their corresponding data source on the [Data](./docs/data.md) page.
 

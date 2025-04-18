@@ -22,7 +22,7 @@
 
 [5] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, "Question-answering system for combustion kinetics", Technical Report 315, c4e-Preprint Series, Cambridge, 2023 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-315.pdf)).
 
-[6] D. Tran, S. D. Rihm, A. Kondniski, L. Pascazio, F. Saluz, S. Mosbach, J. Akroyd, and M. Kraft, "Natural Language Access Point to Digital Metal-Organic Polyhedra Chemistry in The World Avatar", Technical Report 327, c4e-Preprint Series, Cambridge, 2024 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e_327_nmdt2_MarieICL__preprint_.pdf)).
+[6] D. Tran, S. D. Rihm, A. Kondniski, L. Pascazio, F. Saluz, S. Mosbach, J. Akroyd, and M. Kraft, "Natural Language Access Point to Digital Metal-Organic Polyhedra Chemistry in The World Avatar", Technical Report 327, c4e-Preprint Series, Cambridge, 2024 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e_327_nmdt2_MarieICL__preprint__dih1fxm.pdf)).
 
 ## Previous versions
 

@@ -46,12 +46,12 @@ The agent is designed for deployment on [Docker](#12-docker-deployment). Althoug
 These dependencies have been added to the Dockerfile. But in the event there is a need to update their links, please read the steps below on how to find and extract the dependencies.
 1. **IfcOpenShell**
     - Required to load and parse IFC files
-    - Download required version from https://blenderbim.org/docs-python/ifcopenshell-python/installation.html
+    - Download required version from https://docs.ifcopenshell.org/ifcopenshell-python/installation.html
     - Extract and place the `ifcopenshell` from `blenderbim/libs/site/packages/` to the `\Lib\site-packages` of either your temporary python environment `venv` or the python program
     - Delete the remaining extracted content
 2. **IfcConvert.exe**
     - Required to convert IFC to glb format
-    - Download IfcConvert.exe from: https://blenderbim.org/docs-python/ifcconvert/installation.html
+    - Download IfcConvert.exe from: https://docs.ifcopenshell.org/ifcconvert/installation.html
     - Extract it to `<root>`
 
 ### 1.2 Docker Deployment:

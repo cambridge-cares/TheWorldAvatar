@@ -13,7 +13,7 @@ Please note that it is not the intention for this EmailAgent to be used to send 
 
 
 ## Building the Image
-The agent directory contains the required files to build a Docker Image for the EmailAgent service; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL. Files have also been added to ensure the agent is compatible for deplyment in a [stack environment](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md).
+The agent directory contains the required files to build a Docker Image for the EmailAgent service; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL. Files have also been added to ensure the agent is compatible for deplyment in a [stack environment](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md).
 
 Please note the caveats below before attempting to build the service using Docker:
 
