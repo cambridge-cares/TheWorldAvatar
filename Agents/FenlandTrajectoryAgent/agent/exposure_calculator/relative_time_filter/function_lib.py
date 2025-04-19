@@ -392,21 +392,37 @@ def filter_by_buffer(results_json, buffer_poly):
 
 def check_overlap_naive(tstart, tend, binding):
     """
-    Placeholder function for Approach A:
-    Checks if the entire trajectory time interval [tstart, tend] overlaps with the business establishment's operating hours.
-    In a practical application, you would parse startTime and endTime from binding.
-    Here, it simply returns True to indicate a pass.
+    Placeholder extension point for additional overlap validation.
+
+    This function is called in Approaches A and C to perform a secondary
+    check of whether the time slice [tstart, tend] overlaps with the
+    business’s opening hours. In the current implementation, the
+    opening-hours filtering is already handled within the SPARQL query
+    via regular expressions, so this function simply returns True.
+
+    You can replace this placeholder with custom logic—for example,
+    parsing binding["openingHours"]["value"] (e.g. "09:00-17:00")
+    and returning False if the slice lies entirely outside that range.
     """
     return True
 
+
 def check_time_in_opening_hours(sensor_time, opening_hours_string):
     """
-    Placeholder function for Approach B:
-    Checks if the given sensor point time (sensor_time) falls within the operating hours described in opening_hours_string.
-    In a practical application, you would parse opening_hours_string.
-    Here, it simply returns True as a demonstration.
+    Placeholder extension point for time-in-hours validation.
+
+    This function is called in Approach B to perform an additional
+    check on a single representative timestamp (sensor_time) against
+    the opening_hours_string. The SPARQL query already applies a regex-
+    based filter on opening hours, so this function currently always
+    returns True.
+
+    You can extend it to parse opening_hours_string (e.g. "09:00-17:00")
+    and return True only if sensor_time.time() falls within that interval,
+    handling cases like overnight hours if needed.
     """
     return True
+
 
 def find_nearest_point_in_space(business_geom, points):
     """
