@@ -49,6 +49,37 @@ class ExposureUtils:
 
         # Base directory for SQL and SPARQL templates
         self.template_dir = os.path.join(os.path.dirname(__file__), "count")
+    
+    def fetch_env_crs(self, env_data_iri: str, feature_type: str) -> str:
+        """
+        return a geometry's CRS URI； Point type feature is 4326 by default。
+        """
+        template = self.load_template("get_crs_for_env_data.sparql")
+        sparql = template.format(env_data_iri=env_data_iri)
+
+        try:
+            resp = requests.post(
+                self.ENV_DATA_ENDPOINT_URL,
+                data=sparql,
+                headers={
+                    "Content-Type": "application/sparql-query",
+                    "Accept":       "application/json",
+                },
+                timeout=10
+            )   
+            resp.raise_for_status()
+            bnd = resp.json().get("results", {}).get("bindings", [])
+            if bnd:
+                return bnd[0]["crs"]["value"]
+        except Exception:
+            pass
+
+        # if original obda doesn't represent CRS, by default use 4326 (lat, lon),normally lat and lon is used for coordinates
+        if feature_type.upper() == "POINT":
+            return "http://www.opengis.net/def/crs/EPSG/0/4326"
+        # AREA default is 27700, but can be changed  by get_crs_for_env_data.sparql, and get_crs_for_env_data.sparql has higher priority
+        return "http://www.opengis.net/def/crs/EPSG/0/27700"
+
         
     def commit_if_psycopg2(self, conn):
         try:
