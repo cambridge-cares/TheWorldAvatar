@@ -4,13 +4,17 @@ import time
 import logging
 import configparser
 import binascii
+import re
 from typing import Optional, Tuple, List, Dict
+import math
 
 import pandas as pd
 import requests
 import psycopg2
 
-from shapely.geometry import Point, LineString
+from shapely.geometry import Point, LineString, Polygon, MultiPolygon
+from shapely import wkt
+from pyproj import Geod
 from shapely.ops import unary_union
 from shapely.wkb import loads as wkb_loads
 from pyproj import CRS, Transformer
@@ -19,41 +23,109 @@ from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 from contextlib import contextmanager
-
-
+import numpy as np
+from shapely.ops import transform
+from shapely.prepared import prep
+from shapely.strtree import STRtree
 
 class ExposureUtils:
+    @staticmethod
+    def geodesic_area(geom) -> float:
+        """Calculate actual surface area in WGS84 coordinate system (unit: square meters)"""
+        if geom is None or geom.is_empty:
+            return 0.0
+        geod = Geod(ellps='WGS84')
+        if geom.geom_type == 'Polygon':
+            lons, lats = zip(*list(geom.exterior.coords))
+            area, _ = geod.polygon_area_perimeter(lons, lats)
+            return abs(area)
+        elif geom.geom_type == 'MultiPolygon':
+            return sum(ExposureUtils.geodesic_area(poly) for poly in geom.geoms)
+        else:
+            return 0.0
+        
+    @staticmethod
+    def buffer_point_geodesic(lon: float, lat: float, radius_m: float, n=60) -> Polygon:
+        """
+        Deprecated, no longer called internally. Signature kept for compatibility.
+        """
+        raise NotImplementedError("Use _make_fast_buffer instead")
+
+    @staticmethod
+    def buffer_linestring_geodesic(coords: list, radius_m: float, seg_step_m=20.0) -> Polygon:
+        """
+        Deprecated, no longer called internally. Signature kept for compatibility.
+        """
+        raise NotImplementedError("Use _make_fast_buffer instead")
+
+    @staticmethod
+    def create_geodesic_buffer(coords: list, radius_m: float):
+        """
+        Backward compatibility: Wrap as Geometry, then use _make_fast_buffer.
+        """
+        from shapely.geometry import Point, LineString
+        eu = ExposureUtils()
+        if not coords:
+            return None
+        if len(coords) == 1:
+            geom = Point(coords[0])
+        else:
+            geom = LineString(coords)
+        return eu._make_fast_buffer(geom, radius_m)
+
+    def _make_fast_buffer(self, geom, radius_m: float):
+        """
+        Perform local equidistant projection (+buffer) + inverse projection on given WGS84 Geometry.
+        Much faster than geodesic fwd version.
+        """
+        # 1) Calculate centroid for projection center
+        centroid = geom.centroid
+        # 2) Construct Azimuthal Equidistant projection
+        aeqd = CRS.from_proj4(f"+proj=aeqd +lat_0={centroid.y} +lon_0={centroid.x} +units=m")
+        to_aeqd = Transformer.from_crs(4326, aeqd, always_xy=True).transform
+        to_wgs84 = Transformer.from_crs(aeqd, 4326, always_xy=True).transform
+        # 3) Project, Euclidean buffer, inverse project
+        proj = transform(to_aeqd, geom)
+        buf_proj = proj.buffer(radius_m)
+        return transform(to_wgs84, buf_proj)
+
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(self.__class__.__name__)
 
-        config_file = os.path.join(os.path.dirname(__file__), "..", "flaskapp", "exposure", "config.properties")
+        config_file = os.path.join(
+            os.path.dirname(__file__),
+            "..", "flaskapp", "exposure", "config.properties"
+        )
         if not os.path.exists(config_file):
-            self.logger.error(f"Config file not found at {config_file}. Please provide one.")
+            self.logger.error(f"Config file not found at {config_file}")
             sys.exit(1)
         self.config = configparser.ConfigParser()
         self.config.read(config_file)
         try:
             self.ENV_DATA_ENDPOINT_URL = self.config.get("DEFAULT", "ENV_DATA_ENDPOINT_URL")
-            self.TRAJECTORY_DB_HOST = self.config.get("DEFAULT", "TRAJECTORY_DB_HOST")
+            self.TRAJECTORY_DB_HOST     = self.config.get("DEFAULT", "TRAJECTORY_DB_HOST")
             self.TRAJECTORY_DB_PASSWORD = self.config.get("DEFAULT", "TRAJECTORY_DB_PASSWORD")
         except (configparser.NoOptionError, configparser.NoSectionError) as e:
             self.logger.error(f"Config error: {e}")
             sys.exit(1)
+
+        # Reuse geodetic and projection instances
+        self.geod = Geod(ellps='WGS84')
+        self.trans_27700_to_4326 = Transformer.from_crs(27700, 4326, always_xy=True)
 
         self.DB_PORT = DB_URL.split(':')[-1].split('/')[0]
         self.DB_USER = DB_USER
         self.DB_NAME = DATABASE
 
         self.env_data_cache = {}
-
-        # Base directory for SQL and SPARQL templates
         self.template_dir = os.path.join(os.path.dirname(__file__), "count")
-    
+
     def fetch_env_crs(self, env_data_iri: str, feature_type: str) -> str:
         """
-        return a geometry's CRS URI； Point type feature is 4326 by default。
+        Returns a CRS URI for a geometry; falls back to 4326 for POINT if not found.
         """
+        # Minimal change: directly load template
         template = self.load_template("get_crs_for_env_data.sparql")
         sparql = template.format(env_data_iri=env_data_iri)
 
@@ -72,20 +144,180 @@ class ExposureUtils:
             if bnd:
                 return bnd[0]["crs"]["value"]
         except Exception:
+            # Ignore network/SPARQL issues
             pass
 
-        # if original obda doesn't represent CRS, by default use 4326 (lat, lon),normally lat and lon is used for coordinates
+        # If not found or error, force fallback to WGS84 for POINT
         if feature_type.upper() == "POINT":
             return "http://www.opengis.net/def/crs/EPSG/0/4326"
-        # AREA default is 27700, but can be changed  by get_crs_for_env_data.sparql, and get_crs_for_env_data.sparql has higher priority
-        return "http://www.opengis.net/def/crs/EPSG/0/27700"
+        # AREA also falls back to 4326 (can be adjusted if needed)
+        return "http://www.opengis.net/def/crs/EPSG/0/4326"
 
-        
+    def exposure_calculation(
+        self,
+        trajectory_df: pd.DataFrame,
+        env_df: pd.DataFrame,
+        env_data_iri: str,
+        domain_label: str,
+        feature_type: str,
+        exposure_radius: float,
+        trajectory_iri: str
+    ) -> dict:
+        """High-speed global geodesic buffer based on single AEQD projection + spatial index + true geodesic area calculation"""
+        # 1) Extract trajectory lat/lon
+        coords_ll = [
+            (float(r["LONGITUDE"]), float(r["LATITUDE"]))
+            for _, r in trajectory_df.iterrows()
+            if r["LONGITUDE"] and r["LATITUDE"]
+        ]
+        if not coords_ll:
+            return {"envFeatureName": domain_label, "type": feature_type, "count": 0, "totalArea": None}
+
+        # 2) Construct trajectory geometry (WGS84)
+        base_geom = Point(coords_ll[0]) if len(coords_ll) == 1 else LineString(coords_ll)
+
+        # 3) Define Azimuthal Equidistant projection at trajectory centroid (units: meters)
+        centroid = base_geom.centroid
+        aeqd_crs = CRS.from_proj4(
+            f"+proj=aeqd +lat_0={centroid.y} +lon_0={centroid.x} +units=m"
+        )
+        to_aeqd  = Transformer.from_crs(4326, aeqd_crs, always_xy=True).transform
+        to_wgs84 = Transformer.from_crs(aeqd_crs, 4326, always_xy=True).transform
+
+        # 4) Project to plane and buffer once
+        proj_base = transform(to_aeqd, base_geom)
+        buf_proj  = proj_base.buffer(exposure_radius)
+        if buf_proj.is_empty:
+            return {"envFeatureName": domain_label, "type": feature_type, "count": 0, "totalArea": None}
+
+        # 5) Project all environmental features to the same plane CRS at once
+        proj_env = []
+        if feature_type.upper() == "POINT":
+            for _, row in env_df.iterrows():
+                try:
+                    lon, lat = float(row["Longitude"]), float(row["Latitude"])
+                    pt_proj = Point(to_aeqd(lon, lat))
+                    proj_env.append((pt_proj, row.get("ID", f"{lon},{lat}")))
+                except:
+                    continue
+        else:
+            # AREA: First check source CRS, then project to AEQD
+            crs_uri = self.fetch_env_crs(env_data_iri, feature_type)
+            m = re.search(r"EPSG/0/(\d+)", crs_uri)
+            src_epsg = int(m.group(1)) if m else 4326
+            to_env_proj = Transformer.from_crs(
+                f"EPSG:{src_epsg}", aeqd_crs, always_xy=True
+            ).transform
+            for _, row in env_df.iterrows():
+                wkb_hex = row.get("Geometry", "")
+                if not wkb_hex or wkb_hex == "N/A":
+                    continue
+                try:
+                    poly_src  = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
+                    poly_proj = transform(to_env_proj, poly_src)
+                    proj_env.append((poly_proj, None))
+                except:
+                    continue
+
+        # 6) Build spatial index and calculate plane intersections
+        all_geoms = [g for g, _ in proj_env]
+        tree = STRtree(all_geoms)
+        idxs = tree.query(buf_proj)
+
+        point_count = 0
+        area_count  = 0
+        total_area  = 0.0
+
+        if feature_type.upper() == "POINT":
+            visited = set()
+            for i in idxs:
+                pt_proj, uid = proj_env[i]
+                if buf_proj.intersects(pt_proj):
+                    visited.add(uid)
+            point_count = len(visited)
+        else:
+            for i in idxs:
+                poly_proj, _ = proj_env[i]
+                inter_proj = poly_proj.intersection(buf_proj)
+                if inter_proj.is_empty:
+                    continue
+                # Project back to WGS84 and calculate true geodesic area
+                inter_ll = transform(to_wgs84, inter_proj)
+                total_area += ExposureUtils.geodesic_area(inter_ll)
+                area_count  += 1
+
+        # 7) Write back to database (ALTER TABLE + UPDATE + commit, maintain compatibility with old version)
+        conn = None
+        try:
+            conn = self.connect_to_database(
+                self.TRAJECTORY_DB_HOST,
+                self.DB_PORT,
+                self.DB_USER,
+                self.TRAJECTORY_DB_PASSWORD,
+                self.DB_NAME
+            )
+            table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
+            safe_label = domain_label.replace(" ", "_").replace("/", "_")
+            point_col = f"{safe_label}_point_count"
+            area_col  = f"{safe_label}_area_count"
+            ta_col    = f"{safe_label}_total_area"
+
+            # 7a) Add columns
+            for col, dtype in [
+                (point_col, "INTEGER"),
+                (area_col,  "INTEGER"),
+                (ta_col,    "DOUBLE PRECISION")
+            ]:
+                alter_sql = f"""
+                DO $$ BEGIN
+                  IF NOT EXISTS (
+                    SELECT FROM information_schema.columns
+                    WHERE table_name = %s AND column_name = %s
+                  ) THEN
+                    EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{col}" {dtype}';
+                  END IF;
+                END $$;
+                """
+                self.execute_query(conn, alter_sql, (table_name, col))
+
+            # 7b) Update values
+            update_sql = f"""
+            UPDATE "{table_name}"
+            SET "{point_col}" = %s,
+                "{area_col}"  = %s,
+                "{ta_col}"    = %s;
+            """
+            self.execute_query(conn, update_sql, (
+                point_count,
+                area_count,
+                total_area
+            ))
+
+            # 7c) Commit
+            self.commit_if_psycopg2(conn)
+
+        except Exception as e:
+            self.logger.error(f"Failed to update the database: {e}")
+        finally:
+            if conn:
+                conn.close()
+
+        # 8) Return result
+        result = {
+            "envFeatureName": domain_label,
+            "type":           feature_type,
+            "count":          point_count if feature_type.upper()=="POINT" else area_count,
+        }
+        if feature_type.upper() == "AREA":
+            result["totalArea"] = total_area
+
+        return result
+
     def commit_if_psycopg2(self, conn):
         try:
-            test_cursor = conn.cursor()  # if using JDBC and receive error
+            test_cursor = conn.cursor()  # Will throw an exception if using JDBC
             test_cursor.close()
-            # use => psycopg2
+            # Success means we're using psycopg2
             conn.commit()
             self.logger.debug("Committed (psycopg2).")
         except:
@@ -99,14 +331,17 @@ class ExposureUtils:
     
     def connect_to_database(self, host: str, port: int, user: str, password: str, database: str) -> psycopg2.extensions.connection:
         """
-        If TRAJECTORY_DB_HOST or TRAJECTORY_DB_PASSWORD are empty in config.properties，we safely believe external database info is imcompleted or not needed，
-        Then we use TSClient (psycopg2), connect docker swarm's internal postgis container
+        If TRAJECTORY_DB_HOST or TRAJECTORY_DB_PASSWORD is empty, consider external configuration incomplete,
+        use internal connection method from TSClient; otherwise use psycopg2 to connect to external server.
+        Note: Caller needs to manually call conn.close() after using the connection.
         """
         if not host.strip() or not password.strip():
             self.logger.info("External DB parameters not provided; using internal TSClient connection via setup_clients().")
             try:
+                # Call setup_clients() from gps_client module, which has already successfully initialized TSClient (internal connection method)
                 import agent.datainstantiation.gps_client as gdi
                 kg_client, ts_client, double_class, point_class = gdi.setup_clients()
+                # Use TSClient's connection method, return internal connection
                 conn = ts_client.connection.getConnection()
                 self.logger.info("Internal TSClient connection established successfully.")
                 return conn
@@ -138,22 +373,28 @@ class ExposureUtils:
                 do_fetch = True
 
             start_time = time.time()
+            # Try getting a cursor via psycopg2
             try:
                 cursor = connection.cursor()
                 using_psycopg = True
             except Exception:
+                # If .cursor() throws an exception (including Py4JException), we assume it's TSClient JDBC
                 cursor = connection.createStatement()
                 using_psycopg = False
 
             self.logger.debug(f"Executing query: {query}, params={params}")
 
             if using_psycopg:
+                # psycopg2 mode
                 cursor.execute(query, params)
             else:
+                # JDBC mode
                 if params:
+                    # For each parameter: escape special characters and wrap in quotes
                     safe_params = []
                     for p in params:
                         if p is None:
+                            # For NULL parameters, use the 'NULL' string
                             safe_params.append("NULL") 
                             continue
                         p_escaped = str(p).replace("'", "''")
@@ -282,7 +523,7 @@ class ExposureUtils:
 
         if feature_type.upper() == "POINT" and dl_lower.startswith("food hygiene rating") and reference_time is not None:
             self.logger.info(f"[fetch_env_data] Using absolute-time-filter for {env_data_iri} at {reference_time}")
-            template_file = "absolute_time_filter.sparql"  # absolute-time-filter.sparql is used here
+            template_file = "absolute_time_filter.sparql"  # You might have named it absolute-time-filter.sparql
             sparql_query = self.load_template(template_file).format(given_time=reference_time)
             headers = {"Content-Type": "application/sparql-query", "Accept": "application/json"}
             resp = requests.post(endpoint_url, data=sparql_query, headers=headers, timeout=30)
@@ -300,7 +541,7 @@ class ExposureUtils:
                 })
             df = pd.DataFrame(data)
             self.logger.info(f"[POINT - TimeFilter] Extracted DataFrame with {len(df)} rows for {env_data_iri}")
-            domain_label_final = domain_label  # 
+            domain_label_final = domain_label  # Keep original domain label
 
         elif feature_type.upper() == "POINT":
             if dl_lower.startswith("food hygiene rating"):
@@ -353,152 +594,6 @@ class ExposureUtils:
             self.env_data_cache[env_data_iri] = (df, domain_label_final)
 
         return df, domain_label_final
-
-    def exposure_calculation(
-        self,
-        trajectory_df: pd.DataFrame,
-        env_df: pd.DataFrame,
-        domain_label: str,
-        feature_type: str,
-        exposure_radius: float,
-        trajectory_iri: str
-    ) -> dict:
-        self.logger.info(f"[exposure_calculation] Start, domain_label={domain_label}, feature_type={feature_type}, radius={exposure_radius}")
-        self.logger.info(f"[exposure_calculation] Trajectory DF shape={trajectory_df.shape}, Env DF shape={env_df.shape}")
-
-        coords_ll = []
-        for _, row in trajectory_df.iterrows():
-            lat = float(row["LATITUDE"])
-            lon = float(row["LONGITUDE"])
-            coords_ll.append((lon, lat))
-        self.logger.info(f"[exposure_calculation] Collected {len(coords_ll)} trajectory points, e.g. first 5: {coords_ll[:5]}")
-
-        if len(coords_ll) < 2:
-            self.logger.warning("[exposure_calculation] Trajectory has fewer than 2 points, falling back to a single point buffer.")
-            if coords_ll:
-                line_lonlat = Point(coords_ll[0])
-            else:
-                return {
-                    "envFeatureName": domain_label,
-                    "type": feature_type,
-                    "count": 0,
-                    "totalArea": None
-                }
-        else:
-            line_lonlat = LineString(coords_ll)
-
-        crs_wgs84 = CRS.from_epsg(4326)
-        crs_27700 = CRS.from_epsg(27700)
-        transformer = Transformer.from_crs(crs_wgs84, crs_27700, always_xy=True)
-        def lonlat_to_27700(lon, lat):
-            x, y = transformer.transform(lon, lat)
-            return (x, y)
-        coords_27700 = [lonlat_to_27700(lon, lat) for lon, lat in coords_ll]
-        self.logger.info(f"[exposure_calculation] Transformed trajectory to EPSG:27700, first 5 coords: {coords_27700[:5]}")
-
-        buffers = []
-        for i in range(len(coords_27700) - 1):
-            segment = LineString([coords_27700[i], coords_27700[i + 1]])
-            segment_buffer = segment.buffer(exposure_radius)
-            buffers.append(segment_buffer)
-        buffer_geom = unary_union(buffers)
-        self.logger.info(f"[exposure_calculation] Created segmented buffer, area={buffer_geom.area:.2f}, bounds={buffer_geom.bounds}")
-
-        point_count, area_count, total_area = 0, 0, 0.0
-        if feature_type.upper() == "POINT":
-            visited_ids = set()
-            for idx, row in env_df.iterrows():
-                try:
-                    lon = float(row["Longitude"])
-                    lat = float(row["Latitude"])
-                    pt_27700 = Point(lonlat_to_27700(lon, lat))
-                    if buffer_geom.intersects(pt_27700):
-                        unique_id = row.get("ID", f"{lon},{lat}")
-                        visited_ids.add(unique_id)
-                except Exception as e:
-                    self.logger.debug(f"[POINT] Skipping row idx={idx} due to error: {e}")
-                    continue
-            point_count = len(visited_ids)
-            self.logger.info(f"[POINT] Total count={point_count}, visited_ids={list(visited_ids)[:10]}...")
-        elif feature_type.upper() == "AREA":
-            for idx, row in env_df.iterrows():
-                wkb_hex = row.get("Geometry", "")
-                if not wkb_hex or wkb_hex == "N/A":
-                    continue
-                try:
-                    poly = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
-                    if buffer_geom.intersects(poly):
-                        intersection = buffer_geom.intersection(poly)
-                        area_count += 1
-                        total_area += intersection.area
-                except Exception as e:
-                    self.logger.debug(f"[AREA] Skipping row idx={idx} due to error: {e}")
-                    continue
-            self.logger.info(f"[AREA] Final count={area_count}, total_area={total_area:.2f}")
-
-        try:
-            conn = self.connect_to_database(
-                self.TRAJECTORY_DB_HOST,
-                self.DB_PORT,
-                self.DB_USER,
-                self.TRAJECTORY_DB_PASSWORD,
-                self.DB_NAME
-            )
-            # get timeseries IRI's corrsponding table
-            table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
-
-            safe_label = domain_label.replace(" ", "_").replace("/", "_")
-            point_column = f"{safe_label}_point_count"
-            area_column = f"{safe_label}_area_count"
-            total_area_column = f"{safe_label}_total_area"
-
-            for column, dtype in [
-                (point_column, "INTEGER"),
-                (area_column, "INTEGER"),
-                (total_area_column, "DOUBLE PRECISION")
-            ]:
-                alter_sql = f"""
-                DO $$ BEGIN
-                    IF NOT EXISTS (
-                        SELECT FROM information_schema.columns
-                        WHERE table_name = %s AND column_name = %s
-                    ) THEN
-                        EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{column}" {dtype}';
-                    END IF;
-                END $$;
-                """
-                self.execute_query(conn, alter_sql, (table_name, column))
-
-            update_sql = f"""
-            UPDATE "{table_name}"
-            SET "{point_column}" = %s,
-                "{area_column}" = %s,
-                "{total_area_column}" = %s;
-            """
-            self.execute_query(conn, update_sql, (point_count, area_count, total_area))
-
-            self.commit_if_psycopg2(conn)
-        except Exception as e:
-            self.logger.error(f"Failed to update the database: {e}")
-        finally:
-            if conn:
-                conn.close()
-        
-        result = {
-            "envFeatureName": domain_label,
-            "type": feature_type,
-            "count": point_count if feature_type.upper() == "POINT" else area_count,
-        }
-        if feature_type.upper() != "POINT":
-            result["totalArea"] = total_area
-
-        return result
-        # return {
-        #     "envFeatureName": domain_label,
-        #     "type": feature_type,
-        #     "count": point_count if feature_type.upper() == "POINT" else area_count,
-        #     "totalArea": total_area
-        # }
 
     def fetch_domain_and_data_sources(self, env_data_iri: str) -> List[Dict[str, str]]:
         template = self.load_template("get_domain_and_data_sources.sparql")
