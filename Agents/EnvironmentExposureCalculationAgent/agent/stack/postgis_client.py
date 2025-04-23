@@ -60,15 +60,15 @@ class PostGISClient:
                     cur.execute(query)
                 return pd.DataFrame(cur.fetchall(), columns=[desc[0] for desc in cur.description])
 
-    def execute_update(self, query: str, table_mappings: dict, val_params: dict = None):
+    def execute_update(self, query: str, table_mappings: dict = None, val_params: dict = None):
         query = self.process_table_mapping(query, table_mappings)
 
         with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
             with conn.cursor() as cur:
                 cur.execute(query, val_params)
                 conn.commit()
-    
-    def execute_updatemany(self, query: str, table_mappings: dict, vals):
+
+    def execute_updatemany(self, query: str, table_mappings: dict = None, vals=None):
         query = self.process_table_mapping(query, table_mappings)
 
         with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
