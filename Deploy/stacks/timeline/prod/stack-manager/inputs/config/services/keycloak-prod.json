@@ -25,7 +25,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "themes",
+                        "Source": "keycloak/themes",
                         "Target": "/opt/keycloak/themes"
                     },
                     {
