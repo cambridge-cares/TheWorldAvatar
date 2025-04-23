@@ -71,7 +71,8 @@ def process_gps_csv_file(csv_file):
         #     logger.error(f"Failed to create Point instance: {e}")
         #     raise e
         # point_class = StackClient.stackClients_view.Point
-        points = [StackClient.stackClients_view.Point(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
+        # points = [StackClient.stackClients_view.Point(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
+        points = [StackClient.stackClients_view.Point(float(row['LONGITUDE']), float(row['LATITUDE'])) for _, row in df.iterrows()]
         return {
             'object': os.path.basename(csv_file).replace('.csv', ''),
             'times': [transform_datetime(row['UTC DATE'], row['UTC TIME']) for _, row in df.iterrows()],

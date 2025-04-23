@@ -1,45 +1,169 @@
 [PrefixDeclaration]
 fh:         http://www.theworldavatar.com/ontology/OntoFHRS/
 gs:         https://www.theworldavatar.com/kg/ontogreenspace/
-rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
-owl:        http://www.w3.org/2002/07/owl#
+ies4:       http://ies.data.gov.uk/ontology/ies4#
 xsd:        http://www.w3.org/2001/XMLSchema#
-exposure:   http://www.theworldavatar.com/ontology/OntoEnvExpo/
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:       http://www.w3.org/2000/01/rdf-schema#
+owl:        http://www.w3.org/2002/07/owl#
 geo:        http://www.opengis.net/ont/geosparql#
+time:       http://www.w3.org/2006/time/
+wgs:        http://www.w3.org/2003/01/geo/wgs84_pos#
+ex:         http://example.org/ns#
+exposure:   http://www.theworldavatar.com/ontology/OntoEnvExpo/
 
 [MappingDeclaration] @collection [[
 mappingId       FoodHygieneDomain
 target      <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> a exposure:Domain ; exposure:hasDomainName "Food hygiene rating"^^xsd:string ; exposure:hasFeatureType "POINT"^^xsd:string ; exposure:hasDataSource "supermarket"^^xsd:string, "takeaways"^^xsd:string .
-source      SELECT DISTINCT 'Food hygiene rating' AS "DomainName"
-            FROM "fhr_cambridge"
+source      SELECT DISTINCT 'Food hygiene rating' AS "DomainName" FROM "fhr_cambridge_2025"
 
-mappingId       BasicBusinessInfo
-target      fh:{FHRSID} a fh:BusinessEstablishment ; fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> ; fh:hasBusinessName "{BusinessName}"^^xsd:string ; fh:hasBusinessType "{BusinessType}"^^xsd:string ; fh:hasPostcode "{PostCode}"^^xsd:string .
-source      SELECT "FHRSID", "BusinessName", "BusinessType", "PostCode" 
-            FROM "fhr_cambridge";
+mappingId       Time-BEStart-2023
+target      fh:BusinessEstablishmentStart/{FHRSID} a fh:BusinessEstablishmentStart ; ies4:isStartOf fh:BusinessEstablishment/{FHRSID} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_start/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2023"
 
-mappingId       BusinessLocation
-target      fh:GeoPoint_{FHRSID} a geo:Feature ; geo:isPartOf fh:{FHRSID} ; geo:hasLongitude "{Geocode/Longitude}"^^xsd:float ; geo:hasLatitude "{Geocode/Latitude}"^^xsd:float .
-source      SELECT "FHRSID", "Geocode/Longitude", "Geocode/Latitude"
-            FROM "fhr_cambridge";
+mappingId       Time-BEStart-2025
+target      fh:BusinessEstablishmentStart/{FHRSID} a fh:BusinessEstablishmentStart ; ies4:isStartOf fh:BusinessEstablishment/{FHRSID} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_start/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year 
+            FROM "fhr_cambridge_2025"
 
-mappingId       RatingDetails
-target      fh:{FHRSID} fh:hasRatingValue "{RatingValue}"^^xsd:string ; fh:hasRatingDate "{RatingDate}"^^xsd:date .
-source      SELECT "FHRSID", "RatingValue", "RatingDate"
-            FROM "fhr_cambridge";
+mappingId       Time-PeriodStart-2023
+target      ies4:ParticularPeriod/{FHRSID}_start/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_Start}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_Start", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year 
+            FROM "fhr_cambridge_2023"
+
+mappingId       Time-PeriodStart-2025
+target      ies4:ParticularPeriod/{FHRSID}_start/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_Start}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_Start", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year 
+            FROM "fhr_cambridge_2025"
+
+mappingId       Time-BEEnd-2023
+target      fh:BusinessEstablishmentEnd/{FHRSID} a fh:BusinessEstablishmentEnd ; ies4:isEndOf fh:BusinessEstablishment/{FHRSID} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_end/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_End") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       Time-BEEnd-2025
+target      fh:BusinessEstablishmentEnd/{FHRSID} a fh:BusinessEstablishmentEnd ; ies4:isEndOf fh:BusinessEstablishment/{FHRSID} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_end/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_End") AS year 
+            FROM "fhr_cambridge_2025"
+
+mappingId       Time-PeriodEnd-2023
+target      ies4:ParticularPeriod/{FHRSID}_end/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_End}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_End", EXTRACT(YEAR FROM "Business_Establishment_End") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       Time-PeriodEnd-2025
+target      ies4:ParticularPeriod/{FHRSID}_end/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_End}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_End", EXTRACT(YEAR FROM "Business_Establishment_End") AS year 
+            FROM "fhr_cambridge_2025"
+
+mappingId       Attributes-BE-with-Ratings-2023
+target      fh:BusinessEstablishment/{FHRSID} a fh:BusinessEstablishment ; fh:hasRating fh:Rating/{FHRSID}/{year} ; rdf:type fh:{BusinessTypeID} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year, CAST("BusinessTypeID" AS varchar) AS "BusinessTypeID" 
+            FROM "fhr_cambridge_2023"
+
+mappingId       Attributes-BE-with-Ratings-2025
+target      fh:BusinessEstablishment/{FHRSID} a fh:BusinessEstablishment ; fh:hasRating fh:Rating/{FHRSID}/{year} ; rdf:type fh:{BusinessTypeID} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year, CAST("BusinessTypeID" AS varchar) AS "BusinessTypeID"
+            FROM "fhr_cambridge_2025"
+
+mappingId       Attributes-BE-with-Geometry-2023
+target      fh:BusinessEstablishment/{FHRSID} a geo:Feature ; geo:hasGeometry geo:Geometry/{FHRSID}/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       Attributes-BE-with-Geometry-2025
+target      fh:BusinessEstablishment/{FHRSID} a geo:Feature ; geo:hasGeometry geo:Geometry/{FHRSID}/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2025"
+
+mappingId       Geometry_Details-2023
+target      geo:Geometry/{FHRSID}/{year} a geo:Point ; geo:asWKT "POINT({Geocode/Longitude} {Geocode/Latitude})"^^geo:wktLiteral ; geo:crs <http://www.opengis.net/def/crs/EPSG/0/4326> ; wgs:long "{Geocode/Longitude}"^^xsd:double ; wgs:lat  "{Geocode/Latitude}"^^xsd:double .
+source      SELECT "FHRSID", "Geocode/Longitude", "Geocode/Latitude", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year 
+            FROM "fhr_cambridge_2023"
+
+mappingId       Geometry_Details-2025
+target      geo:Geometry/{FHRSID}/{year} a geo:Point ; geo:asWKT "POINT({Geocode/Longitude} {Geocode/Latitude})"^^geo:wktLiteral ; geo:crs <http://www.opengis.net/def/crs/EPSG/0/4326> ; wgs:long "{Geocode/Longitude}"^^xsd:double ; wgs:lat  "{Geocode/Latitude}"^^xsd:double .
+source      SELECT "FHRSID", "Geocode/Longitude", "Geocode/Latitude", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year 
+            FROM "fhr_cambridge_2025"
+
+mappingId       RatingStart-2023
+target      fh:RatingStart/{FHRSID}/{year} a fh:RatingStart ; ies4:isStartOf fh:Rating/{FHRSID}/{year} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_rating_start/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       RatingStart-2025
+target      fh:RatingStart/{FHRSID}/{year} a fh:RatingStart ; ies4:isStartOf fh:Rating/{FHRSID}/{year} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_rating_start/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2025"
+
+mappingId       RatingPeriodStart-2023
+target      ies4:ParticularPeriod/{FHRSID}_rating_start/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_Start}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_Start", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       RatingPeriodStart-2025
+target      ies4:ParticularPeriod/{FHRSID}_rating_start/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_Start}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_Start", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2025"
+
+mappingId       RatingEnd-2023
+target      fh:RatingEnd/{FHRSID}/{year} a fh:RatingEnd ; ies4:isEndOf fh:Rating/{FHRSID}/{year} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_rating_end/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_End") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       RatingEnd-2025
+target      fh:RatingEnd/{FHRSID}/{year} a fh:RatingEnd ; ies4:isEndOf fh:Rating/{FHRSID}/{year} ; ies4:inPeriod ies4:ParticularPeriod/{FHRSID}_rating_end/{year} .
+source      SELECT "FHRSID", EXTRACT(YEAR FROM "Business_Establishment_End") AS year
+            FROM "fhr_cambridge_2025"
+
+mappingId       RatingPeriodEnd-2023
+target      ies4:ParticularPeriod/{FHRSID}_rating_end/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_End}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_End", EXTRACT(YEAR FROM "Business_Establishment_End") AS year
+            FROM "fhr_cambridge_2023"
+
+mappingId       RatingPeriodEnd-2025
+target      ies4:ParticularPeriod/{FHRSID}_rating_end/{year} a ies4:ParticularPeriod ; ies4:iso8601PeriodRepresentation {Business_Establishment_End}^^xsd:dateTimeStamp .
+source      SELECT "FHRSID", "Business_Establishment_End", EXTRACT(YEAR FROM "Business_Establishment_End") AS year
+            FROM "fhr_cambridge_2025"
+
+mappingId       Rating_Details-2023
+target      fh:Rating/{FHRSID}/{year} a fh:Rating ; fh:hasValue "{RatingValue}"^^xsd:string .
+source      SELECT "FHRSID", "RatingValue", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year 
+            FROM "fhr_cambridge_2023"
+
+mappingId       Rating_Details-2025
+target      fh:Rating/{FHRSID}/{year} a fh:Rating ; fh:hasValue "{RatingValue}"^^xsd:string .
+source      SELECT "FHRSID", "RatingValue", EXTRACT(YEAR FROM "Business_Establishment_Start") AS year
+            FROM "fhr_cambridge_2025"
+
+mappingId       LocalAuthorityMapping
+target      fh:BusinessEstablishment/{FHRSID} fh:hasLocalAuthority fh:LocalAuthority/{LocalAuthorityCode} .
+source      SELECT DISTINCT "FHRSID", "LocalAuthorityCode" FROM "fhr_cambridge_2025"
+
+mappingId       LocalAuthorityDetails
+target      fh:LocalAuthority/{LocalAuthorityCode} a fh:LocalAuthority ; fh:hasName "{LocalAuthorityName}"^^xsd:string ; fh:hasWebsite "{LocalAuthorityWebSite}"^^xsd:anyURI ; fh:hasEmailAddress "{LocalAuthorityEmailAddress}"^^xsd:string .
+source      SELECT DISTINCT "LocalAuthorityCode", "LocalAuthorityName", "LocalAuthorityWebSite", "LocalAuthorityEmailAddress" 
+            FROM "fhr_cambridge_2025"
+
+mappingId       GreenspaceCore
+target      gs:{id} a gs:Greenspace ; gs:hasFunction "{function}"^^xsd:string ; gs:hasFirstAlternativeName "{distName1}"^^xsd:string ; gs:hasSecondAlternativeName "{distName2}"^^xsd:string ; gs:hasThirdAlternativeName "{distName3}"^^xsd:string .
+source      SELECT "id", "function", "distName1", "distName2", "distName3"
+            FROM "GB_GreenspaceSite"
+
+mappingId       GreenspaceGeometry
+target      gs:{id} a geo:Feature ; geo:hasGeometry geo:Geometry{id} .
+source      SELECT "id"
+            FROM "GB_GreenspaceSite"
+
+mappingId       GS-Geometry-details
+target      geo:Geometry{id} geo:asWKT "{wkt}"^^geo:wktLiteral ; ex:hasWKB "{wkb_hex}"^^xsd:string ; geo:crs <http://www.opengis.net/def/crs/EPSG/0/27700> .
+source      SELECT "id", "wkb_geometry" AS "wkb_hex", ST_AsText("wkb_geometry") AS "wkt"
+            FROM "GB_GreenspaceSite"
 
 mappingId       GreenspaceDomain
 target      <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> a exposure:Domain ; exposure:hasDomainName "Greenspace"^^xsd:string ; exposure:hasFeatureType "AREA"^^xsd:string ; exposure:hasDataSource "GB_GreenspaceSite"^^xsd:string .
 source      SELECT DISTINCT 'Greenspace' AS "DomainName"
             FROM "GB_GreenspaceSite"
 
-mappingId       GreenspaceBasicInfo
-target      gs:{id} a gs:Greenspace ; gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ; gs:hasFunction "{function}"^^xsd:string ; gs:hasDistrictName1 "{distName1}"^^xsd:string ; gs:hasDistrictName2 "{distName2}"^^xsd:string ; gs:hasDistrictName3 "{distName3}"^^xsd:string ; gs:hasDistrictName4 "{distName4}"^^xsd:string .
-source      SELECT "id", "function", "distName1", "distName2", "distName3", "distName4"
-            FROM "GB_GreenspaceSite";
-
-mappingId       GreenspaceLocation
-target      gs:GeoPoint_{id} a gs:SpatialLocation ; gs:isPartOf gs:{id} ; gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ;geo:hasGeometry "{wkb_geometry}" ; geo:hasTransformedGeometry "{geometry_4326}"^^xsd:string ; gs:linkedToGreenspace gs:{id} .
-source      SELECT "id", "wkb_geometry", ST_AsText(ST_Transform("wkb_geometry", 4326)) AS "geometry_4326"
-            FROM "GB_GreenspaceSite";
 ]]

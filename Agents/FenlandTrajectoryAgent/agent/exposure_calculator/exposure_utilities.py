@@ -27,6 +27,8 @@ import numpy as np
 from shapely.ops import transform
 from shapely.prepared import prep
 from shapely.strtree import STRtree
+from agent.exposure_calculator.trip_detector.trip_detection import detect_trips, DEFAULT_PARAMS
+from agent.exposure_calculator.trip_detector.utilities import *
 
 class ExposureUtils:
     @staticmethod
@@ -119,7 +121,7 @@ class ExposureUtils:
         self.DB_NAME = DATABASE
 
         self.env_data_cache = {}
-        self.template_dir = os.path.join(os.path.dirname(__file__), "count")
+        self.template_dir = os.path.join(os.path.dirname(__file__), "templates")
 
     def fetch_env_crs(self, env_data_iri: str, feature_type: str) -> str:
         """
@@ -233,6 +235,8 @@ class ExposureUtils:
             for i in idxs:
                 pt_proj, uid = proj_env[i]
                 if buf_proj.intersects(pt_proj):
+                    if uid and uid not in visited:
+                        self.logger.info(f"[EXPOSURE][{trajectory_iri}] POI matched: {uid}")
                     visited.add(uid)
             point_count = len(visited)
         else:
@@ -431,23 +435,72 @@ class ExposureUtils:
             raise e
 
     def get_table_name_for_timeseries(self, conn, timeseriesIRI: str) -> str:
-        query_template = self.load_template("get_table_name_for_timeseries.sql")
-        rows = self.execute_query(conn, query_template, (timeseriesIRI,))
+        try:
+            query_template = self.load_template("get_table_name_for_timeseries.sql")
+            rows = self.execute_query(conn, query_template, (timeseriesIRI,))
+            if rows:
+                return rows[0][0]
+        except Exception as e:
+            self.logger.warning(f"[Fallback] Primary get_table_name failed: {e}")
+
+        # Try fallback
+        fallback_template = self.load_template("get_table_name_for_timeseries_fallback.sql")
+        rows = self.execute_query(conn, fallback_template, (timeseriesIRI,))
         if not rows:
-            raise ValueError(f"No tableName found for timeseriesIRI: {timeseriesIRI}")
+            raise ValueError(f"No fallback tableName found for timeseriesIRI: {timeseriesIRI}")
         return rows[0][0]
 
     def get_timeseries_data(self, conn, table_name: str) -> pd.DataFrame:
-        query_template = self.load_template("get_timeseries_data.sql")
-        query = query_template.format(table_name=table_name)
-        rows = self.execute_query(conn, query)
-        df = pd.DataFrame(
-            rows,
-            columns=["time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"]
-        )
-        return df
+        """
+        Retrieve raw timeseries data from database.
+        Automatically detects whether 'Trip index' column exists and selects the correct SQL template.
+        Returns DataFrame with appropriate columns.
+        """
+        try:
+            check_sql = self.load_template("check_trip_index_column.sql")
+            result = self.execute_query(conn, check_sql, (table_name,))
+            has_trip_index = bool(result)
+        except Exception as e:
+            self.logger.warning(f"[Trip index] Failed to check for 'Trip index' column: {e}")
+            has_trip_index = False
+
+        try:
+            if has_trip_index:
+                self.logger.info(f"[Trip index] Detected in table: {table_name}")
+                sql_template_name = "get_timeseries_data_with_trip.sql"
+            else:
+                self.logger.info(f"[Trip index] Not found, using fallback SQL.")
+                sql_template_name = "get_timeseries_data.sql"
+
+            query_template = self.load_template(sql_template_name)
+            query = query_template.format(table_name=table_name)
+            rows = self.execute_query(conn, query)
+
+            base_cols = ["time", "column1", "column2", "column3", "column4", "column5", "column6", "column7"]
+            if has_trip_index:
+                base_cols.append("Trip index")
+
+            return pd.DataFrame(rows, columns=base_cols)
+
+        except Exception as primary_exception:
+            self.logger.warning(f"[Fallback] Primary SQL failed for {table_name}: {primary_exception}")
+            
+            # Run fallback version
+            try:
+                fallback_template = self.load_template("get_timeseries_data_fallback.sql")
+                query = fallback_template.format(table_name=table_name)
+                rows = self.execute_query(conn, query, (table_name,))
+                return pd.DataFrame(rows, columns=["time", "LATITUDE", "LONGITUDE"])
+            except Exception as fallback_exception:
+                self.logger.error(f"[Fallback] Failed for {table_name}: {fallback_exception}")
+                raise fallback_exception
+
 
     def fetch_trajectory_data_from_db(self, trajectory_iri: str) -> pd.DataFrame:
+        """
+        Fetch and process trajectory data from database.
+        Handles basic column renaming and time formatting.
+        """
         self.logger.info("==== fetch_trajectory_data_from_db() called ====")
         conn = None
         try:
@@ -611,6 +664,23 @@ class ExposureUtils:
                 "dataSourceName": b["dataSourceName"]["value"],
             })
         return results
+    
+    def create_standard_trajectory_table(self, table_name: str, conn):
+        """
+        Creates a standardized trajectory table only for internal use when importing external data.
+        This SQL is defined inline rather than as a template since it's a utility function
+        for internal data standardization rather than a query template.
+        """
+        create_sql = f'''
+        CREATE TABLE IF NOT EXISTS "{table_name}" (
+            "time" TIMESTAMP,
+            "LATITUDE" DOUBLE PRECISION,
+            "LONGITUDE" DOUBLE PRECISION
+        );
+        '''
+        self.execute_query(conn, create_sql)
+        self.logger.info(f"[Fallback] Created table {table_name} with standard structure.")
+
 
     def calculate_exposure_simplified_util(self, data: dict) -> List[Dict]:
         trajectoryIRIs = data.get("trajectoryIRIs", [])
@@ -737,3 +807,197 @@ class ExposureUtils:
         if conn:
             conn.close()
         return final_results
+
+    def detect_trips_util(self, trajectory_iri: str) -> dict:
+        """
+        Performs trip detection on a trajectory and updates the database with results.
+        Args:
+            trajectory_iri: The IRI of the trajectory to analyze
+        Returns:
+            dict: Status of the operation
+        """
+        if not trajectory_iri:
+            raise ValueError("trajectoryIRI is required")
+
+        try:
+            trajectory_df = self.fetch_trajectory_data_from_db(trajectory_iri)
+            if 'time' not in trajectory_df.columns:
+                raise ValueError("Required column 'time' not found in trajectory data")
+            if trajectory_df['time'].isna().all():
+                raise ValueError("No valid time data found in trajectory")
+
+            trajectory_df['Timestamp'] = pd.to_datetime(trajectory_df['time'])
+            self.logger.info(f"Created Timestamp column from time data. Sample values:")
+            self.logger.info(f"First 3 values: {trajectory_df['Timestamp'].head(3).tolist()}")
+            self.logger.info(f"Total rows: {len(trajectory_df)}, Valid Timestamp values: {trajectory_df['Timestamp'].notna().sum()}")
+
+            if trajectory_df['Timestamp'].isna().all():
+                raise ValueError("Failed to create valid Timestamp column from time data")
+
+            for col in ['LATITUDE', 'LONGITUDE', 'SPEED', 'DISTANCE', 'HEIGHT', 'HEADING']:
+                if col not in trajectory_df.columns:
+                    raise ValueError(f"Required column '{col}' not found in trajectory data")
+                if trajectory_df[col].isna().all():
+                    raise ValueError(f"No valid data found in column '{col}'")
+                trajectory_df[col] = pd.to_numeric(trajectory_df[col], errors='coerce')
+                if col not in ['LATITUDE', 'LONGITUDE']:
+                    trajectory_df[col] = trajectory_df[col].fillna(0)
+
+            trajectory_df = trajectory_df.sort_values('Timestamp').reset_index(drop=True)
+            trajectory_df['original_index'] = trajectory_df.index
+
+        except Exception as e:
+            self.logger.error(f"Failed to prepare trajectory data: {e}")
+            raise
+
+        columns_mapping = {
+            "utc_date": "Timestamp",
+            "lat": "LATITUDE",
+            "lon": "LONGITUDE",
+            "utm_n": "y_utm_sd",
+            "utm_e": "x_utm_sd"
+        }
+
+        if "y_utm_sd" in trajectory_df.columns:
+            trajectory_df.drop(columns=["y_utm_sd"], inplace=True)
+        if "x_utm_sd" in trajectory_df.columns:
+            trajectory_df.drop(columns=["x_utm_sd"], inplace=True)
+
+        valid_coords = trajectory_df[trajectory_df['LATITUDE'].notna() & trajectory_df['LONGITUDE'].notna()]
+        if valid_coords.empty:
+            raise ValueError("No valid coordinates found in trajectory data")
+
+        lat, lon = float(valid_coords.iloc[0]['LATITUDE']), float(valid_coords.iloc[0]['LONGITUDE'])
+        utm_code = f"EPSG:{wgs_to_utm_code(lat, lon)}"
+        self.logger.info(f"Using projection {utm_code} based on coordinates: lat={lat}, lon={lon}")
+
+        try:
+            self.logger.info("Starting trip detection with DataFrame shape: %s", trajectory_df.shape)
+            detected_gps, incidents_table, width, height, cell_size = detect_trips(
+                trajectory_df.copy(),
+                trajectory_iri,
+                columns_mapping,
+                params=DEFAULT_PARAMS,
+                interpolate_helper_func=None,
+                code=utm_code
+            )
+            self.logger.info("Trip detection completed successfully")
+            self.logger.info("Results - detected_gps shape: %s", detected_gps.shape if detected_gps is not None else "None")
+            self.logger.info("Results - incidents_table shape: %s", incidents_table.shape if incidents_table is not None else "None")
+
+            if detected_gps is not None:
+                result_df = pd.DataFrame(index=trajectory_df.index)
+                result_df['time'] = trajectory_df['time']
+
+                trip_columns = [
+                    ("Points in segment", ""),
+                    ("x_utm_sd", None),
+                    ("y_utm_sd", None),
+                    ("kernel", 0.0),
+                    ("zone", -1),
+                    ("norm_kernel", 0.0),
+                    ("modfied_kernel", 0.0),
+                    ("norm_modified_kernel", 0.0),
+                    ("snap_to_hs", 0),
+                    ("Trip index", -1),
+                    ("Visit index", -1),
+                    ("Gap", 0)
+                ]
+
+                detected_gps = detected_gps.reset_index(drop=True)
+                result_df = result_df.reset_index(drop=True)
+
+                if len(detected_gps) != len(result_df):
+                    self.logger.warning(f"Length mismatch: detected_gps={len(detected_gps)}, result_df={len(result_df)}")
+                    if 'original_index' in detected_gps.columns:
+                        detected_gps = detected_gps.set_index('original_index')
+                        result_df = result_df.reindex(detected_gps.index)
+                        detected_gps = detected_gps.reset_index()
+                        result_df = result_df.reset_index()
+                    else:
+                        min_len = min(len(detected_gps), len(result_df))
+                        detected_gps = detected_gps.iloc[:min_len]
+                        result_df = result_df.iloc[:min_len]
+
+                for col, default_value in trip_columns:
+                    try:
+                        result_df[col] = detected_gps[col].values if col in detected_gps.columns else pd.Series([default_value] * len(result_df))
+                    except Exception as e:
+                        self.logger.warning(f"Error copying column {col}: {e}")
+                        result_df[col] = pd.Series([default_value] * len(result_df))
+
+                detected_gps = result_df
+
+        except Exception as e:
+            self.logger.error(f"Trip detection failed: {e}")
+            self.logger.error("DataFrame state at failure:")
+            self.logger.error(f"Columns: {trajectory_df.columns.tolist()}")
+            self.logger.error(f"Data types: {trajectory_df.dtypes.to_dict()}")
+            raise
+
+        conn = None
+        try:
+            conn = self.connect_to_database(
+                self.TRAJECTORY_DB_HOST,
+                self.DB_PORT,
+                self.DB_USER,
+                self.TRAJECTORY_DB_PASSWORD,
+                self.DB_NAME
+            )
+            table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
+
+            add_template = self.load_template("add_trip_detection_columns.sql")
+            for col_name, col_type in [
+                ("Points in segment", "TEXT"),
+                ("x_utm_sd", "DOUBLE PRECISION"),
+                ("y_utm_sd", "DOUBLE PRECISION"),
+                ("kernel", "DOUBLE PRECISION"),
+                ("zone", "INTEGER"),
+                ("norm_kernel", "DOUBLE PRECISION"),
+                ("modfied_kernel", "DOUBLE PRECISION"),
+                ("norm_modified_kernel", "DOUBLE PRECISION"),
+                ("snap_to_hs", "INTEGER"),
+                ("Trip index", "INTEGER"),
+                ("Visit index", "INTEGER"),
+                ("Gap", "INTEGER"),
+                ("utm_zone", "TEXT")
+            ]:
+                alter_sql = add_template.format(table_name=table_name, column_name=col_name, col_type=col_type)
+                self.execute_query(conn, alter_sql)
+
+            update_sql_template = self.load_template("update_trip_detection_results.sql")
+            update_sql = update_sql_template.format(table_name=table_name)
+
+            for _, row in detected_gps.iterrows():
+                values = (
+                    row.get("Points in segment"),
+                    row.get("x_utm_sd"),
+                    row.get("y_utm_sd"),
+                    row.get("kernel"),
+                    row.get("zone"),
+                    row.get("norm_kernel"),
+                    row.get("modfied_kernel"),
+                    row.get("norm_modified_kernel"),
+                    row.get("snap_to_hs"),
+                    row.get("Trip index"),
+                    row.get("Visit index"),
+                    row.get("Gap"),
+                    row.get("time")
+                )
+                self.execute_query(conn, update_sql, values)
+
+            self.commit_if_psycopg2(conn)
+            return {
+                "message": "Trip detection applied and table updated successfully.",
+                "projection_used": utm_code,
+                "processed_rows": len(detected_gps)
+            }
+
+        except Exception as e:
+            self.logger.error(f"Database operation failed: {e}")
+            raise
+        finally:
+            if conn:
+                conn.close()
+
+

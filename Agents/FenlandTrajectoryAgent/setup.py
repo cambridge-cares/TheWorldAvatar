@@ -39,7 +39,10 @@ setup(
         'gunicorn==20.1.0',
         'click>=8.0',
         'werkzeug==2.2.2',
-        'psycopg2-binary==2.9.5'
+        'psycopg2-binary==2.9.5',
+        'scikit-learn>=1.0.2',
+        'scikit-image>=0.19.0',
+        'KDEpy>=1.1.0'
     ],
     extras_require={
         'dev': [
