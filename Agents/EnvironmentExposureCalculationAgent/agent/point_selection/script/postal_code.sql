@@ -20,7 +20,8 @@ BEGIN
             ogc_fid INTEGER,
             src_schema varchar,
             src_table varchar,
-            wkb_geometry Geometry
+            wkb_geometry Geometry,
+            buffer_geom Geometry
         );
     END IF;
 
