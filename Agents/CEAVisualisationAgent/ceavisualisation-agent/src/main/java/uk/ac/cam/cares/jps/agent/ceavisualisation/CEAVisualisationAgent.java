@@ -159,7 +159,7 @@ public class CEAVisualisationAgent extends JPSAgent {
         // column values
         for (VisValues vis : visValues) {
             String valueRow = "(";
-            valueRow += vis.getIri() + ",";
+            valueRow += "'" + vis.getIri() + "'" + ",";
             Map<String, Double> ceaValues = vis.getValues();
             for (String column : Column.getColumns()) {
                 valueRow += ceaValues.get(column) + ",";
@@ -192,7 +192,11 @@ public class CEAVisualisationAgent extends JPSAgent {
             for (Annual annual : Column.getAnnuals(area.getKey())) {
                 Double annualValue = annuals.get(annual.getAnnual());
                 ceaValues.put(annual.getAnnual(), annualValue);
-                ceaValues.put(annual.getAnnualPerArea(), annualValue / areaValue);
+                if (areaValue != 0.0) {
+                    ceaValues.put(annual.getAnnualPerArea(), annualValue / areaValue);
+                } else {
+                    ceaValues.put(annual.getAnnualPerArea(), 0.0);
+                }
             }
         }
 
