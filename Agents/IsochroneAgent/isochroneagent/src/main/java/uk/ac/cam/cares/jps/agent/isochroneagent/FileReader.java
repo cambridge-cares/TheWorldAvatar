@@ -16,8 +16,14 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class FileReader {
 
+    // Private constructor to hide the implicit public one
+    private FileReader() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     /**
      * Read input files
+     * 
      * @param path
      * @return
      * @throws FileNotFoundException
@@ -26,14 +32,15 @@ public class FileReader {
         return new FileInputStream(path);
     }
 
-
     /**
-     * Read Point of Interest (POI) files from directory and parse into Map, allows multiple SPARQL files.
-     * @param POI_PATH Path for directory containing POI SPARQL queries
+     * Read Point of Interest (POI) files from directory and parse into Map, allows
+     * multiple SPARQL files.
+     * 
+     * @param poiPath Path for directory containing POI SPARQL queries
      * @return
      */
-    public static Map readPOIsparql(Path POI_PATH) {
-        try (Stream<Path> files = Files.list(POI_PATH)) {
+    public static Map<String, String> readPOIsparql(Path poiPath) {
+        try (Stream<Path> files = Files.list(poiPath)) {
             // Find all available SPARQL files
             Map<String, String> sparqlFiles = files
                     .filter(Files::isRegularFile)
@@ -50,24 +57,25 @@ public class FileReader {
                             }));
 
             // Process each SPARQL file
-            sparqlFiles.forEach((fileName, filePath) -> {
-                // Process the SPARQL file here
-                // You can replace the following line with your processing logic
-                System.out.println("Processing SPARQL file: " + filePath);
-            });
+            sparqlFiles.forEach((fileName, filePath) ->
+            // Process the SPARQL file here
+            // You can replace the following line with your processing logic
+            System.out.println("Processing SPARQL file: " + filePath));
             return sparqlFiles;
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to read files from the directory.", ex);
+            throw new RuntimeException("Failed to read SPARQL files from" + poiPath, ex);
         }
     }
 
     /**
-     * Read EDGESTABLE SQL files from directory and parse into Map, allows multiple .SQL files.
-     * @param EDGESTABLESQL_PATH Path for directory containing .SQL
+     * Read EDGESTABLE SQL files from directory and parse into Map, allows multiple
+     * .SQL files.
+     * 
+     * @param edgesTableSQLPath Path for directory containing .SQL
      * @return
      */
-    public static Map readEdgesTableSQL(Path EDGESTABLESQL_PATH) {
-        try (Stream<Path> files = Files.list(EDGESTABLESQL_PATH)) {
+    public static Map<String, String> readEdgesTableSQL(Path edgesTableSQLPath) {
+        try (Stream<Path> files = Files.list(edgesTableSQLPath)) {
             // Find all available EdgesTableSQL files
             Map<String, String> edgesTableSQLFiles = files
                     .filter(Files::isRegularFile)
@@ -84,33 +92,36 @@ public class FileReader {
                             }));
 
             // Process each EdgesTableSQL file
-            edgesTableSQLFiles.forEach((fileName, filePath) -> {
+            edgesTableSQLFiles.forEach((fileName, filePath) -> 
                 // Process the EdgesTableSQL file here
                 // You can replace the following line with your processing logic
-                System.out.println("Processing EdgesTableSQL file: " + filePath);
-            });
+                System.out.println("Processing EdgesTableSQL file: " + filePath)
+            );
 
             return edgesTableSQLFiles;
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to read files from the directory.", ex);
+            throw new RuntimeException("Failed to read SQL files from" + edgesTableSQLPath, ex);
         }
     }
 
-    /** Retrieve POI locations from knowledge graph by executing the input SPARQL queries.
+    /**
+     * Retrieve POI locations from knowledge graph by executing the input SPARQL
+     * queries.
+     * 
      * @param storeClient
-     * @param POImap
+     * @param poiMap
      * @return
      */
-    public static JSONArray getPOILocation(RemoteStoreClient storeClient, Map<String, String> POImap)
-    {            
+    public static JSONArray getPOILocation(RemoteStoreClient storeClient, Map<String, String> poiMap) {
         JSONArray cumulativePOI = new JSONArray();
-        for (Map.Entry<String, String> entry : POImap.entrySet()) {
+        for (Map.Entry<String, String> entry : poiMap.entrySet()) {
             String value = entry.getValue();
-            JSONArray POI = storeClient.executeQuery(value);
+            JSONArray poi = storeClient.executeQuery(value);
 
-            // Iterate through the POIs in this iteration and add them to the cumulative array
-            for (int i = 0; i < POI.length(); i++) {
-                cumulativePOI.put(POI.get(i));
+            // Iterate through the POIs in this iteration and add them to the cumulative
+            // array
+            for (int i = 0; i < poi.length(); i++) {
+                cumulativePOI.put(poi.get(i));
             }
         }
         return cumulativePOI;
