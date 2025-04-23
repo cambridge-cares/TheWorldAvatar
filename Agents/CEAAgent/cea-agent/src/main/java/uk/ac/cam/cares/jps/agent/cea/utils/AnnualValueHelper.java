@@ -388,6 +388,12 @@ public class AnnualValueHelper {
     private static String getEnergyType(String dataIRI) {
         String[] split = dataIRI.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
         String dataType = split[1].split("_")[0];
+        if (CEAConstants.ELECTRICITY_SUPPLY.contains(dataType)) {
+            dataType = "ElectricitySupply";
+        }
+        if (CEAConstants.HEAT_SUPPLY.contains(dataType)) {
+            dataType = "HeatSupply";
+        }
         return "Annual" + dataType;
     }
 
