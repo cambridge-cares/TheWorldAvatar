@@ -94,11 +94,7 @@ public class AssetManagerAgent extends JPSAgent{
             String FOLDER_MANUAL = System.getenv(KEY_FOLDERmanual);
             JSONObject assetData = requestParams.getJSONObject("assetData");
 
-            try {
-                readPropFile(agentProperties);
-            } catch (Exception e) {
-                throw new JPSRuntimeException("Failed to read agent.properties file: ", e);
-            }
+            readPropEnv();
 
             args = new String[] {
                 ENDPOINT_KG_ASSET, //0
@@ -246,35 +242,24 @@ public class AssetManagerAgent extends JPSAgent{
     }
 
     //Read properties file
-    private void readPropFile (String propFile) throws IOException{
-        try (InputStream input = new FileInputStream(propFile)) {
-            // Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
+    private void readPropEnv() {
+        ENDPOINT_KG_ASSET = System.getenv("ENDPOINT_KG_ASSET");
+        ENDPOINT_KG_OFFICE = System.getenv("ENDPOINT_KG_OFFICE");
+        ENDPOINT_KG_LAB = System.getenv("ENDPOINT_KG_LAB");
+        ENDPOINT_KG_PURCHASEDOC = System.getenv("ENDPOINT_KG_PURCHASEDOCS");
+        ENDPOINT_KG_BMS = System.getenv("ENDPOINT_KG_BMS");
 
-            try {
-                // Read the mappings folder from the properties file
-                ENDPOINT_KG_ASSET = prop.getProperty("endpoint.kg.asset");
-                ENDPOINT_KG_OFFICE= prop.getProperty("endpoint.kg.office");
-                ENDPOINT_KG_LAB= prop.getProperty("endpoint.kg.lab");
-                ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
-                ENDPOINT_KG_BMS = prop.getProperty("endpoint.kg.bms");
-                KG_USERNAME = prop.getProperty("auth.kg.user");
-                KG_PASSWORD = prop.getProperty("auth.kg.pass");
-                ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
-                TARGET_QR_SIZE = Double.parseDouble(prop.getProperty("target_qr_size"));
-                URL_MANUAL = prop.getProperty("url.manual");
-                URL_DOCUPLOAD = prop.getProperty("url.docupload");
-            }
-            catch (Exception e) {
-                throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
-            }
-            
+        KG_USERNAME = System.getenv("AUTH_KG_USER");
+        KG_PASSWORD = System.getenv("AUTH_KG_PASS");
 
-        }
-        catch (Exception e) {
-            throw new JPSRuntimeException("Failed to read properties file: ", e);
-        }
+        ENDPOINT_PRINTER = System.getenv("ENDPOINT_PRINTER");
+
+        TARGET_QR_SIZE = Double.parseDouble(
+                System.getenv("TARGET_QR_SIZE") != null ? System.getenv("TARGET_QR_SIZE").trim() : "4.0"
+        );
+
+        URL_MANUAL = System.getenv("URL_MANUAL");
+        URL_DOCUPLOAD = System.getenv("URL_DOCUPLOAD");
     }
 
     public boolean validateInput(JSONObject requestParams, String pathURL) throws BadRequestException {

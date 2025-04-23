@@ -11,6 +11,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.HttpUrl;
+
 /**
  * Network source for constructing, sending and processing trajectory related requests to server
  */
@@ -29,7 +31,6 @@ public class TrajectoryNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(TrajectoryNetworkSource.class);
     private final RequestQueue requestQueue;
     private final Context context;
-
 
     /**
      * Constructor of the class. The instantiation is handled by dependency injection.
@@ -79,7 +80,7 @@ public class TrajectoryNetworkSource {
             }
         };
 
-       return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
+        return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -88,7 +89,6 @@ public class TrajectoryNetworkSource {
             }
         };
     }
-
 
     private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound) throws JSONException {
         if (!rawResponse.has("message")) {
@@ -110,7 +110,19 @@ public class TrajectoryNetworkSource {
             return null;
         }
 
-        String getTrajectoryUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
+        // Primary request URL
+        String getTrajectoryActivityUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
+                .addQueryParameter("service", "WFS")
+                .addQueryParameter("version", "1.0.0")
+                .addQueryParameter("request", "GetFeature")
+                .addQueryParameter("typeName", "twa:trajectoryUserIdByActivity")
+                .addQueryParameter("outputFormat", "application/json")
+                .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
+                .build().toString();
+
+        // Fallback request URL
+        String getTrajectoryDefaultUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
                 .addQueryParameter("service", "WFS")
                 .addQueryParameter("version", "1.0.0")
@@ -120,19 +132,31 @@ public class TrajectoryNetworkSource {
                 .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
                 .build().toString();
 
-        LOGGER.info("Print out uri: " + getTrajectoryUri);
+        LOGGER.info("Print out URI: " + getTrajectoryActivityUri);
 
         Response.Listener<String> onGetTrajectorySuccess = s1 -> {
             try {
-                // Log the full server response
                 LOGGER.debug("Full server response: " + s1);
 
                 JSONObject trajectoryResponse = new JSONObject(s1);
-                if (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
-                        .getJSONArray("features")
-                        .getJSONObject(0)
-                        .getString("geometry").equals("null")) {
-                    onSuccessUpper.onResponse("");
+                if (trajectoryResponse.getInt("totalFeatures") == 0 ||
+                        (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
+                                .getJSONArray("features")
+                                .getJSONObject(0)
+                                .getString("geometry").equals("null"))) {
+                    LOGGER.info("No trajectory from getTrajectoryActivityUri, trying getTrajectoryDefaultUri...");
+                    // Fallback request
+                    StringRequest fallbackRequest = new StringRequest(Request.Method.GET, getTrajectoryDefaultUri, onSuccessUpper, onFailureUpper) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            Map<String, String> headers = new HashMap<>();
+                            headers.put("Authorization", "Bearer " + accessToken);
+                            return headers;
+                        }
+                    };
+
+                    fallbackRequest.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                    requestQueue.add(fallbackRequest);
                 } else {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());
                 }
@@ -141,7 +165,8 @@ public class TrajectoryNetworkSource {
                 onFailureUpper.onErrorResponse(new VolleyError("Geoserver error"));
             }
         };
-        StringRequest request = new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
+
+        StringRequest request = new StringRequest(Request.Method.GET, getTrajectoryActivityUri, onGetTrajectorySuccess, onFailureUpper) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -149,6 +174,7 @@ public class TrajectoryNetworkSource {
                 return headers;
             }
         };
+
         request.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return request;

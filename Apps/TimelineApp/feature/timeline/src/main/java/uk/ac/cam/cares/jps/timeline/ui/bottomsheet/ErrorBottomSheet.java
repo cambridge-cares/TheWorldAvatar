@@ -19,7 +19,7 @@ import uk.ac.cam.cares.jps.timeline.viewmodel.ConnectionViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.UserPhoneViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
-public class ErrorBottomSheet extends BottomSheet{
+public class ErrorBottomSheet extends BottomSheet {
 
     private final Map<ErrorType, View.OnClickListener> errorHandler;
 
@@ -31,6 +31,7 @@ public class ErrorBottomSheet extends BottomSheet{
 
     /**
      * Constructor
+     *
      * @param context fragment context
      */
     public ErrorBottomSheet(@NonNull Context context,
@@ -42,6 +43,7 @@ public class ErrorBottomSheet extends BottomSheet{
 
     /**
      * Inflate ui for the bottomSheet layout object
+     *
      * @param context fragment context
      */
     @Override
@@ -51,6 +53,7 @@ public class ErrorBottomSheet extends BottomSheet{
 
     /**
      * Configure the bottom sheet message and retry operation based on the error type
+     *
      * @param errorType
      */
     public void setErrorType(ErrorType errorType) {
