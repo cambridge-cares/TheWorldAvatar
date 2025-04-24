@@ -235,7 +235,7 @@ public class CEAVisualisationAgent extends JPSAgent {
 
         // creating Geoserver layer for buildings with scaled CEA outputs
 
-        String scale = "v.%s / (SELECT MAX(v.%s) FROM " + SCHEMA + "." + TABLE + " v) AS scaled_%s,";
+        String scale = "v.%s / GREATEST((SELECT MAX(v.%s) FROM " + SCHEMA + "." + TABLE + " v), 1e-9) AS scaled_%s,";
 
         String scales = "";
 
