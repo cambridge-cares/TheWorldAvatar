@@ -64,14 +64,6 @@ def process_gps_csv_file(csv_file):
         if not all(column in df.columns for column in required_columns) or df[required_columns].isnull().any().any():
             logger.warning(f"Skipping {csv_file} due to missing or incomplete required columns.")
             return None
-        # try:
-        #     point_class = StackClient.stackClients_view.Point().getClass()
-        #     logger.info(f"Point class imported successfully")
-        # except Exception as e:
-        #     logger.error(f"Failed to create Point instance: {e}")
-        #     raise e
-        # point_class = StackClient.stackClients_view.Point
-        # points = [StackClient.stackClients_view.Point(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
         points = [StackClient.stackClients_view.Point(float(row['LONGITUDE']), float(row['LATITUDE'])) for _, row in df.iterrows()]
         return {
             'object': os.path.basename(csv_file).replace('.csv', ''),
@@ -168,6 +160,7 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_c
         ts_client.init_timeseries(dataIRI=dataIRIs, times=times, values=values_list, ts_type=ts_type, time_format=time_format)
 
         logger.info(f"Data for {gps_object['object']} successfully instantiated.")
+        return dataIRIs
     except Exception as e:
         logger.error(f"Error instantiating data for {gps_object['object']}: {e}")
         raise
