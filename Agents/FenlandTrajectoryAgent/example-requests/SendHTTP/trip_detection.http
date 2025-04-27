@@ -1,0 +1,6 @@
+POST http://localhost:5007/fenland-trajectory-agent/trip_detection
+Content-Type: application/json
+
+{
+  "trajectoryIRI": "https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_15f6441b-21a8-4614-9eb5-66d70aea0aee"
+}
