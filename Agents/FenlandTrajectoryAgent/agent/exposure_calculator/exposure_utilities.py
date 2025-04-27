@@ -285,17 +285,35 @@ class ExposureUtils:
                 self.execute_query(conn, alter_sql, (table_name, col))
 
             # 7b) Update values
-            update_sql = f"""
-            UPDATE "{table_name}"
-            SET "{point_col}" = %s,
-                "{area_col}"  = %s,
-                "{ta_col}"    = %s;
+            # First check if time_series_iri column exists in the table
+            check_col_sql = """
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_name = %s AND column_name = 'time_series_iri';
             """
-            self.execute_query(conn, update_sql, (
-                point_count,
-                area_count,
-                total_area
-            ))
+            has_tsiri = bool(self.execute_query(conn, check_col_sql, (table_name,)))
+
+            if has_tsiri:
+                # If time_series_iri exists, only update rows matching the trajectory
+                update_sql = f"""
+                UPDATE "{table_name}"
+                SET "{point_col}" = %s,
+                    "{area_col}"  = %s,
+                    "{ta_col}"    = %s
+                WHERE "time_series_iri" = %s;
+                """
+                params = (point_count, area_count, total_area, trajectory_iri)
+            else:
+                # Legacy behavior: update all rows if time_series_iri column doesn't exist
+                update_sql = f"""
+                UPDATE "{table_name}"
+                SET "{point_col}" = %s,
+                    "{area_col}"  = %s,
+                    "{ta_col}"    = %s;
+                """
+                params = (point_count, area_count, total_area)
+
+            self.execute_query(conn, update_sql, params)
 
             # 7c) Commit
             self.commit_if_psycopg2(conn)
@@ -450,7 +468,7 @@ class ExposureUtils:
             raise ValueError(f"No fallback tableName found for timeseriesIRI: {timeseriesIRI}")
         return rows[0][0]
 
-    def get_timeseries_data(self, conn, table_name: str) -> pd.DataFrame:
+    def get_timeseries_data(self, conn, table_name: str, trajectory_iri: str) -> pd.DataFrame:
         """
         Retrieve raw timeseries data from database.
         Automatically detects whether 'Trip index' column exists and selects the correct SQL template.
@@ -489,8 +507,10 @@ class ExposureUtils:
             try:
                 fallback_template = self.load_template("get_timeseries_data_fallback.sql")
                 query = fallback_template.format(table_name=table_name)
-                rows = self.execute_query(conn, query, (table_name,))
+                rows = self.execute_query(conn, query, (trajectory_iri,))
+
                 return pd.DataFrame(rows, columns=["time", "LATITUDE", "LONGITUDE"])
+
             except Exception as fallback_exception:
                 self.logger.error(f"[Fallback] Failed for {table_name}: {fallback_exception}")
                 raise fallback_exception
@@ -512,7 +532,7 @@ class ExposureUtils:
                 self.DB_NAME
             )
             table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
-            df = self.get_timeseries_data(conn, table_name)
+            df = self.get_timeseries_data(conn, table_name, trajectory_iri)
         finally:
             if conn:
                 conn.close()
