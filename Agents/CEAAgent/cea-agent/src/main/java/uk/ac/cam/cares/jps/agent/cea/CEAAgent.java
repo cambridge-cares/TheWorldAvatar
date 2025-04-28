@@ -12,7 +12,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
-import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;

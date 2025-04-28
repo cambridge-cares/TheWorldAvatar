@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -18,6 +19,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,8 +29,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class GeometryQueryHelper {
+
+    private static final String PROPERTIES_PATH = "/resources/CEAAgentConfig.properties";
+    private static final String minFootprintArea;
+
+    static {
+        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
+            Properties config = new Properties();
+            config.load(input);
+            minFootprintArea = config.getProperty("geometry.query.minfootprintarea", "1.0");
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("config.properties file not found");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
 
     public static List<CEAGeometryData> bulkGetBuildingGeometry(List<String> uriStringList, String endpoint) {
 
@@ -41,7 +65,9 @@ public class GeometryQueryHelper {
 
         wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
                 .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
-                .addWhere("?geometry", "geo:asWKT", "?wkt");
+                .addWhere("?geometry", "geo:asWKT", "?wkt")
+                .addWhere("?geometry", "geo:hasMetricArea", "?area")
+                .addFilter("?area >= "+ minFootprintArea);
 
         // query for building height
 
