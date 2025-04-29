@@ -235,7 +235,6 @@ public class CEAAgent extends JPSAgent {
 
             } else if (requestUrl.contains(URI_QUERY)) {
                 for (int i = 0; i < uriArray.length(); i++) {
-                    String uri = uriArray.getString(i);
 
                     // Only set route once - assuming all iris passed in same namespace
                     if (i == 0) {
@@ -250,10 +249,13 @@ public class CEAAgent extends JPSAgent {
                         storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                     }
 
+                    String uri = uriArray.getString(i);
+                    JSONObject data = new JSONObject(); // container of outputs of a building
+
                     if (!DataManager.checkBuildingInitialised(uri, ceaRoute)) {
-                        // building in question has not been initialised
-                        // TODO - other buildings may have outputs, should continue to the next building
-                        return requestParams;
+                        // building in question has not been initialised,  continue to the next building
+                        requestParams.append(CEA_OUTPUTS, data);
+                        continue;
                     }
 
                     LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
@@ -261,12 +263,10 @@ public class CEAAgent extends JPSAgent {
                     LinkedHashMap<String, JSONObject> outputMap = new LinkedHashMap<>();
 
                     if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, outputMap, ceaRoute)) {
-                        // building in question does not have complete outputs
-                        // TODO - other buildings may have outputs, should continue to the next building
-                        return requestParams;
+                        // building in question does not have complete outputs, continue to the next building
+                        requestParams.append(CEA_OUTPUTS, data);
+                        continue;
                     }
-
-                    JSONObject data = new JSONObject(); // container of all outputs to be returned
 
                     // retrieve scalar values
                     for (String scalar : CEAConstants.SCALARS) {
@@ -289,23 +289,19 @@ public class CEAAgent extends JPSAgent {
                         // more human-friendly label
                         if (measurement.contains("ESupply")) {
                             // PVT annual electricity supply
-                            measurement = "Annual " + measurement.split("ESupply")[0] + " Electricity Supply";
+                            measurement = measurement.split("ESupply")[0] + " Electricity Supply";
                         } else if (measurement.contains("QSupply")) {
                             // PVT annual heat supply
-                            measurement = "Annual " + measurement.split("QSupply")[0] + " Heat Supply";
-                        } else {
-                            if (measurement.contains("Thermal")) {
-                                // solar collector annual heat supply
-                                measurement = "Annual " + measurement.split("Supply")[0] + " Heat Supply";
-                            } else if (measurement.contains("PV")) {
-                                // PV annual electricity supply
-                                measurement = "Annual " + measurement.split("Supply")[0]
-                                        + " Electricity Supply";
-                            } else {
-                                // annual energy consumption
-                                measurement = "Annual " + measurement;
-                            }
+                            measurement = measurement.split("QSupply")[0] + " Heat Supply";
+                        } else if (measurement.contains("Thermal")) {
+                            // solar collector annual heat supply
+                            measurement = measurement.split("Supply")[0] + " Heat Supply";
+                        } else if (measurement.contains("PV")) {
+                            // PV annual electricity supply
+                            measurement = measurement.split("Supply")[0] + " Electricity Supply";
                         }
+                        // annual energy consumption
+                        measurement = "Annual " + measurement;
                         data.put(measurement, value);
                     }
                     requestParams.append(CEA_OUTPUTS, data);
