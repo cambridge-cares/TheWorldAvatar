@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
@@ -51,11 +52,12 @@ public class CEAOutputUpdater {
         for (int i = 0; i < uriArray.length(); i++) {
             LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
             LinkedHashMap<String, String> scalarIris = new LinkedHashMap<>();
+            LinkedHashMap<String, JSONObject> outputMap = new LinkedHashMap<>();
 
             String uri = uriArray.getString(i);
 
             // initialise time series and scalar outputs if they have not been initialised yet
-            if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, ceaRoute)) {
+            if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, outputMap, ceaRoute)) {
                 tsHelper.createTimeSeries(tsIris);
                 DataManager.initialiseData(i, scalars, uri, tsIris, scalarIris, ceaRoute);
             } else {

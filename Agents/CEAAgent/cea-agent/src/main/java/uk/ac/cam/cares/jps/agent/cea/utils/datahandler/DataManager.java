@@ -13,6 +13,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -124,10 +125,10 @@ public class DataManager {
      * @return if CEA output data are initialised
      */
     public static boolean checkDataInitialised(String building, LinkedHashMap<String, String> tsIris,
-            LinkedHashMap<String, String> scalarIris, String route) {
+            LinkedHashMap<String, String> scalarIris, LinkedHashMap<String, JSONObject> outputMap, String route) {
 
         List<String> allMeasures = new ArrayList<>();
-        Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
+        Stream.of(CEAConstants.SCALARS, CEAConstants.TIME_SERIES).forEach(allMeasures::addAll);
 
         JSONArray allDataIRI = DataRetriever.bulkGetDataIRI(building, allMeasures, route);
 
@@ -136,23 +137,23 @@ public class DataManager {
             return false;
         }
 
-        for (String measurement : allMeasures) {
+        for (int i = 0; i < allDataIRI.length(); i++) {
+            JSONObject output = allDataIRI.getJSONObject(i);
+            String dataIRI = output.getString("measure");
+            outputMap.put(dataIRI, output);
             // find matching Data IRI
-            String dataIRI = "";
-            for (int i = 0; i < allDataIRI.length(); i++) {
-                dataIRI = allDataIRI.getJSONObject(i).get("measure").toString();
+            for (String measurement : allMeasures) {
                 if (dataIRI.contains(measurement)) {
-                    // Strong assumption that the measure IRI would contain the measure key!
+                    if (CEAConstants.TIME_SERIES.contains(measurement)) {
+                        tsIris.put(measurement, dataIRI);
+                    } else {
+                        scalarIris.put(measurement, dataIRI);
+                    }
                     break;
                 }
             }
-
-            if (CEAConstants.TIME_SERIES.contains(measurement)) {
-                tsIris.put(measurement, dataIRI);
-            } else {
-                scalarIris.put(measurement, dataIRI);
-            }
         }
+
         return true;
     }
 

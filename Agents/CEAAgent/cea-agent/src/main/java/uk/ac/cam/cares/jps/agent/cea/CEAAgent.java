@@ -251,69 +251,41 @@ public class CEAAgent extends JPSAgent {
                     }
 
                     if (!DataManager.checkBuildingInitialised(uri, ceaRoute)) {
+                        // building in question has not been initialised
+                        // TODO - other buildings may have outputs, should continue to the next building
                         return requestParams;
                     }
 
-                    JSONObject data = new JSONObject();
+                    LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
+                    LinkedHashMap<String, String> scalarIris = new LinkedHashMap<>();
+                    LinkedHashMap<String, JSONObject> outputMap = new LinkedHashMap<>();
 
-                    // TODO use DataManager.checkDataInitialised
+                    if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, outputMap, ceaRoute)) {
+                        // building in question does not have complete outputs
+                        // TODO - other buildings may have outputs, should continue to the next building
+                        return requestParams;
+                    }
+
+                    JSONObject data = new JSONObject(); // container of all outputs to be returned
 
                     // retrieve scalar values
-                    List<String> allScalarMeasures = new ArrayList<>();
-                    Stream.of(CEAConstants.SCALARS).forEach(allScalarMeasures::addAll);
-
-                    JSONArray allScalarDataIRI = DataRetriever.bulkGetDataIRI(uri, allScalarMeasures, ceaRoute);
-                    String dataIRI = "";
-                    String unitIRI = "";
-                    String value = "";
                     for (String scalar : CEAConstants.SCALARS) {
-                        for (int j = 0; j < allScalarDataIRI.length(); j++) {
-                            dataIRI = allScalarDataIRI.getJSONObject(j).get("measure").toString();
-                            if (dataIRI.contains(scalar)) {
-                                // Strong assumption that the measure IRI would contain the measure key!
-                                value = allScalarDataIRI.getJSONObject(j).get("value").toString();
-                                unitIRI = allScalarDataIRI.getJSONObject(j).get("unit").toString();
-                                value += " " + DataRetriever.getUnit(unitIRI);
-                                break;
-                            }
-                        }
-                        
+                        JSONObject scalarOutput = outputMap.get(scalarIris.get(scalar));
+                        String value = scalarOutput.getString("value") + " "
+                                + DataRetriever.getUnit(scalarOutput.getString("unit"));
                         data.put(scalar, value);
                     }
 
-                    // retrieve annual time series values
+                    // retrieve annual values (summary of time series output)
 
-                    List<String> allTSMeasures = new ArrayList<>();
-                    Stream.of(CEAConstants.TIME_SERIES).forEach(allTSMeasures::addAll);
-
-                    // get all time series IRI
-                    JSONArray allTSDataIRI = DataRetriever.bulkGetDataIRI(uri, allTSMeasures, ceaRoute);
-                    List<String> dataIRIList = IntStream.range(0, allTSDataIRI.length())
-                        .mapToObj(allTSDataIRI::getJSONObject) // Convert to JSONObject
-                        .map(tsDataIRI -> tsDataIRI.getString("measure")) // Extract "measure"
-                        .collect(Collectors.toList()); // Collect into a list
-                    
-                    // map time series IRI to time series variable constants
-                    LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
-                    for (String measurement : CEAConstants.TIME_SERIES) {
-                        for (int j = 0; j < dataIRIList.size(); j++) {
-                            String tsDataIRI = dataIRIList.get(j);
-                            if (tsDataIRI.contains(measurement)) {
-                                // Strong assumption that the measure IRI would contain the measure key!
-                                tsIris.put(measurement, tsDataIRI);
-                                break;
-                            }
-                        }
-                    }
-
-                    // try to retrieve annual values objects
-
-                    Map<String, JSONObject> annualObjectMap = AnnualValueHelper.bulkCheckAnnualObject(dataIRIList, ceaRoute);
+                    List<String> dataIRIList = new ArrayList<>(tsIris.values());
+                    Map<String, JSONObject> annualObjectMap = AnnualValueHelper.bulkCheckAnnualObject(dataIRIList,
+                            ceaRoute);
                     for (String measurement : CEAConstants.TIME_SERIES) {
                         String tsDataIRI = tsIris.get(measurement);
                         JSONObject annualObject = annualObjectMap.get(tsDataIRI);
-                        value = annualObject.get("numericalValue").toString();
-                        value += " " + DataRetriever.getUnit(annualObject.get("unit").toString());
+                        String value = annualObject.get("numericalValue").toString() + " "
+                                + DataRetriever.getUnit(annualObject.getString("unit"));
                         // more human-friendly label
                         if (measurement.contains("ESupply")) {
                             // PVT annual electricity supply
@@ -336,11 +308,9 @@ public class CEAAgent extends JPSAgent {
                         }
                         data.put(measurement, value);
                     }
-
                     requestParams.append(CEA_OUTPUTS, data);
                 }
             }
-
         }
         return requestParams;
     }
@@ -510,5 +480,4 @@ public class CEAAgent extends JPSAgent {
         }
     }
 
-    
 }
