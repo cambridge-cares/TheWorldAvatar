@@ -54,31 +54,28 @@ public class TerrainHelper {
 
             List<Geometry> geometries = new ArrayList<>();
 
+            // building data should always be included
+            for (CEABuildingData building : buildings) {
+                for (Geometry geometry : building.getGeometry().getFootprint()) {
+                    geometries.add(geometry);
+                }
+            }
+
+            crs = buildings.get(0).getGeometry().getCrs(); // this assumes all building data (and surrounding) has the
+                                                           // same CRS
+
             if (!surroundings.isEmpty()) {
 
-                // create an expanded envelope based on surrounding building data
+                // include surrounding building data in the bounding box
                 for (CEAGeometryData ceaGeometryData : surroundings) {
                     for (Geometry geometry : ceaGeometryData.getFootprint()) {
                         geometries.add(geometry);
                     }
                 }
-
-                crs = surroundings.get(0).getCrs();
-
                 bufferDistance = 30.0; // 30 metre buffer
 
             } else {
-
-                // create an expanded envelope based on asked building data because there is no
-                // surrounding buildings
-                for (CEABuildingData building : buildings) {
-                    for (Geometry geometry : building.getGeometry().getFootprint()) {
-                        geometries.add(geometry);
-                    }
-                }
-
-                crs = buildings.get(0).getGeometry().getCrs();
-
+                // use bigger buffer if there is no surrounding building
                 bufferDistance = 160.0; // 160 metre buffer
             }
 
@@ -87,8 +84,7 @@ public class TerrainHelper {
             List<byte[]> result = new ArrayList<>();
 
             // query for terrain data
-            String terrainQuery = getTerrainQuery(boundingBox, Integer.valueOf(crs),
-                    postgisCRS, table);
+            String terrainQuery = getTerrainQuery(boundingBox, Integer.valueOf(crs), postgisCRS, table);
 
             try (Connection conn = postgisClient.getConnection();
                     Statement stmt = conn.createStatement();) {
