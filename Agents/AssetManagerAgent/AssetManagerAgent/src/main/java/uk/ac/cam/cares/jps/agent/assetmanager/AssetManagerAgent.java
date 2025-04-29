@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,11 +13,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.io.FileOutputStream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.http.HttpEntity;
@@ -44,7 +48,8 @@ import org.apache.logging.log4j.Logger;
     "/addmanual",
     "/addassetimage",
     "/addpurchdocfile",
-    "/delete"
+    "/delete",
+    "/getqrcode"
 })
 public class AssetManagerAgent extends JPSAgent{
     /**
@@ -75,14 +80,72 @@ public class AssetManagerAgent extends JPSAgent{
     //Clients and util classes
     public QRPrinter printerHandler;
     public AssetKGInterface instanceHandler;
-    
+
     //hanlde request
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        requestURL = request.getRequestURL().toString();
-        return getRequestParameters(requestParams, request.getServletPath());
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getServletPath().contains("getqrcode")) {
+            processQRCodeRequest(request, response);
+        }
+        else {
+            JSONObject requestParams = AgentCaller.readJsonParameter(request);
+            try {
+                JSONObject result = getRequestParameters(requestParams, request.getServletPath());
+
+                response.setContentType("application/json");
+                response.getWriter().write(result.toString());
+            }
+            catch (Exception e) {
+                throw new JPSRuntimeException(e);
+            }
+        }
     }
 
+    private void processQRCodeRequest(HttpServletRequest request, HttpServletResponse response)  {
+        // Get the IRI parameter from the request
+        readPropEnv();
+
+
+
+        JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        String IRI = requestParams.getJSONObject("assetData").getString("IRI");
+
+
+        if (KG_USERNAME.isBlank() && KG_PASSWORD.isBlank()){
+            instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB);
+        }
+        else if(!KG_USERNAME.isBlank() && !KG_PASSWORD.isBlank()){
+            instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB, KG_USERNAME, KG_PASSWORD);
+        }
+        else{
+            throw new JPSRuntimeException("Please ensure eiher both username and password to be filled when auth is needed or both are empty when not.");
+        }
+
+        String ID = instanceHandler.existenceChecker.getIDbyIRIString(IRI);
+
+        try {
+            if (ID == null) {
+                response.getWriter().write(String.format("No QR code created for IRI %s, as asset does not exist for IRI %s.", IRI, IRI));
+            } else {
+                // Generate the QR code as a ByteArrayOutputStream
+                QRPrinter print = new QRPrinter("", "", TARGET_QR_SIZE);
+                ByteArrayOutputStream qrStream = print.createQR(IRI, "UTF-8", 250, 250);
+
+                // Set the response content type to image/png in the method handling the QR code logic
+                response.setContentType("image/png");
+                // Set the content length to the size of the ByteArrayOutputStream (QR code size)
+                response.setContentLength(qrStream.size());
+
+                // Write the QR code image to the response output stream
+                qrStream.writeTo(response.getOutputStream());
+                qrStream.flush();
+            }
+        }
+        catch (Exception e) {
+            throw new JPSRuntimeException(e);
+        }
+
+    }
 
     public JSONObject getRequestParameters(JSONObject requestParams, String urlPath) {
         JSONObject jsonMessage = new JSONObject();

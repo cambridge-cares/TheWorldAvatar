@@ -36,7 +36,7 @@ ENV TSSEARCH "/root/tsSearch.properties"
 ENV FOLDERQR "/root/folderQR/"
 ENV FOLDERMANUAL "/root/manuals/"
 
-COPY --from=builder /root/AssetManagerAgent/output/asset-manager-agent##1.0.2.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/AssetManagerAgent/output/asset-manager-agent##1.1.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
