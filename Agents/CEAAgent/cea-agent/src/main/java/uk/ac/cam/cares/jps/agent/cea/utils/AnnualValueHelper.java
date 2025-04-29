@@ -285,7 +285,7 @@ public class AnnualValueHelper {
 
     }
 
-    private static Map<String, JSONObject> bulkCheckAnnualObject(List<String> dataIRIList, String route) {
+    public static Map<String, JSONObject> bulkCheckAnnualObject(List<String> dataIRIList, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
@@ -320,7 +320,8 @@ public class AnnualValueHelper {
         wb.addWhere("?building", "?predicate", "?quantity");
 
         SelectBuilder sb = new SelectBuilder().addWhere(wb).addVar("?building").addVar("?dataIRI").addVar("?measure")
-                .addVar("?energyType").addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addVar("?energyType").addVar("?numericalValue").addVar("?unit")
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
         
         // optional where statement
@@ -333,6 +334,8 @@ public class AnnualValueHelper {
 
         optionalWb.addWhere("?otherQuantity", "rdf:type", "?energyType");
         optionalWb.addWhere("?otherQuantity", "om:hasValue", "?measure");
+        optionalWb.addWhere("?measure", "om:hasNumericalValue", "?numericalValue");
+        optionalWb.addWhere("?measure", "om:hasUnit", "?unit");
 
         // combine queries explicitly to ensure the order
         // VALUES clause must appear before OPTIONAL in this case

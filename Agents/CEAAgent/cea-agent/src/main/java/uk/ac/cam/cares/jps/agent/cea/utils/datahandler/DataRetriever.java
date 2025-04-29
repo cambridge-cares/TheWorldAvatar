@@ -11,6 +11,7 @@ import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class DataRetriever {
@@ -215,14 +216,11 @@ public class DataRetriever {
         }
     }
 
-    public static JSONArray bulkGetDataIRI(String building, String route) {
+    public static JSONArray bulkGetDataIRI(String building, List<String> allMeasures, String route) {
 
         if (building.equals("")) {
             return new JSONArray();
         }
-        
-        ArrayList<String> allMeasures = new ArrayList<>();
-        Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
 
         SelectBuilder sb = new SelectBuilder();
         boolean addAsUnion = false;
@@ -243,7 +241,7 @@ public class DataRetriever {
             }
         }
 
-        sb.addVar("?measure").addVar("?unit");
+        sb.addVar("?measure").addVar("?unit").addVar("?value"); // For scalar output, value will be a number, otherwise blank
 
         sb.setVar(Var.alloc("building"), NodeFactory.createURI(building));
 

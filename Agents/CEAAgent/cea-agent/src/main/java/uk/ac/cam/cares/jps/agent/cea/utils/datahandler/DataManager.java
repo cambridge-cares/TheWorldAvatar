@@ -129,7 +129,7 @@ public class DataManager {
         List<String> allMeasures = new ArrayList<>();
         Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
 
-        JSONArray allDataIRI = DataRetriever.bulkGetDataIRI(building, route);
+        JSONArray allDataIRI = DataRetriever.bulkGetDataIRI(building, allMeasures, route);
 
         if (allDataIRI.length() != allMeasures.size()) {
             // Note this does not consider partial initialisation
@@ -142,6 +142,7 @@ public class DataManager {
             for (int i = 0; i < allDataIRI.length(); i++) {
                 dataIRI = allDataIRI.getJSONObject(i).get("measure").toString();
                 if (dataIRI.contains(measurement)) {
+                    // Strong assumption that the measure IRI would contain the measure key!
                     break;
                 }
             }
@@ -445,12 +446,12 @@ public class DataManager {
      */
     public static void updateScalars(String route, LinkedHashMap<String, String> scalarIris,
             LinkedHashMap<String, List<Double>> scalars, Integer uriCounter) {
-        
+
         UpdateBuilder ub = new UpdateBuilder()
-        .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         boolean addAsUnion = false;
-        
+
         for (String measurement : CEAConstants.SCALARS) {
             WhereBuilder wb1 = new WhereBuilder()
                     .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
@@ -470,7 +471,7 @@ public class DataManager {
                 ub.addWhere(wb1);
                 addAsUnion = true;
             }
-            
+
         }
 
         UpdateRequest ur = ub.buildRequest();
