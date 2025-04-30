@@ -79,12 +79,14 @@ public class TerrainHelper {
                 bufferDistance = 160.0; // 160 metre buffer
             }
 
-            String boundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, bufferDistance);
+            String trueBoundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, 0.);
+            String bufferBoundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, bufferDistance);
 
             List<byte[]> result = new ArrayList<>();
 
             // query for terrain data
-            String terrainQuery = getTerrainQuery(boundingBox, Integer.valueOf(crs), postgisCRS, table);
+            String terrainQuery = getTerrainQuery(trueBoundingBox, bufferBoundingBox, Integer.valueOf(crs), postgisCRS,
+                    table);
 
             try (Connection conn = postgisClient.getConnection();
                     Statement stmt = conn.createStatement();) {
@@ -110,23 +112,35 @@ public class TerrainHelper {
     /**
      * Creates a SQL query string for raster data within a bounding box
      * 
-     * @param wkt         wkt literal of the bounding box
+     * @param checkWkt    wkt literal of the bounding box used for checking
+     * @param clipWkt     wkt literal of the bounding box used for clipping
      * @param originalCRS coordinate reference system of center point
      * @param postgisCRS  coordinate reference system of the raster data queried
      * @param table       table storing raster data
      * @return SQL query string
      */
-    private String getTerrainQuery(String wkt, Integer originalCRS, Integer postgisCRS,
+    private String getTerrainQuery(String checkWkt, String clipWkt, Integer originalCRS, Integer postgisCRS,
             String table) {
         // Create bounding box from wkt, then convert to postgis CRS
         String query = String.format(
-                "WITH polygon_cte AS (SELECT ST_Transform(ST_GeomFromText('%s', %d), %d) AS geom)%n", wkt, originalCRS,
-                postgisCRS);
+                "WITH polygon_cte AS (SELECT ST_Transform(ST_GeomFromText('%s', %d), %d) AS geom),%n", clipWkt,
+                originalCRS, postgisCRS);
 
-        query = query + String.format("SELECT ST_AsTIFF(ST_Union(raster_clip.clipped)) AS data FROM (\n" + //
-                "    SELECT ST_Clip(a.rast, b.geom) AS clipped\n" + //
-                "    FROM %s a, polygon_cte b\n" + //
-                "    WHERE ST_Intersects(a.rast, b.geom)) raster_clip;", table);
+        // bounding box for checking that raster data covers the essential area
+        // this should be completely contained by the clipping bounding box
+        query = query + String.format("check_cte AS (SELECT ST_Transform(ST_GeomFromText('%s', %d), %d) AS geom),%n",
+                checkWkt, originalCRS, postgisCRS);
+
+        // clip raster data and get its bounding box as a polygon
+        query = query + String.format("clipped_bbox_cte AS (\n" + //
+                "SELECT ST_Envelope(ST_Union(raster_clip.clipped)) AS bounding_box,\n" + //
+                "ST_AsTIFF(ST_Union(raster_clip.clipped)) AS data\n" + //
+                "FROM ( SELECT ST_Clip(a.rast, b.geom) AS clipped\n" + //
+                "FROM %s a, polygon_cte b WHERE ST_Intersects(a.rast, b.geom)) raster_clip)\n", table);
+
+        // return clipped raster data if it completely covers checkWkt, otherwise this will be blank
+        query = query + "SELECT clipped_bbox_cte.data FROM polygon_cte, clipped_bbox_cte, check_cte\n" +
+                "WHERE ST_Contains(clipped_bbox_cte.bounding_box, check_cte.geom);";
 
         return query;
     }
