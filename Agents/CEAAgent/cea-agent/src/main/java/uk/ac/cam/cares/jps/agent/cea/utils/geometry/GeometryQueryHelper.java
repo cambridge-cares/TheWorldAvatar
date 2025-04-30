@@ -108,7 +108,11 @@ public class GeometryQueryHelper {
 
         for (String uri : uriStringList) {
             JSONArray resultJSONArray = queryMap.getOrDefault(uri, new JSONArray());
-            listCeaGeometryData.add(processBuildingData(resultJSONArray));
+            if (resultJSONArray.length() > 0) {
+                listCeaGeometryData.add(processBuildingData(resultJSONArray));
+            } else {
+                System.out.println("Warning: Empty JSONArray encountered for URI: " + uri);
+            }
         }
 
         return listCeaGeometryData;
