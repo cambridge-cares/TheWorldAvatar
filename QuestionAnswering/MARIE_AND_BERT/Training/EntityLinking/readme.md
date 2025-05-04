@@ -35,7 +35,7 @@ Shown below is an example of the expected folder structure after set-up:
 
 ## Train SMILES NER
 ###Training on Windows
-Follow the [setup guide](setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](#data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. 
+Follow the [setup guide](#setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](#data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. 
 
 Use `MARIE_AND_BERT/Training/EntityLinking` as root folder to run the following command to train the SMILES NER model:
 ```
@@ -125,7 +125,7 @@ workdir="/home/[your_CRSid]/[your_training_folder]/NEL_Training_Marie_and_Bert" 
 ```
 
 ###Training on Windows
-Follow the [setup guide](setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. Also use `MARIE_AND_BERT/Training/EntityLinking` as the root folder to run the following commands:
+Follow the [setup guide](#setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](#data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. Also use `MARIE_AND_BERT/Training/EntityLinking` as the root folder to run the following commands:
 
 
 First step:

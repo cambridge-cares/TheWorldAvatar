@@ -3,7 +3,7 @@ The folder contains the source, resource, and Docker setup files for the Reactio
 
 
 ## Purpose
-The Reaction Optimisation Goal Iteration (ROGI) Agent is designed to perform iterations of reaction experiment as part of goal-driven reaction optimisation exercise. It operates based on concepts defined in [`OntoGoal`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontogoal) and orchestrates [`DoE Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent), [`VapourtecSchedule Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecScheduleAgent), [`Vapourtec Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecAgent), [`HPLC Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCAgent), and [`HPLCPostPro Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCPostProAgent) to complete one iteration.
+The Reaction Optimisation Goal Iteration (ROGI) Agent is designed to perform iterations of reaction experiment as part of goal-driven reaction optimisation exercise. It operates based on concepts defined in [`OntoGoal`](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontogoal) and orchestrates [`DoE Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent), [`VapourtecSchedule Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecScheduleAgent), [`Vapourtec Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecAgent), [`HPLC Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCAgent), and [`HPLCPostPro Agent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCPostProAgent) to complete one iteration.
 
 
 ## Building the Docker image
@@ -65,7 +65,7 @@ The following command can be used to install all required packages.
 (<venv_name>) $ python -m pip install -e .[dev]
 ```
 
-As `pyderivationagent` library relies on the `py4jps` package, Java 11 is required. For Windows, it is recommended to obtain OpenJDK 11 from [here](https://developers.redhat.com/products/openjdk/download) and follow the [instructions](https://access.redhat.com/documentation/en-us/openjdk/11/html-single/installing_and_using_openjdk_11_for_windows/index). For linux environment, one can install via:
+As `pyderivationagent` library relies on the `py4jps` package, Java 11 is required. For Windows, it is recommended to obtain OpenJDK 11 from [here](https://developers.redhat.com/products/openjdk/download) and follow the [instructions](https://docs.redhat.com/en/documentation/red_hat_build_of_openjdk/11/html/installing_and_using_red_hat_build_of_openjdk_11_for_windows/index). For linux environment, one can install via:
 
 `(Linux)`
 ```sh

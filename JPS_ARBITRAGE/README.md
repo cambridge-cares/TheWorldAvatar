@@ -33,18 +33,18 @@ How do we know if it's not working? If the python logger logging to tomcat serve
  	- http://www.usinflationcalculator.com/
  	- https://www.icis.com/resources/news/2013/11/08/9723077/se-asia-to-china-palm-oil-freight-rates-may-fall-on-weak-demand/ 
  	- https://www.icis.com/resources/news/2013/11/08/9723077/se-asia-to-china-palm-oil-freight-rates-may-fall-on-weak-demand/
- 	- https://www.ema.gov.sg/Non_Residential_Programmes_Electricity_Tariffs.aspx
+ 	- Non_Residential_Programmes_Electricity_Tariffs.aspx - missing
 
- 2. exchange_rates.pyw
+ 2. exchange_rates.pyw<!-- markdown-link-check-disable-next-line -->
  	- http://apilayer.net/api/live?access_key=402d77f0850c35adfa5a797e325262dd&currencies=CNY,SGD&source=USD&format=1
 
  3. FAME_download.pyw
- 	- http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html 
+ 	- https://www.cmegroup.com/markets/energy/biofuels/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html 
  4. HNG_download.pyw
- 	- http://www.cmegroup.com/trading/energy/natural-gas/natural-gas_quotes_globex.html 
+ 	- https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.quotes.html
  5. NG_to_MeOH_MoDS.py
  	- https://business.directenergy.com/understanding-energy/energy-tools/conversion-factors.
- 6. ZCE_download.pyw
+ 6. ZCE_download.pyw<!-- markdown-link-check-disable-next-line -->
  	- http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm
   	
 ### TODO: 

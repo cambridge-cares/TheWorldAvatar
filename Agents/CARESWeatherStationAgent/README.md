@@ -2,7 +2,7 @@
 
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the weather station located in the vicinity of the CARES Lab. Its only purpose is to retrieve new data (if available) from the API and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
-agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
+agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS_BASE_LIB to interact with both the KG and database.
 
 Before explaining the usage of the agent, we will briefly summarize the weather station API that is
@@ -22,7 +22,7 @@ The actual endpoint has the following structure:
 https://api.weather.com/v2/pws/observations/all/1day?stationId=[<stationId>]&format=json&units=s&numericPrecision=decimal&apiKey=[<apiKey>]
 ```
 where `[stationId]` is the id of the weather station which is taking the physical readings.  The `[apiKey]` is the key needed to access the API. By setting `units=s` one ensures that the values of the readings correspond to SI units. 
-Finally, the option `numericPrecision=decimal` enables the numerical readings to be returned in decimal values (unless according to the API the field under observation can only return an integer. See also the [API documentation](#Weather-Station-API)).
+Finally, the option `numericPrecision=decimal` enables the numerical readings to be returned in decimal values (unless according to the API the field under observation can only return an integer. See also the [API documentation](#weather-station-api)).
 The endpoint controls what type of data is retrieved and its form.
 
 #### Example readings
@@ -39,7 +39,7 @@ taken at a timestamp between the first and third image.
 ## Usage 
 This part of the README describes the usage of the input agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. 
 
-The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/tree/master), [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontodevice/OntoDevice.owl), [OntoEMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl), , [OntoTimeSeries](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
+The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/tree/master), [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice/OntoDevice.owl), [OntoEMS](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoems/OntoEMS.owl), , [OntoTimeSeries](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
 ```
 <ReportingStation> rdf:type ontoems:ReportingStation ;
                    ontoems:reports <Quantity> .
@@ -88,7 +88,7 @@ The time-series client property file needs to contain all credentials and endpoi
 More information can be found in the example property file `client.properties` in the `config` folder.
 
 #### API properties
-The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#Weather-Station-API)),
+The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#weather-station-api)),
 as well as, the url of the API and the identifier of the weather station. More specifically, the API properties file should contain the following keys:
 - `weather.api_key` the key needed to access the API.
 - `weather.stationId` the stationId associated with the sensor.

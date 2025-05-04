@@ -1,11 +1,11 @@
 # SensorLoggerMobileAppAgent
 ## 1. Description
-The SensorLoggerMobileAppAgent is an agent which receives HTTP POST requests containing JSON payload sent from the [SensorLogger](https://github.com/tszheichoi/awesome-sensor-logger) mobile application, subsequently instantiate it as time series following the [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontology. The information instantiated from SensorLogger includes: Smartphone device, Acceleration vector, Gravity vector, Magnetic flux density vector, Sound pressure level, Illuminance, Relative brightness, Location. 
+The SensorLoggerMobileAppAgent is an agent which receives HTTP POST requests containing JSON payload sent from the [SensorLogger](https://github.com/tszheichoi/awesome-sensor-logger) mobile application, subsequently instantiate it as time series following the [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice) ontology. The information instantiated from SensorLogger includes: Smartphone device, Acceleration vector, Gravity vector, Magnetic flux density vector, Sound pressure level, Illuminance, Relative brightness, Location. 
 
 The agent functions as below:
 1) The agent receives JSON payload from the SensorLogger and parse the received JSON Array.
-2) It downsamples the received timeseries data via the [Downsampling](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/core/downsampling) library, and instantiates the data using the [TimeSeriesClient](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). 
-3) The [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) triples are instantiated in Ontop.
+2) It downsamples the received timeseries data via the [Downsampling](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/core/downsampling) library, and instantiates the data using the [TimeSeriesClient](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries). 
+3) The [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice) triples are instantiated in Ontop.
 
 ### 1.1 Concurrency Design
 The agent manages a phone ID to recording task map, where each phone ID will have a corresponding recording task. The recording task is responsible for sensor data processing, knowldge graph instantiation and postgres table initiation and data upload. Each recording task has different types of sensor processors, which are responsible for the sensor IRI query and generation, downsampling and data formulation for individual types. The following class diagram highlight the relations between class and omit some details of some classes for simlicity.
@@ -234,5 +234,5 @@ The debugger port will be available at 5005.
 ### 5.3 Testing resources
 You may use the [SamplePOST request](sensorloggermobileappagent/src/main/resources/SamplePOST.http) for testing any changes made to the code, this HTTP request contains a sample of the recording for testing purposes.
 
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services

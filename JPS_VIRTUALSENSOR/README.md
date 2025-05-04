@@ -5,7 +5,7 @@
     - mapbox_api_key
     - mapbox_username
 2) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, the API key needs to have OneCall enabled (credit card required, you can set the call limit below the limit before it starts charging).
-3) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
+3) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 4) Elevation data (optional):
 AERMOD agent will try to query elevation data from a table named `elevation` in the default database. AERMOD agent can query the data stored in any SRID, but the table needs to contain data in one SRID only, hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in [elevation.json]. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `./stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
 5) Buildings data (optional for ships, compulsory for static point source use cases):
@@ -51,6 +51,7 @@ disp:tempMeasure rdf:type om:Measure ;
 				 om:hasUnit om:kelvin .
 ```
 
+<!-- markdown-link-check-disable -->
 An instance can emit multiple pollutants, the class of pollutant ID needs to be one of the following:
 - <https://www.theworldavatar.com/kg/ontodispersion/NOx>
 - <https://www.theworldavatar.com/kg/ontodispersion/uHC>
@@ -59,6 +60,7 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 - <https://www.theworldavatar.com/kg/ontodispersion/PM10>
 - <https://www.theworldavatar.com/kg/ontodispersion/PM2.5>
 - <https://www.theworldavatar.com/kg/ontodispersion/CO2>
+<!-- markdown-link-check-enable -->
 
 ## Important for visualisation if not deployed locally
 Modify instances of `http://localhost:4242` in [data.json] to the external URL of where the stack is going to be deployed.

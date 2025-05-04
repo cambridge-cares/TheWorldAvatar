@@ -77,4 +77,4 @@ slug: digital-twin
 
 <br><br>
 
-[plugin:content-inject](/modular/partners)
+[plugin:content-inject](../../modular/partners)

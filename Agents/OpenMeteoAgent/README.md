@@ -31,7 +31,7 @@ The docker image uses TheWorldAvatar maven repository (https://maven.pkg.github.
 ```
 
 ### 2.2. Stack Set Up
-The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
+The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ### 2.3. Blazegraph Set Up
 The agent is designed to use the stack Blazegraph. Please ensure that the Blazegraph namespace corresponding to ```route.label``` in ```./openmeteo-agent/src/main/resources/config.properties```, is set up in the stack Blazegraph with geospatial capabilities.

@@ -22,5 +22,5 @@ Since multiple feature modules can extend the base camera fragment for different
 ## Extend Camera Fragment
 
 The base camera fragment need to be extended for the capture result to be used for different use cases. Navigating directly to this fragment and click the capture button won't have any effect. Here are some helpful links:
-- [QR code scanning example](https://github.com/cambridge-cares/TheWorldAvatar/tree/1584-asset-management-app/Apps/AssetManagementApp/feature/qrscan)
+- [QR code scanning example](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/AssetManagementApp/feature/qrscan)
 - [Google ML Kit](https://developers.google.com/ml-kit): provide various vision APIs such as barcode scanning, face detection and text recognition

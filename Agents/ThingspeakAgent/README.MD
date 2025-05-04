@@ -2,7 +2,7 @@
 
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the Thingspeak cloud server. Its only purpose is to retrieve new data (if available) from the API and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
-agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
+agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS_BASE_LIB to interact with both the KG and database.
 
 Before explaining the usage of the agent, we will briefly summarize the Thingspeak API that is
@@ -73,7 +73,7 @@ The time-series client property file needs to contain all credentials and endpoi
 More information can be found in the example property file `client.properties` in the `config` folder.
 
 #### API properties
-The API properties contains the parameters needed to access the Thingspeak API (see the [API description](#Thingspeak-API)). It should contain the following keys:
+The API properties contains the parameters needed to access the Thingspeak API (see the [API description](#thingspeak-api)). It should contain the following keys:
 - `thingspeak.channelNumber` the ID of the channel.
 - `thingspeak.apiKey` the API Key needed to read data from a private channel, a public channel do not require an API Key and this key can be set to equal to "None".
 - `thingspeak.results` the number of results to retrieve from the Thingspeak server.

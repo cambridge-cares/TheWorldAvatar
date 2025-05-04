@@ -1,8 +1,6 @@
 # Marie and BERT (Marie 3.0)
 
-The ``Marie and Bert`` a.k.a `Marie 3.0` project is developed by [Xiaochi Zhou](xz378@cam.ac.uk) and [Shaocong Zhang](sz375@cam.ac.uk) and [Mehal Agarwal](ma988@cam.ac.uk).
-
-A demonstration webpage is deployed at [Marie Website](http://159.223.42.53:5003/)
+The ``Marie and Bert`` a.k.a `Marie 3.0` project is developed by [Xiaochi Zhou](mailto:xz378@cam.ac.uk) and [Shaocong Zhang](mailto:sz375@cam.ac.uk) and [Mehal Agarwal](mailto:ma988@cam.ac.uk).
 
 ## Architecture
 
@@ -97,7 +95,7 @@ The user will need to change `/tmp/directory/for/models` to their folder of choi
 To run the full functions of the Marie system, three other systems are required:
 
 1. The LDF server. See [LDF server readme](../JPS_LDF/README.md) to run it. 
-2. The semantic agents. See [PCE Agent readme](../Agents/PCEAgent/README.md) and [STDC Agent readme](../Agents/STDCThermoAgent/README.md) to create docker containers running them. 
+2. The semantic agents. See [PCE Agent readme](../../Agents/PCEAgent/README.md) and [STDC Agent readme](../../Agents/STDCThermoAgent/README.md) to create docker containers running them. 
 
  
 ## Docker Deployment
@@ -122,6 +120,7 @@ The deployment requires at least 16 GB of memory allocated to docker. The buildi
 To deploy the local LDF server (For reaction queries) and the Agents system (For agent queries)
 
 1. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using
+<!-- markdown-link-check-disable -->
 ```
 python KGToolbox/SPARQLEndpoint/export_triples.py 
 --endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie 
@@ -133,6 +132,7 @@ python KGToolbox/SPARQLEndpoint/export_triples.py
 --endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem 
 --output_filename ontocompchem.nt
 ```
+<!-- markdown-link-check-enable -->
 
 The script needs to be run under `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT` and the files will be created under `MARIE_AND_BERT/DATA/KG`.
 
