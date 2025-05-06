@@ -1,63 +1,36 @@
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX dbo: <https://dbpedia.org/ontology/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
-PREFIX twa: <https://www.theworldavatar.com/kg/>
-PREFIX city: <http://cui.unige.ch/citygml/2.0/>
-PREFIX carpark: <https://www.theworldavatar.com/kg/ontocarpark/>
-PREFIX building: <https://www.theworldavatar.com/kg/Building/>
-PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX tw: <https://www.theworldavatar.com/kg/>
-PREFIX sch: <https://schema.org/>
-PREFIX ontocape_economic: <http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/hasRevenue/>
-PREFIX time: <http://www.w3.org/2006/time#>
-PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
-PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
-PREFIX plot: <https://www.theworldavatar.com/kg/ontoplot/>
-PREFIX ontocape: <http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/>
-PREFIX dbr: <https://dbpedia.org/page/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX cityfurniture: <https://www.theworldavatar.com/kg/CityFurniture/>
-PREFIX www: <http://www.w3.org/2001/>
-PREFIX fibo-fnd-plc-loc: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/>
-PREFIX ontsl: <https://www.theworldavatar.com/kg/ontosealevel/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
-PREFIX : <https://www.theworldavatar.com/kg/>
-PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX icontact: <http://ontology.eil.utoronto.ca/icontact.owl#>
-PREFIX env: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
-PREFIX grp: <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
-PREFIX sf: <http://www.opengis.net/ont/sf>
-PREFIX fibo-fnd-arr-id: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/>
-PREFIX openstreetmap: <https://www.openstreetmap.org/>
-PREFIX fibo-fnd-plc-adr: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/>
-PREFIX sensorloggerapp: <https://www.theworldavatar.com/kg/sensorloggerapp/>
-PREFIX tfi: <https://www.theworldavatar.com/ontotrafficincident/>
-PREFIX be: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX bim: <https://www.theworldavatar.com/kg/ontobim/>
-PREFIX obda: <https://w3id.org/obda/vocabulary#>
-PREFIX ems: <https://www.theworldavatar.com/kg/ontoems/>
-PREFIX ic: <http://ontology.eil.utoronto.ca/icontact.owl#>
-PREFIX iso: <https://www.theworldavatar.com/kg/ontoisochrone/>
-PREFIX zone: <https://www.theworldavatar.com/kg/ontozoning/>
-PREFIX osm: <https://w3id.org/openstreetmap/terms#>
-PREFIX frn: <http://www.opengis.net/citygml/cityfurniture/2.0/>
-PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
-PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>
+PREFIX sch: <https://schema.org/>
+PREFIX ontosealevel:	<https://www.theworldavatar.com/kg/ontosealevel/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX landplot: <https://www.theworldavatar.com/kg/landplot/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX bot: <https://w3id.org/bot#>
-PREFIX sea: <https://www.theworldavatar.com/kg/ontosealevel/>
 
-SELECT DISTINCT  ?input ?type ?name ?description ?pointid
+# NOTICE: this is template file for getting culture env feature. Should be redesigned after a proper ontology is done.
+
+SELECT  ?iri ?type ?name ?description ?geom ?type_label
 WHERE{ 
-  VALUES (?input ?pointid) { %(inputs)s }
-  ?input a ?type. 
-  optional {?input sch:name ?name.}
-  optional {?input rdfs:label ?description.}
+{
+  ?iri a ontosealevel:Museum.
+  BIND(ontosealevel:Museum AS ?type).
+  BIND("museum" AS ?type_label)
+}
+UNION
+{
+  ?iri a ontosealevel:TouristAttraction.
+  BIND(ontosealevel:TouristAttraction AS ?type).
+  BIND("touristattraction" AS ?type_label)
+}
+UNION
+{
+  ?iri a ontosealevel:HeritageTree.
+  BIND(ontosealevel:HeritageTree AS ?type).
+  BIND("heritagetree" AS ?type_label)
+}
+UNION
+{
+  ?iri a ontosealevel:Monument.
+  BIND(ontosealevel:Monument AS ?type).
+  BIND("monument" AS ?type_label)
+}
+
+
+  ?iri sch:name ?name ; rdfs:label ?description; geo:hasGeometry/geo:asWKT ?geom.
 }
