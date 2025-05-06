@@ -9,4 +9,4 @@ SET buffer_geom = ST_Transform(
     ),
     4326
 )
-WHERE query_id = %(query_id)s;
+WHERE query_id = %(query_id)s and buffer_geom IS NULL;

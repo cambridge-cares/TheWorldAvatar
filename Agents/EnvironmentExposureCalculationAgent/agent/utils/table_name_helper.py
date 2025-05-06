@@ -11,5 +11,5 @@ class TableNameHelper:
         compressed_hex = base64.b32encode(hash_byte).decode()[:12]
         return compressed_hex
     
-    def get_points_table_name(self,) -> str:
+    def get_query_id(self,) -> str:
         return self.get_table_name()

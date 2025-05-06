@@ -2,6 +2,7 @@ import re
 from typing import Any, List, Tuple
 import pandas as pd
 import psycopg2
+from psycopg2.extras import execute_values
 from pydantic import BaseModel, model_validator
 from agent.exceptions import StackException
 from twa import agentlogging
@@ -68,12 +69,12 @@ class PostGISClient:
                 cur.execute(query, val_params)
                 conn.commit()
 
-    def execute_updatemany(self, query: str, table_mappings: dict = None, vals=None):
+    def execute_updatemany(self, query: str, table_mappings: dict = None, vals=None, template=None):
         query = self.process_table_mapping(query, table_mappings)
 
         with psycopg2.connect(**self.db_config.model_dump(exclude={'pg_conf', 'url'})) as conn:
             with conn.cursor() as cur:
-                cur.executemany(query, vals)
+                execute_values(cur, query, vals, template)
                 conn.commit()
 
     def process_table_mapping(self, query: str, table_mappings: dict) -> str:
