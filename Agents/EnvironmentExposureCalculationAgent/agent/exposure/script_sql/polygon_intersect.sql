@@ -9,7 +9,7 @@ BEGIN
 
         -- Create the table
         CREATE TABLE "env_exposure"."results" (
-            point_id varchar,
+            point_id INTEGER,
             query_id varchar,
             iri varchar,
             type_label varchar,
