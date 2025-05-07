@@ -1,20 +1,20 @@
 from flask import abort
+from agent.config.params import PointSelectionParam
 from agent.point_selection.point_selection import create_points_table_postal_code, create_ponits_table_self_defined_area
 
 
-def select_points(table_name:str, point_selection: str, data: dict) -> str:
-    if point_selection == 'selected_points':
+def select_points(table_name:str, point_selection: str, data: dict):
+    if point_selection == PointSelectionParam.SelectedPoints.value:
         points = data['points']  # list of points
         # todo: need to fix the input
-    elif point_selection == 'region':
+    elif point_selection == PointSelectionParam.Region.value:
         # get points in a preset region
         region = data['region']
         # todo: need to add this function
-    elif point_selection == 'self_defined_region':
+    elif point_selection == PointSelectionParam.SelfDefinedRegion.value:
         create_ponits_table_self_defined_area(data.get('lng_start'), data.get('lng_end'), data.get('lng_step'),
                             data.get('lat_start'), data.get('lat_end'), data.get('lat_step'), table_name)
-    elif point_selection == 'postal_code':
+    elif point_selection == PointSelectionParam.PostalCode.value:
         create_points_table_postal_code(table_name)
     else:
         abort(400, description="Unsupported point selection method")
-    return table_name

@@ -28,8 +28,7 @@ def create_ponits_table_self_defined_area(lng_start: float, lng_end: float, lng_
 
 
 def create_points_table_provided_list(lng: float, lat: float) -> str:
-    create_ponits_table_self_defined_area(lng_start=lng, lng_end=lng, lng_step=0.1,
-                                          lat_start=lat, lat_end=lat, lat_step=0.1)
+    pass
 
 
 def create_points_table_postal_code(query_id: str):
