@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.sensor.data;
 
 import com.android.volley.Response;
 
+import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.sensor.source.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
@@ -13,6 +14,7 @@ import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 public class UserPhoneRepository {
     UserPhoneNetworkSource userPhoneNetworkSource;
     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
+    LoginRepository loginRepository;
 
     /**
      * Constructor of the class
@@ -23,8 +25,9 @@ public class UserPhoneRepository {
             UserPhoneNetworkSource userPhoneNetworkSource,
             SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
 
-            this.userPhoneNetworkSource = userPhoneNetworkSource;
-            this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
+        this.userPhoneNetworkSource = userPhoneNetworkSource;
+        this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
+        this.loginRepository = sensorCollectionStateManagerRepository.loginRepository;
     }
 
     /**
@@ -35,13 +38,13 @@ public class UserPhoneRepository {
      * @param callback Callback to UI level
      */
     public void registerAppToUser(RepositoryCallback<Boolean> callback) {
-        sensorCollectionStateManagerRepository.getUserId(new RepositoryCallback<String>() {
+        this.loginRepository.getAccessToken(new RepositoryCallback<String>() {
             @Override
-            public void onSuccess(String userId) {
+            public void onSuccess(String accessToken) {
                 sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<String>() {
                     @Override
                     public void onSuccess(String deviceId) {
-                        userPhoneNetworkSource.registerAppToUser(userId,
+                        userPhoneNetworkSource.registerAppToUser(accessToken,
                                 deviceId,
                                 (Response.Listener<Boolean>) aBoolean -> callback.onSuccess(true),
                                 callback::onFailure); // onFailure is not triggered

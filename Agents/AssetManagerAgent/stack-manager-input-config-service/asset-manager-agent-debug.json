@@ -1,0 +1,58 @@
+{
+  "ServiceSpec": {
+    "Name": "asset-manager-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/asset-manager-agent:1.0.2",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/home/astoria-cares/Documents/AssetManagerAgent/TheWorldAvatar-1645-dev-assetmanageragent-2/Agents/AssetManagerAgent/manuals",
+            "Target": "/root/manuals"
+          }
+        ],
+        "Env": [
+          "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
+          "DB_NAME=postgres",
+          "ENDPOINT_KG_ASSET=http://asset-test-blazegraph:8080/blazegraph/namespace/asset/sparql",
+          "ENDPOINT_KG_OFFICE=http://asset-test-blazegraph:8080/blazegraph/namespace/office/sparql",
+          "ENDPOINT_KG_PURCHASEDOCS=http://asset-test-blazegraph:8080/blazegraph/namespace/purchasedocs/sparql",
+          "ENDPOINT_KG_LAB=http://asset-test-blazegraph:8080/blazegraph/namespace/lab/sparql",
+          "ENDPOINT_KG_BMS=http://asset-test-blazegraph:8080/blazegraph/namespace/bms/sparql",
+          "AUTH_KG_USER=user",
+          "AUTH_KG_PASS=password",
+          "ENDPOINT_PRINTER=http://host.docker.internal:5000/print",
+          "TARGET_QR_SIZE=4.",
+          "URL_MANUAL=https://www.theworldavatar.com:1010/careslab/manuals/",
+          "URL_DOCUPLOAD=http://host.docker.internal:1016/document-upload-agent/adddocument"
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "blazegraph_password"
+          }
+        ]
+      }
+    },
+    "EndpointSpec": {
+      "Ports": [
+        {
+          "Name": "web",
+          "Protocol": "tcp",
+          "TargetPort": "5005",
+          "PublishedPort": "5005"
+        }
+      ]
+    }
+  },
+  "endpoints": {
+    "asset-manager-agent": {
+      "url": "http://localhost:8080/asset-manager-agent/",
+      "externalPath": "/asset-manager-agent/"
+    }
+  }
+}

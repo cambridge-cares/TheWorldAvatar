@@ -12,6 +12,8 @@ import kong.unirest.UnirestException;
 import org.apache.http.HttpException;
 import org.apache.http.protocol.HTTP;
 import com.google.gson.Gson;
+import org.json.JSONObject;
+
 
 import org.locationtech.jts.geom.Geometry;
 import java.io.*;
@@ -73,6 +75,7 @@ public class RunCEATask implements Runnable {
         this.metaData = ceaMetaData;
         this.database = ceaDatabase;
         this.updater = updater;
+        this.solarProperties = solar == null ? "null" : solar.toString();
     }
 
     public void stop() {

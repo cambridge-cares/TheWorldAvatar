@@ -42,6 +42,9 @@
         app:behavior_peekHeight="100dp"
         app:behavior_fitToContents="false"
         app:behavior_hideable="false"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="5dp"
         />
 
 

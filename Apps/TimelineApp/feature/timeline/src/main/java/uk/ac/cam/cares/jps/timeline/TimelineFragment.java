@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -31,7 +30,6 @@ import org.apache.log4j.Logger;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
-import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 
@@ -94,6 +92,12 @@ public class TimelineFragment extends Fragment {
                 NavHostFragment.findNavController(this).navigate(request);
                 return true;
             }
+
+            // todo: the tooltip effect not very ideal
+//            if(menuItem.getItemId() == R.id.tool_tip) {
+//                  new ToolTipDialogFragment().show(getParentFragmentManager(), "ToolTipDialog");
+//                  return true;
+//            }
             return false;
         });
     }

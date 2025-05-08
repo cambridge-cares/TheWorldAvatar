@@ -5,6 +5,9 @@
         <item name="titleTextColor">?attr/colorOnPrimary</item>
     </style>
 
+    <item name="colorQuaternary" type="color">@color/md_theme_light_quaternary</item>
+    <item name="colorDefault" type="color">@color/md_theme_light_default</item>
+    <item name="colorSelected" type="color">@color/md_theme_light_selected</item>
     <item name="rippleColor" type="color">@color/md_theme_light_inverseOnSurface</item>
     <item name="app_bar_background" type="drawable">@drawable/gradient_app_bar_background_light</item>
 </resources>

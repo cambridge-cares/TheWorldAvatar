@@ -85,8 +85,7 @@
         <View
             android:id="@+id/bottom_spacer_view"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="@dimen/component_margin_xl"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/sensors_recycler_view" />
 
