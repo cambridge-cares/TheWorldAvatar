@@ -141,9 +141,6 @@ public class CEAAgent extends JPSAgent {
                     }
                 }
 
-                for (int i = 0; i < uriArray.length(); i++) {
-                    String uri = uriArray.getString(i);
-
                 // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to
                 // ontop endpoint
                 geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
@@ -489,10 +486,9 @@ public class CEAAgent extends JPSAgent {
      */
     private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase, JSONObject solar) {
         try {
-            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs,
-                    ceaDatabase, updater, solar);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, uris, threadNumber, crs, ceaDatabase, updater, solar);
             CEAExecutor.execute(task);
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }

@@ -14,7 +14,6 @@ import org.apache.http.protocol.HTTP;
 import com.google.gson.Gson;
 import org.json.JSONObject;
 
-
 import org.locationtech.jts.geom.Geometry;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -28,11 +27,11 @@ import java.util.*;
 public class RunCEATask implements Runnable {
     private final ArrayList<CEABuildingData> inputs;
     private final ArrayList<String> uris;
-    private final URI endpointUri;
     private final int threadNumber;
     private final String crs;
     private final String database;
     private final CEAMetaData metaData;
+    private final String solarProperties;
     private Double weatherLat;
     private Double weatherLon;
     private Double weatherElevation;
@@ -65,17 +64,16 @@ public class RunCEATask implements Runnable {
 
     private CEAOutputUpdater updater;
 
-    public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri,
-            ArrayList<String> uris, int thread, String crs, String ceaDatabase, CEAOutputUpdater updater) {
+    public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris,
+            int thread, String crs, String ceaDatabase, CEAOutputUpdater updater, JSONObject solar) {
         this.inputs = buildingData;
-        this.endpointUri = endpointUri;
         this.uris = uris;
         this.threadNumber = thread;
         this.crs = crs;
         this.metaData = ceaMetaData;
         this.database = ceaDatabase;
         this.updater = updater;
-        this.solarProperties = solar == null ? "null" : solar.toString();
+        this.solarProperties = solar == null ? "null" : "\'" + solar.toString() + "\'";
     }
 
     public void stop() {
@@ -392,7 +390,7 @@ public class RunCEATask implements Runnable {
                         cmdPython + terrainScript + " " + tempTerrainPath + " " + strTmp + " " + TERRAIN_FILE);
                 ArrayList<String> argsCreateDefaultWeatherWorkflow = getArgument(argsExec,
                         cmdPython + createWorkflowScript + " " + refWorkflowWeather + " " + WORKFLOW_YML_WEATHER + " "
-                                + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database);
+                                + strTmp + " " + "null" + " " + "null" + " " + "null" + " " + database + " null");
                 ArrayList<String> argsRunDefaultWeatherWorkflow = getArgument(argsExec, cmdCEA + workflowPathWeather);
                 ArrayList<String> argsCreateWeather = getArgument(argsExec,
                         cmdPython + weatherScript + " " + weatherTimesPath + " " + weatherDataPath + " " + weatherLat
@@ -401,11 +399,11 @@ public class RunCEATask implements Runnable {
                 ArrayList<String> argsCreateMainWorkflow = getArgument(argsExec,
                         cmdPython + createWorkflowScript + " " + refWorkflowMain + " " + WORKFLOW_YML_MAIN + " "
                                 + strTmp + " " + surroundingsFlag + " " + weatherFlag + " " + terrainFlag + " "
-                                + database);
+                                + database + " " + solarProperties);
                 ArrayList<String> argsRunMainWorkflow = getArgument(argsExec, cmdCEA + workflowPathMain);
                 ArrayList<String> argsCreatePVTWorkflow = getArgument(argsExec,
                         cmdPython + createWorkflowScript + " " + refWorkflowPVT + " " + WORKFLOW_YML_PVT + " " + strTmp
-                                + " " + "null" + " " + "null" + " " + "null" + " " + database);
+                                + " " + "null" + " " + "null" + " " + "null" + " " + database + " " + solarProperties);
                 ArrayList<String> argsRunPVTWorkflow = getArgument(argsExec, cmdCEA + workflowPathPVT);
 
                 try {
