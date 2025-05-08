@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
-import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -90,7 +91,7 @@ public class UsageMatcher {
                 e.printStackTrace();
                 throw new JPSRuntimeException("osm_tags.csv file not found");
             }
-            catch (IOException e) {
+            catch (IOException | CsvValidationException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
@@ -172,6 +173,11 @@ public class UsageMatcher {
         // initialise schema
         String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
         rdbStoreClient.executeUpdate(initialiseSchema);
+
+        // add extension for UUID generation if not exist
+
+        String createExtension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"";
+        rdbStoreClient.executeUpdate(createExtension);
 
         // initialise address table
         String initialiseAddressTable = "CREATE TABLE IF NOT EXISTS " + addressTable;

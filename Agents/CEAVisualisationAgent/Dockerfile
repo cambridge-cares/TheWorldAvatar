@@ -22,7 +22,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/ceavisualisation-agent/output/ceavisualisation-agent##0.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/ceavisualisation-agent/output/ceavisualisation-agent##0.2.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

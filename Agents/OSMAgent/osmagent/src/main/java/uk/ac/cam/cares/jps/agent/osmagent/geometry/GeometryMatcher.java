@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.osmagent.geometry;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -14,8 +16,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 public class GeometryMatcher {
@@ -23,8 +23,9 @@ public class GeometryMatcher {
     private static final String RESOURCES_PATH = "/resources";
 
     private final RemoteRDBStoreClient rdbStoreClient;
+
     public GeometryMatcher(String url, String user, String password) {
-        this.rdbStoreClient  = new RemoteRDBStoreClient(url, user, password);
+        this.rdbStoreClient = new RemoteRDBStoreClient(url, user, password);
     }
 
     public void matchGeometry(String pointTable, String polygonTable, String bound, Integer boundSRID) {
@@ -32,18 +33,12 @@ public class GeometryMatcher {
         int pointSRID;
         int polygonSRID;
 
-        int pointMin;
-        int polygonMin;
-        int pointMax;
-        int polygonMax;
-
         // get SRID of OSM point geometries
         JSONArray result = rdbStoreClient.executeQuery(sridQuery(pointTable, "geometryProperty"));
 
         if (!result.isEmpty()) {
             pointSRID = result.getJSONObject(0).getInt("srid");
-        }
-        else {
+        } else {
             throw new JPSRuntimeException("Failed to get OSM points SRID.");
         }
 
@@ -52,49 +47,33 @@ public class GeometryMatcher {
 
         if (!result.isEmpty()) {
             polygonSRID = result.getJSONObject(0).getInt("srid");
-        }
-        else {
+        } else {
             throw new JPSRuntimeException("Failed to get OSM polygons SRID.");
         }
 
-        // create temporary tables of CityDB building footprints, transformed to the same SRIDs of OSM point and polygon geometries
+        // create temporary tables of CityDB building footprints, transformed to the
+        // same SRIDs of OSM point and polygon geometries
         String citydbPoint = createTable(bound, boundSRID, pointSRID);
-
         String citydbPolygon = "";
 
         if (pointSRID != polygonSRID) {
+            // if OSM polygon geometries have different SRIDs to OSM points, create another
+            // temporary table for polygons
             citydbPolygon = createTable(bound, boundSRID, polygonSRID);
+        } else {
+            // if OSM point and polygon geometries have the same SRIDs, they can use the
+            // same temporary table
+            citydbPolygon = citydbPoint;
         }
 
         if (bound == null) {
-            // get min and max IDs for points table
-            result = rdbStoreClient.executeQuery(idQuery(pointTable));
-
-            if (!result.isEmpty()) {
-                pointMin = result.getJSONObject(0).getInt("min");
-                pointMax = result.getJSONObject(0).getInt("max");
-            } else {
-                throw new JPSRuntimeException("Failed, no ogc_fid column in OSM points table.");
-            }
-
-            // get min and max IDs for polygons table
-            result = rdbStoreClient.executeQuery(idQuery(polygonTable));
-
-            if (!result.isEmpty()) {
-                polygonMin = result.getJSONObject(0).getInt("min");
-                polygonMax = result.getJSONObject(0).getInt("max");
-            } else {
-                throw new JPSRuntimeException("Failed, no ogc_fid column in OSM points table.");
-            }
+            // no bound specified, try to match all OSM points and polygons
 
             // matching osm point geometries with CityDB building footprints
             try (Connection connection = rdbStoreClient.getConnection();
-                 Statement statement = connection.createStatement()) {
-                for (int i = pointMin; i <= pointMax; i++) {
-                    statement.execute(pointSQL(pointTable, citydbPoint, i));
-                }
-            }
-            catch (SQLException e) {
+                    Statement statement = connection.createStatement()) {
+                statement.execute(bulkPointSQL(pointTable, citydbPoint));
+            } catch (SQLException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
@@ -102,28 +81,25 @@ public class GeometryMatcher {
             System.out.println("Finished OSM points matching.");
 
             try (Connection connection = rdbStoreClient.getConnection();
-                 Statement statement = connection.createStatement()) {
-                for (int i = polygonMin; i <= polygonMax; i++) {
-                    statement.execute(polygonSQL(polygonTable, citydbPoint, threshold, i));
-                }
-            }
-            catch (SQLException e) {
+                    Statement statement = connection.createStatement()) {
+                statement.execute(bulkPolygonSQL(polygonTable, citydbPolygon, threshold));
+            } catch (SQLException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
 
             System.out.println("Finished OSM polygons matching.");
-        }
-        else {
+
+        } else {
+            // only match points and polygons within bound
             result = rdbStoreClient.executeQuery(boundID(pointTable, bound, boundSRID, pointSRID));
 
             try (Connection connection = rdbStoreClient.getConnection();
-                 Statement statement = connection.createStatement()) {
+                    Statement statement = connection.createStatement()) {
                 for (int i = 0; i < result.length(); i++) {
                     statement.execute(pointSQL(pointTable, citydbPoint, result.getJSONObject(i).getInt("ogc_fid")));
                 }
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
@@ -133,12 +109,12 @@ public class GeometryMatcher {
             result = rdbStoreClient.executeQuery(boundID(polygonTable, bound, boundSRID, polygonSRID));
 
             try (Connection connection = rdbStoreClient.getConnection();
-                 Statement statement = connection.createStatement()) {
+                    Statement statement = connection.createStatement()) {
                 for (int i = 0; i < result.length(); i++) {
-                    statement.execute(polygonSQL(polygonTable, citydbPoint, threshold, result.getJSONObject(i).getInt("ogc_fid")));
+                    statement.execute(polygonSQL(polygonTable, citydbPolygon, threshold,
+                            result.getJSONObject(i).getInt("ogc_fid")));
                 }
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
@@ -148,11 +124,10 @@ public class GeometryMatcher {
 
         // delete temporary tables
         deleteTable(citydbPoint);
-        if (!citydbPolygon.isEmpty()) {
+        if (!citydbPolygon.equals(citydbPoint)) {
             deleteTable(citydbPolygon);
         }
     }
-
 
     private String createTable(String bound, Integer boundSRID, Integer targetSRID) {
         String citydbTable = "CREATE TABLE %s AS \n" +
@@ -175,7 +150,7 @@ public class GeometryMatcher {
                     "bound AS (" +
                     "SELECT %s AS geo)";
             boundGeo = String.format(boundGeo, boundGeometry(bound, boundSRID, targetSRID));
-            intersects =  " WHERE public.ST_Intersects((SELECT geo FROM bound LIMIT 1), geo)";
+            intersects = " WHERE public.ST_Intersects((SELECT geo FROM bound LIMIT 1), geo)";
         }
 
         String createIndex = "CREATE INDEX %s ON %s USING gist (geometry)";
@@ -188,8 +163,7 @@ public class GeometryMatcher {
 
             statement.execute(String.format(citydbTable, cityTable, targetSRID, boundGeo, intersects));
             statement.execute(String.format(createIndex, String.format("\"geo_id_%s\"", UUID.randomUUID()), cityTable));
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -206,14 +180,14 @@ public class GeometryMatcher {
             Statement statement = conn.createStatement();
 
             statement.execute(String.format(delete, table));
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
      * Returns SQL query for the SRID of a table
+     * 
      * @param table table name
      * @return SQL query for the SRID of table
      */
@@ -221,30 +195,27 @@ public class GeometryMatcher {
         return String.format("SELECT DISTINCT public.ST_SRID(p.\"%s\") AS srid FROM %s p", geometryColumn, table);
     }
 
-    /**
-     * Returns SQL query for the min and max ID of a table
-     * @param table table name
-     * @return SQL query for the min and max ID of table
-     */
-    private String idQuery(String table) {
-        return "SELECT MIN(ogc_fid) as min, MAX(ogc_fid) as max FROM " + table;
-    }
-
     private String boundGeometry(String bound, Integer boundSRID, Integer targetSRID) {
-        return String.format("public.ST_Transform(public.ST_GeomFromText(\'%s\', %d), %d)", bound, boundSRID, targetSRID);
+        return String.format("public.ST_Transform(public.ST_GeomFromText(\'%s\', %d), %d)", bound, boundSRID,
+                targetSRID);
     }
 
     private String boundID(String table, String bound, Integer boundSRID, Integer targetSRID) {
         String with = "WITH bound AS (SELECT %s AS geo)\n";
         with = String.format(with, boundGeometry(bound, boundSRID, targetSRID));
 
-        return with + String.format("SELECT ogc_fid FROM %s WHERE public.ST_Intersects((SELECT geo FROM bound LIMIT 1), \"geometryProperty\")", table);
+        return with + String.format(
+                "SELECT ogc_fid FROM %s WHERE public.ST_Intersects((SELECT geo FROM bound LIMIT 1), \"geometryProperty\")",
+                table);
     }
 
     /**
-     * SQL query to match OSM point geometries with not null building tag to CityDB building footprints, and assign the building IRI accordingly
-     * @param table OSM points table
-     * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
+     * SQL query to match OSM point geometries with not null building tag to CityDB
+     * building footprints, and assign the building IRI accordingly
+     * 
+     * @param table     OSM points table
+     * @param cityTable table storing CityDB building IRI and footprints,
+     *                  transformed to same SRID as table
      * @return SQL query
      */
     private String pointSQL(String table, String cityTable, int id) {
@@ -259,9 +230,30 @@ public class GeometryMatcher {
     }
 
     /**
-     * SQL query to match OSM polygon geometries with not null building tag to CityDB building footprints, and assign the building IRI accordingly
-     * @param table OSM polygons table
-     * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
+     * Same purpose as pointSQL, but do it to all points
+     * 
+     * @param table     OSM points table
+     * @param cityTable table storing CityDB building IRI and footprints,
+     *                  transformed to same SRID as table
+     * @return SQL query
+     */
+    private String bulkPointSQL(String table, String cityTable) {
+        String update = "UPDATE %s AS p\n" +
+                "SET building_iri = g.urival\n" +
+                "FROM %s AS g\n" +
+                "WHERE building_iri IS NULL AND\n" +
+                "public.ST_Intersects(p.\"geometryProperty\", g.geometry)";
+
+        return String.format(update, table, cityTable);
+    }
+
+    /**
+     * SQL query to match OSM polygon geometries with not null building tag to
+     * CityDB building footprints, and assign the building IRI accordingly
+     * 
+     * @param table     OSM polygons table
+     * @param cityTable table storing CityDB building IRI and footprints,
+     *                  transformed to same SRID as table
      * @return SQL query
      */
     private String polygonSQL(String table, String cityTable, double threshold, int id) {
@@ -277,19 +269,69 @@ public class GeometryMatcher {
     }
 
     /**
-     * Matches building IRIs not in usageTable with land use from landUseTable, and updates usageTable with the assigned OntoBuiltEnv:PropertyUsage class according to '/dlm_landuse.csv'
-     * @param usageTable centralised table to store usage information
+     * Same purpose as polygonSQL, but do it to all polygons
+     * 
+     * @param table     OSM polygons table
+     * @param cityTable table storing CityDB building IRI and footprints,
+     *                  transformed to same SRID as table
+     * @return SQL query
+     */
+    private String bulkPolygonSQL(String table, String cityTable, double threshold) {
+        String update = "CREATE TEMP TABLE TempBuildingIRI AS\n" +
+                "WITH RankedIntersections AS (\n" + // extract data from intersecting polygons from two tables
+                "    SELECT\n" +
+                "        a.ogc_fid AS a_row,\n" +
+                "        b.urival AS b_id,\n" +
+                "        a.\"geometryProperty\" AS a_geom,\n" +
+                "        b.geometry AS b_geom,\n" +
+                "        ST_Area(a.\"geometryProperty\") as a_area,\n" +
+                "        ST_Area(b.geometry) as b_area\n" +
+                "    FROM %s a JOIN %s b ON\n" +
+                "        ST_Intersects(a.\"geometryProperty\", b.geometry)\n" +
+                "),\n" +
+                "CalculatedIntersections AS(\n" + // calculate intersection area
+                "    SELECT\n" +
+                "        a_row, b_id, a_geom,\n" +
+                "        b_geom, a_area, b_area,\n" +
+                "        ST_Area(ST_Intersection(a_geom, b_geom)) AS intersection_area,\n" +
+                "        LEAST(a_area, b_area) AS smaller_polygon_area\n" +
+                "    FROM RankedIntersections\n" +
+                "),\n" +
+                "RankedIntersectionsFinal as (\n" + // rank intersection area in desending order
+                "    SELECT\n" +
+                "        a_row, b_id, intersection_area, smaller_polygon_area,\n" +
+                "        RANK() OVER (PARTITION BY a_row ORDER BY intersection_area DESC) AS rank\n" +
+                "    FROM CalculatedIntersections\n" +
+                "    WHERE intersection_area > %f * smaller_polygon_area\n" +
+                ")\n" +
+                "SELECT\n" + // pick pairs with biggest intersection area
+                "    a_row, b_id FROM\n" +
+                "    RankedIntersectionsFinal WHERE rank = 1;\n" +
+                "UPDATE %s\n" + // update building IRI in polygon table
+                "SET building_iri = TempBuildingIRI.b_id\n" +
+                "FROM TempBuildingIRI\n" +
+                "WHERE %s.ogc_fid = TempBuildingIRI.a_row";
+
+        return String.format(update, table, cityTable, threshold, table, table);
+    }
+
+    /**
+     * Matches building IRIs not in usageTable with land use from landUseTable, and
+     * updates usageTable with the assigned OntoBuiltEnv:PropertyUsage class
+     * according to '/dlm_landuse.csv'
+     * 
+     * @param usageTable   centralised table to store usage information
      * @param landUseTable table containing DLM land use data
      */
-    public void updateLandUse(String usageTable, String landUseTable, String geometryColumn, String csv, String bound, Integer boundSRID) {
+    public void updateLandUse(String usageTable, String landUseTable, String geometryColumn, String csv, String bound,
+            Integer boundSRID) {
         JSONArray result = rdbStoreClient.executeQuery(sridQuery(landUseTable, geometryColumn));
 
         int landSRID;
 
         if (!result.isEmpty()) {
             landSRID = result.getJSONObject(0).getInt("srid");
-        }
-        else {
+        } else {
             throw new JPSRuntimeException("Failed to get landuse table SRID.");
         }
 
@@ -307,15 +349,14 @@ public class GeometryMatcher {
 
                 String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt, source) \n" +
                         "SELECT q2.iri, \'" + ontobuilt + "\' , \'land_use\' FROM \n" +
-                        "(SELECT q.urival AS iri, q.geometry AS geo FROM " + citydbTable + "q\n" +
+                        "(SELECT q.urival AS iri, q.geometry AS geo FROM " + citydbTable + " q\n" +
                         "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
                         "WHERE u.building_iri IS NULL) AS q2 \n" +
-                        "WHERE public.ST_Intersects(q2.geo, \n" +
-                        "(SELECT CASE WHEN public.ST_IsValid(public.ST_Collect(\"%s\")) THEN public.ST_Collect(\"%s\")\n" +
-                        "ELSE public.ST_MakeValid(public.ST_Collect(\"%s\")) END AS g FROM " + landUseTable + " \n" +
-                        "WHERE \"" + key + "\" = \'" + value + "\'))";
+                        "JOIN " + landUseTable + " lu ON\n" +
+                        "public.ST_Intersects(q2.geo, public.ST_MakeValid(lu.\"%s\"))" + 
+                        "WHERE lu.\"" + key + "\" = \'" + value + "\'";
 
-                rdbStoreClient.executeUpdate(String.format(updateLandUse, geometryColumn, geometryColumn, geometryColumn));
+                rdbStoreClient.executeUpdate(String.format(updateLandUse, geometryColumn));
                 System.out.println(
                         "Untagged buildings with building_iri are assigned for " + key + " with value:"
                                 + value + " under the ontobuiltenv:" + ontobuilt
@@ -325,16 +366,13 @@ public class GeometryMatcher {
             System.out.println(
                     "Untagged building has been assigned an ontobuilt type according to the corresponding landuse.");
             csvReader.close();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(String.format("%s file not found", csv));
-        }
-        catch (IOException e) {
+        } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
-        }
-        finally {
+        } finally {
             deleteTable(citydbTable);
         }
     }

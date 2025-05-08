@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 public class CEAMetaData {
-    public List<CEAGeometryData> surrounding;
-    public List<OffsetDateTime> weatherTimes;
-    public Map<String, List<Double>> weather;
-    public List<Double> weatherMetaData;
-    public byte[] terrain;
+    private List<CEAGeometryData> surrounding;
+    private List<OffsetDateTime> weatherTimes;
+    private Map<String, List<Double>> weather;
+    private List<Double> weatherMetaData;
+    private byte[] terrain;
 
-    public CEAMetaData(List<CEAGeometryData> surrounding_value, List<OffsetDateTime> weatherTimes_value, Map<String, List<Double>> weather_value, List<Double> weatherMetaData_value, byte[] terrain_value) {
-        this.surrounding = surrounding_value;
-        this.weatherTimes = weatherTimes_value;
-        this.weather = weather_value;
-        this.weatherMetaData = weatherMetaData_value;
-        this.terrain = terrain_value;
+    public CEAMetaData(List<CEAGeometryData> surroundingValue, List<OffsetDateTime> weatherTimesValue, Map<String, List<Double>> weatherValue, List<Double> weatherMetaDataValue, byte[] terrainValue) {
+        this.surrounding = surroundingValue;
+        this.weatherTimes = weatherTimesValue;
+        this.weather = weatherValue;
+        this.weatherMetaData = weatherMetaDataValue;
+        this.terrain = terrainValue;
     }
 
     public List<CEAGeometryData> getSurrounding() {return this.surrounding;}
@@ -29,13 +29,13 @@ public class CEAMetaData {
 
     public byte[] getTerrain() {return this.terrain;}
 
-    public void setSurrounding(List<CEAGeometryData> surrounding_value) {this.surrounding = surrounding_value;}
+    public void setSurrounding(List<CEAGeometryData> surroundingValue) {this.surrounding = surroundingValue;}
 
-    public void setWeatherTimes(List<OffsetDateTime> weatherTimes_value) {this.weatherTimes = weatherTimes_value;}
+    public void setWeatherTimes(List<OffsetDateTime> weatherTimesValue) {this.weatherTimes = weatherTimesValue;}
 
-    public void setWeather(Map<String, List<Double>> weather_value) {this.weather = weather_value;}
+    public void setWeather(Map<String, List<Double>> weatherValue) {this.weather = weatherValue;}
 
-    public void setWeatherMetaData(List<Double> weatherMetaData_value) {this.weatherMetaData = weatherMetaData_value;}
+    public void setWeatherMetaData(List<Double> weatherMetaDataValue) {this.weatherMetaData = weatherMetaDataValue;}
 
-    public void setTerrain(byte[] terrain_value) {this.terrain = terrain_value;}
+    public void setTerrain(byte[] terrainValue) {this.terrain = terrainValue;}
 }
