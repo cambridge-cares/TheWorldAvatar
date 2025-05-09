@@ -6,11 +6,11 @@ from agent.exposure.env_feature_retrieval import fetch_env_features
 from agent.exposure.constants import FeatureTableName, ScriptName
 from agent.stack.ontop_client import OntopClient
 from agent.stack.postgis_client import PostGISClient
-from agent.utils.table_name_helper import TableNameHelper
+from agent.utils.table_name_helper import QueryIdHelper
 
 class Intersect:
 
-    def __init__(self, table_name_helper:TableNameHelper):
+    def __init__(self, table_name_helper:QueryIdHelper):
         self.points_table_name = table_name_helper.get_query_id()
         self.table_name_helper = table_name_helper
         

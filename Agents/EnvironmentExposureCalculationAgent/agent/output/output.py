@@ -6,14 +6,13 @@ from flask import abort, current_app
 import pandas as pd
 from agent.config.params import OutputFormatParam, PointSelectionParam
 from agent.stack.postgis_client import PostGISClient
-from agent.utils.table_name_helper import TableNameHelper
+from agent.utils.table_name_helper import QueryIdHelper
 
 
-def get_output(output_format: str, point_select: str, table_name_helper: TableNameHelper) -> str:
-    if not output_format:
-        return 'No output format specified. Results saved in potsgis database.'
-
+def get_output(output_format: str, point_select: str, table_name_helper: QueryIdHelper) -> str:
     query_id = table_name_helper.get_query_id()
+    if not output_format:
+        return query_id
 
     summary_df = get_summary_df(point_select, query_id)
     exposure_details = get_exposure_details()

@@ -1,7 +1,7 @@
 import base64
 import hashlib
 
-class TableNameHelper:
+class QueryIdHelper:
     def __init__(self, data:dict, args:dict):
         self.data_str = "_".join([str(val) for key, val in data.items() if key not in ['output_format']])
         self.args_str = "_".join([str(val) for key, val in args.items() if key not in ['output_format']])

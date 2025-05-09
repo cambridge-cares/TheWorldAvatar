@@ -2,10 +2,10 @@ import os
 from typing import cast
 from flask import current_app
 from agent.stack.postgis_client import PostGISClient
-from agent.utils.table_name_helper import TableNameHelper
+from agent.utils.table_name_helper import QueryIdHelper
 
 
-def create_buffer_around_points(table_name_helper: TableNameHelper, buffer_radius: float):
+def create_buffer_around_points(table_name_helper: QueryIdHelper, buffer_radius: float):
     postgis_client = cast(PostGISClient, current_app.extensions['postgis_client'])
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
