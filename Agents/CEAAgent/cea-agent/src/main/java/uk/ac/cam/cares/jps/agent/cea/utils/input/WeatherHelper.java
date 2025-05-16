@@ -27,10 +27,9 @@ import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
+import org.cts.op.CoordinateOperation;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import org.locationtech.jts.geom.Coordinate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,7 +85,7 @@ public class WeatherHelper extends JPSAgent {
         Coordinate centerCoordinate;
         Double elevation = 0.0;
         long count = 0;
-        if (surroundings != null) {
+        if (!surroundings.isEmpty()) {
             for (CEAGeometryData ceaGeometryData : surroundings) {
                 for (Geometry geometry : ceaGeometryData.getFootprint()) {
                     envelope.expandToInclude(geometry.getEnvelopeInternal());
@@ -124,7 +123,8 @@ public class WeatherHelper extends JPSAgent {
 
         try {
             // coordinate in (longitude, latitude) format
-            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
+            Set<CoordinateOperation> operations = GeometryHandler.getTransformOperations(crs, CRS_4326);
+            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, operations);
 
             Double latitude;
             Double longitude;
@@ -144,11 +144,11 @@ public class WeatherHelper extends JPSAgent {
 
             Map<String, List<String>> weatherMap = getWeatherIRI(stationIRI, weatherRoute);
 
-            List<Double> lat_lon = getStationCoordinate(stationIRI, weatherRoute);
+            List<Double> latLon = getStationCoordinate(stationIRI, weatherRoute);
 
-            if (!lat_lon.isEmpty()) {
-                latitude = lat_lon.get(0);
-                longitude = lat_lon.get(1);
+            if (!latLon.isEmpty()) {
+                latitude = latLon.get(0);
+                longitude = latLon.get(1);
             }
 
             // if the timestamps of the instantiated weather data does not meet CEA requirements,

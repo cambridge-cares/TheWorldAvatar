@@ -5,10 +5,6 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 
 import java.sql.Connection;
@@ -30,22 +26,19 @@ public class TerrainHelper {
 
     /**
      * Gets terrain data for building
-     * @param buildings ArrayList of CEABuildingData of target buildings
+     * 
+     * @param buildings    ArrayList of CEABuildingData of target buildings
      * @param surroundings list of CEA
-     * @param table PostGIS table name
+     * @param table        PostGIS table name
      * @return terrain data as byte[]
      */
     public byte[] getTerrain(ArrayList<CEABuildingData> buildings, List<CEAGeometryData> surroundings, String table) {
         // query for the coordinate reference system used by the terrain data
         String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM %s LIMIT 1", table);
 
-        Double bufferDistance;
-
-        Coordinate center;
-
         String crs;
 
-        Envelope envelope = new Envelope();
+        Double bufferDistance;
 
         try {
             RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
@@ -59,55 +52,47 @@ public class TerrainHelper {
 
             Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
 
+            List<Geometry> geometries = new ArrayList<>();
+
+            // building data should always be included
+            for (CEABuildingData building : buildings) {
+                for (Geometry geometry : building.getGeometry().getFootprint()) {
+                    geometries.add(geometry);
+                }
+            }
+
+            crs = buildings.get(0).getGeometry().getCrs(); // this assumes all building data (and surrounding) has the
+                                                           // same CRS
+
             if (!surroundings.isEmpty()) {
+
+                // include surrounding building data in the bounding box
                 for (CEAGeometryData ceaGeometryData : surroundings) {
                     for (Geometry geometry : ceaGeometryData.getFootprint()) {
-                        envelope.expandToInclude(geometry.getEnvelopeInternal());
+                        geometries.add(geometry);
                     }
                 }
+                bufferDistance = 30.0; // 30 metre buffer
 
-                crs = surroundings.get(0).getCrs();
-
-                center = envelope.centre();
-
-                Polygon polygon = envelopeToPolygon(envelope);
-
-                polygon = (Polygon) GeometryHandler.transformGeometry(polygon, "EPSG:"+crs, "EPSG:"+postgisCRS);
-
-                envelope = new Envelope();
-                for (Coordinate coordinate : polygon.getCoordinates()) {
-                    envelope.expandToInclude(coordinate);
-                }
-
-                double w = envelope.getWidth();
-                double h = envelope.getHeight();
-
-                bufferDistance = w >= h ? w /2 : h/2;
-
-                bufferDistance += 30.0;
+            } else {
+                // use bigger buffer if there is no surrounding building
+                bufferDistance = 160.0; // 160 metre buffer
             }
-            else {
-                for (CEABuildingData building : buildings) {
-                    for (Geometry geometry : building.getGeometry().getFootprint()) {
-                        envelope.expandToInclude(geometry.getEnvelopeInternal());
-                    }
-                }
 
-                crs = buildings.get(0).getGeometry().getCrs();
-
-                center = envelope.centre();
-                bufferDistance = 160.0;
-            }
+            String trueBoundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, 0.);
+            String bufferBoundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, bufferDistance);
 
             List<byte[]> result = new ArrayList<>();
 
             // query for terrain data
-            String terrainQuery = getTerrainQuery(center.getX(), center.getY(), bufferDistance, Integer.valueOf(crs), postgisCRS, table);
+            String terrainQuery = getTerrainQuery(trueBoundingBox, bufferBoundingBox, Integer.valueOf(crs), postgisCRS,
+                    table);
 
-            try (Connection conn = postgisClient.getConnection()) {
-                Statement stmt = conn.createStatement();
+            try (Connection conn = postgisClient.getConnection();
+                    Statement stmt = conn.createStatement();) {
+
                 ResultSet terrainResult = stmt.executeQuery(terrainQuery);
-                while(terrainResult.next()) {
+                while (terrainResult.next()) {
                     byte[] rasterBytes = terrainResult.getBytes("data");
                     result.add(rasterBytes);
                 }
@@ -115,54 +100,49 @@ public class TerrainHelper {
 
             if (result.size() == 1) {
                 return result.get(0);
-            }
-            else{
+            } else {
                 return null;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("No terrain data retrieved, agent will run CEA with CEA's default terrain.");
             return null;
         }
     }
 
     /**
-     * Creates a SQL query string for raster data within a square bounding box of length 2*radius, center point at (x, y)
-     * @param x first coordinate of center point
-     * @param y second coordinate of center point
-     * @param radius length of the square bounding box divided by 2
+     * Creates a SQL query string for raster data within a bounding box
+     * 
+     * @param checkWkt    wkt literal of the bounding box used for checking
+     * @param clipWkt     wkt literal of the bounding box used for clipping
      * @param originalCRS coordinate reference system of center point
-     * @param postgisCRS coordinate reference system of the raster data queried
-     * @param table table storing raster data
+     * @param postgisCRS  coordinate reference system of the raster data queried
+     * @param table       table storing raster data
      * @return SQL query string
      */
-    private String getTerrainQuery(Double x, Double y, Double radius, Integer originalCRS, Integer postgisCRS, String table) {
-        // SQL commands for creating a square bounding box
-        String terrainBoundary = String.format("ST_Expand(ST_Transform(ST_SetSRID(ST_MakePoint(%f, %f), %d), %d), %f)", x, y, originalCRS, postgisCRS, radius);
+    private String getTerrainQuery(String checkWkt, String clipWkt, Integer originalCRS, Integer postgisCRS,
+            String table) {
+        // Create bounding box from wkt, then convert to postgis CRS
+        String query = String.format(
+                "WITH polygon_cte AS (SELECT ST_Transform(ST_GeomFromText('%s', %d), %d) AS geom),%n", clipWkt,
+                originalCRS, postgisCRS);
 
-        // query result to be converted to TIF format
-        String query = String.format("SELECT ST_AsTIFF(ST_Union(ST_Clip(rast, %s))) as data ", terrainBoundary);
-        query = query + String.format("FROM %s ", table);
-        query = query + String.format("WHERE ST_Intersects(rast, %s);", terrainBoundary);
+        // bounding box for checking that raster data covers the essential area
+        // this should be completely contained by the clipping bounding box
+        query = query + String.format("check_cte AS (SELECT ST_Transform(ST_GeomFromText('%s', %d), %d) AS geom),%n",
+                checkWkt, originalCRS, postgisCRS);
+
+        // clip raster data and get its bounding box as a polygon
+        query = query + String.format("clipped_bbox_cte AS (\n" + //
+                "SELECT ST_Envelope(ST_Union(raster_clip.clipped)) AS bounding_box,\n" + //
+                "ST_AsTIFF(ST_Union(raster_clip.clipped)) AS data\n" + //
+                "FROM ( SELECT ST_Clip(a.rast, b.geom) AS clipped\n" + //
+                "FROM %s a, polygon_cte b WHERE ST_Intersects(a.rast, b.geom)) raster_clip)\n", table);
+
+        // return clipped raster data if it completely covers checkWkt, otherwise this will be blank
+        query = query + "SELECT clipped_bbox_cte.data FROM polygon_cte, clipped_bbox_cte, check_cte\n" +
+                "WHERE ST_Contains(clipped_bbox_cte.bounding_box, check_cte.geom);";
 
         return query;
     }
 
-    /**
-     * Converts an Envelope object to Polygon object
-     * @param envelope Envelope object
-     * @return envelope as a Polygon object
-     */
-    private Polygon envelopeToPolygon(Envelope envelope) {
-        GeometryFactory geometryFactory = new GeometryFactory();
-
-        Coordinate[] coordinates = new Coordinate[5];
-        coordinates[0] = new Coordinate(envelope.getMinX(), envelope.getMinY());
-        coordinates[1] = new Coordinate(envelope.getMinX(), envelope.getMaxY());
-        coordinates[2] = new Coordinate(envelope.getMaxX(), envelope.getMaxY());
-        coordinates[3] = new Coordinate(envelope.getMaxX(), envelope.getMinY());
-        coordinates[4] = coordinates[0];
-
-        return geometryFactory.createPolygon(coordinates);
-    }
 }
