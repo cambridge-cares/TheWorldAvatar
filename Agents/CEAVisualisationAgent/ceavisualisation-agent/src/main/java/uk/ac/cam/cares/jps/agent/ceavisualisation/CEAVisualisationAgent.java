@@ -98,6 +98,10 @@ public class CEAVisualisationAgent extends JPSAgent {
                     for (Annual annual : Annual.values()) {
                         validation = validation && data.getJSONObject(i).has(annual.getAnnual());
                     }
+                    for (Area area : Area.values()) {
+                        validation = validation && data.getJSONObject(i).has(area.getValue());
+                    }
+                    validation = validation && data.getJSONObject(i).has(IRI);
                 }
             }
         } else {
