@@ -12,12 +12,12 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
-import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
 import uk.ac.cam.cares.jps.agent.cea.tasks.RunCEATask;
+import uk.ac.cam.cares.jps.agent.cea.tasks.CEAOutputUpdater;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,14 +33,15 @@ import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-@WebServlet(
-        urlPatterns = {
-                CEAAgent.URI_ACTION,
-                CEAAgent.URI_UPDATE,
-                CEAAgent.URI_QUERY
-        })
+@WebServlet(urlPatterns = {
+        CEAAgent.URI_ACTION,
+        CEAAgent.URI_UPDATE,
+        CEAAgent.URI_QUERY
+})
 public class CEAAgent extends JPSAgent {
     public static final String KEY_REQ_METHOD = "method";
     public static final String URI_ACTION = "/run";
@@ -89,12 +90,13 @@ public class CEAAgent extends JPSAgent {
     private String openmeteoagentUrl;
     private String ontopUrl;
     private List<String> ceaDb;
+    private CEAOutputUpdater updater;
 
     public CEAAgent() {
         readConfig();
         ontopUrl = endpointConfig.getOntopUrl();
         stackName = StackClient.getStackName();
-        stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
+        stackAccessAgentBase = stackAccessAgentBase.replace(STACK_NAME, stackName);
         openmeteoagentUrl = openmeteoagentUrl.replace(STACK_NAME, stackName);
         tsUrl = endpointConfig.getDbUrl(tsDb);
         dbUser = endpointConfig.getDbUser();
@@ -111,8 +113,9 @@ public class CEAAgent extends JPSAgent {
 
             if (requestUrl.contains(URI_ACTION)) {
                 ArrayList<CEABuildingData> buildingData = new ArrayList<>();
-                ArrayList<String> uriStringArray = new ArrayList<>();
-                String crs = new String();
+                ArrayList<String> uriStringArray = IntStream.range(0, uriArray.length()).mapToObj(uriArray::getString)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                String crs = "";
                 String terrainDb = defaultTerrainDb;
                 String terrainTable = defaultTerrainTable;
                 WeatherHelper weatherHelper = null;
@@ -138,43 +141,58 @@ public class CEAAgent extends JPSAgent {
                     }
                 }
 
-                for (int i = 0; i < uriArray.length(); i++) {
-                    String uri = uriArray.getString(i);
+                // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to
+                // ontop endpoint
+                geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
+                // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to
+                // ontop endpoint
+                usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
+                weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER)
+                        : stackAccessAgentBase + defaultWeatherLabel;
+                ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA)
+                        : stackAccessAgentBase + defaultCeaLabel;
+                terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
+                terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE)
+                        : terrainTable;
 
-                    // Only set route once - assuming all iris passed in same namespace
-                    // Will not be necessary if namespace is passed in request params
-                    if (i == 0) {
-                        // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                        geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
-                        // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                        usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
-                        weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : stackAccessAgentBase + defaultWeatherLabel;
-                        ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
-                        terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
-                        terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainTable;
+                if (!RouteHelper.checkEndpoint(ceaRoute)) {
+                    throw new JPSRuntimeException("ceaEndpoint not accessible");
+                }
 
-                        if (!RouteHelper.checkEndpoint(ceaRoute)){
-                            throw new JPSRuntimeException("ceaEndpoint not accessible");
-                        }
+                List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
+                storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
+                weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute);
+                updater = new CEAOutputUpdater(storeClient, rdbStoreClient, tsDb, ceaRoute);
 
-                        List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
-                        storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
-                        weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute);
-                    }
+                // Get footprint from building endpoints
+                List<CEAGeometryData> listFootprint = GeometryQueryHelper.bulkGetBuildingGeometry(uriStringArray,
+                        geometryRoute);
 
-                    uriStringArray.add(uri);
+                try {
+                    GeometryHandler.ensureSameCRS(listFootprint);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
-                    // Get footprint from ground thematic surface or find from surface geometries depending on data
-                    CEAGeometryData footprint = GeometryQueryHelper.getBuildingGeometry(uri, ontopUrl, true);
+                List<Map<String, Double>> listUsage = BuildingUsageHelper.bulkGetBuildingUsages(uriStringArray,
+                        usageRoute);
 
-                    // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
-                    Map<String, Double> usage = BuildingUsageHelper.getBuildingUsages(uri, usageRoute);
-                    buildingData.add(new CEABuildingData(footprint, usage));
+                for (int i = 0; i < uriStringArray.size(); i++) {
+                    buildingData.add(new CEABuildingData(listFootprint.get(i), listUsage.get(i)));
                 }
 
                 crs = buildingData.get(0).getGeometry().getCrs();
 
-                List<CEAGeometryData> surrounding = null;
+                List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray,
+                        geometryRoute);
+
+                try {
+                    GeometryHandler.ensureSameCRS(surrounding);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 List<Object> weather = new ArrayList<>();
 
@@ -186,80 +204,64 @@ public class CEAAgent extends JPSAgent {
 
                 CEAMetaData ceaMetaData;
 
-                if (weatherHelper.getWeather(buildingData.get(0).getGeometry(), surrounding, weatherRoute, crs, weather)) {
-                    ceaMetaData = new CEAMetaData(surrounding, (List<OffsetDateTime>) weather.get(0), (Map<String, List<Double>>) weather.get(1), (List<Double>) weather.get(2), terrain);
-                }
-                else {
+                if (weatherHelper.getWeather(buildingData.get(0).getGeometry(), surrounding, weatherRoute, crs,
+                        weather)) {
+                    ceaMetaData = new CEAMetaData(surrounding, (List<OffsetDateTime>) weather.get(0),
+                            (Map<String, List<Double>>) weather.get(1), (List<Double>) weather.get(2), terrain);
+                } else {
                     ceaMetaData = new CEAMetaData(surrounding, null, null, null, terrain);
                 }
 
                 String ceaDatabase = ceaDb.get(0);
 
-                try {
-                    String tempS = GeometryHandler.getCountry(buildingData.get(0).getGeometry().getFootprint().get(0).getCoordinate());
-                    tempS = tempS.toUpperCase();
+                String tempS = GeometryQueryHelper
+                        .getCountry(buildingData.get(0).getGeometry().getFootprint().get(0).getCoordinate());
 
-                    if (ceaDb.contains(tempS)) {
-                        ceaDatabase = tempS;
-                    }
-                }
-                catch (Exception e) {
+                tempS = tempS.toUpperCase();
+
+                if (ceaDb.contains(tempS)) {
+                    ceaDatabase = tempS;
                 }
 
                 runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar);
-            }
-            else if (requestUrl.contains(URI_UPDATE)) {
+            } else if (requestUrl.contains(URI_UPDATE)) {
+
+                // unpack data from request
+
                 // parse times
                 List<OffsetDateTime> times = DataParser.getTimesList(requestParams, KEY_TIMES);
-                TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient);
 
-                // parse times series data;
+                // parse times series data
                 List<List<List<?>>> timeSeries = new ArrayList<>();
                 for (int i = 0; i < uriArray.length(); i++) {
                     List<List<?>> iriList = new ArrayList<>();
-                    for(String ts: CEAConstants.TIME_SERIES) {
+                    for (String ts : CEAConstants.TIME_SERIES) {
                         iriList.add(DataParser.getTimeSeriesList(requestParams, ts, i));
                     }
                     timeSeries.add(iriList);
                 }
 
+                // parse scalar output
+
                 LinkedHashMap<String, List<Double>> scalars = new LinkedHashMap<>();
 
-                // parse PV area data
-                for(String scalar: CEAConstants.SCALARS){
+                for (String scalar : CEAConstants.SCALARS) {
                     scalars.put(scalar, DataParser.getList(requestParams, scalar));
                 }
 
+                // update triplestore and relational database
+
+                updater.updateCEA(uriArray, times, timeSeries, scalars);
+
+            } else if (requestUrl.contains(URI_QUERY)) {
                 for (int i = 0; i < uriArray.length(); i++) {
-                    LinkedHashMap<String,String> tsIris = new LinkedHashMap<>();
-                    LinkedHashMap<String,String> scalarIris = new LinkedHashMap<>();
-
-                    String uri = uriArray.getString(i);
-
-                    if (!DataManager.checkBuildingInitialised(uri, ceaRoute)) {
-                        DataManager.initialiseBuilding(uri, ceaRoute);
-                    }
-
-                    if(!DataManager.checkDataInitialised(uri, tsIris, scalarIris, ceaRoute)) {
-                        tsHelper.createTimeSeries(tsIris);
-                        DataManager.initialiseData(i, scalars, uri, tsIris, scalarIris, ceaRoute);
-                    }
-                    else{
-                        DataManager.updateScalars(ceaRoute, scalarIris, scalars, i);
-                    }
-                    tsHelper.addDataToTimeSeries(timeSeries.get(i), times, tsIris);
-                    AnnualValueHelper.instantiateAnnual(timeSeries.get(i), tsIris, ceaRoute);
-                }
-            }
-            else if (requestUrl.contains(URI_QUERY)) {
-                for (int i = 0; i < uriArray.length(); i++) {
-                    String uri = uriArray.getString(i);
 
                     // Only set route once - assuming all iris passed in same namespace
-                    if(i==0) {
-                        ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
+                    if (i == 0) {
+                        ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA)
+                                : stackAccessAgentBase + defaultCeaLabel;
 
-                        if (!RouteHelper.checkEndpoint(ceaRoute)){
+                        if (!RouteHelper.checkEndpoint(ceaRoute)) {
                             throw new JPSRuntimeException("ceaEndpoint not accessible");
                         }
 
@@ -267,67 +269,64 @@ public class CEAAgent extends JPSAgent {
                         storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                     }
 
-                    if(!DataManager.checkBuildingInitialised(uri, ceaRoute)){
-                        return requestParams;
+                    String uri = uriArray.getString(i);
+                    JSONObject data = new JSONObject(); // container of outputs of a building
+
+                    if (!DataManager.checkBuildingInitialised(uri, ceaRoute)) {
+                        // building in question has not been initialised,  continue to the next building
+                        requestParams.append(CEA_OUTPUTS, data);
+                        continue;
                     }
 
-                    JSONObject data = new JSONObject();
+                    LinkedHashMap<String, String> tsIris = new LinkedHashMap<>();
+                    LinkedHashMap<String, String> scalarIris = new LinkedHashMap<>();
+                    LinkedHashMap<String, JSONObject> outputMap = new LinkedHashMap<>();
+
+                    if (!DataManager.checkDataInitialised(uri, tsIris, scalarIris, outputMap, ceaRoute)) {
+                        // building in question does not have complete outputs, continue to the next building
+                        requestParams.append(CEA_OUTPUTS, data);
+                        continue;
+                    }
 
                     // retrieve scalar values
                     for (String scalar : CEAConstants.SCALARS) {
-                        ArrayList<String> result = DataRetriever.getDataIRI(uri, scalar, ceaRoute);
-                        if (!result.isEmpty()) {
-                            String value = DataRetriever.getNumericalValue(result.get(0), ceaRoute);
-                            if(!(value.equals("0") || value.equals("0.0"))){
-                                value += " " + DataRetriever.getUnit(result.get(1));
-                                data.put(scalar, value);
-                            }
-                        }
+                        JSONObject scalarOutput = outputMap.get(scalarIris.get(scalar));
+                        String value = scalarOutput.getString("value") + " "
+                                + DataRetriever.getUnit(scalarOutput.getString("unit"));
+                        data.put(scalar, value);
                     }
 
+                    // retrieve annual values (summary of time series output)
+
+                    List<String> dataIRIList = new ArrayList<>(tsIris.values());
+                    Map<String, JSONObject> annualObjectMap = AnnualValueHelper.bulkCheckAnnualObject(dataIRIList,
+                            ceaRoute);
                     for (String measurement : CEAConstants.TIME_SERIES) {
-                        ArrayList<String> result = DataRetriever.getDataIRI(uri, measurement, ceaRoute);
-                        String attachedIri = AnnualValueHelper.getInfo(result.get(0), measurement, ceaRoute);
-                        String energyType = AnnualValueHelper.getType(result.get(0), ceaRoute);
-                        String value = AnnualValueHelper.retrieveAnnualValue(attachedIri, energyType, ceaRoute);
-                        if (!value.isEmpty()) {
-                            if (CEAConstants.TIME_SERIES.contains(measurement)) {
-                                if (measurement.contains("ESupply")) {
-                                    // PVT annual electricity supply
-                                    measurement = "Annual "+ measurement.split("ESupply")[0] + " Electricity Supply";
-                                }
-                                else if (measurement.contains("QSupply")) {
-                                    // PVT annual heat supply
-                                    measurement = "Annual "+ measurement.split("QSupply")[0] + " Heat Supply";
-                                }
-                                else {
-                                    if (measurement.contains("Thermal")) {
-                                        // solar collector annual heat supply
-                                        measurement = "Annual "+ measurement.split("Supply")[0] + " Heat Supply";
-                                    }
-                                    else if (measurement.contains("PV")) {
-                                        // PV annual electricity supply
-                                        measurement = "Annual "+ measurement.split("Supply")[0] + " Electricity Supply";
-                                    }
-                                    else {
-                                        // annual energy consumption
-                                        measurement = "Annual " + measurement;
-                                    }
-                                }
-
-                                // Return non-zero values
-                                if(!(value.equals("0") || value.equals("0.0"))){
-                                    value += " " + DataRetriever.getUnit(result.get(1));
-                                    data.put(measurement, value);
-                                }
-                            }
+                        String tsDataIRI = tsIris.get(measurement);
+                        JSONObject annualObject = annualObjectMap.get(tsDataIRI);
+                        String value = annualObject.get("numericalValue").toString() + " "
+                                + DataRetriever.getUnit(annualObject.getString("unit"));
+                        // more human-friendly label
+                        if (measurement.contains("ESupply")) {
+                            // PVT annual electricity supply
+                            measurement = measurement.split("ESupply")[0] + " Electricity Supply";
+                        } else if (measurement.contains("QSupply")) {
+                            // PVT annual heat supply
+                            measurement = measurement.split("QSupply")[0] + " Heat Supply";
+                        } else if (measurement.contains("Thermal")) {
+                            // solar collector annual heat supply
+                            measurement = measurement.split("Supply")[0] + " Heat Supply";
+                        } else if (measurement.contains("PV")) {
+                            // PV annual electricity supply
+                            measurement = measurement.split("Supply")[0] + " Electricity Supply";
                         }
+                        // annual energy consumption
+                        measurement = "Annual " + measurement;
+                        data.put(measurement, value);
                     }
-
                     requestParams.append(CEA_OUTPUTS, data);
                 }
             }
-
         }
         return requestParams;
     }
@@ -365,6 +364,7 @@ public class CEAAgent extends JPSAgent {
 
     /**
      * Validates input specific to requests coming to URI_UPDATE
+     * 
      * @param requestParams - request body in JSON format
      * @return boolean saying if request is valid or not
      */
@@ -415,28 +415,38 @@ public class CEAAgent extends JPSAgent {
 
     /**
      * Validates input specific to requests coming to URI_ACTION
+     * 
      * @param requestParams - request body in JSON format
      * @return boolean saying if request is valid or not
      */
     private boolean validateActionInput(JSONObject requestParams) {
         boolean error = requestParams.get(KEY_IRI).toString().isEmpty();
 
-        if (requestParams.has(KEY_GEOMETRY)) {error = error || requestParams.get(KEY_GEOMETRY).toString().isEmpty();}
-        if (requestParams.has(KEY_USAGE)) {error = error || requestParams.get(KEY_USAGE).toString().isEmpty();}
-        if (requestParams.has(KEY_CEA)) {error = error || requestParams.get(KEY_CEA).toString().isEmpty();}
+        if (requestParams.has(KEY_GEOMETRY)) {
+            error = error || requestParams.get(KEY_GEOMETRY).toString().isEmpty();
+        }
+        if (requestParams.has(KEY_USAGE)) {
+            error = error || requestParams.get(KEY_USAGE).toString().isEmpty();
+        }
+        if (requestParams.has(KEY_CEA)) {
+            error = error || requestParams.get(KEY_CEA).toString().isEmpty();
+        }
 
         return error;
     }
 
     /**
      * Validates input specific to requests coming to URI_QUERY
+     * 
      * @param requestParams - request body in JSON format
      * @return boolean saying if request is valid or not
      */
     private boolean validateQueryInput(JSONObject requestParams) {
         boolean error = requestParams.get(KEY_IRI).toString().isEmpty();
 
-        if (requestParams.has(KEY_CEA)) {error = error || requestParams.get(KEY_CEA).toString().isEmpty();}
+        if (requestParams.has(KEY_CEA)) {
+            error = error || requestParams.get(KEY_CEA).toString().isEmpty();
+        }
         return error;
     }
 
@@ -455,32 +465,33 @@ public class CEAAgent extends JPSAgent {
             defaultTerrainTable = config.getProperty("terrain.table");
             tsDb = config.getProperty("cea.database");
             ceaDb = Arrays.asList(config.getProperty("cea.defined.databases").split(","));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
     }
 
     /**
-     * Runs CEATask on CEAInputData, which will send request to the update endpoint with the extracted CEAOutputData after running CEA simulations
-     * @param buildingData input data on building footprint, height, usage, surrounding and weather
-     * @param uris list of input uris
+     * Runs CEATask on CEAInputData, which will send request to the update endpoint
+     * with the extracted CEAOutputData after running CEA simulations
+     * 
+     * @param buildingData input data on building footprint, height, usage,
+     *                     surrounding and weather
+     * @param uris         list of input uris
      * @param threadNumber int tracking thread that is running
-     * @param crs coordinate reference system
+     * @param crs          coordinate reference system
      */
     private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase, JSONObject solar) {
         try {
-            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs, ceaDatabase, solar);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, uris, threadNumber, crs, ceaDatabase, updater, solar);
             CEAExecutor.execute(task);
-        }
-        catch(URISyntaxException e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
     }
+
 }

@@ -1,16 +1,9 @@
 {
     "ServiceSpec": {
-        "Name": "cea-agent",
+        "Name": "ceavisualisation-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ceavisualisation-agent:0.1.0",
-                "Mounts": [
-                    {
-                        "Type": "bind",
-                        "Source": "../../../../../../Agents/CEAVisualisationAgent/ceavisualisation-agent/src/main/resources/config.properties",
-                        "Target": "/resources/config.properties"
-                    }
-                ],
+                "Image": "ghcr.io/cambridge-cares/ceavisualisation-agent:0.2.0",
                 "Env": [
                     "DB_NAME=postgres"
                 ],
@@ -20,11 +13,17 @@
                     },
                     {
                         "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
                     }
                 ],
                 "Secrets": [
                     {
                         "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
                     }
                 ]
             }
@@ -32,7 +31,7 @@
     },
     "endpoints": {
         "cea-agent": {
-          "url": "http://localhost:8084/ceavisualisation-agent/",
+          "url": "http://localhost:8080/ceavisualisation-agent/",
           "externalPath": "/ceavisualisation-agent/"
         }
     }

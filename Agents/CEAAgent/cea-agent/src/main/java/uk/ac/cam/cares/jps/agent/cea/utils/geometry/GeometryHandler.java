@@ -1,14 +1,15 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 
 import org.cts.crs.CRSException;
 import org.cts.CRSFactory;
+import org.cts.IllegalCoordinateException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.units.Unit;
 import org.cts.crs.GeodeticCRS;
 import org.cts.op.CoordinateOperation;
+import org.cts.op.CoordinateOperationException;
 import org.cts.op.CoordinateOperationFactory;
 import org.cts.registry.EPSGRegistry;
 import org.cts.registry.RegistryManager;
@@ -19,16 +20,9 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class GeometryHandler {
     public static final String EPSG_4326 = "EPSG:4326";
@@ -38,6 +32,7 @@ public class GeometryHandler {
 
     /**
      * Parses a WKT string to a geometry object
+     * 
      * @param geometryString WKT string
      * @return geometryString as a geometry object
      */
@@ -46,13 +41,35 @@ public class GeometryHandler {
     }
 
     /**
+     * Return WKT string of envelope of a list of geometries (building footprint) with buffer
+     * 
+     * @param geometries list of geometry objects
+     * @param crs        source CRS of geometries
+     * @param distance   buffer distance (in metre)
+     * @return WKT string of bounding box
+     */
+
+    public static String getBufferEnvelope(List<Geometry> geometries, String crs, Double distance) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        GeometryCollection geoCol = geometryFactory.createGeometryCollection(geometries.toArray(new Polygon[0]));
+
+        Geometry envelope = geoCol.getEnvelope();
+
+        Polygon boundingBoxGeometry = (Polygon) bufferPolygon(envelope, "EPSG:" + crs, distance);
+
+        return boundingBoxGeometry.toText();
+    }
+
+    /**
      * Buffers a geometry object
-     * @param geom geometry object
+     * 
+     * @param geom      geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
-     * @param distance buffer distance
+     * @param distance  buffer distance
      * @return buffered geometry object
      */
-    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance)  {
+    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance) {
         if (distance == 0) {
             return geom;
         }
@@ -79,15 +96,15 @@ public class GeometryHandler {
             result.setSRID(source);
 
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return geom;
         }
     }
 
     /**
      * Inflates a geometry object
-     * @param geom geometry object
+     * 
+     * @param geom     geometry object
      * @param distance buffer distance
      * @return inflated geometry object
      */
@@ -102,7 +119,8 @@ public class GeometryHandler {
 
     /**
      * Transforms a geometry object from sourceCRS to targetCRS
-     * @param geometry geometry object
+     * 
+     * @param geometry  geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
      * @param targetCRS target CRS for geometry transformation with EPSG prefix
      * @return the transformed geometry in targetCRS
@@ -115,8 +133,10 @@ public class GeometryHandler {
             return geometry;
         }
 
+        Set<CoordinateOperation> operations = getTransformOperations(sourceCRS, targetCRS);
+
         for (int i = 0; i < coordinates.length; i++) {
-            transformed[i] = transformCoordinate(coordinates[i], sourceCRS, targetCRS);
+            transformed[i] = transformCoordinate(coordinates[i], operations);
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
@@ -132,12 +152,31 @@ public class GeometryHandler {
 
     /**
      * Transform a coordinate from sourceCRS to targetCRS
+     * 
      * @param coordinate coordinate to be transformed
-     * @param sourceCRS source CRS of coordinate with EPSG prefix
-     * @param targetCRS target CRS for coordinate transformation with EPSG prefix
+     * @param sourceCRS  source CRS of coordinate with EPSG prefix
+     * @param targetCRS  target CRS for coordinate transformation with EPSG prefix
      * @return the transformed coordinate in targetCRS
+     * @throws CoordinateOperationException
+     * @throws IllegalCoordinateException
      */
-    public static Coordinate transformCoordinate(Coordinate coordinate, String sourceCRS, String targetCRS) throws Exception {
+    public static Coordinate transformCoordinate(Coordinate coordinate, Set<CoordinateOperation> operations)
+            throws IllegalCoordinateException, CoordinateOperationException {
+
+        double[] transform = new double[3];
+        if (!operations.isEmpty()) {
+            // Test each transformation method (generally, only one method is available)
+            for (CoordinateOperation op : operations) {
+                // Transform coord using the op CoordinateOperation from sourceCRS to targetCRS
+                transform = op.transform(new double[] { coordinate.getX(), coordinate.getY(), coordinate.getZ() });
+            }
+        }
+
+        return new Coordinate(transform[0], transform[1], transform[2]);
+    }
+
+    public static Set<CoordinateOperation> getTransformOperations(String sourceCRS, String targetCRS)
+            throws CRSException, CoordinateOperationException {
         CRSFactory crsFactory = new CRSFactory();
         RegistryManager registryManager = crsFactory.getRegistryManager();
         registryManager.addRegistry(new EPSGRegistry());
@@ -145,23 +184,13 @@ public class GeometryHandler {
         CoordinateReferenceSystem source = crsFactory.getCRS(sourceCRS);
         CoordinateReferenceSystem target = crsFactory.getCRS(targetCRS);
 
-        Set<CoordinateOperation> operations = CoordinateOperationFactory
-                .createCoordinateOperations((GeodeticCRS) source, (GeodeticCRS) target);
+        return CoordinateOperationFactory.createCoordinateOperations((GeodeticCRS) source, (GeodeticCRS) target);
 
-        double[] transform = new double[3];
-        if (operations.size() != 0) {
-            // Test each transformation method (generally, only one method is available)
-            for (CoordinateOperation op : operations) {
-                // Transform coord using the op CoordinateOperation from sourceCRS to targetCRS
-                transform  = op.transform(new double[] {coordinate.getX(), coordinate.getY(), coordinate.getZ()});
-            }
-        }
-
-        return new Coordinate(transform[0], transform[1], transform[2]);
     }
 
     /**
      * Checks whether a CRS has meter as the unit of measurement
+     * 
      * @param crs CRS string
      * @return true if crs has meter as the unit of measurement, false otherwise
      */
@@ -174,137 +203,8 @@ public class GeometryHandler {
 
         if (unit.getName().contains(Unit.METER.getName())) {
             return true;
-        }
-        else {
+        } else {
             return false;
-        }
-    }
-
-    /**
-     * Extracts the footprint given a JSONArray of building surface geometries as WKT strings
-     * @param surfaceArray JSONArray of building surface geometries as WKT strings
-     * @param originalCRS CRS of surfaceArray as String
-     * @param height building height
-     * @return list of geometry objects representing the building footprint
-     */
-    public static List<Geometry> extractFootprint(JSONArray surfaceArray, String originalCRS, Double height) {
-        double distance = 0.0;
-        double increment = 0.00005;
-        double limit = 0.001;
-
-        List<Polygon> exteriors = new ArrayList<>();
-//        List<LinearRing> holes = new ArrayList<>();
-        GeometryFactory geometryFactory = new GeometryFactory();
-        String geoType;
-
-        List<Geometry> result = new ArrayList<>();
-
-        originalCRS = "EPSG:" + originalCRS;
-
-        String crs = EPSG_4326;
-
-        if (surfaceArray.length() == 1) {
-            String wkt = surfaceArray.getJSONObject(0).getString("wkt");
-
-            Geometry temp = toGeometry(wkt);
-
-            try {
-                result.add(extractExterior((Polygon) transformGeometry(temp, originalCRS, EPSG_4326)));
-
-                return result;
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                throw new JPSRuntimeException(e);
-            }
-        }
-        else {
-            for (int i = 0; i < surfaceArray.length(); i++) {
-                String wkt = surfaceArray.getJSONObject(i).getString("wkt");
-
-                // create Polygon object from WKT string
-                Polygon polygon = (Polygon) toGeometry(wkt);
-
-                try {
-                    polygon = (Polygon) transformGeometry(polygon, originalCRS, EPSG_4326);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    throw new JPSRuntimeException(e);
-                }
-
-                // get exterior ring for buffering
-                exteriors.add(extractExterior(polygon));
-
-                // store holes to add back in later
-//                for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
-//                    holes.add(polygon.getInteriorRingN(j));
-//                }
-            }
-
-            // create GeometryCollection and perform union
-            GeometryCollection geoCol = geometryFactory.createGeometryCollection(exteriors.toArray(new Polygon[0]));
-
-            Geometry merged = geoCol.union();
-
-            geoType = merged.getGeometryType();
-
-            distance += increment;
-
-            // keep on inflating, merging until either the limit is reached or a single polygon is formed
-            while (!geoType.equals("Polygon") && distance < limit) {
-                distance += increment;
-
-                for (int i = 0; i < exteriors.size(); i++) {
-                    Polygon temp = (Polygon) bufferPolygon(exteriors.get(i), crs, distance);
-                    if (!temp.isValid()) {
-                        temp = (Polygon) GeometryFixer.fix(temp);
-                    }
-                    exteriors.set(i, temp);
-                }
-
-                geoCol = (GeometryCollection) geometryFactory.buildGeometry(exteriors);
-                merged = geoCol.union();
-                geoType = merged.getGeometryType();
-            }
-
-            List<Geometry> geometries = new ArrayList<>();
-
-            if (geoType.equals("Polygon")) {
-                geometries.add(bufferPolygon(extractExterior((Polygon) merged), crs, -1 * distance));
-            }
-            else {
-                for (int i = 0; i < merged.getNumGeometries(); i++) {
-                    Geometry geometry = merged.getGeometryN(i);
-
-                    // calculate number of floors
-                    int floor = (int) Math.round(height / FLOOR_HEIGHT);
-
-                    // at least one floor
-                    if (floor == 0) {
-                        floor = 1;
-                    }
-
-                    double area = 0;
-
-                    try {
-                        area = transformGeometry(geometry, crs, METER_EPSG_STRING).getArea();
-                    }
-                    catch (Exception e) {
-                    }
-
-                    // calculate gross floor area for the geometry, since CEA treats each geometry object as a building
-                    double gfa = floor * area;
-
-                    // CEA cannot work with geometry whose gross floor area is smaller than or equal to 100 m2
-                    if (gfa > 100) {
-                        // deflate geometries back
-                        geometries.add(extractExterior((Polygon) bufferPolygon(geometry, crs, -1 * distance)));
-                    }
-                }
-            }
-
-            return geometries;
         }
     }
 
@@ -332,6 +232,7 @@ public class GeometryHandler {
 
     /**
      * Extracts and returns the exterior ring of a polygon object
+     * 
      * @param polygon polygon object
      * @return polygon's exterior ring as a polygon object
      */
@@ -341,6 +242,7 @@ public class GeometryHandler {
 
     /**
      * Swaps the coordinates of a polygon object
+     * 
      * @param polygon polygon object
      * @return polygon with its coordinates swapped
      */
@@ -353,15 +255,17 @@ public class GeometryHandler {
             coordinate.setY(temp);
         }
 
-        coordinates[0] = coordinates[coordinates.length-1];
+        coordinates[0] = coordinates[coordinates.length - 1];
 
         return new GeometryFactory().createPolygon(coordinates);
     }
 
     /**
      * Check if the CEAGeometryDatas in ceaGeometries have the same CRS
+     * 
      * @param ceaGeometries list of CEAGeometryDatas
-     * @return true if CEAGeometryDatas in ceaGeometries have the same CRS, false otherwise
+     * @return true if CEAGeometryDatas in ceaGeometries have the same CRS, false
+     *         otherwise
      */
     private static boolean checkSameCRS(List<CEAGeometryData> ceaGeometries) {
         List<String> crsList = ceaGeometries.stream()
@@ -370,60 +274,4 @@ public class GeometryHandler {
         return crsList.stream().allMatch(s -> s.equals(crsList.get(0)));
     }
 
-    private static List<Geometry> insertHoles(List<Geometry>  geometries, List<LinearRing> holes) {
-        List<Geometry> result = new ArrayList<>();
-
-        for (LinearRing hole: holes) {
-            int i = 0;
-            while (i < geometries.size()) {
-                Geometry geometry = geometries.get(i);
-                if (geometry.contains(hole)) {
-                    result.add(geometry.difference(hole));
-                    geometries.remove(i);
-                    break;
-                }
-                else {
-                    i++;
-                }
-            }
-        }
-
-        result.addAll(geometries);
-
-        return result;
-    }
-
-    public static String getCountry(Coordinate coordinate) throws Exception {
-        String urlString = String.format(
-                "https://nominatim.openstreetmap.org/reverse?lat=%f&lon=%f&format=json",
-                coordinate.getY(), coordinate.getX()
-        );
-
-
-        URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-
-        conn.setRequestProperty("User-Agent", "CEA agent");
-
-        // Read the response
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
-        }
-        reader.close();
-
-        JSONObject j = new JSONObject(response.toString());
-
-        if (j.has("address")) {
-            if (j.getJSONObject("address").has("country_code")) {
-                return j.getJSONObject("address").getString("country_code");
-            }
-        }
-
-        return "CH";
-    }
 }

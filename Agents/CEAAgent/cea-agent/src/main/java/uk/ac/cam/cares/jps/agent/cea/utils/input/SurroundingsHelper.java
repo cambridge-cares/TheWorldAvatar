@@ -10,26 +10,30 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SurroundingsHelper {
     /**
      * Retrieves the surrounding buildings
+     * 
      * @param endpoint SPARQL endpoint
      * @return the surrounding buildings as a list of CEAGeometryData
      */
-    public static List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, ArrayList<String> buildingIRIs, String endpoint) {
+    public static List<CEAGeometryData> getSurroundings(List<CEABuildingData> ceaBuildingDataList,
+            List<String> buildingIRIs, String endpoint) {
         try {
-            String uri;
-            List<CEAGeometryData> surroundings = new ArrayList<>();
 
-            Double buffer = 50.0;
+            Double buffer = 50.0; // this should be in metre
+
+            // collect footprints of buildings
 
             List<Geometry> geometries = new ArrayList<>();
 
@@ -41,16 +45,7 @@ public class SurroundingsHelper {
 
             String crs = ceaBuildingDataList.get(0).getGeometry().getCrs();
 
-            GeometryFactory geometryFactory = new GeometryFactory();
-
-            GeometryCollection geoCol = geometryFactory.createGeometryCollection(geometries.toArray(new Polygon[0]));
-
-            Geometry envelope = geoCol.getEnvelope();
-
-            Polygon boundingBoxGeometry = (Polygon) GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs, buffer);
-
-
-            String boundingBox = boundingBoxGeometry.toText();
+            String boundingBox = GeometryHandler.getBufferEnvelope(geometries, crs, buffer);
 
             Query query = getBuildingsWithinBoundsQuery(boundingBox);
 
@@ -59,41 +54,36 @@ public class SurroundingsHelper {
             // Execute SPARQL query
             JSONArray queryResultArray = storeClient.executeQuery(query.toString());
 
-            for (int i = 0; i < queryResultArray.length(); i++) {
-                uri = queryResultArray.getJSONObject(i).get("building").toString();
+            List<String> newUriList = IntStream.range(0, queryResultArray.length())
+                    .mapToObj(i -> queryResultArray.getJSONObject(i).get("building").toString())
+                    .filter(uri -> !buildingIRIs.contains(uri)).collect(Collectors.toList());
 
-                if (!buildingIRIs.contains(uri)) {
-                    CEAGeometryData temp = GeometryQueryHelper.getBuildingGeometry(uri, endpoint, false);
-                    surroundings.add(temp);
-                }
-            }
-
-            return surroundings;
-        }
-        catch (Exception e) {
-            System.out.println("No surroundings retrieved, agent will run CEA with CEA's default surroundings retrieved from OpenStreetMap.");
-            return null;
+            return GeometryQueryHelper.bulkGetBuildingGeometry(newUriList, endpoint);
+        } catch (Exception e) {
+            System.out.println(
+                    "No surroundings retrieved, agent will run CEA with CEA's default surroundings retrieved from OpenStreetMap.");
+            return Collections.emptyList();
         }
     }
 
     /**
-     * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
+     * Builds a SPARQL geospatial query for city object id of buildings whose
+     * envelope are within lowerBounds and upperBounds
+     * 
      * @param boundingBox WKT string that define the boundary of surroundings query
      * @return returns a query object for the geospatial query
      */
-    private static Query getBuildingsWithinBoundsQuery(String boundingBox) throws ParseException {
+    private static Query getBuildingsWithinBoundsQuery(String boundingBox) {
         boundingBox = "\"" + boundingBox + "\"^^geo:wktLiteral";
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("ocgml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ocgml))
                 .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
                 .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
                 .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp))
                 .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo));
 
         wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
-                .addWhere("?geometry", "grp:parent" , "?Lod0FootPrint")
+                .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
                 .addWhere("?geometry", "geo:asWKT", "?wkt")
                 .addFilter("geof:sfIntersects(?wkt, ?box)");
 
@@ -101,11 +91,9 @@ public class SurroundingsHelper {
                 .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
                 .addBind(boundingBox, "box")
                 .addWhere(wb)
-                .addVar("?building")
-                .addVar("?geometry");
+                .addVar("?building");
 
-        Query query = sb.build();
 
-        return query;
+        return sb.build();
     }
 }
