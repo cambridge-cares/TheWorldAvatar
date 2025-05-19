@@ -27,10 +27,6 @@ def create_ponits_table_self_defined_area(lng_start: float, lng_end: float, lng_
         postgis_client.execute_update(file.read(), table_mapping, params)
 
 
-def create_points_table_provided_list(lng: float, lat: float) -> str:
-    pass
-
-
 def create_points_table_postal_code(query_id: str):
     sql_path = os.path.join(script_dir, "postal_code.sql")
     with open(sql_path, "r") as file:

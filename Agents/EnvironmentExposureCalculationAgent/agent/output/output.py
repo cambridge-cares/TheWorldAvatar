@@ -16,7 +16,7 @@ def get_output(output_format: str, point_select: str, query_id: str) -> str:
     exposure_details = get_exposure_details()
 
     if output_format == OutputFormatParam.CSV.value:
-        return output_as_csv(summary_df, exposure_details)
+        return output_as_zip_of_csv(summary_df, exposure_details)
     elif output_format == OutputFormatParam.JSON.value:
         return output_as_json()
     else:
@@ -27,6 +27,9 @@ def get_summary_df(point_selection: str, query_id: str) -> pd.DataFrame:
     postgis = cast(PostGISClient, current_app.extensions['postgis_client'])
 
     def get_query() -> str:
+        # TODO: Since the input points determine the input and output scripts to call, it will be better to create 
+        # Profile class for different input choices and manage both the input and output scripts at a separate module, 
+        # instead of defining the scripts in point_selection and output modules
         if point_selection == PointSelectionParam.PostalCode.value:
             path = os.path.join(os.path.dirname(
                 os.path.abspath(__file__)), 'script_sql', 'retrieve_postal_code_result.sql')
@@ -47,15 +50,15 @@ def output_as_json(summary_df: pd.DataFrame, exposure_details: pd.DataFrame):
     return {"summary": summary_df.to_dict(orient='records'), "exposures": exposure_details.to_dict(orient='records')}
 
 
-def output_as_csv(summary_df: pd.DataFrame, exposure_details: pd.DataFrame):
+def output_as_zip_of_csv(summary_df: pd.DataFrame, exposure_details: pd.DataFrame):
     summary_file = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'output_files', 'summary.csv')
     summary_df.to_csv(summary_file, index=False)
-    
+
     exposure_details_file = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'output_files', 'exposure_details.csv')
     exposure_details.to_csv(exposure_details_file, index=False)
-    
+
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
         zip_file.write(summary_file, arcname='summary.csv')

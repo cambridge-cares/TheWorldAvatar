@@ -5,12 +5,9 @@ from agent.point_selection.point_selection import create_points_table_postal_cod
 
 def select_points(query_id:str, point_selection: str, data: dict):
     if point_selection == PointSelectionParam.SelectedPoints.value:
-        points = data['points']  # list of points
-        # todo: need to fix the input
+        pass
     elif point_selection == PointSelectionParam.Region.value:
-        # get points in a preset region
-        region = data['region']
-        # todo: need to add this function
+        pass
     elif point_selection == PointSelectionParam.SelfDefinedRegion.value:
         create_ponits_table_self_defined_area(data.get('lng_start'), data.get('lng_end'), data.get('lng_step'),
                             data.get('lat_start'), data.get('lat_end'), data.get('lat_step'), query_id)

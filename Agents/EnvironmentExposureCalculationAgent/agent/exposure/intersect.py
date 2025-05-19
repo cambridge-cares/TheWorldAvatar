@@ -1,7 +1,6 @@
 import os
 from typing import cast
 from flask import current_app
-import pandas as pd
 from agent.exposure.env_feature_retrieval import fetch_env_features
 from agent.exposure.constants import FeatureTableName, ScriptName
 from agent.stack.ontop_client import OntopClient
@@ -19,7 +18,6 @@ class Intersect:
         
         
     def intersect(self,):
-        # should save the request id to feature table as well
         fetch_env_features([ScriptName.Greenspace], save_feature_table=True, feature_table=FeatureTableName.Polygons)
         self.area_intersect()
         
