@@ -6,7 +6,7 @@ from agent.exposure import exposure_calculation
 from agent.output.output import get_output
 from agent.output.save_to_table import save_to_table
 from agent.point_selection import select_points
-from agent.utils.table_name_helper import TableNameHelper
+from agent.utils.table_name_helper import QueryIdHelper
 
 
 def register_route(app):
@@ -26,21 +26,21 @@ def register_route(app):
 
         data = request.get_json()
 
-        table_name_helper = TableNameHelper(data, request.args)
+        query_id = QueryIdHelper(data, request.args).get_query_id()
         # step1: point selection
-        select_points(table_name_helper.get_table_name(),
+        select_points(query_id,
                       point_selection, data)
 
         # step2: create boundary around points
-        create_boundary(table_name_helper, boundary, data)
+        create_boundary(query_id, boundary, data)
 
         # step3: exposure calculation
-        exposure_calculation(table_name_helper, algorithm)
+        exposure_calculation(query_id, algorithm)
 
         # step4: (Optional) output result
-        save_to_table(table_name_helper)
+        save_to_table(query_id)
         output_format = data.get('output_format')
-        output = get_output(output_format, point_selection, table_name_helper)
+        output = get_output(output_format, point_selection, query_id)
 
         if output_format == OutputFormatParam.CSV.value:
             return send_file(output,         

@@ -6,13 +6,11 @@ from agent.exposure.env_feature_retrieval import fetch_env_features
 from agent.exposure.constants import FeatureTableName, ScriptName
 from agent.stack.ontop_client import OntopClient
 from agent.stack.postgis_client import PostGISClient
-from agent.utils.table_name_helper import QueryIdHelper
 
 class Intersect:
 
-    def __init__(self, table_name_helper:QueryIdHelper):
-        self.points_table_name = table_name_helper.get_query_id()
-        self.table_name_helper = table_name_helper
+    def __init__(self, query_id:str):
+        self.query_id = query_id
         
         self.postgis_client = cast(PostGISClient, current_app.extensions['postgis_client'])
         self.ontop_client = cast(OntopClient, current_app.extensions['ontop_client'])
@@ -35,11 +33,11 @@ class Intersect:
         with open(path) as file:
             self.postgis_client.execute_update(file.read(), 
                                                {"feature_table_name": FeatureTableName.Polygons.value['feature_table_name']},
-                                               {'query_id': self.table_name_helper.get_query_id()})
+                                               {'query_id': self.query_id})
     
     def point_intersect(self):
         path = os.path.join(self.script_dir, "script_sql", "point_intersect.sql")
         with open(path) as file:
             self.postgis_client.execute_update(file.read(), 
                                                {"feature_table_name": FeatureTableName.Points.value['feature_table_name']},
-                                               {'query_id': self.table_name_helper.get_query_id()})
+                                               {'query_id': self.query_id})

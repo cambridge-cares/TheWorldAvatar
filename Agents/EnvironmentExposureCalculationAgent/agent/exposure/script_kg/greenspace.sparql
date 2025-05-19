@@ -3,9 +3,9 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 
 # NOTICE: this is template file for getting culture env feature. Should be redesigned after a proper ontology is done.
 
-SELECT  ?iri ?type ?name ?geom ?type_label
+SELECT  ?iri ?type ?geom ?type_label
 WHERE{ 
-  ?iri a greenspace:Greenspace; greenspace:hasFirstAlternativeName ?name; geo:hasGeometry/geo:asWKT ?geom.
+  ?iri a greenspace:Greenspace; geo:hasGeometry/geo:asWKT ?geom.
   BIND(greenspace:Greenspace as ?type)
   BIND("greenspace" as ?type_label)
 }

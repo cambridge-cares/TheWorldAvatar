@@ -6,11 +6,9 @@ from flask import abort, current_app
 import pandas as pd
 from agent.config.params import OutputFormatParam, PointSelectionParam
 from agent.stack.postgis_client import PostGISClient
-from agent.utils.table_name_helper import QueryIdHelper
 
 
-def get_output(output_format: str, point_select: str, table_name_helper: QueryIdHelper) -> str:
-    query_id = table_name_helper.get_query_id()
+def get_output(output_format: str, point_select: str, query_id: str) -> str:
     if not output_format:
         return query_id
 
