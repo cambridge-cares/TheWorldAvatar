@@ -3,7 +3,7 @@
         "Name": "ceavisualisation-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ceavisualisation-agent:0.2.0-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/ceavisualisation-agent:0.2.0",
                 "Env": [
                     "DB_NAME=postgres"
                 ],
