@@ -4,11 +4,11 @@ This agent serves as an exploration on environment calculation and there will be
 ## Workflow Overview
 ```mermaid v2
 graph TD
-    A[1. Sample points] --> B[2. Create buffer]
-    B --> C[3. Access TWA KG for filtered objects information ]
-    C --> D[4. Store objects information to Postgis as temporary table]
-    D --> E[5. Geometry calculation with PostgreSQL]
-    E --> F[6. Store results, output in the requested format]
+    A[1 Sample points] --> B[2 Create buffer]
+    B --> C[3 Access TWA KG for filtered objects information ]
+    C --> D[4 Store objects information to Postgis as temporary table]
+    D --> E[5 Geometry calculation with PostgreSQL]
+    E --> F[6 Store results, output in the requested format]
 ```
 
 After stage 4, the buffered points and environment features are all stored in the Postgis database and ready for calculation directly without passing parameters in SQL.
@@ -115,7 +115,7 @@ curl --location 'http://localhost:3838/environment-exposure-calculation-agent/ca
 
 ## Experiment
 ### Greenspace Exposure
-The experiment is aimed at finding the greenspace exposure counts and areas around postcode locations in different years. The result is generated with code at commit [cec8893](https://github.com/cambridge-cares/TheWorldAvatar/commit/cec8893b1ed064de33d9bfa09e003afd9eb42c53).
+The experiment is aimed at finding the greenspace exposure counts and areas around postcode locations in different years. The result is generated with code at commit [ae15be3](https://github.com/cambridge-cares/TheWorldAvatar/commit/ae15be3831cb27a13bf0b01662f30603b7367a9c).
 
 Input variables
 - Boundary radius size (m): [400, 800, 1000]
