@@ -12,4 +12,4 @@ class QueryIdHelper:
         return compressed_hex
     
     def get_query_id(self,) -> str:
-        return self.get_query_id_of_dataset('2019')
+        return self.get_query_id_of_dataset()
