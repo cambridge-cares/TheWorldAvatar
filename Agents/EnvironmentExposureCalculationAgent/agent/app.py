@@ -16,7 +16,7 @@ def create_app():
     stack_client.launchGateway()
     # app.extensions['stack_client'] = stack_client
     
-    db_conf, ontop_url, blazegraph_url = retrieve_stack_settings(stack_client)
+    db_conf, ontop_url = retrieve_stack_settings(stack_client)
     app.extensions['postgis_client'] = PostGISClient(db_conf)
     app.extensions['ontop_client'] = OntopClient(ontop_url)
         
