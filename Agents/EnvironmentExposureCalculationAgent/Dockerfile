@@ -52,17 +52,5 @@ FROM base as prod
 
 # # Copy required source code (as code is not attached as volume)
 WORKDIR /app/agent
+COPY ./agent .
 CMD python -m flask run -h 0.0.0.0 -p 5000
-# COPY ./agent ./agent
-# COPY ./app_entry_point.sh .
-
-# # Set permission 
-# RUN chmod +x app_entry_point.sh
-# # Set the entrypoint
-# ENTRYPOINT ./app_entry_point.sh
-# #==================================================================================================
-
-# FROM base as debug
-# WORKDIR /agent
-# CMD ["flask", "run", "--host=0.0.0.0", "--port=5000", "--debug"]
-# # CMD ["sh", "-c", "while true; do sleep 3600; done"]

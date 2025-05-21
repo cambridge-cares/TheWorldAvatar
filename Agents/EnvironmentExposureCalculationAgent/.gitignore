@@ -13,12 +13,18 @@ coverage.xml
 geckodriver.log
 assets
 
-## Directories
+# Directories
 tmp_base/
 tmp_stack/
 output/*
 data/*
 !.gitignore
 
-## User defined
+# User defined
 *.egg-info
+
+# data file
+# stack-data-uploader/inputs/data/parks/MasterPlan2019SDCPParkandOpenSpacelayer/*
+# stack-data-uploader/inputs/data/parks/MP14SDCPPWPLANParksandOpenSpaceSHP/*
+# stack-data-uploader/inputs/data/parks/NParksParksandNatureReserves/*
+# stack-data-uploader/inputs/data/sgpostcode/postcode/*

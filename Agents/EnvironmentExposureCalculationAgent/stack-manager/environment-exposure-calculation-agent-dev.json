@@ -14,7 +14,13 @@
                     {
                         "ConfigName": "geoserver"
                     }
-                ], 
+                ], "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/EnvironmentExposureCalculationAgent/agent",
+                        "Target": "/agent"
+                    }
+                ],
                 "Secrets": [
                     {
                         "SecretName": "postgis_password"
