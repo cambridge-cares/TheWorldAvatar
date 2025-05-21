@@ -115,7 +115,7 @@ curl --location 'http://localhost:3838/environment-exposure-calculation-agent/ca
 
 ## Experiment
 ### Greenspace Exposure
-The experiment is aimed at finding the greenspace exposure counts and areas around postcode locations in different years. The result is generated with code at commit [ae15be3](https://github.com/cambridge-cares/TheWorldAvatar/commit/ae15be3831cb27a13bf0b01662f30603b7367a9c).
+The experiment is aimed at finding the greenspace exposure counts and areas around postcode locations in different years. The result is generated with code at commit [ec240a0](https://github.com/cambridge-cares/TheWorldAvatar/commit/ec240a017bdc75ac9bdef2f5d24b3622bd75d9f1).
 
 Input variables
 - Boundary radius size (m): [400, 800, 1000]
@@ -190,5 +190,10 @@ Since the ontology design hasn't captured dataset version information and featur
     source		SELECT "ogc_fid",  ST_ASTEXT(wkb_geometry) as wkt
                 FROM "public"."parks_2016"
     ```
+3. To get unique request id, manually modify `utils/table_name_helper.py`
+    ```
+    def get_query_id(self,) -> str:
+        return self.get_query_id_of_dataset('<DATESET_NAME>')
+    ```
     Rerun the command to get the result in another year.
-3. After running all the boundary sizes for all years (9 seperate requests), mannually consolidate the summary result 
+4. After running all the boundary sizes for all years (9 seperate requests), mannually consolidate the summary result 
