@@ -58,7 +58,7 @@ This guide is for VSCode remote debug with docker container. The development ima
 
 After these steps, the agent should be running with hot reload and debugger attached . However, changes made to `app.py` and `route.py` will require a container restart for the changes to be effective.
 
-### Production Setup
+<!-- ### Production Setup
 Notice: The production setup hasn't been fully tested.
 
 1. Build production image as
@@ -68,14 +68,14 @@ Notice: The production setup hasn't been fully tested.
 
 2. Copy the [stack-manager/environment-exposure-calculation-agent.json](./stack-manager/environment-exposure-calculation-agent.json) to Singapore-sea-level-rise stack manager inputs config folder.
 
-3. Start Singapore-sea-level-rise stack with stack manager.
+3. Start Singapore-sea-level-rise stack with stack manager. -->
 
 ## Usage 
 The agent supports different methods of calculation, and they are specified as request arguments. Each method may have parameters and are defined in the request body.
 - point_selection
     - postal_code: use postalcode data stored in table `public.sgpostcode`
     - self_defined_region: sample points regularly in the provided rectangle region
-        - param
+        - request body param
             ```
             "lng_start": lng_start,
             "lng_end": lng_end,
@@ -88,7 +88,7 @@ The agent supports different methods of calculation, and they are specified as r
     - regions (Not implemented)
 - boundary
     - buffer: create a circular buffer around the selected points
-        - param
+        - request body param
             ```
             "boundary_radius": <RADIUE_IN_METER> 
             ```
@@ -197,3 +197,6 @@ Since the ontology design hasn't captured dataset version information and featur
     ```
     Rerun the command to get the result in another year.
 4. After running all the boundary sizes for all years (9 seperate requests), mannually consolidate the summary result 
+
+## Developer Note
+The agent is at experiment stage and has few directions to improve on. Search for `TODO` in the code to find out more information for potential improvement directions.
