@@ -58,7 +58,7 @@ Output: IRI of the created station with key "station", e.g. {"station": "http://
 
 An example request using curl:
 ```
-curl -X PUT "http://localhost:8086/WeatherAgent/CreateStation?lat=0&lon=0&name=Station+1"
+curl -X PUT "http://localhost:3838/weather-agent/CreateStation?lat=0&lon=0&name=Station+1"
 ```
 
 ### WeatherAgent/UpdateStation (PUT)
@@ -69,7 +69,7 @@ For a successful update, it will return "Updated station: [IRI of station]" in i
 
 Example request using curl:
 ```
-curl -X PUT "http://localhost:8086/WeatherAgent/UpdateStation?iri=http://station1"
+curl -X PUT "http://localhost:3838/weather-agent/UpdateStation?iri=http://station1"
 ```
 
 ### WeatherAgent/DeleteStation (DELETE)
@@ -80,7 +80,7 @@ If successful, it will return "Deleted station: [IRI of station]".
 
 Example request using curl:
 ```
-curl -X DELETE "http://localhost:8086/WeatherAgent/DeleteStation?iri=http://station1"
+curl -X DELETE "http://localhost:3838/weather-agent/DeleteStation?iri=http://station1"
 ```
 
 ## Ontology
