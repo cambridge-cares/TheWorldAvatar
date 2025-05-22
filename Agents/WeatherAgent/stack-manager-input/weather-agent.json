@@ -3,13 +3,13 @@
 		"Name": "weather-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/weatheragent:1.3",
+				"Image": "ghcr.io/cambridge-cares/weatheragent:1.4.1-SNAPSHOT",
 				"Env": [
 					"DATABASE=postgres",
 					"SCHEMA=public",
 					"LAYERNAME=weatherstations",
 					"GEOSERVER_WORKSPACE=weatherstations",
-					"ONTOP_CONTAINER_NAME=",
+					"ONTOP_CONTAINER_NAME=Ontop",
 					"API_KEY="
 				],
 				"Configs": [
