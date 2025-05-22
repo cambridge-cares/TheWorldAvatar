@@ -3,7 +3,7 @@
     "Name": "weather-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/weatheragent:1.4.1-SNAPSHOT",
+        "Image": "ghcr.io/cambridge-cares/weatheragent:1.4.1",
         "Env": [
           "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
           "DATABASE=postgres",
