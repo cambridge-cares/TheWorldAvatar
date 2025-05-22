@@ -11,3 +11,4 @@ FROM "env_exposure"."point_table" as po
 JOIN "public"."sgpostcode" as pc ON pc.ogc_fid = po.ogc_fid
 JOIN lat_lng as ll ON ll.id = po.id
 WHERE query_id = %(query_id)s
+ORDER BY pc.postal_code

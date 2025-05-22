@@ -4,7 +4,7 @@ from agent.boundary import create_boundary
 from agent.config.params import OutputFormatParam
 from agent.exposure import exposure_calculation
 from agent.output.output import get_output
-from agent.output.save_to_table import save_to_table
+from agent.output.postprocessing import postprocess_result
 from agent.point_selection import select_points
 from agent.utils.table_name_helper import QueryIdHelper
 
@@ -37,8 +37,8 @@ def register_route(app):
         # step3: exposure calculation
         exposure_calculation(query_id, algorithm)
 
-        # step4: (Optional) output result
-        save_to_table(query_id)
+        # step4: result output
+        postprocess_result(query_id)
         output_format = data.get('output_format')
         output = get_output(output_format, point_selection, query_id)
 

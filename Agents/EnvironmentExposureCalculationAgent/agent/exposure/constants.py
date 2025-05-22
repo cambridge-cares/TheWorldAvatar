@@ -1,10 +1,12 @@
 from enum import Enum
+import os
 
-
-class ScriptName(Enum):
-    Culture = "culture"
-    Facility = "facility"
-    Greenspace = "greenspace"
+kg_script_dir = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), 'script_kg')
+class KGScript(Enum):
+    Culture = os.path.join(kg_script_dir, 'culture.sparql')
+    Facility = os.path.join(kg_script_dir, 'facility.sparql')
+    Greenspace = os.path.join(kg_script_dir, 'greenspace.sparql')
 
 
 class FeatureTableName(Enum):

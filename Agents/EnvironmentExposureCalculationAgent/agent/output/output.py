@@ -27,9 +27,9 @@ def get_summary_df(point_selection: str, query_id: str) -> pd.DataFrame:
     postgis = cast(PostGISClient, current_app.extensions['postgis_client'])
 
     def get_query() -> str:
-        # TODO: Since the input points determine the input and output scripts to call, it will be better to create 
-        # Profile class for different input choices and manage both the input and output scripts at a separate module, 
-        # instead of defining the scripts in point_selection and output modules
+        # Get input points information from the original table and combine with the aggregated results
+        # Since each type of input data are retrieved differently, will need scripts for different types
+        # TODO: ideally construct the summary retrieval SQL dynamically, so it is (input points information retrieval) + (aggregated result retrieval). (aggregated result retrieval) can be shared by different types, and reduce duplication in each script file.
         if point_selection == PointSelectionParam.PostalCode.value:
             path = os.path.join(os.path.dirname(
                 os.path.abspath(__file__)), 'script_sql', 'retrieve_postal_code_result.sql')
@@ -43,6 +43,7 @@ def get_summary_df(point_selection: str, query_id: str) -> pd.DataFrame:
 
 
 def get_exposure_details() -> pd.DataFrame:
+    # TODO: get the details (eg. name, description, address) of intersected objects for each input point
     return pd.DataFrame()
 
 
