@@ -6,10 +6,8 @@
 				"Image": "ghcr.io/cambridge-cares/weatheragent:1.4.1-SNAPSHOT",
 				"Env": [
 					"DATABASE=postgres",
-					"SCHEMA=public",
 					"LAYERNAME=weatherstations",
 					"GEOSERVER_WORKSPACE=weatherstations",
-					"ONTOP_CONTAINER_NAME=ontop",
 					"API_KEY="
 				],
 				"Configs": [

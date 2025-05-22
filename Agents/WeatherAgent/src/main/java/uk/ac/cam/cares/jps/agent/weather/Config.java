@@ -27,9 +27,9 @@ public class Config extends ContainerClient{
 
 	public static String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
 	public static String DATABASE = System.getenv("DATABASE");
-	public static String SCHEMA = System.getenv("SCHEMA");
+	public static String SCHEMA = System.getenv("SCHEMA") != null ? System.getenv("SCHEMA"): "postgres";
 	public static String LAYERNAME = System.getenv("LAYERNAME"); // layer name in geoserver, also tablename in postgis
-	public static String ONTOP_CONTAINER_NAME = System.getenv("ONTOP_CONTAINER_NAME");
+	public static String ONTOP_CONTAINER_NAME = System.getenv("ONTOP_CONTAINER_NAME") != null ? System.getenv("ONTOP_CONTAINER_NAME"): "ontop";
 
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
