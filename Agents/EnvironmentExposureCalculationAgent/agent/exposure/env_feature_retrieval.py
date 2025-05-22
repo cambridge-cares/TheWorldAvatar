@@ -40,6 +40,9 @@ def save_to_table(res: pd.DataFrame, feature_table: str):
     script_name = os.path.join(os.path.dirname(os.path.abspath(
         __file__)), 'script_sql', 'save_to_temp_table.sql')
     with open(script_name) as file:
+        if res.empty:
+            return
+        
         values = [tuple(row.values)
                   for _, row in res[['iri', 'geom', 'type_label']].iterrows()]
         query = file.read()
