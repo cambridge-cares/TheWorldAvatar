@@ -52,6 +52,9 @@ def output_as_json(summary_df: pd.DataFrame, exposure_details: pd.DataFrame):
 
 
 def output_as_zip_of_csv(summary_df: pd.DataFrame, exposure_details: pd.DataFrame):
+    os.makedirs(os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), 'output_files'), exist_ok=True)
+    
     summary_file = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'output_files', 'summary.csv')
     summary_df.to_csv(summary_file, index=False)
