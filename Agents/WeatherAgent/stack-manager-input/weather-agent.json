@@ -9,7 +9,7 @@
 					"SCHEMA=public",
 					"LAYERNAME=weatherstations",
 					"GEOSERVER_WORKSPACE=weatherstations",
-					"ONTOP_CONTAINER_NAME=Ontop",
+					"ONTOP_CONTAINER_NAME=ontop",
 					"API_KEY="
 				],
 				"Configs": [

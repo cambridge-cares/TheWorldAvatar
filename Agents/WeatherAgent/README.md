@@ -24,6 +24,8 @@ The environment variables used by this container:
 3) LAYERNAME
 4) DATABASE
 5) GEOSERVER_WORKSPACE
+6) SCHEMA
+7) ONTOP_CONTAINER_NAME
 
 ## Spinning up the stack
 Navigate to ```Deploy/stacks/dynamic/stack-manager``` and run the following command:
