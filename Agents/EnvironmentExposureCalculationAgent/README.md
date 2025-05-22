@@ -115,7 +115,7 @@ curl --location 'http://localhost:3838/environment-exposure-calculation-agent/ca
 
 ## Experiment
 ### Greenspace Exposure
-The experiment is aimed at finding the greenspace exposure counts and areas around postcode locations in different years. The result is generated with code at commit [ec240a0](https://github.com/cambridge-cares/TheWorldAvatar/commit/ec240a017bdc75ac9bdef2f5d24b3622bd75d9f1).
+The experiment is aimed at finding the greenspace exposure counts and areas around postcode locations in different years. The result is generated with code at commit [9797353](https://github.com/cambridge-cares/TheWorldAvatar/commit/979735306df27eb55e9896ec81edce323f6bfe85).
 
 Input variables
 - Boundary radius size (m): [400, 800, 1000]
