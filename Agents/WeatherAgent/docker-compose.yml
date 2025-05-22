@@ -2,19 +2,5 @@ version: "3.8"
 
 services:
   weatheragent:
-    image: ghcr.io/cambridge-cares/weatheragent:1.4
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: none
-    configs:
-      - postgis
-      - blazegraph
-      - geoserver
-      - ontop
-    secrets:
-      - postgis_password
-      - geoserver_password
-    networks:
-      - stack
+    image: ghcr.io/cambridge-cares/weatheragent:1.4.1
+    build: .
