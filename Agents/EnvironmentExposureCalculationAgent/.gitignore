@@ -23,8 +23,11 @@ data/*
 # User defined
 *.egg-info
 
+# output file
+agent/output/output_files/*
+
 # data file
-# stack-data-uploader/inputs/data/parks/MasterPlan2019SDCPParkandOpenSpacelayer/*
-# stack-data-uploader/inputs/data/parks/MP14SDCPPWPLANParksandOpenSpaceSHP/*
-# stack-data-uploader/inputs/data/parks/NParksParksandNatureReserves/*
-# stack-data-uploader/inputs/data/sgpostcode/postcode/*
+stack-data-uploader/inputs/data/parks/MasterPlan2019SDCPParkandOpenSpacelayer/*
+stack-data-uploader/inputs/data/parks/MP14SDCPPWPLANParksandOpenSpaceSHP/*
+stack-data-uploader/inputs/data/parks/NParksParksandNatureReserves/*
+stack-data-uploader/inputs/data/sgpostcode/postcode/*
