@@ -3,18 +3,4 @@ version: "3.8"
 services:
   aermod-agent:
     image: ghcr.io/cambridge-cares/aermod-agent:1.9
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: none
-    configs:
-      - postgis
-      - blazegraph
-      - geoserver
-      - ontop
-    secrets:
-      - postgis_password
-      - geoserver_password
-    networks:
-      - stack
+    build: .
