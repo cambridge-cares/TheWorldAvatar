@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
     <artifactId>AermodAgent</artifactId>
-    <version>1.8-dev-DOME-SNAPSHOT</version>
+    <version>1.9.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
 
