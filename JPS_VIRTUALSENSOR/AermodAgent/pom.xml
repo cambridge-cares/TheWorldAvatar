@@ -94,7 +94,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.46.0</version>
+			<version>1.47.1</version>
 		</dependency>
 
 		<dependency>
