@@ -291,7 +291,7 @@ public class AermodAgent extends DerivationAgent {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            OntopClient ontopClient = OntopClient.getInstance();
+            OntopClient ontopClient = OntopClient.getInstance(EnvConfig.ONTOP_CONTAINER_NAME);
             ontopClient.updateOBDA(obdaFile);
         }
 

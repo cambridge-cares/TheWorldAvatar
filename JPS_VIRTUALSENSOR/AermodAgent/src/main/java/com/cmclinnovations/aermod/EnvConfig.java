@@ -27,6 +27,7 @@ public class EnvConfig {
     public static final String NUMBER_OF_LAYERS = System.getenv("NUMBER_OF_LAYERS");
     public static final boolean IGNORE_BUILDINGS = Boolean.parseBoolean(System.getenv("IGNORE_BUILDINGS"));
     public static final String RDB_SCHEMA = System.getenv("RDB_SCHEMA") != null ? System.getenv("RDB_SCHEMA") : "public";
+    public static final String ONTOP_CONTAINER_NAME = System.getenv("ONTOP_CONTAINER_NAME") != null ? System.getenv("ONTOP_CONTAINER_NAME") : "ontop";
 
     private EnvConfig() {
         throw new IllegalStateException();
