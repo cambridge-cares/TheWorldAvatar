@@ -1,4 +1,4 @@
 services:
   dispersion-interactor:
-    image: ghcr.io/cambridge-cares/dispersion-interactor:1.10.1-SNAPSHOT
+    image: ghcr.io/cambridge-cares/dispersion-interactor:1.10.1
     build: .
