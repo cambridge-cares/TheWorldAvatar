@@ -90,7 +90,7 @@ public class CreateVirtualSensor extends HttpServlet {
             LOGGER.error("Could not retrieve virtual sensor ontop.obda file.");
             throw new RuntimeException(e);
         }
-        OntopClient ontopClient = OntopClient.getInstance();
+        OntopClient ontopClient = OntopClient.getInstance(Config.ONTOP_CONTAINER_NAME);
         ontopClient.updateOBDA(obdaFile);
     }
 
