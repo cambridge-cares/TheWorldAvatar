@@ -3,7 +3,7 @@ uvicorn[standard]
 pyyaml
 pydantic
 rdflib
-redis
+redis[search]==5.2.1
 SPARQLWrapper
 openai
 tritonclient[grpc]
