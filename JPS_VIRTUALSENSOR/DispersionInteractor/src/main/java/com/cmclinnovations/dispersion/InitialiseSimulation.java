@@ -122,7 +122,7 @@ public class InitialiseSimulation extends HttpServlet {
 
                     // add ontop mapping
                     Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-                    OntopClient ontopClient = OntopClient.getInstance();
+                    OntopClient ontopClient = OntopClient.getInstance(Config.ONTOP_CONTAINER_NAME);
                     ontopClient.updateOBDA(obdaFile);
 
                     // adds OntoAgent instance
@@ -258,10 +258,10 @@ public class InitialiseSimulation extends HttpServlet {
         GDALClient gdalClient = GDALClient.getInstance();
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
-        gdalClient.uploadVectorStringToPostGIS(Config.DATABASE, Config.WEATHER_LAYER_NAME,
+        gdalClient.uploadVectorStringToPostGIS(Config.DATABASE, Config.SCHEMA, Config.WEATHER_LAYER_NAME,
                 featureCollection.toString(), new Ogr2OgrOptions(), true);
         geoServerClient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-        geoServerClient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE,
+        geoServerClient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.SCHEMA,
                 Config.WEATHER_LAYER_NAME, new GeoServerVectorSettings());
     }
 
