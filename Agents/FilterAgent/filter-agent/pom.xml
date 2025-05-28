@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.39.1</version>
+			<version>1.47.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-reload4j</artifactId>
@@ -97,7 +97,7 @@
 		<dependency>
 			<groupId>com.cmclinnovations</groupId>
 			<artifactId>stack-clients</artifactId>
-			<version>1.16.0</version>
+			<version>1.47.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>httpclient</artifactId>
