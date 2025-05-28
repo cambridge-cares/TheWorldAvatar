@@ -375,7 +375,13 @@ public class SensorService extends Service {
 
         // Unregister the NetworkChangeReceiver when the service is destroyed
         if (networkChangeReceiver != null) {
-            unregisterReceiver(networkChangeReceiver);
+            try {
+                LOGGER.info("unregister network change receiver");
+                unregisterReceiver(networkChangeReceiver);
+            } catch (Exception e) {
+                LOGGER.warn("network change receiver is deregister already");
+            }
+
         }
 
         // Stop activity recognition updates
