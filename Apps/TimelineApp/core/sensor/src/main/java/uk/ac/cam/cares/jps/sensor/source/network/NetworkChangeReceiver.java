@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.util.Log;
 
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +40,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private final SensorNetworkSource sensorNetworkSource;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private String taskId;
+    private final Logger LOGGER = Logger.getLogger(NetworkChangeReceiver.class);
 
     public NetworkChangeReceiver(SensorLocalSource sensorLocalSource, SensorNetworkSource sensorNetworkSource) {
         this.sensorLocalSource = sensorLocalSource;
@@ -57,23 +59,32 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (this.isNetworkAvailable(context)) {
             executorService.execute(() -> {
-                List<UnsentData> unsentDataList = sensorLocalSource.retrieveUnsentData();
-                for (UnsentData unsentData : unsentDataList) {
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(() -> {
-                        try {
-                            Map<String, JSONArray> allSensorDataMap = deserializeMap(unsentData.data);
-                            JSONArray allSensorData = convertMapToSensorData(allSensorDataMap);
-                            String jsonString = allSensorData.toString();
-                            byte[] compressedData = compressData(jsonString);
-                            sensorNetworkSource.sendPostRequest(unsentData.deviceId, taskId, compressedData, allSensorData);
-                            sensorLocalSource.deleteUnsentData(unsentData);
-                            Log.e("network change receiver", "unsent data operations completed");
-                        } catch (Exception e) {
-                            Log.e("NetworkReceiver", "Error processing unsent data", e);
-                        }
-                    }, 1000); // 1-second delay between requests
-                }
+                int limit = 100;
+                int offset = 0;
+                List<UnsentData> unsentDataList;
+                do {
+                    LOGGER.info("offset: " + offset);
+                    unsentDataList = sensorLocalSource.retrieveUnsentData(limit, offset);
+                    offset += unsentDataList.size();
+
+                    // TODO: should send as batches
+                    for (UnsentData unsentData : unsentDataList) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(() -> {
+                            try {
+                                Map<String, JSONArray> allSensorDataMap = deserializeMap(unsentData.data);
+                                JSONArray allSensorData = convertMapToSensorData(allSensorDataMap);
+                                String jsonString = allSensorData.toString();
+                                byte[] compressedData = compressData(jsonString);
+                                sensorNetworkSource.sendPostRequest(unsentData.deviceId, taskId, compressedData, allSensorData);
+                                sensorLocalSource.deleteUnsentData(unsentData);
+                                LOGGER.info("unsent data operations completed");
+                            } catch (Exception e) {
+                                LOGGER.error("Error processing unsent data", e);
+                            }
+                        }, 1000); // 1-second delay between requests
+                    }
+                } while (!unsentDataList.isEmpty());
             });
         }
     }

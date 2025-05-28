@@ -31,8 +31,8 @@ public interface UnsentDataDao {
      *
      * @return a list of {@link UnsentData} objects representing all records in the 'unsent_data' table.
      */
-    @Query("SELECT * FROM unsent_data")
-    List<UnsentData> getAllUnsentData();
+    @Query("SELECT * FROM unsent_data LIMIT :limit OFFSET :offset")
+    List<UnsentData> getAllUnsentData(int limit, int offset);
 
     /**
      * Deletes all unsent data records from the database that matches the given id

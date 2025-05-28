@@ -193,8 +193,8 @@ public class SensorLocalSource {
      *
      * @return a list of {@link UnsentData} objects
      */
-    public List<UnsentData> retrieveUnsentData() {
-        return unsentDataDao.getAllUnsentData();
+    public List<UnsentData> retrieveUnsentData(int limit, int offset) {
+        return unsentDataDao.getAllUnsentData(limit, offset);
     }
 
     public void deleteUnsentData(UnsentData unsentData) {
