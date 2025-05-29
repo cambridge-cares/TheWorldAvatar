@@ -1,0 +1,7 @@
+services:
+  trip-agent:
+    image: trip-agent-debug:1.0-SNAPSHOT
+    build:
+      target: debug
+      context: .
+    

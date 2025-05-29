@@ -1,0 +1,11 @@
+flask
+pandas
+numpy
+scipy
+requests
+twa==0.0.8
+matplotlib
+pyproj
+scikit-image
+KDEpy
+shapely
