@@ -4,8 +4,10 @@ from twa import agentlogging
 import pandas as pd
 from pandas._libs.tslibs.np_datetime import OutOfBoundsDatetime
 from agent.trip.utilities import wgs_to_utm_code
-from agent.trip.trip_detection import detect_trips
+from agent.trip.trip_detection import detect_trips, CH_TRIP_INDEX, CH_VISIT_INDEX
 from py4j.java_gateway import JavaObject
+from agent.trip.kg_client import KgClient
+from agent.utils.baselib_gateway import baselib_view
 
 logger = agentlogging.get_logger('dev')
 
@@ -23,16 +25,17 @@ def api():
 
     time_series_client = TimeSeriesClient(iri)
 
-    with time_series_client.connect() as conn:
-        time_series = time_series_client.get_time_series(
-            data_iri_list=[iri], lowerbound=lowerbound, upperbound=upperbound, conn=conn)
+    logger.info('Querying time series data')
+    time_series_trajectory = time_series_client.get_time_series(
+        data_iri_list=[iri], lowerbound=lowerbound, upperbound=upperbound)
 
-    if (time_series.getTimes().isEmpty()):
+    if (time_series_trajectory.getTimes().isEmpty()):
         message = 'Time series data is empty'
         logger.error(message)
         return message
 
-    dataframe, utm_code = convert_time_series_to_dataframe(time_series, iri)
+    dataframe, utm_code = convert_time_series_to_dataframe(
+        time_series_trajectory, iri)
 
     columns = {
         "utc_date": "utc_date",
@@ -42,7 +45,8 @@ def api():
         "utm_e": "utm_e"
     }
 
-    detected_gps, incidents_table, _, _, _ = detect_trips(
+    logger.info('Running trip detection code')
+    detected_gps, _, _, _, _ = detect_trips(
         dataframe,
         iri,
         columns,
@@ -50,7 +54,27 @@ def api():
         code=utm_code
     )
 
-    return iri
+    kg_client = KgClient()
+    trip, visit = kg_client.get_trip_and_visit(iri)
+
+    if trip is None:
+        logger.info('Trip does not exist, instantiating')
+        trip, visit = kg_client.instantiate_trip_and_visit()
+        time_series_iri = kg_client.get_time_series_iri(iri)
+        time_series_client.add_columns(time_series_iri=time_series_iri, data_iri=[
+            trip, visit], class_list=[baselib_view.java.lang.Integer.TYPE] * 2)
+
+    # py4j requires python native int
+    trip_list_int = [int(x) for x in detected_gps[CH_TRIP_INDEX]]
+    visit_list_int = [int(x) for x in detected_gps[CH_VISIT_INDEX]]
+
+    # create time series object for trip and visit data for upload to time series database
+    time_series_trip_visit = time_series_client.create_time_series(times=time_series_trajectory.getTimes(
+    ), data_iri_list=[trip, visit], values=[trip_list_int, visit_list_int])
+
+    time_series_client.add_time_series(time_series=time_series_trip_visit)
+
+    return 'Added trip and visit data'
 
 
 def convert_time_series_to_dataframe(time_series, point_iri: str):
@@ -77,4 +101,4 @@ def convert_time_series_to_dataframe(time_series, point_iri: str):
 
     utm_code = wgs_to_utm_code(lat[0], lon[0])
 
-    return pd.DataFrame({'utc_date': timestamps, 'lat': lat, 'lon': lon, 'original_time_list': original_time_list}), utm_code
+    return pd.DataFrame({'utc_date': timestamps, 'lat': lat, 'lon': lon}), utm_code

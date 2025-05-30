@@ -64,11 +64,14 @@ class TimeSeriesClient:
             self.tsclient.addTimeSeriesData(time_series, conn)
         logger.info('Uploaded time series data')
 
-    def get_time_series(self, data_iri_list: list, lowerbound=None, upperbound=None, conn=None):
-        return self.tsclient.getTimeSeriesWithinBounds(
-            data_iri_list, lowerbound, upperbound, conn)
+    def get_time_series(self, data_iri_list: list, lowerbound=None, upperbound=None):
+        with self.connect() as conn:
+            time_series = self.tsclient.getTimeSeriesWithinBounds(
+                data_iri_list, lowerbound, upperbound, conn)
+        return time_series
 
-    def add_columns(self, time_series_iri, data_iri: list, class_list: list, conn):
-        self.tsclient.addColumnsToExistingTimeSeries(
-            time_series_iri, data_iri, class_list, None, conn)
+    def add_columns(self, time_series_iri, data_iri: list, class_list: list):
+        with self.connect() as conn:
+            self.tsclient.addColumnsToExistingTimeSeries(
+                time_series_iri, data_iri, class_list, None, conn)
         logger.info('Added new columns')
