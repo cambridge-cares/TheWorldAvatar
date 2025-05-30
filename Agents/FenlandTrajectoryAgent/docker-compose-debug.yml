@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   fenland-trajectory-agent:
     image: ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0

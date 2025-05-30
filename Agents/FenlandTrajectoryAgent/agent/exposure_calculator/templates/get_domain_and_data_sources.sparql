@@ -1,0 +1,10 @@
+PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
+PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
+SELECT ?domainIRI ?domainName ?dataSourceName
+WHERE {{
+  ?domainIRI a exposure:Domain ;
+             exposure:hasDomainName ?domainName ;
+             exposure:hasDataSource ?dataSourceName .
+  FILTER(?domainIRI = <{env_data_iri}>)
+}}

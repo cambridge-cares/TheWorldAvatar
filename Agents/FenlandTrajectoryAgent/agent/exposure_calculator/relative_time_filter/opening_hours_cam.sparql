@@ -1,0 +1,41 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX osmkey: <https://www.openstreetmap.org/wiki/Key:>
+PREFIX ogc: <http://www.opengis.net/rdf#>
+
+CONSTRUCT {
+  ?entity a ?my_type ;
+          geo:hasGeometry ?defaultGeometry ;
+          rdfs:label ?name ;
+          osmkey:opening_hours ?openingHours .
+}
+WHERE {
+  ?asset ?osm_pred ?osm_type ;
+         geo:hasGeometry ?defaultGeometry .
+  ?region osmkey:name 'Cambridge' ;
+          ogc:sfContains ?asset .
+  ?defaultGeometry geo:asWKT ?wkt .
+
+  OPTIONAL { ?asset osmkey:name ?name . }
+  OPTIONAL { ?asset osmkey:opening_hours ?openingHours . }
+  OPTIONAL { ?asset osmkey:fhrs:id ?fhrsId . }
+
+  BIND(
+    IF(
+      BOUND(?fhrsId),
+      IRI(CONCAT("http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment/", STR(?fhrsId))),
+      ?asset
+    ) AS ?entity
+  )
+
+  VALUES (?osm_pred ?osm_type ?my_type) {
+    (osmkey:amenity "restaurant" fh:Restaurant)
+    (osmkey:amenity "fast_food" fh:FastFood)
+    (osmkey:amenity "cafe" fh:Cafe)
+    (osmkey:shop "food" fh:FoodShop)
+    (osmkey:shop "supermarket" fh:Supermarket)
+    (osmkey:shop "convenience" fh:ConvenienceStore)
+  }
+}
