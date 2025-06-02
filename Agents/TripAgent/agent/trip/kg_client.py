@@ -8,6 +8,7 @@ VISIT = PREFIX + 'Visit'
 TIMESERIES_NAMESPACE = 'https://www.theworldavatar.com/kg/ontotimeseries/'
 HAS_TIME_SERIES = TIMESERIES_NAMESPACE + 'hasTimeSeries'
 TIMESERIES_TYPE = TIMESERIES_NAMESPACE + 'TimeSeries'
+HAS_TIME_CLASS = TIMESERIES_NAMESPACE + 'hasTimeClass'
 
 
 class KgClient():
@@ -54,3 +55,13 @@ class KgClient():
         """
         self.remote_store_client.executeUpdate(query)
         return trip, visit
+
+    def get_java_time_class(self, point_iri: str):
+        query = f"""
+        SELECT ?time_class
+        WHERE {{
+            <{point_iri}> <{HAS_TIME_SERIES}>/<{HAS_TIME_CLASS}> ?time_class.
+        }}
+        """
+        query_results = self.remote_store_client.executeQuery(query)
+        return query_results.getJSONObject(0).getString('time_class')
