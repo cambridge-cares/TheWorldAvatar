@@ -1,6 +1,6 @@
 services:
   trip-agent:
-    image: trip-agent:1.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/trip-agent:1.0
     build:
       context: .
       target: production

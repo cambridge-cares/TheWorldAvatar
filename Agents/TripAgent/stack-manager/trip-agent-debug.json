@@ -1,0 +1,43 @@
+{
+    "ServiceSpec": {
+        "Name": "trip-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "trip-agent-debug:1.0",
+                "Env": [],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "5678",
+                    "PublishedPort": "5678"
+                }
+            ]
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/trip-agent/"
+        }
+    }
+}

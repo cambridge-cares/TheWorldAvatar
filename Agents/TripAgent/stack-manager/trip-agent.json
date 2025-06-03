@@ -1,0 +1,32 @@
+{
+    "ServiceSpec": {
+        "Name": "trip-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/trip-agent:1.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/trip-agent/"
+        }
+    }
+}
