@@ -1,7 +1,6 @@
 FROM ghcr.io/theworldavatar/stack-client:1.47.0 AS stackclients
 #==================================================================================================
 FROM python:3.13.3-slim AS base
-ARG CACHEBUST=1
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
