@@ -4,7 +4,10 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "trip-agent-debug:1.0",
-                "Env": [],
+                "Env": [
+                    "NAMESPACE=kb",
+                    "DATABASE=postgres"
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"

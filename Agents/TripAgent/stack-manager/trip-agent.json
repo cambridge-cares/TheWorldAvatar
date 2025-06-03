@@ -4,6 +4,10 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/trip-agent:1.0",
+                "Env": [
+                    "NAMESPACE=kb",
+                    "DATABASE=postgres"
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
