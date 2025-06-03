@@ -16,7 +16,7 @@ API route:
        - This IRI should contain a time series of PostGIS points and should contain the following triple
 
         ```sparql
-        <iri> <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> <time_series>
+        <http://abc> <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> <time_series>
         ```
 
     2) upperbound
@@ -43,10 +43,10 @@ Time | Location
 The agent will check for the existence of trip and visit, if they do not exist, they will be instantiated and share the same time series with the point time series. Existing triples before calculations:
 
 ```sparql
-<iri> <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> <time_series>
+<http://abc> <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> <time_series>
 ```
 
-New triples:
+New triples showing trip and visit sharing the same time series:
 
 ```sparql
 PREFIX twa: <https://www.theworldavatar.com/kg/>
