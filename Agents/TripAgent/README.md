@@ -40,6 +40,8 @@ Time | Location
 3 | POINT(5,6)
 4 | POINT(7,8)
 
+The raw data must contain at least a visit in order for the trip detection module to work (staying within an area over a certain period).
+
 The agent will check for the existence of trip and visit, if they do not exist, they will be instantiated and share the same time series with the point time series. Existing triples before calculations:
 
 ```sparql
