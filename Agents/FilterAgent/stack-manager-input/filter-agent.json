@@ -1,0 +1,35 @@
+{
+	"ServiceSpec": {
+		"Name": "filter-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/filter-agent:1.0.1-SNAPSHOT",
+				"Mounts": [
+					{
+						"Type": "bind",
+						"Source": "../data/filter-queries",
+						"Target": "/inputs/queries"
+					}
+				],
+				"Env": [
+					"DEFAULT_NAMESPACE=kb",
+					"DEFAULT_QUERY=query"
+				],
+				"Configs": [
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"filter-agent": {
+			"url": "http://localhost:8080/",
+			"externalPath": "/filter-agent/"
+		}
+	}
+}
