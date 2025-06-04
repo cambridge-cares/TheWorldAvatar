@@ -5,5 +5,4 @@ services:
     environment:
       DEFAULT_NAMESPACE: kb
       DEFAULT_QUERY: query
-    ports:
-      - "8080:8080"
+    build: .
