@@ -72,11 +72,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                         Handler handler = new Handler(Looper.getMainLooper());
                         handler.postDelayed(() -> {
                             try {
-                                Map<String, JSONArray> allSensorDataMap = deserializeMap(unsentData.data);
-                                JSONArray allSensorData = convertMapToSensorData(allSensorDataMap);
-                                String jsonString = allSensorData.toString();
-                                byte[] compressedData = compressData(jsonString);
-                                sensorNetworkSource.sendPostRequest(unsentData.deviceId, taskId, compressedData, allSensorData);
+                                byte[] compressedData = compressData(unsentData.data);
+                                sensorNetworkSource.sendPostRequest(unsentData.deviceId, taskId, compressedData, unsentData.data);
                                 sensorLocalSource.deleteUnsentData(unsentData);
                                 LOGGER.info("unsent data operations completed");
                             } catch (Exception e) {
@@ -110,58 +107,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         }
 
         return false;
-    }
-
-    /**
-     * Deserializes a JSON string into a Map where the keys represent sensor types
-     * and the values are JSON arrays containing the sensor data.
-     *
-     * @param jsonString string of unsent data
-     * @return map of unsent data
-     */
-    private Map<String, JSONArray> deserializeMap(String jsonString) {
-        Map<String, JSONArray> map = new HashMap<>();
-        try {
-            JSONArray jsonArray = new JSONArray(jsonString);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String sensorType = jsonObject.getString("name");
-
-                if (!map.containsKey(sensorType)) {
-                    map.put(sensorType, new JSONArray());
-                }
-                map.get(sensorType).put(jsonObject);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-
-
-    /**
-     * Combines sensor data from a Map into a single JSONArray.
-     * Each entry in the map corresponds to a sensor type and its data.
-     *
-     * @param sensorDataMap map of unsent data
-     * @return array of unsent data
-     */
-    public JSONArray convertMapToSensorData(Map<String, JSONArray> sensorDataMap) {
-        JSONArray combinedSensorData = new JSONArray();
-
-        for (Map.Entry<String, JSONArray> entry : sensorDataMap.entrySet()) {
-            JSONArray sensorArray = entry.getValue();
-            for (int i = 0; i < sensorArray.length(); i++) {
-                try {
-                    combinedSensorData.put(sensorArray.getJSONObject(i));
-                } catch (JSONException e) {
-
-                }
-            }
-        }
-
-        return combinedSensorData;
     }
 
     public void setTaskId(String taskId) {

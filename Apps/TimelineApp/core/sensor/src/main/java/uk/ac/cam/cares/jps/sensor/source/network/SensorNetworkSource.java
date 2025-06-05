@@ -48,11 +48,11 @@ public class SensorNetworkSource {
      * @param deviceId The ID of the device from which the data is being uploaded.
      * @param sessionId The ID of the current session/task. Task id will be different for each recording session (user press start/stop recording).
      * @param compressedData A byte array containing the GZIP-compressed sensor data.
-     * @param sensorData A {@link JSONArray} containing the sensor data in uncompressed form,
+     * @param hashedSensorData A String containing the sensor data in hashed form,
      *                   used for local storage if the network request fails.
      * @throws UnsupportedEncodingException If the encoding is not supported during conversion to UTF-8.
      */
-    public void sendPostRequest(String deviceId, String sessionId, byte[] compressedData, JSONArray sensorData) throws UnsupportedEncodingException {
+    public void sendPostRequest(String deviceId, String sessionId, byte[] compressedData, String hashedSensorData) throws UnsupportedEncodingException {
         String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.sensorloggeragent_update))
                 .build().toString();
@@ -80,15 +80,13 @@ public class SensorNetworkSource {
 
                 error -> {
                 LOGGER.error("Failed to send data to the server: " + error.toString());
-
-                    String dataHash = computeHash(sensorData.toString());
                     // Check for duplicates before inserting
-                    if (!sensorLocalSource.isDataInUnsentData(dataHash)) {
+                    if (!sensorLocalSource.isDataInUnsentData(hashedSensorData)) {
                         UnsentData unsentData = new UnsentData();
                         unsentData.deviceId = deviceId;
-                        unsentData.data = sensorData.toString();
+                        unsentData.data = hashedSensorData.toString();
                         unsentData.timestamp = System.currentTimeMillis();
-                        unsentData.dataHash = dataHash;
+                        unsentData.dataHash = hashedSensorData;
 
                         sensorLocalSource.insertUnsentData(unsentData);
                     } else {
@@ -108,6 +106,11 @@ public class SensorNetworkSource {
         };
 
         requestQueue.add(postRequest);
+    }
+
+    public void sendPostRequest(String deviceId, String sessionId, byte[] compressedData, JSONArray sensorData) throws UnsupportedEncodingException {
+        String hashedSensorData = computeHash(sensorData.toString());
+        sendPostRequest(deviceId, sessionId, compressedData, hashedSensorData);
     }
 
     public void resetMessageId() {
