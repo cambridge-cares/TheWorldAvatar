@@ -45,7 +45,7 @@ Under construction...
    - For the purpose of linking to OntoSpecies
      - ontospecies.uniquespeciesiri.kb.server.url - the server address where triple-store for OntoSpecies ABox files located
      - ontospecies.uniquespeciesiri.kb.repository.id - the namespace of the triple-store that contains OntoSpecies ABox files
-     - ontospecies.uniquespeciesiri.kb.abox.iri - the base URL of the OntoSpecies ABox files, should be http://www.theworldavatar.com/kb/ontospecies/ by default
+     - <!-- markdown-link-check-disable-line -->ontospecies.uniquespeciesiri.kb.abox.iri - the base URL of the OntoSpecies ABox files, should be http://www.theworldavatar.com/kb/ontospecies/ by default
    - For provenance information of the experiment data
      - Under construction... will be updated in v1.3...
    - For controlling if generated ABox files are to be uploaded to triple-store automatically
@@ -61,7 +61,7 @@ Under construction...
 
 ## Useful links
 
-Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism Using the Knowledge Graph Technology [[paper](https://doi.org/10.1021/acs.jcim.0c01322)] [[preprint](https://como.ceb.cam.ac.uk/preprints/262/)]
+Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism Using the Knowledge Graph Technology [[paper](https://pubs.acs.org/doi/10.1021/acs.jcim.0c01322)] [[preprint](https://como.ceb.cam.ac.uk/preprints/262/)]
 
 
 
@@ -76,7 +76,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
   - Made class `BibliographyLink` `EQUIVALENT-TO` class `OntoKin:Reference`
   - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `Temperature`, `Length`, `Pressure`, `Density`, `Volume`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter`, `JunctionArchitecture`, `DonorConstructionType`, `Acceptor`, `Donor`, `HomoEnergy`, `LumoEnergy`, `HomoLumoEnergyGap`, `OpticalEnergyGap`, `OpenCircuitPotential`, `ShortCircuitCurrentDensity`, `PowerConversionEfficiency`, `FillFactor` as subclass of `DimensionalQuantity`
   - Added class `http://xmlns.com/foaf/0.1/Agent`, `http://xmlns.com/foaf/0.1/Person`, `http://xmlns.com/foaf/0.1/Organization`, `http://purl.org/ontology/bibo/Journal`
-  - Inherited class `OntoKin:PublicationSpecification`, `OntoKin:JournalSpecification`, `OntoKin:ProceedingsSpecification`, `OntoKin:PreprintSpecification` from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
+  - Inherited class `OntoKin:PublicationSpecification`, `OntoKin:JournalSpecification`, `OntoKin:ProceedingsSpecification`, `OntoKin:PreprintSpecification` from [`OntoKin`](https://raw.githubusercontent.com/TheWorldAvatar/ontology/refs/heads/main/ontology/ontokin/OntoKin.owl) ontology
 
 - Relationships
 
@@ -89,7 +89,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<X refersTo DimensionalQuantity>` to make the direct connection between measured data point `X` with the physical `DimensionalQuantity` it represents
     - `<Acceptor hasComponent Component>`, `<Donor hasComponent Component>`
     - Redundant `hasDataPointX` and `hasUncertainty` related to `X1`-`X11`
-  - Inherited publication-related object property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
+  - Inherited publication-related object property from [`OntoKin`](https://raw.githubusercontent.com/TheWorldAvatar/ontology/refs/heads/main/ontology/ontokin/OntoKin.owl) ontology
     - `<OntoKin:JournalSpecification OntoKin:specifies http://purl.org/ontology/bibo/Journal>`
     - `<BibliographyLink OntoKin:hasPublicationSpecification OntoKin:PublicationSpecification>`
     - `<BibliographyLink http://purl.org/dc/terms/contributor http://xmlns.com/foaf/0.1/Agent>`
@@ -108,7 +108,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<Property hasMethod ^^xsd:string>`
     - `<Value hasVal ^^xsd:string>`
     - Redundant `hasValue` related to `X1`-`X11`
-  - Inherited publication-related data property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
+  - Inherited publication-related data property from [`OntoKin`](https://raw.githubusercontent.com/TheWorldAvatar/ontology/refs/heads/main/ontology/ontokin/OntoKin.owl) ontology
       - `<OntoKin:JournalSpecification http://purl.org/ontology/bibo/volume ^^xsd:integer>`
       - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageStart ^^xsd:integer>`
       - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageEnd ^^xsd:integer>`

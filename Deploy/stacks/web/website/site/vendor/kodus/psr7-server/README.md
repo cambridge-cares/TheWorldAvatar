@@ -1,13 +1,12 @@
 # Helper class to create PSR-7 server request
-
+<!-- markdown-link-check-disable-line -->
 [![Latest Version](https://img.shields.io/github/release/Nyholm/psr7-server.svg?style=flat-square)](https://github.com/Nyholm/psr7-server/releases)
-[![Build Status](https://img.shields.io/travis/Nyholm/psr7-server/master.svg?style=flat-square)](https://travis-ci.org/Nyholm/psr7-server)
 [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/Nyholm/psr7-server.svg?style=flat-square)](https://scrutinizer-ci.com/g/Nyholm/psr7-server)
 [![Quality Score](https://img.shields.io/scrutinizer/g/Nyholm/psr7-server.svg?style=flat-square)](https://scrutinizer-ci.com/g/Nyholm/psr7-server)
 [![Total Downloads](https://poser.pugx.org/nyholm/psr7-server/downloads)](https://packagist.org/packages/nyholm/psr7-server)
 [![Monthly Downloads](https://poser.pugx.org/nyholm/psr7-server/d/monthly.png)](https://packagist.org/packages/nyholm/psr7-server)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
-
+<!-- markdown-link-check-enable-->
 A helper class that can create ANY PSR-7 server request. 
 
 ## Installation

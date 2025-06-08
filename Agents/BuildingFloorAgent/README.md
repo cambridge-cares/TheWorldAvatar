@@ -6,7 +6,7 @@ This agent has been developed to improve the number of floors for 3D buildings. 
 3) Cat. C: the data is estimate calculated by the height of buildilng
 
 ### 1.1 Requirements
-The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data).
+The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader#citydb-data).
 
 ## 2. Building the Agent
 The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document. Follow the steps below to build and deploy the agent.
@@ -49,7 +49,9 @@ According to the general standard of Singapore, there are two cases:
 2) Domestic building: 1st floor height is 3.6m, the rest floor height is 2.8m
 
 ### 2.3 Retrieving BuildingFloorAgent's image
-The Building Floor Agent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/buildingflooragent) using `docker pull ghcr.io/cambridge-cares/buildingflooragent:<LATEST-VERSION>`
+<!-- The package is missing from the  -->
+<!-- markdown-link-check-disable-next-line -->
+The Building Floor Agent should be pulled automatically with the stack-manager, if not you can pull the latest version from cambridge_cares package using `docker pull ghcr.io/cambridge-cares/buildingflooragent:<LATEST-VERSION>`
 
 ### 2.4 Starting with the stack-manager
 The agent has been implemented to work in the stack. To do so, place buildingfloor.json in the [stack-manager config directory]. 

@@ -38,4 +38,4 @@ slug: land-use
 
 <br>
 
-[plugin:content-inject](/modular/partners)
+[plugin:content-inject](../../../modular/partners)

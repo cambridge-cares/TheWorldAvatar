@@ -33,7 +33,7 @@ The theme by itself is useful, but you may have an easier time getting up and ru
 
 ## GPM Installation (Preferred)
 
-The simplest way to install this theme is via the [Grav Package Manager (GPM)](http://learn.getgrav.org/advanced/grav-gpm) through your system's Terminal (also called the command line).  From the root of your Grav install type:
+The simplest way to install this theme is via the [Grav Package Manager (GPM)](https://learn.getgrav.org/16/cli-console/grav-cli-gpm) through your system's Terminal (also called the command line).  From the root of your Grav install type:
 
     bin/gpm install quark
 

@@ -60,7 +60,7 @@ These raw CSV files also contain some strange characters that aren't supported i
 
 ## Writing an ontology
 
-As an example, a very simple sample NHS ontology has been put together to describe the concepts within this tutorial's data set. This ontology has been created as a CSV file, and uploaded via the use of the [TBox Generator](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter), see the Stack Data Uploader's documentation for more details on how to upload it.
+As an example, a very simple sample NHS ontology has been put together to describe the concepts within this tutorial's data set. This ontology has been created as a CSV file, and uploaded via the use of the [TBox Generator](https://github.com/TheWorldAvatar/BaseLib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/converter), see the Stack Data Uploader's documentation for more details on how to upload it.
 
 A copy of the simple ontology used can be seen below as well as in the TWA repository [here](./resources/nhs.csv).
 
@@ -151,7 +151,7 @@ source          SELECT "OrganisationCode" AS id ,
 
 ## Uploading the data
 
-To upload the data so that it can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
+To upload the data so that it can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
 
 An example configuration file that covers all three CSVs used in tutorial, can be seen below and also found in the TWA repository [here](./resources/nhs.json).
 
@@ -281,7 +281,7 @@ If you haven't already, it's worth reading through the [Overview](./overview.md)
 
 The first step here is to spin up an empty visualisation. When creating a new visualisation, it is recommended that the committed example visualisation is used.
 
-To that end, copy the [example Mapbox visualisation](../example-mapbox-vis/) (the one containing the `run.sh` and `docker-compose.yml` files) to a new directory (of your choice) on your local machine. Using the README file within, you should be able to then spin up a docker container hosting the visualisation.
+To that end, copy the [example Mapbox visualisation](../example/) (the one containing the `run.sh` and `docker-compose.yml` files) to a new directory (of your choice) on your local machine. Using the README file within, you should be able to then spin up a docker container hosting the visualisation.
 
 If you then access the visualisation (usually at `localhost`), you should see the example visualisation along with its sample data in Cambridge, India, and Singapore.
 
@@ -492,7 +492,7 @@ SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
 
 Now that we've configured the FIA to register a metadata query for IRIs with the `http://theworldavatar.com/ontology/health/nhs.owl#GPPractice` class, we can spin the agent up within our stack.
 
-For information on how to restart the stack with the FIA agent, please see the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) documentation.
+For information on how to restart the stack with the FIA agent, please see the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) documentation.
 
 
 **3. Configuring the visualisation:**<br/>

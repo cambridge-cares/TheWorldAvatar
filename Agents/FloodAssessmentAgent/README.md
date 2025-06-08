@@ -217,18 +217,18 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 
 <!-- TWA github -->
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Derivation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
-[Derivation Agent configuration]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Derivation Agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
+[Derivation Agent configuration]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent/pyderivationagent/conf/agent_conf.py
 [EPC Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EnergyPerformanceCertificateAgent
 [Flood Warning Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodWarningAgent
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[OntoBuiltEnv]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv
-[OntoFlood]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoflood
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
+[OntoBuiltEnv]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobuiltenv
+[OntoFlood]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoflood
 [Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md#spinning-up-a-stack
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 
 <!-- data sources -->

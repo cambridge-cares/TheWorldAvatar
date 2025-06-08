@@ -50,7 +50,7 @@ This agent automatically runs the update job periodically once deployed and does
 
 [config file]: ./config/config.py
 
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[TimeSeriesClient]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 
 [BMSQueryAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/BMSQueryAgent
 

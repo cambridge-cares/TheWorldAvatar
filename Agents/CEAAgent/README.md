@@ -63,7 +63,7 @@ The agent employs a configuration file - [CEAAgentConfig.properties], the conten
 4. `terrain.database`: _Optional_ field for the RDB database name containing the terrain data.
 5. `terrain.table`: _Optional_ field for the RDB table containing the terrain data.
 
-The file location of `CEAAgentConfig.properties` can be set in the stack service configuration file at [cea-agent.json]. The default location is set to the [current file location](./cea-agent/src/main/resources/CEAAgentConfig.properties) and need not be modified if you transfer the [cea-agent.json] to the [stack manager's services](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services) directory.
+The file location of `CEAAgentConfig.properties` can be set in the stack service configuration file at [cea-agent.json]. The default location is set to the [current file location](./cea-agent/src/main/resources/CEAAgentConfig.properties) and need not be modified if you transfer the [cea-agent.json] to the [stack manager's services](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services) directory.
 
 ### 2.2. Agent Dependencies
 
@@ -114,7 +114,7 @@ Run `./stack.sh start <STACK NAME>` in the [stack-manager] directory to start th
 
 ### 2.6. Visualisation
 
-Visualisation of CEA outputs can be achieved with the [TWA Visualisation Framework] and [FeatureInfoAgent]. The [TWA Visualisation Framework] can be deployed according to the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
+Visualisation of CEA outputs can be achieved with the [TWA Visualisation Framework] and [FeatureInfoAgent]. The [TWA Visualisation Framework] can be deployed according to the [documentation](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#example---including-a-visualisation).
 
 For the [FeatureInfoAgent], the `.sparql` and `.json` files for CEA data is available at [feature-info-agent-input](./feature-info-agent-input). This must be placed inside the `stack-manager/input/data/fia-queries` directory following the [FeatureInfoAgent] instructions.
 
@@ -383,8 +383,8 @@ The agent will attempt to retrieve terrain data for an area containing the targe
 [CEAAgentConfig.properties]: ./cea-agent/src/main/resources/CEAAgentConfig.properties
 [cea-agent.json]: ./stack-manager-input-config/cea-agent.json
 [cea-agent-debug.json]: ./stack-manager-input-config/cea-agent-debug.json
-[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config services]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-data-uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config services]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services
 [TWA Visualisation Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
 [FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
