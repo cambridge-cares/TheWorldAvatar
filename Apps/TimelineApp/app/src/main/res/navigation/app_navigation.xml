@@ -4,22 +4,38 @@
     android:id="@+id/app_navigation"
     app:startDestination="@id/user_map">
 
+    <!-- Included nested graphs -->
     <include app:graph="@navigation/timeline_map"/>
     <include app:graph="@navigation/user_map"/>
 
-<!--    <include app:graph="@navigation/location_tracking_graph"/>-->
-<!--    <include app:graph="@navigation/routing_graph"/>-->
-<!--    <fragment-->
-<!--        android:id="@+id/mapFragment2"-->
-<!--        android:name="uk.ac.cam.cares.jps.locationtracking.MapFragment"-->
-<!--        android:label="MapFragment" />-->
-<!--    <fragment-->
-<!--        android:id="@+id/routingFragment"-->
-<!--        android:name="uk.ac.cam.cares.jps.routing.RoutingFragment"-->
-<!--        android:label="RoutingFragment" >-->
-<!--        <action-->
-<!--            android:id="@+id/action_routingFragment_to_mapFragment2"-->
-<!--            app:destination="@id/mapFragment2" />-->
-<!--    </fragment>-->
+    <action
+        android:id="@+id/action_global_account_setting"
+        app:destination="@id/account_setting" />
 
+    <action
+        android:id="@+id/action_global_sensor_setting"
+        app:destination="@id/sensor_setting" />
+
+    <action
+        android:id="@+id/action_global_privacy_setting"
+        app:destination="@id/privacy_setting" />
+
+    <!-- Optional commented fragments kept intact
+    <include app:graph="@navigation/location_tracking_graph"/>
+    <include app:graph="@navigation/routing_graph"/>
+
+    <fragment
+        android:id="@+id/mapFragment2"
+        android:name="uk.ac.cam.cares.jps.locationtracking.MapFragment"
+        android:label="MapFragment" />
+
+    <fragment
+        android:id="@+id/routingFragment"
+        android:name="uk.ac.cam.cares.jps.routing.RoutingFragment"
+        android:label="RoutingFragment">
+        <action
+            android:id="@+id/action_routingFragment_to_mapFragment2"
+            app:destination="@id/mapFragment2" />
+    </fragment>
+    -->
 </navigation>

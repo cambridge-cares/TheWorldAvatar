@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onboarding_fragment">
+
+    <fragment
+        android:id="@+id/onboarding_fragment"
+        android:name="uk.ac.cam.cares.jps.login.OnboardingFragment"
+        tools:layout="@layout/fragment_onboarding" />
+
+    <fragment
+        android:id="@+id/login_fragment"
+        android:name="uk.ac.cam.cares.jps.login.LoginFragment"
+        tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/create_account_fragment"
+        android:name="uk.ac.cam.cares.jps.login.CreateAccountFragment"
+        tools:layout="@layout/fragment_create_account" />
+</navigation>
