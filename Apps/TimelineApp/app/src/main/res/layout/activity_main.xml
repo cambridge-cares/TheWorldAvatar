@@ -20,15 +20,14 @@
         android:id="@+id/user_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="56dp"
-        android:src="@drawable/ic_profile"
-        android:contentDescription="User Menu"
         android:layout_gravity="top|end"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="56dp"
         android:clickable="true"
+        android:contentDescription="User Menu"
         android:focusable="true"
-        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_profile"
         app:layout_constraintEnd_toEndOf="parent"
-         />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
