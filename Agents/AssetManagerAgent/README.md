@@ -524,6 +524,35 @@ Content-Type: application/json
 }
 ```
 
+
+#### QR image return
+##### - `/getqrcode`
+Returns the QR code of the given asset data IRI to the Post request.
+
+The parameter accepted:
+- ID : The ID or IRI of the device.
+
+Example request:
+- Request
+```
+POST /asset-manager-agent/getqrcode HTTP/1.1
+Content-Type: application/json
+
+{
+    "assetData":{
+        "ID": "https://www.theworldavatar.com/kg/ontoelecpowerequipment/ACPowerQualityAnalyser_8bb4aef6-459e-49e7-9a79-e0c313455e15"
+    }
+}
+```
+- cURL command to save the QR code image as an image file, as command line cannot display image
+```
+curl -X POST "http://localhost:3838/asset-manager-agent/getqrcode"   -H "Content-Type: application/json"   -d '{
+    "assetData": {
+      "IRI": "https://www.theworldavatar.com/kg/ontoelecpowerequipment/ACPowerQualityAnalyser_8bb4aef6-459e-49e7-9a79-e0c313455e15"
+    }
+  }'   --output qr.png
+```
+
 ### *Regarding Unit Tests*
 
 The unit tests were not tested to the fullest and currently is encountering the following issue:
