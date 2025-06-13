@@ -10,6 +10,8 @@
 
 [5] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, ["Question-answering system for combustion kinetics"](https://doi.org/10.1016/j.proci.2024.105428), Proceedings of the Combustion Institute, 40, 105428, (2024).
 
+[6] S. D. Rihm, D. Tran, A. Kondniski, L. Pascazio, F. Saluz, S. Mosbach, J. Akroyd, and M. Kraft, ["Natural language access point to digital metal-organic polyhedra chemistry in The World Avatar"](https://doi.org/10.1017/dce.2025.12), Data-Centric Engineering, 6, 22, (2025).
+
 ## Preprints
 
 [1] X. Zhou, D. Nurkowski, S. Mosbach, J. Akroyd, and M. Kraft, "A Question answering system for chemistry", Technical Report 266, c4e-Preprint Series, Cambridge, 2021 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-266.pdf)).
@@ -36,4 +38,4 @@
 
 1. Marie version 5: Ref. [5]
 
-1. Marie version 6(current): Preprint [6]
+1. Marie version 6(current): Ref. [6]

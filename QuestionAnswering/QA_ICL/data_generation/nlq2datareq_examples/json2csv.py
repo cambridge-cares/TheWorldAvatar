@@ -3,8 +3,6 @@ import csv
 import json
 from typing import Optional
 
-import pandas as pd
-
 
 def json_dumps_if_not_none(data: Optional[dict]):
     if not data:
@@ -14,29 +12,33 @@ def json_dumps_if_not_none(data: Optional[dict]):
 
 def jsonobj2csvrow(obj: dict):
     data_req = obj["data_req"]
-    req_form = data_req["req_form"]
+    req_form = data_req.get("req_form")
 
     return (
         obj["nlq"],
-        req_form["type"],
+        req_form.get("type") if req_form else None,
+        json_dumps_if_not_none(data_req.get("var2cls")),
         json_dumps_if_not_none(data_req.get("entity_bindings")),
         json_dumps_if_not_none(data_req.get("const_bindings")),
-        req_form.get("namespace"),
-        req_form.get("query"),
-        json_dumps_if_not_none(req_form.get("res_map")),
-        req_form.get("name"),
+        req_form.get("triplestore") if req_form else None,
+        req_form.get("query") if req_form else None,
+        json_dumps_if_not_none(req_form.get("pkeys") if req_form else None),
+        req_form.get("name") if req_form else None,
+        json_dumps_if_not_none(data_req.get("visualise")),
     )
 
 
 HEADERS = (
     "question",
     "target",
+    "var2cls",
     "entity_bindings",
     "const_bindings",
-    "sparql_namcespace",
+    "sparql_triplestore",
     "sparql_query",
-    "sparql_res_map",
+    "sparql_pkeys",
     "func_name",
+    "visualise"
 )
 
 if __name__ == "__main__":
