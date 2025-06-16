@@ -115,6 +115,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNotImplemented() {
-        UiUtils.showNotImplementedDialog(this); // replace with a Toast or dialog if needed
+        UiUtils.showNotImplementedDialog(this);
     }
 }

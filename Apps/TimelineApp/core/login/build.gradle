@@ -13,7 +13,6 @@ dependencies {
     def nav_version = '2.7.5'
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
-    implementation 'me.relex:circleindicator:2.1.6'
 
 
     implementation project(path: ':core:utils')
