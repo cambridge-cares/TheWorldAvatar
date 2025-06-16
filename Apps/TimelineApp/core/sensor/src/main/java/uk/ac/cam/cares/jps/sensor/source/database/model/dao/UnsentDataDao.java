@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model.dao;
 
+import android.database.Cursor;
+
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -32,7 +34,7 @@ public interface UnsentDataDao {
      * @return a list of {@link UnsentData} objects representing all records in the 'unsent_data' table.
      */
     @Query("SELECT * FROM unsent_data LIMIT :limit OFFSET :offset")
-    List<UnsentData> getAllUnsentData(int limit, int offset);
+    Cursor getAllUnsentData(int limit, int offset);
 
     /**
      * Deletes all unsent data records from the database that matches the given id
@@ -41,6 +43,9 @@ public interface UnsentDataDao {
      */
     @Query("DELETE FROM unsent_data WHERE id = :id")
     void deleteById(int id);
+
+    @Query("DELETE FROM unsent_data WHERE id IN (:ids)")
+    void deleteByIds(List<Integer> ids);
 
     /**
      * Deletes all unsent data records from the database.

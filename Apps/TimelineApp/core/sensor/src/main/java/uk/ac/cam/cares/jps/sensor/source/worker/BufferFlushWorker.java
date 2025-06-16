@@ -3,8 +3,6 @@ package uk.ac.cam.cares.jps.sensor.source.worker;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.hilt.work.HiltWorker;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -18,7 +16,6 @@ import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 
 @HiltWorker

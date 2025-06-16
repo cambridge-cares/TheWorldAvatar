@@ -12,22 +12,25 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
+
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
+import uk.ac.cam.cares.jps.sensor.source.worker.SensorUploadWorker;
+import uk.ac.cam.cares.jps.sensor.source.worker.UnsentDataUploadWorker;
 
 /**
  * Class in charge of listening to changes in network connectivity. When the receiver detects the
@@ -50,7 +53,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     /**
      * Called when the network status changes. If the network becomes available,
      * this method retrieves all unsent sensor data and attempts to send it to the server.
-     * A small delay is introduced between each request to avoid overwhelming the network.
      *
      * @param context the application context
      * @param intent the intent that triggered the receiver
@@ -58,31 +60,15 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (this.isNetworkAvailable(context)) {
-            executorService.execute(() -> {
-                int limit = 100;
-                int offset = 0;
-                List<UnsentData> unsentDataList;
-                do {
-                    LOGGER.info("offset: " + offset);
-                    unsentDataList = sensorLocalSource.retrieveUnsentData(limit, offset);
-                    offset += unsentDataList.size();
-
-                    // TODO: should send as batches
-                    for (UnsentData unsentData : unsentDataList) {
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(() -> {
-                            try {
-                                byte[] compressedData = compressData(unsentData.data);
-                                sensorNetworkSource.sendPostRequest(unsentData.deviceId, taskId, compressedData, unsentData.data);
-                                sensorLocalSource.deleteUnsentData(unsentData);
-                                LOGGER.info("unsent data operations completed");
-                            } catch (Exception e) {
-                                LOGGER.error("Error processing unsent data", e);
-                            }
-                        }, 1000); // 1-second delay between requests
-                    }
-                } while (!unsentDataList.isEmpty());
-            });
+            Data unsentDataWorkerParam = new Data.Builder()
+                    .putString("taskId", taskId)
+                    .build();
+            OneTimeWorkRequest unsentDataUploadRequest = new OneTimeWorkRequest.Builder(
+                    UnsentDataUploadWorker.class)
+                    .addTag("unsentDataUploadWorker")
+                    .setInputData(unsentDataWorkerParam)
+                    .build();
+            WorkManager.getInstance(context).enqueue(unsentDataUploadRequest);
         }
     }
 
