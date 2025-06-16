@@ -7,29 +7,11 @@
 
     <fragment
         android:id="@+id/onboarding_fragment"
-        android:name="uk.ac.cam.cares.jps.login.OnboardingFragment"
-        android:label="Onboarding"
+        android:name="uk.ac.cam.cares.jps.user.OnboardingFragment"
         tools:layout="@layout/fragment_onboarding">
-        <action
-            android:id="@+id/action_onboardingFragment_to_loginFragment"
-            app:destination="@id/login_fragment" />
-        <action
-            android:id="@+id/action_onboardingFragment_to_create_account_fragment"
-            app:destination="@id/create_account_fragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/login_fragment"
-        android:name="uk.ac.cam.cares.jps.user.LoginFragment"
-        tools:layout="@layout/fragment_login">
         <deepLink
             app:uri="@string/login_fragment_link" />
     </fragment>
-
-    <fragment
-        android:id="@+id/create_account_fragment"
-        android:name="uk.ac.cam.cares.jps.user.CreateAccountFragment"
-        tools:layout="@layout/fragment_create_account" />
 
     <fragment
         android:id="@+id/user_fragment"
@@ -65,5 +47,4 @@
     <action
         android:id="@+id/action_global_sensor_setting"
         app:destination="@id/sensor_setting" />
-
 </navigation>

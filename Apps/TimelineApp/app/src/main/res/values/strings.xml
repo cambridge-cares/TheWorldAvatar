@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">TWA Timeline</string>
-    <string name="login_fragment_link">android-app://uk.ac.cam.cares.jps.user/login</string>
+    <string name="login_fragment_link">android-app://uk.ac.cam.cares.jps.user/onboarding</string>
 
 </resources>

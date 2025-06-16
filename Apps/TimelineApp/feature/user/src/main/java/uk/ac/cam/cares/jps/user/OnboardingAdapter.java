@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.login;
+package uk.ac.cam.cares.jps.user;
 
 import android.view.LayoutInflater;
 import android.view.View;
