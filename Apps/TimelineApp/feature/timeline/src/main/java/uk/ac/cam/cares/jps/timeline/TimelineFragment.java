@@ -93,8 +93,15 @@ public class TimelineFragment extends Fragment {
         mapView.getMapboxMap().addOnStyleLoadedListener(style -> {});
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
-        getAndCenterUserLocation();
 
+
+        sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
+            if (hasError != null && hasError) {
+                Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        getAndCenterUserLocation();
         updateUIForThemeMode(isDarkModeEnabled());
 
         TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
@@ -123,13 +130,14 @@ public class TimelineFragment extends Fragment {
         });
     }
 
+
     private void setupRecordingButton() {
         FloatingActionButton recordingFab = binding.recordingFab;
 
         recordingFab.setOnClickListener(v -> {
 
             if (sensorViewModel.getSelectedSensors().getValue() == null || sensorViewModel.getSelectedSensors().getValue().isEmpty()) {
-                Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All in the menu", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All in the sensor settings", Toast.LENGTH_SHORT).show();
             } else {
                 sensorViewModel.toggleRecording();
             }
@@ -166,7 +174,7 @@ public class TimelineFragment extends Fragment {
                             .zoom(15.0)
                             .build();
                     mapView.getMapboxMap().setCamera(cameraOptions);
-                    Log.d("LOCATION", "Fresh LatitudeLangitude: " + location.getLatitude() + ", " + location.getLongitude());
+                    Log.d("LOCATION", "Fresh Coordinates: " + location.getLatitude() + ", " + location.getLongitude());
                 } else {
                     Log.d("LOCATION", "Location is null. Using default location.");
                     setCameraToDefaultLocation();
@@ -205,8 +213,26 @@ public class TimelineFragment extends Fragment {
     }
 
     private void showIntroTooltips() {
-        // Unchanged: Tooltip logic
-    }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            TooltipManager tooltipManager = new TooltipManager(requireActivity(), () -> Log.d(TAG, "Tooltips finished"));
+
+            View firstTarget = binding.mapTopAppbar;
+            View secondTarget = binding.recordingFab;
+
+            tooltipManager.addStep(firstTarget,
+                    "User Menu",
+                    "Tap here to access your account settings and sensor preferences.",
+                    TooltipStyle.DOWN);
+
+            tooltipManager.addStep(secondTarget,
+                    "Quick Start Recording",
+                    "Instantly toggle all sensors. Customize your selection in Sensor Settings.",
+                    TooltipStyle.UP);
+
+            tooltipManager.start();
+        }, 500);
+
+}
 
     private void setupMenu() {
         binding.mapTopAppbar.setNavigationOnClickListener(view -> NavHostFragment.findNavController(this).navigateUp());

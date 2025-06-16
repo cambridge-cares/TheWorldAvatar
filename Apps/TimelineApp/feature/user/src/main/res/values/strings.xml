@@ -41,6 +41,15 @@
     <string name="sensor_description_microphone">Captures sound levels.</string>
     <string name="sensor_description_activity">Detects user activity.</string>
     <string name="sensor_description">Sensor Description</string>
+    <string name="help">Help</string>
+    <string name="help_topic_about">About</string>
+    <string name="help_topic_getting_started">Getting started</string>
+    <string name="help_topic_troubleshooting">Troubleshooting</string>
+    <string name="help_topic_sensor_documentation">Sensor documentation</string>
+    <string name="help_topic_helpful_features">Helpful features</string>
+    <string name="help_topic_location_history">Turn Location History on or off</string>
+    <string name="help_topic_recording">How to Start/Stop recording</string>
+    <string name="help_topic_faq">FAQ</string>
     <string name="toggle_all">Toggle All</string>
     <string name="toggle_off">Toggle Off</string>
 </resources>
