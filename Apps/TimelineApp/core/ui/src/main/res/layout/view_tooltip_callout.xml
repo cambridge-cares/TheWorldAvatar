@@ -62,8 +62,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Don’t show again"
+            android:buttonTint="@android:color/white"
             android:textColor="@android:color/white"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="4dp" />
 
         <Button
             android:id="@+id/tooltip_next_button"
@@ -72,7 +73,7 @@
             android:text="Next"
             android:textAllCaps="false"
             android:backgroundTint="#FFFFFF"
-            android:textColor="#000000"/>
+            android:textColor="#11616C"/>
     </LinearLayout>
 
     <ImageView
