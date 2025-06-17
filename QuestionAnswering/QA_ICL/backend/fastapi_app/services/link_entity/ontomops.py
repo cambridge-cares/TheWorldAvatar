@@ -7,7 +7,7 @@ from constants.namespace import ONTOMOPS
 from model.entity_linking.ontomops import (
     AMLinkingArgs,
     CBULinkingArgs,
-    GBULinkingArgs,
+    GBUTypeLinkingArgs,
     MOPLinkingArgs,
 )
 from services.sparql import SparqlClient, get_ontomops_endpoint
@@ -26,7 +26,7 @@ class OntomopsLinkerManager(LinkerManager):
         return {
             "mops:MetalOrganicPolyhedron": self.linkMOP,
             "mops:ChemicalBuildingUnit": self.linkCBU,
-            "mops:GenericBuildingUnit": self.linkGBU,
+            "mops:GenericBuildingUnitType": self.linkGBUType,
             "mops:AssemblyModel": self.linkAM,
         }
 
@@ -72,10 +72,10 @@ WHERE {{
         iris = [binding["CBU"] for binding in bindings]
         return iris
 
-    def linkGBU(self, text: str | None, **kwargs):
+    def linkGBUType(self, text: str | None, **kwargs):
         logger.info(f"Linking generic building unit with args: {kwargs}")
         try:
-            args = GBULinkingArgs.model_validate(kwargs)
+            args = GBUTypeLinkingArgs.model_validate(kwargs)
         except Exception as e:
             logger.error(
                 f"Invalid linking args for generic building unit with error: {e}"
@@ -83,14 +83,19 @@ WHERE {{
             lst: list[str] = []
             return lst
 
-        query = f"""PREFIX mops: <{ONTOMOPS}>
-        
+        clause_gbu = f"?GBU mops:hasGBUType ?GBUType ."
+        clause_modularity = (f"?GBUType mops:hasModularity {args.modularity} ." if args.modularity else None)
+        clause_planarity = (f'?GBUType mops:hasPlanarity "{args.planarity}" .' if args.planarity else None)
+        query = """PREFIX mops: <{mops}>
 SELECT DISTINCT *
 WHERE {{
-    ?GBU mops:hasModularity {args.modularity} ; mops:hasPlanarity "{args.planarity}" .
-}}"""
+    {clauses}
+}}""".format(
+            mops=ONTOMOPS, clauses="\n    ".join([clause for clause in [clause_gbu, clause_modularity, clause_planarity] if clause])
+        )
+
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        iris = [binding["GBU"] for binding in bindings]
+        iris = [binding["GBUType"] for binding in bindings]
         return iris
 
     def linkAM(self, text: str | None, **kwargs):
@@ -105,11 +110,12 @@ WHERE {{
         clauses_GBU = [
             *(
                 triple
-                for i, gbu_args in enumerate(args.GBU)
+                for i, gbu_type_args in enumerate(args.GBUType)
                 for triple in [
                     f"?AM mops:hasGenericBuildingUnit ?GBU{i} ; mops:hasGenericBuildingUnitNumber ?GBUNum{i} .",
-                    f'?GBU{i} mops:hasModularity {gbu_args.modularity} ; mops:hasPlanarity "{gbu_args.planarity}" .',
-                    f"?GBUNum{i} mops:hasUnitNumberValue {gbu_args.num} .",
+                    f'?GBU{i} mops:hasGBUType ?GBUType{i} .',
+                    f'?GBUType{i} mops:hasModularity {gbu_type_args.modularity} ; mops:hasPlanarity "{gbu_type_args.planarity}" .',
+                    f"?GBUNum{i} mops:hasUnitNumberValue {gbu_type_args.num} .",
                     f"?GBUNum{i} mops:isNumberOf ?GBU{i} .",
                 ]
             ),
@@ -121,12 +127,12 @@ WHERE {{
                         [
                             f"?AM mops:hasGenericBuildingUnit ?GBUExclude .",
                             "FILTER ( ?GBUExclude NOT IN ( {} ) )".format(
-                                ", ".join(f"?GBU{i}" for i in range(len(args.GBU)))
+                                ", ".join(f"?GBU{i}" for i in range(len(args.GBUType)))
                             ),
                         ]
                     )
                 )
-                if args.GBU
+                if args.GBUType
                 else None
             ),
         ]

@@ -62,12 +62,12 @@
   {
     "heading": "Metal-Organic Polyhedra",
     "questions": [
-      "What are all the MOPs with the CBU formula [Mg4C56H76O12S4]?",
-      "Give me all MOPs with a geometric structure of (5-pyramidal)x12(3-planar)x20.",
-      "Return all assembly models based on the CBU [(C6H3)O(CH2)13CH3(CO2)2].",
-      "What assembly models are representative of Ih symmetry?",
+      "Which MOPs have an outer diameter greater than 70 Angstrom?",
+      "What MOPs are based on the CBU [(C6H3)O(CH2)13CH3(CO2)2] and what are their inner sphere diameters?",
+      "What type of AM has the MOP with the largest pore size diameter?",
+      "Are there MOPs have a molecular weight greater than 30,000?",
+      "What are all the MOPs using the CBU with formula [Mg4C56H76O12S4]?",
       "What assembly models are representative of icosahedral geometry?",
-      "Find the modularity of CBU [(C3N3)(C6H4)3(CO2)3]",
       "What is the provenance of the information about MOP [V3O2(OH)2(HCO2)3]4[(C6H4)(C3H2N2)2]6?",
       "What MOPs are associated with DOI 10.1016/j.chempr.2017.02.002?",
       "Which chemical building units are used as 2-linear generic building units?"

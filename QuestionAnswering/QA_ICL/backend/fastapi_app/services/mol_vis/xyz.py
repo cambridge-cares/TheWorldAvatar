@@ -208,7 +208,7 @@ PREFIX mops: <{ONTOMOPS}>
 
 SELECT DISTINCT * WHERE {{
     VALUES ?IRI {{ {" ".join(f"<{iri}>" for iri in iris)} }}
-    ?IRI os:hasGeometry/mops:hasGeometryFile ?URL .
+    ?IRI os:hasGeometry/os:hasGeometryFile ?URL .
 }}"""
         _, bindings = self.ontomops_client.querySelectThenFlatten(query)
         iri2url = {binding["IRI"]: binding["URL"] for binding in bindings}

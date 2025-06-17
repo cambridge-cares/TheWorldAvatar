@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from constants.namespace import PREFIX2URI
-from constants.prefixes import TWA_ABOX_PREFIXES
+from constants.prefixes import OM_MEASURE_ABOX_PREFIX, TWA_ABOX_PREFIXES
 from model.exceptions.execute_data_req.sparql import TriplestoreNotFound
 from model.nlq2datareq import SparqlDataReqForm
 from model.structured_answer import DataItem, DocumentCollection, TableData
@@ -92,7 +92,7 @@ class SparqlDataReqExecutor:
 
         logger.info("Linearising documents into a table...")
         docs_no_iris = filter_deep_remove_iris_from_list(
-            lst=docs, iri_prefixes=TWA_ABOX_PREFIXES
+            lst=docs, iri_prefixes=TWA_ABOX_PREFIXES + OM_MEASURE_ABOX_PREFIX
         )
         flattened_docs = deep_pd_json_normalize_list(docs_no_iris)
         table_data = TableData.from_data(flattened_docs)
