@@ -156,7 +156,7 @@ public class TooltipManager {
             overlayView.bringToFront();
         });
 
-        // Add tooltip and ensure it's drawn above
+        // Add tooltip
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             rootOverlay.addView(tooltipView);
             tooltipView.bringToFront();

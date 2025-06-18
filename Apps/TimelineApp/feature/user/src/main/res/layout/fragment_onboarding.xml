@@ -57,19 +57,12 @@
 
         <Button
             android:id="@+id/sign_in_or_up_button"
-            android:text="Sign In"
+            android:text="Continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#11616C"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="36dp"/>
 
-        <Button
-            android:id="@+id/btnCreateAccount"
-            android:text="Create Account"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
-            android:textColor="#BF000000"
-            android:layout_marginTop="8dp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

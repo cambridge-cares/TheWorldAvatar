@@ -20,6 +20,10 @@
         android:id="@+id/action_global_privacy_setting"
         app:destination="@id/privacy_setting" />
 
+    <action
+        android:id="@+id/action_global_help_page"
+        app:destination="@id/help_page" />
+
     <!-- Optional commented fragments kept intact
     <include app:graph="@navigation/location_tracking_graph"/>
     <include app:graph="@navigation/routing_graph"/>

@@ -10,7 +10,7 @@
         android:name="uk.ac.cam.cares.jps.user.OnboardingFragment"
         tools:layout="@layout/fragment_onboarding">
         <deepLink
-            app:uri="@string/login_fragment_link" />
+            app:uri="@string/onboarding_fragment_link" />
     </fragment>
 
     <fragment
@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_user_fragment_to_sensor_setting"
             app:destination="@id/sensor_setting" />
+        <action
+            android:id="@+id/action_global_help_page"
+            app:destination="@id/help_page" />
     </fragment>
 
     <fragment
@@ -40,6 +43,14 @@
             app:uri="@string/sensor_fragment_link" />
     </fragment>
 
+    <fragment
+        android:id="@+id/help_page"
+        android:name="uk.ac.cam.cares.jps.user.HelpPageFragment"
+        tools:layout="@layout/fragment_help">
+        <deepLink
+            app:uri="@string/help_fragment_link"/>
+    </fragment>
+
     <action
         android:id="@+id/action_global_account_setting"
         app:destination="@id/account_setting" />
@@ -47,4 +58,9 @@
     <action
         android:id="@+id/action_global_sensor_setting"
         app:destination="@id/sensor_setting" />
+
+    <action
+        android:id="@+id/action_global_help_page"
+        app:destination="@id/help_page" />
+
 </navigation>

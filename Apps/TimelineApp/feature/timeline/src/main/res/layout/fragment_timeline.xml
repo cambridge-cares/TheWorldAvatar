@@ -30,6 +30,25 @@
             app:menu="@menu/timeline_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:paddingEnd="40dp"
+        android:paddingTop="12dp">
+
+        <ImageButton
+            android:id="@+id/user_dropdown_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="end"
+            android:paddingTop="22dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Open dropdown menu"
+            android:src="@drawable/ic_profile"
+             />
+    </FrameLayout>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/bottom_sheet_container"
         style="@style/Widget.TWA.BottomSheet"

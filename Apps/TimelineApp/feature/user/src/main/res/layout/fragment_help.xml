@@ -1,89 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:padding="24dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:background="?attr/colorSurface"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Help Page"
+        app:titleCentered="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Help icon -->
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_help_outline"
-            android:layout_marginBottom="16dp"
-            android:contentDescription="@string/help" />
 
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="How can we help?"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="4dp" />
+    <ScrollView
+        android:id="@+id/help_scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/white"
+        android:padding="24dp"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Subtitle -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Learn more about Timeline and get support with these FAQs."
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Help topics container -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:divider="?android:attr/dividerHorizontal"
-            android:showDividers="middle">
+            android:gravity="center_horizontal">
 
-            <!-- Each row: -->
-            <include layout="@layout/help_item"
-                android:id="@+id/help_about_row" />
+            <!-- Help icon -->
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_help_outline"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/help" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_getting_started_row" />
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How can we help?"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="4dp" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_troubleshooting_row" />
+            <!-- Subtitle -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Learn more about Timeline and get support with these FAQs."
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_sensor_documentation_row" />
+            <!-- Help topics container -->
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:divider="?android:attr/dividerHorizontal"
+                android:showDividers="middle">
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_features_row" />
+                <!-- Each row: -->
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_about_row" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_location_history_row" />
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_getting_started_row" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_recording_row" />
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_troubleshooting_row" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_faq_row" />
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_sensor_documentation_row" />
 
-            <include layout="@layout/help_item"
-                android:id="@+id/help_location_history_row_2" />
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_features_row" />
+
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_location_history_row" />
+
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_recording_row" />
+
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_faq_row" />
+
+                <include layout="@layout/help_item"
+                    android:id="@+id/help_location_history_row_2" />
+            </LinearLayout>
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Need more help?"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginTop="24dp" />
         </LinearLayout>
-
-        <!-- Footer -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Need more help?"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginTop="24dp" />
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

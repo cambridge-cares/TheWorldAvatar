@@ -3,7 +3,9 @@ package uk.ac.cam.cares.jps.timeline;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -55,6 +58,8 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipManager;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipManager.TooltipStyle;
+import uk.ac.cam.cares.jps.ui.UiUtils;
+
 
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {
@@ -93,6 +98,7 @@ public class TimelineFragment extends Fragment {
         mapView.getMapboxMap().addOnStyleLoadedListener(style -> {});
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
+        binding.userDropdownButton.setOnClickListener(v -> showUserDropdown(v));
 
 
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
@@ -216,13 +222,13 @@ public class TimelineFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             TooltipManager tooltipManager = new TooltipManager(requireActivity(), () -> Log.d(TAG, "Tooltips finished"));
 
-            View firstTarget = binding.mapTopAppbar;
+            View firstTarget = binding.userDropdownButton;;
             View secondTarget = binding.recordingFab;
 
             tooltipManager.addStep(firstTarget,
                     "User Menu",
                     "Tap here to access your account settings and sensor preferences.",
-                    TooltipStyle.DOWN);
+                    TooltipStyle.UP);
 
             tooltipManager.addStep(secondTarget,
                     "Quick Start Recording",
@@ -288,4 +294,65 @@ public class TimelineFragment extends Fragment {
             mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
         }
     }
+
+    private void showUserDropdown(View anchor) {
+        View popupView = LayoutInflater.from(requireContext()).inflate(R.layout.view_user_dropdown_menu, null);
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+
+        popupWindow.setElevation(10f);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        // Link dropdown items
+        popupView.findViewById(R.id.menu_account).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            navigateTo("https://jps.cam.cares/account");
+        });
+
+        popupView.findViewById(R.id.menu_sensor).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            navigateTo("https://jps.cam.cares/sensor");
+        });
+
+        popupView.findViewById(R.id.menu_timeline).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            showNotImplemented();
+        });
+
+        popupView.findViewById(R.id.menu_help).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            navigateTo("https://jps.cam.cares/help");
+        });
+
+        popupView.findViewById(R.id.menu_privacy).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            navigateTo("https://jps.cam.cares/privacy");
+        });
+
+        popupView.findViewById(R.id.menu_logout).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            // TODO: Add logout logic here
+            showNotImplemented();
+        });
+
+        popupWindow.showAsDropDown(anchor, -100, 20);
+    }
+
+    private void navigateTo(String uriString) {
+        NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                .fromUri(Uri.parse(uriString))
+                .build();
+        NavHostFragment.findNavController(this).navigate(request);
+    }
+
+
+    private void showNotImplemented() {
+        UiUtils.showNotImplementedDialog(requireContext());
+    }
+
 }

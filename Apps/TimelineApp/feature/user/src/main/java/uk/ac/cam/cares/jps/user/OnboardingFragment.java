@@ -132,30 +132,58 @@ public class OnboardingFragment extends Fragment {
     }
 
     private void setupOnboardingPager() {
-        List<Integer> layouts = Arrays.asList(
+        List<Integer> realPages = Arrays.asList(
                 R.layout.onboarding_page_1,
                 R.layout.onboarding_page_2,
                 R.layout.onboarding_page_3
         );
-        OnboardingAdapter adapter = new OnboardingAdapter(layouts);
+
+        List<Integer> loopedPages = Arrays.asList(
+                realPages.get(2),
+                realPages.get(0),
+                realPages.get(1),
+                realPages.get(2),
+                realPages.get(0)
+        );
+
+        OnboardingAdapter adapter = new OnboardingAdapter(loopedPages);
         binding.viewPager.setAdapter(adapter);
-        binding.dotsIndicator.createIndicators(layouts.size(), 0);
+        binding.viewPager.setCurrentItem(1, false);
+        binding.dotsIndicator.setViewPager(binding.viewPager);
+        binding.dotsIndicator.createIndicators(realPages.size(), 0);
+
         binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                binding.dotsIndicator.animatePageSelected(position);
+                int realPosition = (position - 1 + realPages.size()) % realPages.size();
+                binding.dotsIndicator.animatePageSelected(realPosition);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                    int current = binding.viewPager.getCurrentItem();
+                    int total = adapter.getItemCount();
+
+                    if (current == 0) {
+
+                        binding.viewPager.setCurrentItem(total - 2, false);
+                    } else if (current == total - 1) {
+
+                        binding.viewPager.setCurrentItem(1, false);
+                    }
+                }
             }
         });
     }
+
+
 
     private void setupButtons() {
         binding.signInOrUpButton.setOnClickListener(v -> {
             showLoading();
             loginViewModel.doAuth();
-        });
-
-        binding.btnCreateAccount.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Create Account is not supported yet.", Toast.LENGTH_SHORT).show();
         });
     }
 
