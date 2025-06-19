@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.timeline;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -17,19 +19,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -50,7 +50,7 @@ import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.user.SensorSettingFragment;
+import uk.ac.cam.cares.jps.user.UserDialogFragment;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
@@ -58,8 +58,6 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipManager;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipManager.TooltipStyle;
-import uk.ac.cam.cares.jps.ui.UiUtils;
-
 
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {
@@ -74,9 +72,12 @@ public class TimelineFragment extends Fragment {
     private ScaleBarPlugin scaleBarPlugin;
     private CompassPlugin compassPlugin;
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private static final String PREF_NAME = "app_preferences";
+    private static final String PREF_LOCATION_PROMPTED = "location_permission_prompted";
+
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
+    private ActivityResultLauncher<String> locationPermissionLauncher;
 
     private SensorViewModel sensorViewModel;
     private boolean isRecording = false;
@@ -95,19 +96,18 @@ public class TimelineFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mapView = binding.mapView;
-        mapView.getMapboxMap().addOnStyleLoadedListener(style -> {});
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
-        binding.userDropdownButton.setOnClickListener(v -> showUserDropdown(v));
-
-
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
             if (hasError != null && hasError) {
                 Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        getAndCenterUserLocation();
+        registerPermissionLauncher();
+        handleInitialLocationPrompt();
+
         updateUIForThemeMode(isDarkModeEnabled());
 
         TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
@@ -136,35 +136,38 @@ public class TimelineFragment extends Fragment {
         });
     }
 
+    private void registerPermissionLauncher() {
+        locationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        getAndCenterUserLocation();
+                    } else {
+                        setCameraToDefaultLocation();
+                        Toast.makeText(requireContext(), "Location permission denied. Showing default view.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
 
-    private void setupRecordingButton() {
-        FloatingActionButton recordingFab = binding.recordingFab;
+    private void handleInitialLocationPrompt() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        boolean wasPrompted = prefs.getBoolean(PREF_LOCATION_PROMPTED, false);
 
-        recordingFab.setOnClickListener(v -> {
-
-            if (sensorViewModel.getSelectedSensors().getValue() == null || sensorViewModel.getSelectedSensors().getValue().isEmpty()) {
-                Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All in the sensor settings", Toast.LENGTH_SHORT).show();
+        if (!wasPrompted) {
+            prefs.edit().putBoolean(PREF_LOCATION_PROMPTED, true).apply();
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        } else {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                getAndCenterUserLocation();
             } else {
-                sensorViewModel.toggleRecording();
+                setCameraToDefaultLocation();
             }
-        });
-
-        sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
-            if (isRecording != null) {
-                int icon = isRecording ? R.drawable.ic_stop : R.drawable.ic_start;
-                recordingFab.setImageResource(icon);
-            }
-        });
+        }
     }
 
     private void getAndCenterUserLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.d("LOCATION", "Permission not granted. Using default location.");
-            setCameraToDefaultLocation();
-            return;
-        }
-
         LocationRequest locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(1000)
@@ -205,24 +208,30 @@ public class TimelineFragment extends Fragment {
         Log.d("MAPBOX_CAMERA", "Camera set to DEFAULT → Lat: " + camCenter.latitude() + ", Lng: " + camCenter.longitude());
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
-                grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getAndCenterUserLocation();
-        } else {
-            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
-        }
+    private void setupRecordingButton() {
+        FloatingActionButton recordingFab = binding.recordingFab;
+
+        recordingFab.setOnClickListener(v -> {
+            if (sensorViewModel.getSelectedSensors().getValue() == null || sensorViewModel.getSelectedSensors().getValue().isEmpty()) {
+                Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All in the sensor settings", Toast.LENGTH_SHORT).show();
+            } else {
+                sensorViewModel.toggleRecording();
+            }
+        });
+
+        sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
+            if (isRecording != null) {
+                int icon = isRecording ? R.drawable.ic_stop : R.drawable.ic_start;
+                recordingFab.setImageResource(icon);
+            }
+        });
     }
 
     private void showIntroTooltips() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             TooltipManager tooltipManager = new TooltipManager(requireActivity(), () -> Log.d(TAG, "Tooltips finished"));
 
-            View firstTarget = binding.userDropdownButton;;
+            View firstTarget = binding.userDropdownButton;
             View secondTarget = binding.recordingFab;
 
             tooltipManager.addStep(firstTarget,
@@ -237,8 +246,7 @@ public class TimelineFragment extends Fragment {
 
             tooltipManager.start();
         }, 500);
-
-}
+    }
 
     private void setupMenu() {
         binding.mapTopAppbar.setNavigationOnClickListener(view ->
@@ -247,8 +255,7 @@ public class TimelineFragment extends Fragment {
 
         binding.mapTopAppbar.setOnMenuItemClickListener(menuItem -> {
             if (menuItem.getItemId() == R.id.user_menu_item) {
-                new uk.ac.cam.cares.jps.user.UserDialogFragment()
-                        .show(getParentFragmentManager(), "user_dialog");
+                UserDialogFragment.show(getParentFragmentManager());
                 return true;
             }
             return false;
@@ -294,65 +301,4 @@ public class TimelineFragment extends Fragment {
             mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
         }
     }
-
-    private void showUserDropdown(View anchor) {
-        View popupView = LayoutInflater.from(requireContext()).inflate(R.layout.view_user_dropdown_menu, null);
-        PopupWindow popupWindow = new PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
-        );
-
-        popupWindow.setElevation(10f);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        // Link dropdown items
-        popupView.findViewById(R.id.menu_account).setOnClickListener(v -> {
-            popupWindow.dismiss();
-            navigateTo("https://jps.cam.cares/account");
-        });
-
-        popupView.findViewById(R.id.menu_sensor).setOnClickListener(v -> {
-            popupWindow.dismiss();
-            navigateTo("https://jps.cam.cares/sensor");
-        });
-
-        popupView.findViewById(R.id.menu_timeline).setOnClickListener(v -> {
-            popupWindow.dismiss();
-            showNotImplemented();
-        });
-
-        popupView.findViewById(R.id.menu_help).setOnClickListener(v -> {
-            popupWindow.dismiss();
-            navigateTo("https://jps.cam.cares/help");
-        });
-
-        popupView.findViewById(R.id.menu_privacy).setOnClickListener(v -> {
-            popupWindow.dismiss();
-            navigateTo("https://jps.cam.cares/privacy");
-        });
-
-        popupView.findViewById(R.id.menu_logout).setOnClickListener(v -> {
-            popupWindow.dismiss();
-            // TODO: Add logout logic here
-            showNotImplemented();
-        });
-
-        popupWindow.showAsDropDown(anchor, -100, 20);
-    }
-
-    private void navigateTo(String uriString) {
-        NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                .fromUri(Uri.parse(uriString))
-                .build();
-        NavHostFragment.findNavController(this).navigate(request);
-    }
-
-
-    private void showNotImplemented() {
-        UiUtils.showNotImplementedDialog(requireContext());
-    }
-
 }

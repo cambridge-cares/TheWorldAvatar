@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.fragment.app.FragmentManager;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.FragmentUserDialogBinding;
@@ -29,6 +30,11 @@ public class UserDialogFragment extends DialogFragment {
 
     private FragmentUserDialogBinding binding;
     private AccountViewModel accountViewModel;
+
+    public static void show(@NonNull FragmentManager fragmentManager) {
+        UserDialogFragment dialog = new UserDialogFragment();
+        dialog.show(fragmentManager, "UserDialog");
+    }
 
     @Nullable
     @Override
@@ -63,6 +69,11 @@ public class UserDialogFragment extends DialogFragment {
             navigate(R.string.help_fragment_link);
         });
 
+        binding.timelineSetting.setOnClickListener(v -> {
+            dismiss();
+            navigate(R.string.timeline_setting_link);
+        });
+
         binding.privacySetting.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.healthReport.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.locationHistory.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
@@ -82,12 +93,12 @@ public class UserDialogFragment extends DialogFragment {
         Dialog dialog = getDialog();
         if (dialog != null && dialog.getWindow() != null) {
             Window window = dialog.getWindow();
-            window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
             WindowManager.LayoutParams params = window.getAttributes();
-            params.gravity = Gravity.TOP | Gravity.END;
-            params.y = 100; // Adjust vertical offset
-            params.x = 30;  // Adjust horizontal offset
+            params.gravity = Gravity.CENTER;
             window.setAttributes(params);
+
             window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }

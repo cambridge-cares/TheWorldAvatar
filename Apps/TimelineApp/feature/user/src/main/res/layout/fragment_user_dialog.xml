@@ -83,6 +83,13 @@
                     style="@style/Theme.TWA.UserItem.Text"
                     android:text="Location History" />
 
+                <TextView
+                    android:id="@+id/timeline_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.TWA.UserItem.Text"
+                    android:text="Timeline Setting" />
+
             </LinearLayout>
 
         </LinearLayout>

@@ -40,6 +40,14 @@
             app:uri="@string/help_fragment_link" />
     </fragment>
 
+    <fragment
+        android:id="@+id/timeline_setting"
+        android:name="uk.ac.cam.cares.jps.user.TimelineSettingFragment"
+        tools:layout="@layout/fragment_timeline_setting">
+        <deepLink
+            app:uri="@string/timeline_setting_link" />
+    </fragment>
+
 
     <action
         android:id="@+id/action_global_account_setting"
@@ -52,4 +60,8 @@
     <action
         android:id="@+id/action_global_help_page"
         app:destination="@id/help_page" />
+
+    <action
+        android:id="@+id/action_global_timeline_setting"
+        app:destination="@id/timeline_setting" />
 </navigation>
