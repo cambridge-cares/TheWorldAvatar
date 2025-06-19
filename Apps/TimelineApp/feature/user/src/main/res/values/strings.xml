@@ -50,6 +50,9 @@
     <string name="help_topic_location_history">Turn Location History on or off</string>
     <string name="help_topic_recording">How to Start/Stop recording</string>
     <string name="help_topic_faq">FAQ</string>
+    <string name="help_fragment_link">android-app://uk.ac.cam.cares.jps.app/help</string>
+    <string name="sensor_fragment_link">android-app://uk.ac.cam.cares.jps.app/sensor</string>
+    <string name="account_setting_link">android-app://uk.ac.cam.cares.jps.app/account</string>
     <string name="toggle_all">Toggle All</string>
     <string name="toggle_off">Toggle Off</string>
 </resources>

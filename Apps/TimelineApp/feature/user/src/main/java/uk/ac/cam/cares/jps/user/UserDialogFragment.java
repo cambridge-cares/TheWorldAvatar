@@ -1,0 +1,94 @@
+package uk.ac.cam.cares.jps.user;
+
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDeepLinkRequest;
+import androidx.navigation.fragment.NavHostFragment;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.user.databinding.FragmentUserDialogBinding;
+import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
+import uk.ac.cam.cares.jps.ui.UiUtils;
+
+@AndroidEntryPoint
+public class UserDialogFragment extends DialogFragment {
+
+    private FragmentUserDialogBinding binding;
+    private AccountViewModel accountViewModel;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentUserDialogBinding.inflate(inflater, container, false);
+        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
+        binding.setAccountViewModel(accountViewModel);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (accountViewModel.name.getValue() == null || accountViewModel.name.getValue().isEmpty()) {
+            accountViewModel.getUserInfo();
+        }
+
+        binding.accountSetting.setOnClickListener(v -> {
+            dismiss();
+            navigate(R.string.account_setting_link);
+        });
+
+        binding.sensorSetting.setOnClickListener(v -> {
+            dismiss();
+            navigate(R.string.sensor_fragment_link);
+        });
+
+        binding.helpPage.setOnClickListener(v -> {
+            dismiss();
+            navigate(R.string.help_fragment_link);
+        });
+
+        binding.privacySetting.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
+        binding.healthReport.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
+        binding.locationHistory.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
+    }
+
+    private void navigate(int uriResId) {
+        Uri uri = Uri.parse(requireContext().getString(uriResId));
+        NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                .fromUri(uri)
+                .build();
+        NavHostFragment.findNavController(this).navigate(request);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null && dialog.getWindow() != null) {
+            Window window = dialog.getWindow();
+            window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.TOP | Gravity.END;
+            params.y = 100; // Adjust vertical offset
+            params.x = 30;  // Adjust horizontal offset
+            window.setAttributes(params);
+            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+    }
+}

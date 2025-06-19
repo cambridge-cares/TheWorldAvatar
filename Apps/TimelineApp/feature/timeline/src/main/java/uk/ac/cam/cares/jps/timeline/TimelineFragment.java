@@ -241,14 +241,14 @@ public class TimelineFragment extends Fragment {
 }
 
     private void setupMenu() {
-        binding.mapTopAppbar.setNavigationOnClickListener(view -> NavHostFragment.findNavController(this).navigateUp());
+        binding.mapTopAppbar.setNavigationOnClickListener(view ->
+                NavHostFragment.findNavController(this).navigateUp()
+        );
 
         binding.mapTopAppbar.setOnMenuItemClickListener(menuItem -> {
             if (menuItem.getItemId() == R.id.user_menu_item) {
-                NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.user_fragment_link)))
-                        .build();
-                NavHostFragment.findNavController(this).navigate(request);
+                new uk.ac.cam.cares.jps.user.UserDialogFragment()
+                        .show(getParentFragmentManager(), "user_dialog");
                 return true;
             }
             return false;
