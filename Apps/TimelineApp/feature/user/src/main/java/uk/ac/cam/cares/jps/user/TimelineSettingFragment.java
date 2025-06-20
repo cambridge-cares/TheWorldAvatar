@@ -59,6 +59,10 @@ public class TimelineSettingFragment extends Fragment {
                 Toast.makeText(requireContext(),
                         "Delete-all confirmation coming soon",
                         Toast.LENGTH_SHORT).show());
+
+        binding.timelineTopAppbar.setNavigationOnClickListener(view ->
+                requireActivity().getOnBackPressedDispatcher().onBackPressed());
+
     }
 
     @Override

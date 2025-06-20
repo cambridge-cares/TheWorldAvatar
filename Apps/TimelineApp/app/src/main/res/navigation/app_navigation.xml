@@ -4,7 +4,6 @@
     android:id="@+id/app_navigation"
     app:startDestination="@id/user_map">
 
-    <!-- Included nested graphs -->
     <include app:graph="@navigation/timeline_map"/>
     <include app:graph="@navigation/user_map"/>
 
