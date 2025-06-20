@@ -96,10 +96,9 @@ public class UserDialogFragment extends DialogFragment {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
             WindowManager.LayoutParams params = window.getAttributes();
-            params.gravity = Gravity.CENTER;
+            params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             window.setAttributes(params);
-
-            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 }
