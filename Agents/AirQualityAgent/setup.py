@@ -16,9 +16,11 @@ setup(
     install_requires= [
         'APScheduler==3.9.1',
         'Flask==2.2.2',
+        'werkzeug==2.2.2',
         'JayDeBeApi==1.2.3',
         'pandas~=1.4',
-        'py4jps==1.0.34', 
+        'numpy~=1.24',
+        'py4jps==1.0.38', 
         'requests==2.28.1',
     ]
 )
