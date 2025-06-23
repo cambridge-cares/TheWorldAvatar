@@ -168,11 +168,13 @@ class ExposureUtils:
             trajectory_iri: str
         ) -> dict:
         """
-        High-speed AEQD buffering with STRtree.
-        2025-06: adds per-point column <DomainLabel>_count_at_time.
+        AEQD-based high-speed exposure calculator.
+        2025-06 – adds <Domain>_count_at_time column for POINT data, with Trip-index awareness.
         """
 
-        # 1 - extract lon/lat
+        # ------------------------------------------------------------------
+        # 1) Extract lon / lat list from trajectory
+        # ------------------------------------------------------------------
         coords_ll = [
             (float(r["LONGITUDE"]), float(r["LATITUDE"]))
             for _, r in trajectory_df.iterrows()
@@ -186,10 +188,14 @@ class ExposureUtils:
                 "totalArea": None
             }
 
-        # 2 - trajectory geometry (WGS84)
+        # ------------------------------------------------------------------
+        # 2) Build trajectory geometry in WGS84
+        # ------------------------------------------------------------------
         base_geom = Point(coords_ll[0]) if len(coords_ll) == 1 else LineString(coords_ll)
 
-        # 3 - local AEQD projection
+        # ------------------------------------------------------------------
+        # 3) Build local Azimuthal-Equidistant CRS
+        # ------------------------------------------------------------------
         centroid = base_geom.centroid
         aeqd_crs = CRS.from_proj4(
             f"+proj=aeqd +lat_0={centroid.y} +lon_0={centroid.x} +units=m"
@@ -197,7 +203,9 @@ class ExposureUtils:
         to_aeqd = Transformer.from_crs(4326, aeqd_crs, always_xy=True).transform
         to_wgs84 = Transformer.from_crs(aeqd_crs, 4326, always_xy=True).transform
 
-        # 4 - buffer whole trajectory once
+        # ------------------------------------------------------------------
+        # 4) Buffer whole trajectory once
+        # ------------------------------------------------------------------
         proj_base = transform(to_aeqd, base_geom)
         buf_proj = proj_base.buffer(exposure_radius)
         if buf_proj.is_empty:
@@ -208,8 +216,10 @@ class ExposureUtils:
                 "totalArea": None
             }
 
-        # 5 - project environmental features
-        proj_env: list = []
+        # ------------------------------------------------------------------
+        # 5) Project all environmental features into the same plane
+        # ------------------------------------------------------------------
+        proj_env = []
         if feature_type.upper() == "POINT":
             for _, row in env_df.iterrows():
                 try:
@@ -221,35 +231,34 @@ class ExposureUtils:
             crs_uri = self.fetch_env_crs(env_data_iri, feature_type)
             m = re.search(r"EPSG/0/(\d+)", crs_uri)
             src_epsg = int(m.group(1)) if m else 4326
-            to_env_proj = Transformer.from_crs(f"EPSG:{src_epsg}", aeqd_crs, always_xy=True).transform
+            to_env = Transformer.from_crs(f"EPSG:{src_epsg}", aeqd_crs, always_xy=True).transform
             for _, row in env_df.iterrows():
                 wkb_hex = row.get("Geometry", "")
                 if not wkb_hex or wkb_hex == "N/A":
                     continue
                 try:
                     poly_src = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
-                    proj_env.append((transform(to_env_proj, poly_src), None))
+                    proj_env.append((transform(to_env, poly_src), None))
                 except Exception:
                     continue
 
-        # 6 - build STRtree
-        all_geoms = [g for g, _ in proj_env]
-        tree = STRtree(all_geoms)
-        idxs = tree.query(buf_proj)
+        # ------------------------------------------------------------------
+        # 6) Build STRtree and compute cumulative exposure
+        # ------------------------------------------------------------------
+        tree = STRtree([g for g, _ in proj_env])
+        spatial_ix = tree.query(buf_proj)
 
-        point_count = 0
-        area_count = 0
-        total_area = 0.0
+        point_count, area_count, total_area = 0, 0, 0.0
 
         if feature_type.upper() == "POINT":
             visited = set()
-            for i in idxs:
+            for i in spatial_ix:
                 pt_proj, uid = proj_env[i]
                 if buf_proj.intersects(pt_proj):
                     visited.add(uid)
             point_count = len(visited)
         else:
-            for i in idxs:
+            for i in spatial_ix:
                 poly_proj, _ = proj_env[i]
                 inter_proj = poly_proj.intersection(buf_proj)
                 if inter_proj.is_empty:
@@ -258,17 +267,21 @@ class ExposureUtils:
                 total_area += ExposureUtils.geodesic_area(inter_ll)
                 area_count += 1
 
-        # 7 - detect Trip index (optional)
-        has_trip_index = False
-        trip_mask = [True] * len(coords_ll)
+        # ------------------------------------------------------------------
+        # 7) Build Trip-mask for per-point counts
+        # ------------------------------------------------------------------
+        trip_mask = [True] * len(coords_ll)                    # default: every point counted
         for col in trajectory_df.columns:
             if col.strip().lower().replace(" ", "_") == "trip_index":
-                has_trip_index = True
-                trip_mask = trajectory_df[col].fillna(0).astype(int) > 0
+                vals = trajectory_df[col].fillna(0).astype(int)
+                if (vals > 0).any():                           # only mask when some >0
+                    trip_mask = vals > 0
                 break
 
-        # 8 - per-point exposure counts (POINT only)
-        per_point_counts: Optional[list] = None
+        # ------------------------------------------------------------------
+        # 8) Per-point exposure counts (POINT only)
+        # ------------------------------------------------------------------
+        per_point_counts = None
         if feature_type.upper() == "POINT":
             per_point_counts = []
             for (lon, lat), in_trip in zip(coords_ll, trip_mask):
@@ -278,13 +291,14 @@ class ExposureUtils:
                 pt_proj = Point(to_aeqd(lon, lat))
                 idxs_pt = tree.query(pt_proj.buffer(exposure_radius))
                 cnt = sum(
-                    1
-                    for i in idxs_pt
+                    1 for i in idxs_pt
                     if pt_proj.distance(proj_env[i][0]) <= exposure_radius
                 )
                 per_point_counts.append(cnt)
 
-        # 9 - write back to DB
+        # ------------------------------------------------------------------
+        # 9) Write results back to database
+        # ------------------------------------------------------------------
         conn = None
         try:
             conn = self.connect_to_database(
@@ -296,20 +310,22 @@ class ExposureUtils:
             )
             table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
             safe_label = domain_label.replace(" ", "_").replace("/", "_")
+
             col_tot_point = f"{safe_label}_point_count"
             col_tot_area = f"{safe_label}_area_count"
-            col_tot_area_m2 = f"{safe_label}_total_area"
-            col_pt_time = f"{safe_label}_count_at_time"  # new column
+            col_tot_area_m = f"{safe_label}_total_area"
+            col_pt_time = f"{safe_label}_count_at_time"
 
-            # 9a - ensure columns exist
-            for col, dtype in [
+            # -------- 9a) Ensure columns exist --------
+            cols_to_add = [
                 (col_tot_point, "INTEGER"),
                 (col_tot_area, "INTEGER"),
-                (col_tot_area_m2, "DOUBLE PRECISION"),
-                (col_pt_time, "INTEGER") if per_point_counts is not None else ()
-            ]:
-                if not col:
-                    continue
+                (col_tot_area_m, "DOUBLE PRECISION")
+            ]
+            if per_point_counts is not None:
+                cols_to_add.append((col_pt_time, "INTEGER"))
+
+            for col, dtype in cols_to_add:
                 alter_sql = f"""
                 DO $$ BEGIN
                   IF NOT EXISTS (
@@ -322,19 +338,20 @@ class ExposureUtils:
                 """
                 self.execute_query(conn, alter_sql, (table_name, col))
 
-            # 9b - update cumulative columns
+            # -------- 9b) Update cumulative columns --------
             has_tsiri = bool(self.execute_query(
                 conn,
                 "SELECT 1 FROM information_schema.columns "
                 "WHERE table_name = %s AND column_name = 'time_series_iri';",
                 (table_name,)
             ))
+
             if has_tsiri:
                 upd_sql = f"""
                 UPDATE "{table_name}"
                 SET "{col_tot_point}" = %s,
-                    "{col_tot_area}" = %s,
-                    "{col_tot_area_m2}" = %s
+                    "{col_tot_area}"  = %s,
+                    "{col_tot_area_m}"= %s
                 WHERE "time_series_iri" = %s;
                 """
                 params = (point_count, area_count, total_area, trajectory_iri)
@@ -342,13 +359,14 @@ class ExposureUtils:
                 upd_sql = f"""
                 UPDATE "{table_name}"
                 SET "{col_tot_point}" = %s,
-                    "{col_tot_area}" = %s,
-                    "{col_tot_area_m2}" = %s;
+                    "{col_tot_area}"  = %s,
+                    "{col_tot_area_m}"= %s;
                 """
                 params = (point_count, area_count, total_area)
+
             self.execute_query(conn, upd_sql, params)
 
-            # 9c - batch update per-point counts
+            # -------- 9c) Batch update per-point counts --------
             if per_point_counts is not None:
                 values = [
                     (pd.to_datetime(r["time"]), cnt)
@@ -356,17 +374,36 @@ class ExposureUtils:
                     if cnt is not None
                 ]
                 if values:
-                    upd_pt_sql = f"""
-                    UPDATE "{table_name}" AS t
-                    SET "{col_pt_time}" = v.cnt
-                    FROM (VALUES %s) AS v(ts, cnt)
-                    WHERE t."time" = v.ts;
-                    """
-                    cur = conn.cursor()
-                    execute_values(cur, upd_pt_sql, values)
-                    conn.commit()
+                    # -------- Determine connection type: test cursor() --------
+                    is_psycopg = True
+                    try:
+                        test_cur = conn.cursor()
+                        test_cur.close()
+                    except Exception:
+                        is_psycopg = False
 
-            # 9d - commit cumulative part where psycopg2 is used
+                    if is_psycopg:
+                        cur = conn.cursor()
+                        execute_values(
+                            cur,
+                            f"""
+                            UPDATE "{table_name}" AS t
+                            SET "{col_pt_time}" = v.cnt
+                            FROM (VALUES %s) AS v(ts, cnt)
+                            WHERE t."time" = v.ts;
+                            """,
+                            values
+                        )
+                    else:  # JDBC / TSClient
+                        for ts, cnt in values:
+                            s_sql = f'''
+                            UPDATE "{table_name}"
+                            SET "{col_pt_time}" = %s
+                            WHERE "time" = %s;
+                            '''
+                            self.execute_query(conn, s_sql, (cnt, ts))
+
+            # -------- 9d) Commit for psycopg2 only --------
             self.commit_if_psycopg2(conn)
 
         except Exception as e:
@@ -375,7 +412,9 @@ class ExposureUtils:
             if conn:
                 conn.close()
 
-        # 10 - return result (compat)
+        # ------------------------------------------------------------------
+        # 10) Build return dict
+        # ------------------------------------------------------------------
         result = {
             "envFeatureName": domain_label,
             "type": feature_type,
