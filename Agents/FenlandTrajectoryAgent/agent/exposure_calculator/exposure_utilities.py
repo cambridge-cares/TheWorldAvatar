@@ -11,6 +11,7 @@ import math
 import pandas as pd
 import requests
 import psycopg2
+from psycopg2.extras import execute_values
 
 from shapely.geometry import Point, LineString, Polygon, MultiPolygon
 from shapely import wkt
@@ -29,6 +30,7 @@ from shapely.prepared import prep
 from shapely.strtree import STRtree
 from agent.exposure_calculator.trip_detector.trip_detection import detect_trips, DEFAULT_PARAMS
 from agent.exposure_calculator.trip_detector.utilities import *
+
 
 class ExposureUtils:
     @staticmethod
@@ -106,7 +108,7 @@ class ExposureUtils:
         self.config.read(config_file)
         try:
             self.ENV_DATA_ENDPOINT_URL = self.config.get("DEFAULT", "ENV_DATA_ENDPOINT_URL")
-            self.TRAJECTORY_DB_HOST     = self.config.get("DEFAULT", "TRAJECTORY_DB_HOST")
+            self.TRAJECTORY_DB_HOST = self.config.get("DEFAULT", "TRAJECTORY_DB_HOST")
             self.TRAJECTORY_DB_PASSWORD = self.config.get("DEFAULT", "TRAJECTORY_DB_PASSWORD")
         except (configparser.NoOptionError, configparser.NoSectionError) as e:
             self.logger.error(f"Config error: {e}")
@@ -137,7 +139,7 @@ class ExposureUtils:
                 data=sparql,
                 headers={
                     "Content-Type": "application/sparql-query",
-                    "Accept":       "application/json",
+                    "Accept": "application/json",
                 },
                 timeout=10
             )   
@@ -156,87 +158,94 @@ class ExposureUtils:
         return "http://www.opengis.net/def/crs/EPSG/0/4326"
 
     def exposure_calculation(
-        self,
-        trajectory_df: pd.DataFrame,
-        env_df: pd.DataFrame,
-        env_data_iri: str,
-        domain_label: str,
-        feature_type: str,
-        exposure_radius: float,
-        trajectory_iri: str
-    ) -> dict:
-        """High-speed global geodesic buffer based on single AEQD projection + spatial index + true geodesic area calculation"""
-        # 1) Extract trajectory lat/lon
+            self,
+            trajectory_df: pd.DataFrame,
+            env_df: pd.DataFrame,
+            env_data_iri: str,
+            domain_label: str,
+            feature_type: str,
+            exposure_radius: float,
+            trajectory_iri: str
+        ) -> dict:
+        """
+        High-speed AEQD buffering with STRtree.
+        2025-06: adds per-point column <DomainLabel>_count_at_time.
+        """
+
+        # 1 - extract lon/lat
         coords_ll = [
             (float(r["LONGITUDE"]), float(r["LATITUDE"]))
             for _, r in trajectory_df.iterrows()
             if r["LONGITUDE"] and r["LATITUDE"]
         ]
         if not coords_ll:
-            return {"envFeatureName": domain_label, "type": feature_type, "count": 0, "totalArea": None}
+            return {
+                "envFeatureName": domain_label,
+                "type": feature_type,
+                "count": 0,
+                "totalArea": None
+            }
 
-        # 2) Construct trajectory geometry (WGS84)
+        # 2 - trajectory geometry (WGS84)
         base_geom = Point(coords_ll[0]) if len(coords_ll) == 1 else LineString(coords_ll)
 
-        # 3) Define Azimuthal Equidistant projection at trajectory centroid (units: meters)
+        # 3 - local AEQD projection
         centroid = base_geom.centroid
         aeqd_crs = CRS.from_proj4(
             f"+proj=aeqd +lat_0={centroid.y} +lon_0={centroid.x} +units=m"
         )
-        to_aeqd  = Transformer.from_crs(4326, aeqd_crs, always_xy=True).transform
+        to_aeqd = Transformer.from_crs(4326, aeqd_crs, always_xy=True).transform
         to_wgs84 = Transformer.from_crs(aeqd_crs, 4326, always_xy=True).transform
 
-        # 4) Project to plane and buffer once
+        # 4 - buffer whole trajectory once
         proj_base = transform(to_aeqd, base_geom)
-        buf_proj  = proj_base.buffer(exposure_radius)
+        buf_proj = proj_base.buffer(exposure_radius)
         if buf_proj.is_empty:
-            return {"envFeatureName": domain_label, "type": feature_type, "count": 0, "totalArea": None}
+            return {
+                "envFeatureName": domain_label,
+                "type": feature_type,
+                "count": 0,
+                "totalArea": None
+            }
 
-        # 5) Project all environmental features to the same plane CRS at once
-        proj_env = []
+        # 5 - project environmental features
+        proj_env: list = []
         if feature_type.upper() == "POINT":
             for _, row in env_df.iterrows():
                 try:
                     lon, lat = float(row["Longitude"]), float(row["Latitude"])
-                    pt_proj = Point(to_aeqd(lon, lat))
-                    proj_env.append((pt_proj, row.get("ID", f"{lon},{lat}")))
-                except:
+                    proj_env.append((Point(to_aeqd(lon, lat)), row.get("ID", f"{lon},{lat}")))
+                except Exception:
                     continue
         else:
-            # AREA: First check source CRS, then project to AEQD
             crs_uri = self.fetch_env_crs(env_data_iri, feature_type)
             m = re.search(r"EPSG/0/(\d+)", crs_uri)
             src_epsg = int(m.group(1)) if m else 4326
-            to_env_proj = Transformer.from_crs(
-                f"EPSG:{src_epsg}", aeqd_crs, always_xy=True
-            ).transform
+            to_env_proj = Transformer.from_crs(f"EPSG:{src_epsg}", aeqd_crs, always_xy=True).transform
             for _, row in env_df.iterrows():
                 wkb_hex = row.get("Geometry", "")
                 if not wkb_hex or wkb_hex == "N/A":
                     continue
                 try:
-                    poly_src  = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
-                    poly_proj = transform(to_env_proj, poly_src)
-                    proj_env.append((poly_proj, None))
-                except:
+                    poly_src = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
+                    proj_env.append((transform(to_env_proj, poly_src), None))
+                except Exception:
                     continue
 
-        # 6) Build spatial index and calculate plane intersections
+        # 6 - build STRtree
         all_geoms = [g for g, _ in proj_env]
         tree = STRtree(all_geoms)
         idxs = tree.query(buf_proj)
 
         point_count = 0
-        area_count  = 0
-        total_area  = 0.0
+        area_count = 0
+        total_area = 0.0
 
         if feature_type.upper() == "POINT":
             visited = set()
             for i in idxs:
                 pt_proj, uid = proj_env[i]
                 if buf_proj.intersects(pt_proj):
-                    if uid and uid not in visited:
-                        self.logger.info(f"[EXPOSURE][{trajectory_iri}] POI matched: {uid}")
                     visited.add(uid)
             point_count = len(visited)
         else:
@@ -245,12 +254,37 @@ class ExposureUtils:
                 inter_proj = poly_proj.intersection(buf_proj)
                 if inter_proj.is_empty:
                     continue
-                # Project back to WGS84 and calculate true geodesic area
                 inter_ll = transform(to_wgs84, inter_proj)
                 total_area += ExposureUtils.geodesic_area(inter_ll)
-                area_count  += 1
+                area_count += 1
 
-        # 7) Write back to database (ALTER TABLE + UPDATE + commit, maintain compatibility with old version)
+        # 7 - detect Trip index (optional)
+        has_trip_index = False
+        trip_mask = [True] * len(coords_ll)
+        for col in trajectory_df.columns:
+            if col.strip().lower().replace(" ", "_") == "trip_index":
+                has_trip_index = True
+                trip_mask = trajectory_df[col].fillna(0).astype(int) > 0
+                break
+
+        # 8 - per-point exposure counts (POINT only)
+        per_point_counts: Optional[list] = None
+        if feature_type.upper() == "POINT":
+            per_point_counts = []
+            for (lon, lat), in_trip in zip(coords_ll, trip_mask):
+                if not in_trip:
+                    per_point_counts.append(None)
+                    continue
+                pt_proj = Point(to_aeqd(lon, lat))
+                idxs_pt = tree.query(pt_proj.buffer(exposure_radius))
+                cnt = sum(
+                    1
+                    for i in idxs_pt
+                    if pt_proj.distance(proj_env[i][0]) <= exposure_radius
+                )
+                per_point_counts.append(cnt)
+
+        # 9 - write back to DB
         conn = None
         try:
             conn = self.connect_to_database(
@@ -262,20 +296,24 @@ class ExposureUtils:
             )
             table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
             safe_label = domain_label.replace(" ", "_").replace("/", "_")
-            point_col = f"{safe_label}_point_count"
-            area_col  = f"{safe_label}_area_count"
-            ta_col    = f"{safe_label}_total_area"
+            col_tot_point = f"{safe_label}_point_count"
+            col_tot_area = f"{safe_label}_area_count"
+            col_tot_area_m2 = f"{safe_label}_total_area"
+            col_pt_time = f"{safe_label}_count_at_time"  # new column
 
-            # 7a) Add columns
+            # 9a - ensure columns exist
             for col, dtype in [
-                (point_col, "INTEGER"),
-                (area_col,  "INTEGER"),
-                (ta_col,    "DOUBLE PRECISION")
+                (col_tot_point, "INTEGER"),
+                (col_tot_area, "INTEGER"),
+                (col_tot_area_m2, "DOUBLE PRECISION"),
+                (col_pt_time, "INTEGER") if per_point_counts is not None else ()
             ]:
+                if not col:
+                    continue
                 alter_sql = f"""
                 DO $$ BEGIN
                   IF NOT EXISTS (
-                    SELECT FROM information_schema.columns
+                    SELECT 1 FROM information_schema.columns
                     WHERE table_name = %s AND column_name = %s
                   ) THEN
                     EXECUTE 'ALTER TABLE "{table_name}" ADD COLUMN "{col}" {dtype}';
@@ -284,38 +322,51 @@ class ExposureUtils:
                 """
                 self.execute_query(conn, alter_sql, (table_name, col))
 
-            # 7b) Update values
-            # First check if time_series_iri column exists in the table
-            check_col_sql = """
-            SELECT 1
-            FROM information_schema.columns
-            WHERE table_name = %s AND column_name = 'time_series_iri';
-            """
-            has_tsiri = bool(self.execute_query(conn, check_col_sql, (table_name,)))
-
+            # 9b - update cumulative columns
+            has_tsiri = bool(self.execute_query(
+                conn,
+                "SELECT 1 FROM information_schema.columns "
+                "WHERE table_name = %s AND column_name = 'time_series_iri';",
+                (table_name,)
+            ))
             if has_tsiri:
-                # If time_series_iri exists, only update rows matching the trajectory
-                update_sql = f"""
+                upd_sql = f"""
                 UPDATE "{table_name}"
-                SET "{point_col}" = %s,
-                    "{area_col}"  = %s,
-                    "{ta_col}"    = %s
+                SET "{col_tot_point}" = %s,
+                    "{col_tot_area}" = %s,
+                    "{col_tot_area_m2}" = %s
                 WHERE "time_series_iri" = %s;
                 """
                 params = (point_count, area_count, total_area, trajectory_iri)
             else:
-                # Legacy behavior: update all rows if time_series_iri column doesn't exist
-                update_sql = f"""
+                upd_sql = f"""
                 UPDATE "{table_name}"
-                SET "{point_col}" = %s,
-                    "{area_col}"  = %s,
-                    "{ta_col}"    = %s;
+                SET "{col_tot_point}" = %s,
+                    "{col_tot_area}" = %s,
+                    "{col_tot_area_m2}" = %s;
                 """
                 params = (point_count, area_count, total_area)
+            self.execute_query(conn, upd_sql, params)
 
-            self.execute_query(conn, update_sql, params)
+            # 9c - batch update per-point counts
+            if per_point_counts is not None:
+                values = [
+                    (pd.to_datetime(r["time"]), cnt)
+                    for (_idx, r), cnt in zip(trajectory_df.iterrows(), per_point_counts)
+                    if cnt is not None
+                ]
+                if values:
+                    upd_pt_sql = f"""
+                    UPDATE "{table_name}" AS t
+                    SET "{col_pt_time}" = v.cnt
+                    FROM (VALUES %s) AS v(ts, cnt)
+                    WHERE t."time" = v.ts;
+                    """
+                    cur = conn.cursor()
+                    execute_values(cur, upd_pt_sql, values)
+                    conn.commit()
 
-            # 7c) Commit
+            # 9d - commit cumulative part where psycopg2 is used
             self.commit_if_psycopg2(conn)
 
         except Exception as e:
@@ -324,15 +375,16 @@ class ExposureUtils:
             if conn:
                 conn.close()
 
-        # 8) Return result
+        # 10 - return result (compat)
         result = {
             "envFeatureName": domain_label,
-            "type":           feature_type,
-            "count":          point_count if feature_type.upper()=="POINT" else area_count,
+            "type": feature_type,
+            "count": point_count if feature_type.upper() == "POINT" else area_count,
         }
         if feature_type.upper() == "AREA":
             result["totalArea"] = total_area
-
+        if per_point_counts is not None:
+            result["count_at_time"] = per_point_counts
         return result
 
     def commit_if_psycopg2(self, conn):
