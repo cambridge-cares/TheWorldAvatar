@@ -2,14 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
-    <!-- Top App Bar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/top_appbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
+        android:background="@android:color/white"
         app:navigationIcon="@drawable/back"
         app:navigationIconTint="?attr/colorOnSurface"
         app:title="Help Page"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal">
 
-            <!-- Help icon -->
+
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -45,7 +45,7 @@
                 android:layout_marginBottom="16dp"
                 android:contentDescription="@string/help" />
 
-            <!-- Title -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 android:textColor="@android:color/black"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Subtitle -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Help topics container -->
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -74,7 +74,7 @@
                 android:divider="?android:attr/dividerHorizontal"
                 android:showDividers="middle">
 
-                <!-- Each row: -->
+
                 <include layout="@layout/help_item"
                     android:id="@+id/help_about_row" />
 
@@ -103,12 +103,20 @@
                     android:id="@+id/help_location_history_row_2" />
             </LinearLayout>
 
-            <!-- Footer -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Need more help?"
                 android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginTop="24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Try these next steps"
+                android:textSize="11sp"
                 android:textColor="#666666"
                 android:layout_marginTop="24dp" />
         </LinearLayout>

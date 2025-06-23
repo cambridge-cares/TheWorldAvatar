@@ -231,7 +231,7 @@ public class TimelineFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             TooltipManager tooltipManager = new TooltipManager(requireActivity(), () -> Log.d(TAG, "Tooltips finished"));
 
-            View firstTarget = binding.userDropdownButton;
+            View firstTarget = binding.mapTopAppbar.findViewById(R.id.user_menu_item);
             View secondTarget = binding.recordingFab;
 
             tooltipManager.addStep(firstTarget,

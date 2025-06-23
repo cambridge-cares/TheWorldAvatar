@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/help_item_container"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingHorizontal="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:clickable="true"
     android:background="?attr/selectableItemBackground">
 
@@ -20,6 +22,6 @@
     <ImageView
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/baseline_chevron_right_24"
+        android:src="@drawable/ic_chevron_right"
         android:contentDescription="@string/toggle_off" />
 </LinearLayout>
