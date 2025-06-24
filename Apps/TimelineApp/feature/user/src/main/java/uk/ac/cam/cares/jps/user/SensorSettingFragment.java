@@ -1,18 +1,19 @@
 package uk.ac.cam.cares.jps.user;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.ACTIVITY_RECOGNITION;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static android.Manifest.permission.RECORD_AUDIO;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -25,10 +26,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
@@ -51,6 +55,8 @@ public class SensorSettingFragment extends Fragment {
     private Runnable activityRecognitionPermissionCallback;
     private Runnable notificationPermissionCallback;
 
+    private final PermissionHelper permissionHelper = new PermissionHelper(this);
+
     /**
      * Called to have the fragment instantiate its user interface view.
      *
@@ -71,6 +77,7 @@ public class SensorSettingFragment extends Fragment {
             }
             accountViewModel.getSessionExpiredDialog(this).show();
         });
+
         return binding.getRoot();
     }
 
@@ -178,155 +185,60 @@ public class SensorSettingFragment extends Fragment {
         List<SensorType> selectedSensorTypes = sensorViewModel.getSelectedSensors().getValue();
 
         // Check if there are any sensors selected
-        promptSelectSensors(selectedSensorTypes);
-        promptGrantPermissions();
+        if (selectedSensorTypes == null || selectedSensorTypes.isEmpty()) {
+            Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Check if location or audio sensors are toggled, and request permissions accordingly
-        assert selectedSensorTypes != null;
+        promptGrantPermissions();
         boolean locationToggled = selectedSensorTypes.contains(SensorType.LOCATION);
         boolean audioToggled = selectedSensorTypes.contains(SensorType.SOUND);
         boolean activityToggled = selectedSensorTypes.contains(SensorType.ACTIVITY);
 
-
         Runnable startRecordingRunnable = () -> sensorViewModel.toggleRecording();
-
-        if (activityToggled) {
-            requestActivityRecognitionPermission(() -> {
-                requestSensorPermissions(locationToggled, audioToggled, startRecordingRunnable);
-            });
-        } else {
-            requestSensorPermissions(locationToggled, audioToggled, startRecordingRunnable);
-        }
+        List<String> permissions = new ArrayList<>(Arrays.asList(
+                locationToggled && needToPermissionGranted(ACCESS_FINE_LOCATION) ? ACCESS_FINE_LOCATION : null,
+                audioToggled && needToPermissionGranted(RECORD_AUDIO) ? RECORD_AUDIO : null,
+                activityToggled && needToPermissionGranted(ACTIVITY_RECOGNITION) ? ACTIVITY_RECOGNITION : null,
+                needToPermissionGranted(POST_NOTIFICATIONS) ? POST_NOTIFICATIONS : null));
+        permissions.removeIf(Objects::isNull);
+        permissionHelper.requestPermissionsInChain(permissions, startRecordingRunnable);
 
     }
 
-    // todo: should redesign this permission request flow
-    private void requestSensorPermissions(boolean locationToggled, boolean audioToggled, Runnable onGranted) {
-        if (locationToggled && audioToggled) {
-            requestLocationPermission(() -> requestAudioPermission(() -> requestAudioPermission(onGranted)));
-        } else if (locationToggled) {
-            requestLocationPermission(() -> requestNotificationPermission(onGranted));
-        } else if (audioToggled) {
-            requestAudioPermission(() -> requestNotificationPermission(onGranted));
-        } else {
-            requestNotificationPermission(onGranted);
-        }
-    }
-
-    /**
-     * Prompts the user to toggle on a sensor if they haven't yet.
-     *
-     * @param selectedSensorTypes list of sensors the user has selected.
-     *                            Empty if the user has not selected any sensors.
-     */
-    private void promptSelectSensors(List<SensorType> selectedSensorTypes) {
-        if (selectedSensorTypes == null || selectedSensorTypes.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
-        }
+    private boolean needToPermissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED;
     }
 
     /**
      * Prompts the user to enable permissions if the haven't yet.
      */
     private void promptGrantPermissions() {
-        StringBuilder permissionNotGranted = new StringBuilder();
+//        StringBuilder permissionNotGranted = new StringBuilder();
+        List<String> permissionNotGranted = new ArrayList<>();
         List<SensorType> selectedSensorTypes = sensorViewModel.getSelectedSensors().getValue();
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            permissionNotGranted.append("Notification ");
+        if (needToPermissionGranted(POST_NOTIFICATIONS)) {
+            permissionNotGranted.add("Notification");
         }
 
         if (selectedSensorTypes.contains(SensorType.ACTIVITY) &&
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
-            permissionNotGranted.append("Activity ");
+                needToPermissionGranted(ACTIVITY_RECOGNITION)) {
+            permissionNotGranted.add("Activity");
         }
 
         if (selectedSensorTypes.contains(SensorType.LOCATION) &&
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionNotGranted.append("Location ");
+                needToPermissionGranted(ACCESS_FINE_LOCATION)) {
+            permissionNotGranted.add("Location");
         }
 
         if (selectedSensorTypes.contains(SensorType.SOUND) &&
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            permissionNotGranted.append("Audio ");
+                needToPermissionGranted(RECORD_AUDIO)) {
+            permissionNotGranted.add("Audio");
         }
 
-        if (permissionNotGranted.length() > 0) {
-            Toast.makeText(requireContext(), permissionNotGranted.length() + "permission(s) not granted. Not able to start recording.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-
-    /**
-     * Requests fine location permission if it hasn't been granted. If granted, runs the provided callback.
-     *
-     * @param onGranted A {@link Runnable} that is executed if the permission is granted.
-     */
-    private void requestLocationPermission(Runnable onGranted) {
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            onGranted.run();
-        } else {
-            locationPermissionCallback = onGranted;
-            requestFineLocationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if (!permissionNotGranted.isEmpty()) {
+            Toast.makeText(requireContext(), String.join(", ", permissionNotGranted) + " permission(s) not granted. Not able to start recording.", Toast.LENGTH_LONG).show();
         }
     }
-
-    private void requestActivityRecognitionPermission(Runnable onGranted) {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-            onGranted.run();
-        } else {
-            activityRecognitionPermissionCallback = onGranted;
-            requestActivityRecognitionPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION);
-        }
-    }
-
-    private void requestNotificationPermission(Runnable onGranted) {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-            onGranted.run();
-        } else {
-            notificationPermissionCallback = onGranted;
-            requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-        }
-    }
-
-    /**
-     * Requests audio recording permission if it hasn't been granted. If granted, runs the provided callback.
-     *
-     * @param onGranted A {@link Runnable} that is executed if the permission is granted.
-     */
-    private void requestAudioPermission(Runnable onGranted) {
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            onGranted.run();
-        } else {
-            audioPermissionCallback = onGranted;
-            requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO);
-        }
-    }
-
-    private final ActivityResultLauncher<String> requestFineLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted && locationPermissionCallback != null) {
-            locationPermissionCallback.run();
-        }
-    });
-
-    private final ActivityResultLauncher<String> requestActivityRecognitionPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted && activityRecognitionPermissionCallback != null) {
-            activityRecognitionPermissionCallback.run();
-        } else {
-            Toast.makeText(requireContext(), "Activity Recognition permission is required to start recording.", Toast.LENGTH_SHORT).show();
-        }
-    });
-
-    private final ActivityResultLauncher<String> requestAudioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted && audioPermissionCallback != null) {
-            audioPermissionCallback.run();
-        }
-    });
-
-    private final ActivityResultLauncher<String> requestNotificationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted && notificationPermissionCallback != null) {
-            notificationPermissionCallback.run();
-        }
-    });
-
 }
