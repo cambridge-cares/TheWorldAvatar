@@ -15,7 +15,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -38,7 +37,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import me.relex.circleindicator.CircleIndicator3;
 import uk.ac.cam.cares.jps.user.databinding.FragmentOnboardingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
@@ -57,6 +55,10 @@ public class OnboardingFragment extends Fragment {
 
     private static final String PREF_NAME = "onboarding";
     private static final String SEEN_KEY = "seen";
+
+    private Handler autoSlideHandler;
+    private Runnable autoSlideRunnable;
+    private boolean userSwiped = false;
 
     @Nullable
     @Override
@@ -157,6 +159,10 @@ public class OnboardingFragment extends Fragment {
             public void onPageSelected(int position) {
                 int realPosition = (position - 1 + realPages.size()) % realPages.size();
                 binding.dotsIndicator.animatePageSelected(realPosition);
+
+                userSwiped = true;
+                pauseAutoSlide();
+                resumeAutoSlideWithDelay();
             }
 
             @Override
@@ -167,18 +173,36 @@ public class OnboardingFragment extends Fragment {
                     int total = adapter.getItemCount();
 
                     if (current == 0) {
-
                         binding.viewPager.setCurrentItem(total - 2, false);
                     } else if (current == total - 1) {
-
                         binding.viewPager.setCurrentItem(1, false);
                     }
                 }
             }
         });
+
+        autoSlideHandler = new Handler(Looper.getMainLooper());
+        autoSlideRunnable = () -> {
+            if (!userSwiped) {
+                int currentItem = binding.viewPager.getCurrentItem();
+                int nextItem = currentItem + 1;
+                binding.viewPager.setCurrentItem(nextItem, true);
+            }
+            autoSlideHandler.postDelayed(autoSlideRunnable, 3000);
+        };
+        autoSlideHandler.postDelayed(autoSlideRunnable, 3000);
     }
 
+    private void pauseAutoSlide() {
+        autoSlideHandler.removeCallbacks(autoSlideRunnable);
+    }
 
+    private void resumeAutoSlideWithDelay() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            userSwiped = false;
+            autoSlideHandler.postDelayed(autoSlideRunnable, 3000);
+        }, 3000);
+    }
 
     private void setupButtons() {
         binding.signInOrUpButton.setOnClickListener(v -> {
@@ -211,6 +235,14 @@ public class OnboardingFragment extends Fragment {
     public void onStart() {
         super.onStart();
         clearAllActiveFragments();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (autoSlideHandler != null && autoSlideRunnable != null) {
+            autoSlideHandler.removeCallbacks(autoSlideRunnable);
+        }
     }
 
     private void clearAllActiveFragments() {
