@@ -22,6 +22,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
+        app:ci_drawable="@drawable/indicator_dot"
+        app:ci_drawable_unselected="@drawable/indicator_dot_unselected"
         />
 
     <LinearLayout

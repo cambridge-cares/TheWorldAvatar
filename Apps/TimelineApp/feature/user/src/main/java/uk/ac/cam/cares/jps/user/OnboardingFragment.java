@@ -151,15 +151,19 @@ public class OnboardingFragment extends Fragment {
         OnboardingAdapter adapter = new OnboardingAdapter(loopedPages);
         binding.viewPager.setAdapter(adapter);
         binding.viewPager.setCurrentItem(1, false);
+
         binding.dotsIndicator.setViewPager(binding.viewPager);
         binding.dotsIndicator.createIndicators(realPages.size(), 0);
+
+        binding.viewPager.post(() -> binding.dotsIndicator.animatePageSelected(0));
 
         binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                int realPosition = (position - 1 + realPages.size()) % realPages.size();
-                binding.dotsIndicator.animatePageSelected(realPosition);
-
+                if (position > 0 && position < adapter.getItemCount() - 1) {
+                    int realPosition = (position - 1 + realPages.size()) % realPages.size();
+                    binding.dotsIndicator.animatePageSelected(realPosition);
+                }
                 userSwiped = true;
                 pauseAutoSlide();
                 resumeAutoSlideWithDelay();
@@ -185,8 +189,11 @@ public class OnboardingFragment extends Fragment {
         autoSlideRunnable = () -> {
             if (!userSwiped) {
                 int currentItem = binding.viewPager.getCurrentItem();
-                int nextItem = currentItem + 1;
-                binding.viewPager.setCurrentItem(nextItem, true);
+                if (currentItem == adapter.getItemCount() - 2) {
+                    binding.viewPager.setCurrentItem(1, false);
+                } else {
+                    binding.viewPager.setCurrentItem(currentItem + 1, true);
+                }
             }
             autoSlideHandler.postDelayed(autoSlideRunnable, 3000);
         };
