@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.RectF;
@@ -216,6 +217,7 @@ public class TimelineFragment extends Fragment {
                 Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All in the sensor settings", Toast.LENGTH_SHORT).show();
             } else {
                 sensorViewModel.toggleRecording();
+                Toast.makeText(requireContext(), "Recording Started", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -223,6 +225,11 @@ public class TimelineFragment extends Fragment {
             if (isRecording != null) {
                 int icon = isRecording ? R.drawable.ic_stop : R.drawable.ic_start;
                 recordingFab.setImageResource(icon);
+
+                int backgroundColor = isRecording
+                        ? ContextCompat.getColor(requireContext(), R.color.fab_recording)
+                        : ContextCompat.getColor(requireContext(), R.color.fab_idle);
+                recordingFab.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
             }
         });
     }

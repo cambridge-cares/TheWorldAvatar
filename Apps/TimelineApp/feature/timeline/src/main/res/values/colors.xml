@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="fab_idle">#388E3C</color>        <!-- dark red -->
+    <color name="fab_idle">#388E3C</color>        <!-- bright green -->
     <color name="fab_recording">#D32F2F</color>  <!-- bright red -->
 </resources>
