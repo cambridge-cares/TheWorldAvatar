@@ -28,17 +28,17 @@ public class TooltipOverlayView extends View {
     public TooltipOverlayView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // Paint for dimmed background
+
         dimPaint = new Paint();
-        dimPaint.setColor(0xCC000000); // slightly stronger semi-transparent black
+        dimPaint.setColor(0xCC000000);
         dimPaint.setStyle(Paint.Style.FILL);
 
-        // Paint for clearing the hole
+
         clearPaint = new Paint();
         clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         clearPaint.setAntiAlias(true);
 
-        // Required for PorterDuff to work properly
+
         setLayerType(View.LAYER_TYPE_HARDWARE, null);
     }
 
@@ -62,10 +62,10 @@ public class TooltipOverlayView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Fill entire screen with dim color
+
         canvas.drawRect(0, 0, getWidth(), getHeight(), dimPaint);
 
-        // Cut transparent hole
+
         if (holeRect != null) {
             canvas.drawRoundRect(holeRect, cornerRadius, cornerRadius, clearPaint);
         }
@@ -77,8 +77,8 @@ public class TooltipOverlayView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (holeRect != null && holeRect.contains(event.getX(), event.getY())) {
-            return false; // Let touches pass through
+            return false;
         }
-        return true; // Consume touches outside the hole
+        return true;
     }
 }

@@ -44,7 +44,7 @@
     <string name="help">Help</string>
     <string name="help_topic_about">About</string>
     <string name="help_topic_getting_started">Getting started</string>
-    <string name="help_topic_troubleshooting">Troubleshooting</string>
+    <string name="help_topic_map">Map Interactions</string>
     <string name="help_topic_sensor_documentation">Sensor documentation</string>
     <string name="help_topic_helpful_features">Helpful features</string>
     <string name="help_topic_location_history">Turn Location History on or off</string>

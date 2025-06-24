@@ -97,10 +97,11 @@
                     android:id="@+id/help_recording_row" />
 
                 <include layout="@layout/help_item"
-                    android:id="@+id/help_faq_row" />
+                    android:id="@+id/help_location_history_row_2" />
 
                 <include layout="@layout/help_item"
-                    android:id="@+id/help_location_history_row_2" />
+                    android:id="@+id/help_faq_row" />
+
             </LinearLayout>
 
 
