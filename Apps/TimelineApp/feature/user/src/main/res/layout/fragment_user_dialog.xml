@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp"
-            android:gravity="center">
+            android:gravity="center_horizontal">
 
             <TextView
                 android:id="@+id/user_name_tv"
@@ -47,76 +47,208 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#DDDDDD"
-                android:layout_marginTop="12dp"
-                />
+                android:layout_marginTop="12dp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:divider="?android:attr/listDivider"
                 android:showDividers="middle"
                 android:dividerPadding="8dp">
 
-                <TextView
+                <LinearLayout
                     android:id="@+id/account_setting"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Account Settings"
-                    android:layout_marginTop="12dp"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_account" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Account Settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/sensor_setting"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Sensor Settings" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_sensor" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Sensor Settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/timeline_setting"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Timeline Setting" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_timeline" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Timeline Setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#DDDDDD"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
                     android:id="@+id/health_report"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Health Report" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_health" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Health Report"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/location_history"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Location History" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_location" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Location History"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#DDDDDD"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="8dp" />
+
+
+                <LinearLayout
                     android:id="@+id/privacy_setting"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Privacy" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_privacy" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Privacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/help_page"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Help" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp">
 
-                <TextView
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_help" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Help"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#DDDDDD"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="8dp" />
+
+
+                <LinearLayout
                     android:id="@+id/log_out"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Theme.TWA.UserItem.Text"
-                    android:text="Log Out" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="12dp"
+                    android:paddingBottom="8dp">
 
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_logout" />
+
+                    <TextView
+                        style="@style/Theme.TWA.UserItem.Text"
+                        android:layout_marginStart="12dp"
+                        android:text="Log Out"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>
