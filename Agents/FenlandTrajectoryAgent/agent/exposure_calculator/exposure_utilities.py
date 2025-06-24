@@ -28,6 +28,7 @@ import numpy as np
 from shapely.ops import transform
 from shapely.prepared import prep
 from shapely.strtree import STRtree
+from shapely.affinity import translate
 from agent.exposure_calculator.trip_detector.trip_detection import detect_trips, DEFAULT_PARAMS
 from agent.exposure_calculator.trip_detector.utilities import *
 
@@ -169,56 +170,39 @@ class ExposureUtils:
         ) -> dict:
         """
         AEQD-based high-speed exposure calculator.
-        2025-06 – adds <Domain>_count_at_time column for POINT data, with Trip-index awareness.
+        2025-06  –  POINT:  <Domain>_count_at_time
+                 –  AREA :  <Domain>_area_at_time   (m², geodesic)
         """
 
-        # ------------------------------------------------------------------
-        # 1) Extract lon / lat list from trajectory
-        # ------------------------------------------------------------------
+        # 1) ─── Extract trajectory coordinates ─────────────────────────────────────────────
         coords_ll = [
             (float(r["LONGITUDE"]), float(r["LATITUDE"]))
             for _, r in trajectory_df.iterrows()
             if r["LONGITUDE"] and r["LATITUDE"]
         ]
         if not coords_ll:
-            return {
-                "envFeatureName": domain_label,
-                "type": feature_type,
-                "count": 0,
-                "totalArea": None
-            }
+            return {"envFeatureName": domain_label,
+                    "type": feature_type,
+                    "count": 0,
+                    "totalArea": None}
 
-        # ------------------------------------------------------------------
-        # 2) Build trajectory geometry in WGS84
-        # ------------------------------------------------------------------
+        # 2) ─── Trajectory geometry / 3) AEQD projection ──────────────────────────────
         base_geom = Point(coords_ll[0]) if len(coords_ll) == 1 else LineString(coords_ll)
-
-        # ------------------------------------------------------------------
-        # 3) Build local Azimuthal-Equidistant CRS
-        # ------------------------------------------------------------------
         centroid = base_geom.centroid
-        aeqd_crs = CRS.from_proj4(
-            f"+proj=aeqd +lat_0={centroid.y} +lon_0={centroid.x} +units=m"
-        )
+        aeqd_crs = CRS.from_proj4(f"+proj=aeqd +lat_0={centroid.y} +lon_0={centroid.x} +units=m")
         to_aeqd = Transformer.from_crs(4326, aeqd_crs, always_xy=True).transform
         to_wgs84 = Transformer.from_crs(aeqd_crs, 4326, always_xy=True).transform
 
-        # ------------------------------------------------------------------
-        # 4) Buffer whole trajectory once
-        # ------------------------------------------------------------------
+        # 4) ─── Buffer entire trajectory once ─────────────────────────────────────
         proj_base = transform(to_aeqd, base_geom)
         buf_proj = proj_base.buffer(exposure_radius)
         if buf_proj.is_empty:
-            return {
-                "envFeatureName": domain_label,
-                "type": feature_type,
-                "count": 0,
-                "totalArea": None
-            }
+            return {"envFeatureName": domain_label,
+                    "type": feature_type,
+                    "count": 0,
+                    "totalArea": None}
 
-        # ------------------------------------------------------------------
-        # 5) Project all environmental features into the same plane
-        # ------------------------------------------------------------------
+        # 5) ─── Environmental features → same plane ────────────────────────────────────
         proj_env = []
         if feature_type.upper() == "POINT":
             for _, row in env_df.iterrows():
@@ -242,13 +226,12 @@ class ExposureUtils:
                 except Exception:
                     continue
 
-        # ------------------------------------------------------------------
-        # 6) Build STRtree and compute cumulative exposure
-        # ------------------------------------------------------------------
+        # 6) ─── STRtree + cumulative exposure ─────────────────────────────────────
         tree = STRtree([g for g, _ in proj_env])
         spatial_ix = tree.query(buf_proj)
 
-        point_count, area_count, total_area = 0, 0, 0.0
+        point_count = area_count = 0
+        total_area = 0.0
 
         if feature_type.upper() == "POINT":
             visited = set()
@@ -267,21 +250,19 @@ class ExposureUtils:
                 total_area += ExposureUtils.geodesic_area(inter_ll)
                 area_count += 1
 
-        # ------------------------------------------------------------------
-        # 7) Build Trip-mask for per-point counts
-        # ------------------------------------------------------------------
-        trip_mask = [True] * len(coords_ll)                    # default: every point counted
+        # 7) ─── Trip-mask (shared) ───────────────────────────────────────
+        trip_mask = [True] * len(coords_ll)
         for col in trajectory_df.columns:
             if col.strip().lower().replace(" ", "_") == "trip_index":
                 vals = trajectory_df[col].fillna(0).astype(int)
-                if (vals > 0).any():                           # only mask when some >0
+                if (vals > 0).any():
                     trip_mask = vals > 0
                 break
 
-        # ------------------------------------------------------------------
-        # 8) Per-point exposure counts (POINT only)
-        # ------------------------------------------------------------------
-        per_point_counts = None
+        # 8) ─── Time series exposure (POINT ➜ count; AREA ➜ area) ────────────────
+        per_point_counts = None        # for POINT
+        per_area_values = None        # for AREA
+
         if feature_type.upper() == "POINT":
             per_point_counts = []
             for (lon, lat), in_trip in zip(coords_ll, trip_mask):
@@ -296,18 +277,31 @@ class ExposureUtils:
                 )
                 per_point_counts.append(cnt)
 
-        # ------------------------------------------------------------------
-        # 9) Write results back to database
-        # ------------------------------------------------------------------
+        elif feature_type.upper() == "AREA":
+            per_area_values = []
+            buf_template = Point(0, 0).buffer(exposure_radius)  # Reuse circle template
+            for (lon, lat), in_trip in zip(coords_ll, trip_mask):
+                if not in_trip:
+                    per_area_values.append(None)
+                    continue
+                pt_proj = Point(to_aeqd(lon, lat))
+                circ_proj = translate(buf_template, pt_proj.x, pt_proj.y)
+                idxs_pt = tree.query(circ_proj)
+                area_m2 = 0.0
+                for i in idxs_pt:
+                    poly_proj, _ = proj_env[i]
+                    inter_proj = poly_proj.intersection(circ_proj)
+                    if inter_proj.is_empty:
+                        continue
+                    inter_ll = transform(to_wgs84, inter_proj)
+                    area_m2 += ExposureUtils.geodesic_area(inter_ll)
+                per_area_values.append(area_m2 if area_m2 > 0 else 0.0)
+
+        # 9) ─── Write back to database ─────────────────────────────────────────────
         conn = None
         try:
-            conn = self.connect_to_database(
-                self.TRAJECTORY_DB_HOST,
-                self.DB_PORT,
-                self.DB_USER,
-                self.TRAJECTORY_DB_PASSWORD,
-                self.DB_NAME
-            )
+            conn = self.connect_to_database(self.TRAJECTORY_DB_HOST, self.DB_PORT,
+                                            self.DB_USER, self.TRAJECTORY_DB_PASSWORD, self.DB_NAME)
             table_name = self.get_table_name_for_timeseries(conn, trajectory_iri)
             safe_label = domain_label.replace(" ", "_").replace("/", "_")
 
@@ -315,15 +309,18 @@ class ExposureUtils:
             col_tot_area = f"{safe_label}_area_count"
             col_tot_area_m = f"{safe_label}_total_area"
             col_pt_time = f"{safe_label}_count_at_time"
+            col_ar_time = f"{safe_label}_area_at_time"
 
-            # -------- 9a) Ensure columns exist --------
+            # 9a) Ensure columns exist
             cols_to_add = [
                 (col_tot_point, "INTEGER"),
                 (col_tot_area, "INTEGER"),
-                (col_tot_area_m, "DOUBLE PRECISION")
+                (col_tot_area_m, "DOUBLE PRECISION"),
             ]
             if per_point_counts is not None:
                 cols_to_add.append((col_pt_time, "INTEGER"))
+            if per_area_values is not None:
+                cols_to_add.append((col_ar_time, "DOUBLE PRECISION"))
 
             for col, dtype in cols_to_add:
                 alter_sql = f"""
@@ -338,13 +335,12 @@ class ExposureUtils:
                 """
                 self.execute_query(conn, alter_sql, (table_name, col))
 
-            # -------- 9b) Update cumulative columns --------
+            # 9b) Update cumulative columns
             has_tsiri = bool(self.execute_query(
                 conn,
                 "SELECT 1 FROM information_schema.columns "
                 "WHERE table_name = %s AND column_name = 'time_series_iri';",
-                (table_name,)
-            ))
+                (table_name,)))
 
             if has_tsiri:
                 upd_sql = f"""
@@ -366,44 +362,52 @@ class ExposureUtils:
 
             self.execute_query(conn, upd_sql, params)
 
-            # -------- 9c) Batch update per-point counts --------
-            if per_point_counts is not None:
+            # 9c) Write per-time series
+            def write_series(col_name, series_vals):
+                if not series_vals:
+                    return
                 values = [
-                    (pd.to_datetime(r["time"]), cnt)
-                    for (_idx, r), cnt in zip(trajectory_df.iterrows(), per_point_counts)
-                    if cnt is not None
+                    (pd.to_datetime(r["time"]), v)
+                    for (_idx, r), v in zip(trajectory_df.iterrows(), series_vals)
+                    if v is not None
                 ]
-                if values:
-                    # -------- Determine connection type: test cursor() --------
-                    is_psycopg = True
-                    try:
-                        test_cur = conn.cursor()
-                        test_cur.close()
-                    except Exception:
-                        is_psycopg = False
+                if not values:
+                    return
+                # Determine connection type
+                is_psycopg = True
+                try:
+                    _ = conn.cursor()
+                    _.close()
+                except Exception:
+                    is_psycopg = False
 
-                    if is_psycopg:
-                        cur = conn.cursor()
-                        execute_values(
-                            cur,
-                            f"""
-                            UPDATE "{table_name}" AS t
-                            SET "{col_pt_time}" = v.cnt
-                            FROM (VALUES %s) AS v(ts, cnt)
-                            WHERE t."time" = v.ts;
-                            """,
-                            values
-                        )
-                    else:  # JDBC / TSClient
-                        for ts, cnt in values:
-                            s_sql = f'''
-                            UPDATE "{table_name}"
-                            SET "{col_pt_time}" = %s
-                            WHERE "time" = %s;
-                            '''
-                            self.execute_query(conn, s_sql, (cnt, ts))
+                if is_psycopg:
+                    cur = conn.cursor()
+                    execute_values(
+                        cur,
+                        f"""
+                        UPDATE "{table_name}" AS t
+                        SET "{col_name}" = v.val
+                        FROM (VALUES %s) AS v(ts, val)
+                        WHERE t."time" = v.ts;
+                        """,
+                        values
+                    )
+                else:
+                    for ts, val in values:
+                        s_sql = f'''
+                        UPDATE "{table_name}"
+                        SET "{col_name}" = %s
+                        WHERE "time" = %s;
+                        '''
+                        self.execute_query(conn, s_sql, (val, ts))
 
-            # -------- 9d) Commit for psycopg2 only --------
+            if per_point_counts is not None:
+                write_series(col_pt_time, per_point_counts)
+            if per_area_values is not None:
+                write_series(col_ar_time, per_area_values)
+
+            # 9d) Commit (psycopg2 only)
             self.commit_if_psycopg2(conn)
 
         except Exception as e:
@@ -412,9 +416,7 @@ class ExposureUtils:
             if conn:
                 conn.close()
 
-        # ------------------------------------------------------------------
-        # 10) Build return dict
-        # ------------------------------------------------------------------
+        # 10) ─── Return result dict ────────────────────────────────────────
         result = {
             "envFeatureName": domain_label,
             "type": feature_type,
@@ -422,6 +424,8 @@ class ExposureUtils:
         }
         if feature_type.upper() == "AREA":
             result["totalArea"] = total_area
+            if per_area_values is not None:
+                result["area_at_time"] = per_area_values
         if per_point_counts is not None:
             result["count_at_time"] = per_point_counts
         return result
