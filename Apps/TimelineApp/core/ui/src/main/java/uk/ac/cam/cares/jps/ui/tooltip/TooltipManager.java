@@ -138,23 +138,38 @@ public class TooltipManager {
         arrowDown.setVisibility(step.style == TooltipStyle.DOWN ? View.VISIBLE : View.GONE);
 
         tooltipView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            int screenWidthPx = activity.getResources().getDisplayMetrics().widthPixels;
+            float density = activity.getResources().getDisplayMetrics().density;
+            int maxWidthPx = (int) (320 * density);
+            int targetWidth = Math.min((int) (screenWidthPx * 0.8), maxWidthPx);
+
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    targetWidth,
                     ViewGroup.LayoutParams.WRAP_CONTENT
             );
 
-            float x = anchorRect.centerX() - tooltipView.getWidth() / 2f;
+            float proposedLeft = anchorRect.centerX() - (targetWidth / 2f);
+
+            int horizontalMarginPx = (int) (16 * density);
+
+            if (proposedLeft < horizontalMarginPx) {
+                proposedLeft = horizontalMarginPx;
+            } else if (proposedLeft + targetWidth > screenWidthPx - horizontalMarginPx) {
+                proposedLeft = screenWidthPx - targetWidth - horizontalMarginPx;
+            }
+
             float y = (step.style == TooltipStyle.UP)
                     ? anchorRect.bottom + 20
                     : anchorRect.top - tooltipView.getHeight() - 20;
 
-            params.leftMargin = Math.max((int) x, 24);
-            params.topMargin = Math.max((int) y, 24);
-            tooltipView.setLayoutParams(params);
+            params.leftMargin = (int) proposedLeft;
+            params.topMargin = Math.max((int) y, horizontalMarginPx);
 
+            tooltipView.setLayoutParams(params);
             tooltipView.bringToFront();
             overlayView.bringToFront();
         });
+
 
         // Add tooltip
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
