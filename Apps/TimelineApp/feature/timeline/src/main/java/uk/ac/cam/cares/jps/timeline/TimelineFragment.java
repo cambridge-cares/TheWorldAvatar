@@ -50,7 +50,12 @@ import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.user.UserDialogFragment;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
@@ -83,6 +88,8 @@ public class TimelineFragment extends Fragment {
     private SensorViewModel sensorViewModel;
     private boolean isRecording = false;
 
+    private PermissionHelper permissionHelper;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -100,6 +107,8 @@ public class TimelineFragment extends Fragment {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
+        permissionHelper = new PermissionHelper(this);
+
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
             if (hasError != null && hasError) {
                 Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
@@ -135,6 +144,59 @@ public class TimelineFragment extends Fragment {
                 }
             });
         });
+    }
+
+    private void setupRecordingButton() {
+        FloatingActionButton recordingFab = binding.recordingFab;
+
+        recordingFab.setOnClickListener(v -> {
+            Boolean isRecording = sensorViewModel.getIsRecording().getValue();
+
+            if (isRecording != null && isRecording) {
+                sensorViewModel.stopRecording();
+                sensorViewModel.toggleAllSensors(false);
+            } else {
+                sensorViewModel.toggleAllSensors(true);
+
+                List<SensorType> selectedSensors = sensorViewModel.getSelectedSensors().getValue();
+                if (selectedSensors == null || selectedSensors.isEmpty()) {
+                    Toast.makeText(requireContext(), "No sensors enabled. Cannot start recording.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                List<String> permissions = new ArrayList<>();
+                if (selectedSensors.contains(SensorType.LOCATION) && needToPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
+                if (selectedSensors.contains(SensorType.SOUND) && needToPermissionGranted(Manifest.permission.RECORD_AUDIO)) {
+                    permissions.add(Manifest.permission.RECORD_AUDIO);
+                }
+                if (selectedSensors.contains(SensorType.ACTIVITY) && needToPermissionGranted(Manifest.permission.ACTIVITY_RECOGNITION)) {
+                    permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
+                }
+                if (needToPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)) {
+                    permissions.add(Manifest.permission.POST_NOTIFICATIONS);
+                }
+
+                permissionHelper.requestPermissionsInChain(permissions, () -> sensorViewModel.startRecording());
+            }
+        });
+
+        sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
+            if (isRecording != null) {
+                int icon = isRecording ? R.drawable.ic_stop : R.drawable.ic_start;
+                recordingFab.setImageResource(icon);
+
+                int backgroundColor = isRecording
+                        ? ContextCompat.getColor(requireContext(), R.color.fab_recording)
+                        : ContextCompat.getColor(requireContext(), R.color.fab_idle);
+                recordingFab.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+            }
+        });
+    }
+
+    private boolean needToPermissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED;
     }
 
     private void registerPermissionLauncher() {
@@ -207,31 +269,6 @@ public class TimelineFragment extends Fragment {
 
         Point camCenter = mapView.getMapboxMap().getCameraState().getCenter();
         Log.d("MAPBOX_CAMERA", "Camera set to DEFAULT → Lat: " + camCenter.latitude() + ", Lng: " + camCenter.longitude());
-    }
-
-    private void setupRecordingButton() {
-        FloatingActionButton recordingFab = binding.recordingFab;
-
-        recordingFab.setOnClickListener(v -> {
-            if (sensorViewModel.getSelectedSensors().getValue() == null || sensorViewModel.getSelectedSensors().getValue().isEmpty()) {
-                Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All in the sensor settings", Toast.LENGTH_SHORT).show();
-            } else {
-                sensorViewModel.toggleRecording();
-                Toast.makeText(requireContext(), "Recording Started", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
-            if (isRecording != null) {
-                int icon = isRecording ? R.drawable.ic_stop : R.drawable.ic_start;
-                recordingFab.setImageResource(icon);
-
-                int backgroundColor = isRecording
-                        ? ContextCompat.getColor(requireContext(), R.color.fab_recording)
-                        : ContextCompat.getColor(requireContext(), R.color.fab_idle);
-                recordingFab.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
-            }
-        });
     }
 
     private void showIntroTooltips() {
