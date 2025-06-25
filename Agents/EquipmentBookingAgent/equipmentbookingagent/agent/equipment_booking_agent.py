@@ -94,25 +94,25 @@ class EquipmentBookingAgent(ABC):
         self.logger = agentlogging.get_logger(logger_name)
 
         # add the default routes for the flask app
-        self.app.add_url_rule('/', 'root', self.start_page, methods=['GET'])
+        self.app.add_url_rule('/equipment-booking-system/', 'root', self.start_page, methods=['GET'])
 
         # add the route for the equipment booking
-        self.app.add_url_rule('/booking', 'equipment_booking', self.booking_page, methods=['GET'])
+        self.app.add_url_rule('/equipment-booking-system/booking', 'equipment_booking', self.booking_page, methods=['GET'])
 
         # add the route for user administration
-        self.app.add_url_rule('/add_user', 'add_lab_user', self.user_admin_page, methods=['GET','POST'])
+        self.app.add_url_rule('/equipment-booking-system/add_user', 'add_lab_user', self.user_admin_page, methods=['GET','POST'])
 
         # add the route for the booking confirmation
-        self.app.add_url_rule('/booking_confirmation', 'booking_confirmation', self.confirmation_page, methods=['POST'])
+        self.app.add_url_rule('/equipment-booking-system/booking_confirmation', 'booking_confirmation', self.confirmation_page, methods=['POST'])
 
         # add the route for daily booking overview
-        self.app.add_url_rule('/overview', 'booking_overview', self.booking_overview, methods=['GET'])
+        self.app.add_url_rule('/equipment-booking-system/overview', 'booking_overview', self.booking_overview, methods=['GET'])
 
          # add the route for equipment-specific booking overview
-        self.app.add_url_rule('/view', 'bookings_view', self.equipment_overview, methods=['GET'])
+        self.app.add_url_rule('/equipment-booking-system/view', 'bookings_view', self.equipment_overview, methods=['GET'])
 
         # add the route for the deletion confirmation
-        self.app.add_url_rule('/delete_booking', 'deletion_confirmation', self.deletion_page, methods=['POST'])
+        self.app.add_url_rule('/equipment-booking-system/delete_booking', 'deletion_confirmation', self.deletion_page, methods=['POST'])
 
     def deletion_page(self):
         data = request.get_json()
