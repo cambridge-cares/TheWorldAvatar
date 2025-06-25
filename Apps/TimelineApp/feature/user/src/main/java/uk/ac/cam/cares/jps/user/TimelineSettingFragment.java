@@ -1,10 +1,13 @@
 package uk.ac.cam.cares.jps.user;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +21,12 @@ import uk.ac.cam.cares.jps.user.databinding.FragmentTimelineSettingBinding;
 public class TimelineSettingFragment extends Fragment {
 
     private FragmentTimelineSettingBinding binding;
+    private SharedPreferences preferences;
+    private static final String PREF_NAME = "TimelinePrefs";
+    private static final String KEY_DURATION = "recording_duration";
+    private final String[] durations = {
+            "15 minutes", "30 minutes", "1 hour", "2 hours", "1 day", "No limit"
+    };
 
     @Nullable
     @Override
@@ -27,7 +36,12 @@ public class TimelineSettingFragment extends Fragment {
 
         binding = FragmentTimelineSettingBinding.inflate(inflater, container, false);
         binding.setLifecycleOwner(getViewLifecycleOwner());
+
+        preferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
+        setupSpinner();
         initListeners();
+
         return binding.getRoot();
     }
 
@@ -62,7 +76,46 @@ public class TimelineSettingFragment extends Fragment {
 
         binding.timelineTopAppbar.setNavigationOnClickListener(view ->
                 requireActivity().getOnBackPressedDispatcher().onBackPressed());
+    }
 
+    //just placeholder durations, not implemented yet
+    private void setupSpinner() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                durations
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerDuration.setAdapter(adapter);
+
+        String saved = preferences.getString(KEY_DURATION, "15 minutes");
+        int savedIndex = java.util.Arrays.asList(durations).indexOf(saved);
+        if (savedIndex >= 0) {
+            binding.spinnerDuration.setSelection(savedIndex);
+        }
+
+        binding.spinnerDuration.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            boolean firstSelection = true;
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (firstSelection) {
+                    firstSelection = false;
+                    return;
+                }
+
+                String selected = durations[position];
+                preferences.edit().putString(KEY_DURATION, selected).apply();
+                Toast.makeText(requireContext(),
+                        "Duration set to " + selected,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+               //not implemented yet
+            }
+        });
     }
 
     @Override

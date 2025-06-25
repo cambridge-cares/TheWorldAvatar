@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:background="@android:color/white">
 
-        <!-- FIXED APP BAR -->
+
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
@@ -30,16 +30,19 @@
                 app:titleTextColor="?attr/colorOnSurface" />
         </com.google.android.material.appbar.AppBarLayout>
 
+
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="16dp"
+            android:clipToPadding="false"
+            android:padding="20dp"
             android:fillViewport="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
 
                 <TextView
                     android:id="@+id/subtitle"
@@ -47,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="Timeline"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -58,7 +61,7 @@
                     android:text="Helps you go back in time and remember where you’ve been by automatically saving your visits and routes to a map."
                     android:textSize="14sp"
                     android:textColor="#666666"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     app:layout_constraintTop_toBottomOf="@id/subtitle"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -74,15 +77,6 @@
                     app:layout_constraintTop_toBottomOf="@id/description"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#CCCCCC"
-                    android:layout_marginVertical="24dp"
-                    app:layout_constraintTop_toBottomOf="@id/timeline_status"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
                 <Button
                     android:id="@+id/btn_toggle_timeline"
                     android:layout_width="wrap_content"
@@ -90,19 +84,32 @@
                     android:text="Turn Off"
                     android:backgroundTint="#E0E0E0"
                     android:textColor="#000000"
-                    android:layout_marginTop="10dp"
                     app:layout_constraintTop_toTopOf="@id/timeline_status"
                     app:layout_constraintBottom_toBottomOf="@id/timeline_status"
                     app:layout_constraintEnd_toEndOf="parent" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#CCCCCC"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    app:layout_constraintTop_toBottomOf="@id/timeline_status"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
 
                 <TextView
                     android:id="@+id/label_autostart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Auto-Start Recording (off)"
+                    android:drawableStart="@drawable/ic_autostart"
+                    android:drawablePadding="8dp"
                     android:textStyle="bold"
                     android:textSize="14sp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="60dp"
                     app:layout_constraintTop_toBottomOf="@id/timeline_status"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -119,9 +126,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Automatically start recording your activity when the app is opened"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textColor="#888888"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     app:layout_constraintTop_toBottomOf="@id/label_autostart"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -130,10 +137,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#CCCCCC"
-                    android:layout_marginVertical="8dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
                     app:layout_constraintTop_toBottomOf="@id/autostart_subtext"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent" />
+
 
                 <TextView
                     android:id="@+id/label_autodelete"
@@ -144,7 +153,7 @@
                     android:textSize="14sp"
                     android:drawableStart="@drawable/ic_delete"
                     android:drawablePadding="8dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="60dp"
                     app:layout_constraintTop_toBottomOf="@id/autostart_subtext"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -152,26 +161,27 @@
                     android:id="@+id/btn_auto_delete"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Choose an auto-delete option"
+                    android:layout_marginTop="8dp"
                     android:background="?android:selectableItemBackground"
-                    android:paddingVertical="12dp"
-                    android:paddingHorizontal="8dp"
-                    android:textColor="?android:textColorPrimary"
+                    android:clickable="true"
                     android:drawableEnd="@drawable/ic_chevron_right"
                     android:drawablePadding="8dp"
-                    android:clickable="true"
                     android:focusable="true"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/label_autodelete"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="12dp"
+                    android:text="Choose an auto-delete option"
+                    android:textColor="?android:textColorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/label_autodelete" />
 
                 <TextView
                     android:id="@+id/autodelete_subtext"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Automatically delete old location data after a chosen period"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textColor="#888888"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/btn_auto_delete"
@@ -182,10 +192,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#CCCCCC"
-                    android:layout_marginVertical="20dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
                     app:layout_constraintTop_toBottomOf="@id/autodelete_subtext"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:id="@+id/label_duration"
@@ -194,7 +205,7 @@
                     android:text="Recording duration"
                     android:textStyle="bold"
                     android:textSize="14sp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="60dp"
                     app:layout_constraintTop_toBottomOf="@id/autodelete_subtext"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -202,22 +213,24 @@
                     android:id="@+id/spinner_duration"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/label_duration"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/label_duration" />
 
                 <TextView
                     android:id="@+id/duration_hint"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Control how long you would like the app to record your activity"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textColor="#888888"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     app:layout_constraintTop_toBottomOf="@id/spinner_duration"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
+
 
                 <Button
                     android:id="@+id/btn_view_history"
@@ -228,19 +241,16 @@
                     android:drawablePadding="8dp"
                     android:backgroundTint="#F0F0F0"
                     android:textColor="#000000"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="48dp"
                     app:layout_constraintTop_toBottomOf="@id/duration_hint"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#CCCCCC"
-                    android:layout_marginVertical="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/duration_hint"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    android:layout_height="60dp"
+                    app:layout_constraintTop_toBottomOf="@id/btn_delete_all"
+                    android:background="@android:color/transparent"/>
 
                 <TextView
                     android:id="@+id/btn_delete_all"
@@ -251,7 +261,7 @@
                     android:textStyle="bold"
                     android:padding="16dp"
                     android:textAlignment="center"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="48dp"
                     android:layout_marginBottom="48dp"
                     app:layout_constraintTop_toBottomOf="@id/btn_view_history"
                     app:layout_constraintStart_toStartOf="parent"
