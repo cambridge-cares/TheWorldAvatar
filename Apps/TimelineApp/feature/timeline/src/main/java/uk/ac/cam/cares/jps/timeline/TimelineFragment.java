@@ -297,7 +297,7 @@ public class TimelineFragment extends Fragment {
 
             tooltipManager.addStep(fourthTarget,
                     "Need this info again?",
-                    "Tap the menu and select About.",
+                    "Tap the menu and select 'About'.",
                     TooltipStyle.UP);
 
             tooltipManager.start();

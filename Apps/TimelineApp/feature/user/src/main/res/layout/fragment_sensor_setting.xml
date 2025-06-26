@@ -34,7 +34,7 @@
                 android:fitsSystemWindows="true"
                 app:navigationIcon="@drawable/back"
                 app:navigationIconTint="?attr/colorOnSurface"
-                app:title="Sensor Setting &amp; Data Upload"
+                app:title="Sensor Setting"
                 app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
                 app:titleTextColor="?attr/colorOnSurface" >
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recording_help_scroll"
+    android:id="@+id/faq_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FAFAFA"
@@ -11,144 +11,126 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingBottom="32dp">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ic_record"
-            android:contentDescription="Recording icon"
-            android:tint="#F44336"
-            android:layout_marginTop="12dp" />
+        android:paddingBottom="32dp"
+        android:gravity="center_horizontal">
 
         <TextView
+            android:id="@+id/faq_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="How to Start/Stop Recording"
+            android:text="FAQs"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#222222"
-            android:layout_marginTop="12dp"
-            android:letterSpacing="0.02" />
+            android:layout_marginBottom="6dp" />
 
         <TextView
+            android:id="@+id/faq_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Track your movement using the recording button on the main screen."
+            android:text="Frequently asked questions about using Timeline."
             android:textSize="15sp"
             android:textColor="#666666"
             android:gravity="center"
-            android:layout_marginTop="6dp"
             android:layout_marginBottom="20dp" />
 
         <LinearLayout
+            android:id="@+id/faq_card_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
             android:orientation="vertical"
+            android:background="@drawable/bg_card"
             android:padding="20dp"
-            android:layout_marginBottom="16dp"
-            android:elevation="4dp">
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/faq_q1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1. What does 'recording' mean?"
-                android:textSize="18sp"
+                android:text="How does location tracking work?"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="#111111"
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/faq_a1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Recording activates your device’s sensors and location to track your movement over time. These are saved as sessions you can view later."
+                android:text="Timeline collects your GPS location periodically and logs time spent at places. It does not run continuously and minimizes battery usage."
                 android:textSize="15sp"
                 android:textColor="#444444" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/faq_card_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
             android:orientation="vertical"
+            android:background="@drawable/bg_card"
             android:padding="20dp"
-            android:layout_marginBottom="16dp"
-            android:elevation="4dp">
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/faq_q2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2. How to start/stop recording"
-                android:textSize="18sp"
+                android:text="Is my data private?"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="#111111"
                 android:layout_marginBottom="8dp" />
 
-            <!--need to rewrite the description and adjust to the sensor settings page instead of quick-start-->
-
             <TextView
+                android:id="@+id/faq_a2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tap the green play button on the right of the main screen to start recording. Tap it again to stop. A session will be saved automatically."
+                android:text="Yes. All data is stored only on your device. Timeline does not share anything unless you manually export it."
                 android:textSize="15sp"
-                android:textColor="#444444"
-                android:layout_marginBottom="12dp" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="#E0E0E0"
-                android:layout_marginBottom="4dp"
-                android:clipToOutline="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="[Image: A screenshot of the recording button on the right side of the main map screen, with an arrow pointing to it]"
-                    android:textColor="#777777"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:padding="16dp" />
-            </FrameLayout>
+                android:textColor="#444444" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/faq_card_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
             android:orientation="vertical"
+            android:background="@drawable/bg_card"
             android:padding="20dp"
-            android:elevation="4dp">
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/faq_q3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3. What happens after?"
-                android:textSize="18sp"
+                android:text="Can I view past logs?"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="#111111"
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/faq_a3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Your recorded data appears in the timeline bar and map view. You can explore each session, view trajectories, and check time intervals."
+                android:text="Yes. Swipe on the timeline bar on the main screen to browse logs from previous days."
                 android:textSize="15sp"
                 android:textColor="#444444" />
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/faq_footer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tip: You can also enable recording from the Timeline Settings screen."
+            android:text="Still have questions? Contact support or check the other Help sections."
             android:textSize="14sp"
             android:textColor="#999999"
-            android:layout_marginTop="24dp"
             android:gravity="center"
-            android:paddingHorizontal="24dp" />
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="20dp" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
