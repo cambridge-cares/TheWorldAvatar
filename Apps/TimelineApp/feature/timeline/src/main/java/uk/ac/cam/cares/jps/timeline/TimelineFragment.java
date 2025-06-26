@@ -277,15 +277,27 @@ public class TimelineFragment extends Fragment {
 
             View firstTarget = binding.mapTopAppbar.findViewById(R.id.user_menu_item);
             View secondTarget = binding.recordingFab;
+            View thirdTarget = binding.bottomSheetContainer;
+            View fourthTarget = binding.mapTopAppbar.findViewById(R.id.user_menu_item);
 
             tooltipManager.addStep(firstTarget,
                     "User Menu",
-                    "Tap here to access your account settings and sensor preferences.",
+                    "Tap here to access your account settings and sensor preferences",
                     TooltipStyle.UP);
 
             tooltipManager.addStep(secondTarget,
                     "Quick Start Recording",
-                    "Instantly toggle all sensors. Customize your selection in Sensor Settings.",
+                    "Instantly toggle all sensors. \nWant control? Customize your selection in Sensor Settings.",
+                    TooltipStyle.UP);
+
+            tooltipManager.addStep(thirdTarget,
+                    "Track your journey here",
+                    "See where you’ve been and how you got there.",
+                    TooltipStyle.DOWN);
+
+            tooltipManager.addStep(fourthTarget,
+                    "Need this info again?",
+                    "Tap the menu and select About.",
                     TooltipStyle.UP);
 
             tooltipManager.start();
