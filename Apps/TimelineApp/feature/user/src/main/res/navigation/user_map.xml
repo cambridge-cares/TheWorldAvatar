@@ -23,7 +23,6 @@
             app:uri="@string/account_setting_link"/>
     </fragment>
 
-
     <fragment
         android:id="@+id/sensor_setting"
         android:name="uk.ac.cam.cares.jps.user.SensorSettingFragment"
@@ -41,13 +40,20 @@
     </fragment>
 
     <fragment
+        android:id="@+id/help_about_fragment"
+        android:name="uk.ac.cam.cares.jps.user.HelpAboutFragment"
+        tools:layout="@layout/help_about">
+        <deepLink
+            app:uri="timeline://help/about" />
+    </fragment>
+
+    <fragment
         android:id="@+id/timeline_setting"
         android:name="uk.ac.cam.cares.jps.user.TimelineSettingFragment"
         tools:layout="@layout/fragment_timeline_setting">
         <deepLink
             app:uri="@string/timeline_setting_link" />
     </fragment>
-
 
     <action
         android:id="@+id/action_global_account_setting"
@@ -64,4 +70,8 @@
     <action
         android:id="@+id/action_global_timeline_setting"
         app:destination="@id/timeline_setting" />
+
+    <action
+        android:id="@+id/action_helpPageFragment_to_helpAboutFragment"
+        app:destination="@id/help_about_fragment" />
 </navigation>

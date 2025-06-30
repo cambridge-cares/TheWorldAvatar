@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -41,6 +42,11 @@ public class HelpPageFragment extends Fragment {
         binding.helpRecordingRow.helpTopicTitle.setText(getString(R.string.help_topic_recording));
         binding.helpLocationHistoryRow2.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
         binding.helpFaqRow.helpTopicTitle.setText(getString(R.string.help_topic_faq));
+
+        binding.helpAboutRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpAboutFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
 
         return binding.getRoot();
     }
