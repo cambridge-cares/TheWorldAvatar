@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Location History"
+        app:titleCentered="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/location_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FAFAFA"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/location_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Control Your Location History"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:id="@+id/location_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose when and how Timeline tracks your location data."
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp" />
+
+            <LinearLayout
+                android:id="@+id/step1_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/step1_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 1: Open Timeline Settings"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step1_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap the menu icon and go to Settings > Timeline Settings."
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step2_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/step2_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 2: Toggle Location History"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step2_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Use the toggle to enable or disable Timeline tracking your location."
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/help_image1"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_toggle_example"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="Example toggle setting screenshot" />
+
+            <LinearLayout
+                android:id="@+id/tip_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tip: Location Access Required"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Make sure Timeline has location permissions enabled under your device settings."
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
