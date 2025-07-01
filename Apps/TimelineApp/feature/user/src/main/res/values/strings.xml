@@ -56,4 +56,25 @@
     <string name="timeline_setting_link">android-app://uk.ac.cam.cares.jps.app/timeline/setting</string>
     <string name="toggle_all">Toggle All</string>
     <string name="toggle_off">Toggle Off</string>
+    <string name="help_quick_start_html">
+    &lt;b&gt;Via Quick Start&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
+    1. Tap the green play button on the main screen.&lt;br/&gt;
+    2. Grant permission when prompted (only once).&lt;br/&gt;
+    3. The button turns red and a popup says "Recording Started".&lt;br/&gt;
+    4. Your journey is now being logged automatically.&lt;br/&gt;
+    5. To stop, tap the red button again. It will turn green.
+    </string>
+
+    <string name="help_sensor_settings_html">
+    &lt;b&gt;Via Sensor Settings&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
+    1. Tap the profile icon → Sensor Settings.&lt;br/&gt;
+    2. Toggle the sensors you want to use.&lt;br/&gt;
+    3. Check the descriptions under each sensor to understand what it tracks.&lt;br/&gt;
+    4. Tap "Start Recording" at the top.&lt;br/&gt;
+    5. Grant permissions only for selected sensors.&lt;br/&gt;
+    6. You may leave the page — it keeps recording.&lt;br/&gt;
+    7. To stop, return and tap "Stop Recording".
+    </string>
+
+
 </resources>

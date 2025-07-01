@@ -48,6 +48,11 @@ public class HelpPageFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(action);
         });
 
+        binding.helpRecordingRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpRecordingFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
+
         return binding.getRoot();
     }
 }

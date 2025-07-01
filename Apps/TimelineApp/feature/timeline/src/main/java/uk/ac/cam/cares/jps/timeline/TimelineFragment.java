@@ -292,7 +292,7 @@ public class TimelineFragment extends Fragment {
 
             tooltipManager.addStep(thirdTarget,
                     "Track your journey here",
-                    "See where you’ve been and how you got there.",
+                    "Swipe up or down to see where you’ve been and how you got there.",
                     TooltipStyle.DOWN);
 
             tooltipManager.addStep(fourthTarget,
