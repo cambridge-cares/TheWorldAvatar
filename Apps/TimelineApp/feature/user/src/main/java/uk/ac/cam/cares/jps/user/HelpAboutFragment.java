@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.HelpAboutBinding;
@@ -33,9 +34,12 @@ public class HelpAboutFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.section1Title.setOnClickListener(v -> toggleSectionVisibility(binding.section1Subtitle));
-        binding.section2Title.setOnClickListener(v -> toggleSectionVisibility(binding.section2Subtitle));
-        binding.section3Title.setOnClickListener(v -> toggleSectionVisibility(binding.section3Subtitle));
+        binding.section1Row.setOnClickListener(v -> toggleSectionVisibility(binding.section1Subtitle));
+        binding.section2Row.setOnClickListener(v -> toggleSectionVisibility(binding.section2Subtitle));
+        binding.section3Row.setOnClickListener(v -> toggleSectionVisibility(binding.section3Subtitle));
+
+        binding.topAppbar.setNavigationOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigateUp());
 
     }
 
@@ -46,4 +50,5 @@ public class HelpAboutFragment extends Fragment {
             subtitle.setVisibility(View.VISIBLE);
         }
     }
+
 }

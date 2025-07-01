@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Getting Started"
+        app:titleCentered="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/getting_started_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FAFAFA"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/getting_started_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Getting Started with Timeline"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:id="@+id/getting_started_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This page will help you do the set up, learn the basics, and start logging your journey automatically with Timeline."
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp" />
+
+            <LinearLayout
+                android:id="@+id/step1_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step1_title"
+                    style="@style/HelpCardTitle"
+                    android:text="Set Up Your Account" />
+
+                <TextView
+                    android:id="@+id/step1_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Sign in or create an account to save preferences, link your data, and sync across devices securely.." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step2_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step2_title"
+                    style="@style/HelpCardTitle"
+                    android:text=" Allow Location Access" />
+
+                <TextView
+                    android:id="@+id/step2_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Timeline uses your device's GPS and motion sensors. Grant location permission when prompted to ensure accurate tracking." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step3_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step3_title"
+                    style="@style/HelpCardTitle"
+                    android:text="Choose What to Track" />
+
+                <TextView
+                    android:id="@+id/step3_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Go to Sensor Settings to enable sensors like location, movement, or battery. Toggle only what’s useful to you." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step4_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step4_title"
+                    style="@style/HelpCardTitle"
+                    android:text="Start Recording" />
+
+                <TextView
+                    android:id="@+id/step4_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Tap the floating “Start Recording” button on the main screen or from the Timeline Settings page to begin logging your movements." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step5_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step5_title"
+                    style="@style/HelpCardTitle"
+                    android:text="View Your History" />
+
+                <TextView
+                    android:id="@+id/step5_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Swipe up the bottom sheet on the map to see daily summaries. Tap a date to explore detailed movement sessions.." />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/getting_started_image"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_getting_started"
+                android:layout_marginTop="16dp"
+                android:contentDescription="Example image showing app usage" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Need more help? Tap the Help icon in the top-right menu to contact support or revisit tutorials."
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:paddingHorizontal="24dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

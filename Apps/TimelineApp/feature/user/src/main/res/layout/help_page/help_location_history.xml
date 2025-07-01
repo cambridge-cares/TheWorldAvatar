@@ -133,6 +133,72 @@
                 android:contentDescription="Example toggle setting screenshot" />
 
             <LinearLayout
+                android:id="@+id/step3_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/step3_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 3: Toggle Location History"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step3_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Use the toggle to enable or disable Timeline tracking your location."
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step4_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/step4_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 4: Toggle Location History"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step4_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Use the toggle to enable or disable Timeline tracking your location."
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
                 android:id="@+id/tip_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,7 +213,7 @@
                     android:text="Tip: Location Access Required"
                     android:textSize="17sp"
                     android:textStyle="bold"
-                    android:textColor="#111111"
+                    android:textChuolor="#111111"
                     android:layout_marginBottom="8dp" />
 
                 <TextView

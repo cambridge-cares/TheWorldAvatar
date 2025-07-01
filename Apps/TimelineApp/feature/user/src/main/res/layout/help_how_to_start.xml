@@ -54,7 +54,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1. What does 'recording' mean?"
+                android:text="What does 'recording' mean?"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#111111"
@@ -80,7 +80,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2. How to start/stop recording"
+                android:text="How to start/stop recording"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#111111"
@@ -91,29 +91,39 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tap the green play button on the right of the main screen to start recording. Tap it again to stop. A session will be saved automatically."
+                android:text="via Quick Start \n\n1. Tap the green play button on the main screen.\n2. Grant permission when prompted (only once).\n3. The button turns red and a popup says 'Recording Started'.\n4. Your journey is now being logged automatically.\n5. To stop, tap the red button again. It will turn green."
                 android:textSize="15sp"
                 android:textColor="#444444"
                 android:layout_marginBottom="12dp" />
 
-            <FrameLayout
+            <ImageView
+                android:id="@+id/help_recording"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="#E0E0E0"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:clipToOutline="true"
-                android:foreground="?attr/selectableItemBackground">
+                android:contentDescription="Screenshot of the recording button on the main screen"
+                android:scaleType="centerCrop"
+                android:src="@drawable/quickstart" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="[Image: A screenshot of the recording button on the right side of the main map screen, with an arrow pointing to it]"
-                    android:textColor="#777777"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:padding="16dp" />
-            </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="via Sensor Settings \n\n1. Tap the profile icon > Sensor Settings.\n2. Toggle the sensors you want to use.\n3. Check the descriptions under each sensor to understand what it tracks.\n4. Tap 'Start Recording' at the top.\n5. Grant permissions only for sensors you selected.\n6. You can leave the page. It will continue recording.\n7. To stop, return and tap 'Stop Recording'."
+                android:textSize="15sp"
+                android:textColor="#444444"
+                android:layout_marginBottom="12dp" />
+
+            <ImageView
+                android:id="@+id/help_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/recording"
+                android:contentDescription="Screenshot of the recording button on the main screen" />
+
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -127,7 +137,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3. What happens after?"
+                android:text="What happens after?"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#111111"
@@ -144,11 +154,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tip: You can also enable recording from the Sensors Settings screen."
-            android:textSize="14sp"
-            android:textColor="#999999"
             android:layout_marginTop="24dp"
             android:gravity="center"
-            android:paddingHorizontal="24dp" />
+            android:paddingHorizontal="24dp"
+            android:text="Tip: Once recording starts, you can freely navigate the app or even lock your screen. Data will continue to log in the background until stopped."
+            android:textColor="#999999"
+            android:textSize="14sp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

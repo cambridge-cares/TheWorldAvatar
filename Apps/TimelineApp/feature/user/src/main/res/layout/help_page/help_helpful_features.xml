@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Getting Started"
+        app:titleCentered="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/getting_started_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FAFAFA"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/getting_started_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Discover helpful features"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:id="@+id/getting_started_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Timeline offers more than just basic tracking. It’s designed to help you make sense of your movements, reflect on your journeys, and manage your data easily."
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp" />
+
+            <LinearLayout
+                android:id="@+id/step1_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step1_title"
+                    style="@style/HelpCardTitle"
+                    android:text="View Past Sessions at a Glance" />
+
+                <TextView
+                    android:id="@+id/step1_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Your movement history is grouped by date and session in the bottom drawer of the main screen. Each session shows: \n\n • Where and when you moved\n • How long you stayed in one place\n • A visual trajectory line connecting your points\n\nThis helps you recall where you've been." />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/step2_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step2_title"
+                    style="@style/HelpCardTitle"
+                    android:text="Customize Sensor Preferences" />
+
+                <TextView
+                    android:id="@+id/step2_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="While the app works out of the box, you can fine-tune it to suit your needs. Go to Sensor Settings to: \n\n • Enable/disable specific sensors like accelerometer or gyroscope \n • Adjust sampling frequency for higher or lower detail \n • Reduce battery usage by disabling unneeded sensors \n\n This ensures you’re collecting only what matters to you." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step3_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step3_title"
+                    style="@style/HelpCardTitle"
+                    android:text="Data Privacy Controls" />
+
+                <TextView
+                    android:id="@+id/step3_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="Your data stays on your device unless you manually choose to export or share it. You can also delete past sessions anytime from the Timeline Settings > Location History > Delete page. \n\n In addition, you can: \n\n Set auto-delete timeframes (See: FAQ number 3) \n Manually clear sessions by date \n You’re always in control." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step4_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step4_title"
+                    style="@style/HelpCardTitle"
+                    android:text="Coming Soon: Smart Summaries" />
+
+                <TextView
+                    android:id="@+id/step4_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="We’re working on a feature that gives you weekly insights based on more metrics. Stay tuned via the Help or About page for updates." />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/getting_started_image"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_getting_started"
+                android:layout_marginTop="16dp"
+                android:contentDescription="Example image showing app usage" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Need more help? Tap the Help icon in the top-right menu to contact support or revisit tutorials."
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:paddingHorizontal="24dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
