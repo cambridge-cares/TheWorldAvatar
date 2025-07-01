@@ -4,7 +4,7 @@ This agent is designed to query for the relevant IRIs and information from the k
 The agent will toggle the status of a component that is being controlled via the ESPHome web server based on the latest timeseries data value, latest status of the component and the setpoint value that it queries from the knowledge graph.(e.g. controlling the on off state of a cooling fan based on the latest measured temperature and temperature setpoint queried from the knowledge graph.)
 
 
-The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT) to interact with both the KG and database.
+The agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent) to interact with both the KG and database.
 
 Before explaining the usage of the agent, we will briefly summarize the ESPHome API that is contacted by one of the classes in this package to retrieve data.
 
@@ -51,9 +51,9 @@ http://<IP address of ESP node>/<domain>/<domain ID>/turn_off
 1) It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine 
 or need to be accessible from the host machine via a fixed URL. This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
-2) An Access Agent instance should be set up and working properly. The necessary routing information should be stored in a triple store such as Blazegraph. Check [Uploading-routing-information](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#Uploading-routing-information) for more information.
+2) An Access Agent instance should be set up and working properly. The necessary routing information should be stored in a triple store such as Blazegraph. Check [Uploading-routing-information](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent#Uploading-routing-information) for more information.
 
-3) It is necessary to have the component and the setpoint that determines when to toggle the component instantiated in the knowledge graph based on [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice). It is necessary to have the timeseries of the status of the component instantiated in the knowledge graph, one such agent that does this is [ESPHome Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent). An example of such an instantiation is shown below:
+3) It is necessary to have the component and the setpoint that determines when to toggle the component instantiated in the knowledge graph based on [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice). It is necessary to have the timeseries of the status of the component instantiated in the knowledge graph, one such agent that does this is [ESPHome Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent). An example of such an instantiation is shown below:
 ```
 <https://www.theworldavatar.com/kg/ontodevice/CoolingFan-01> rdf:type <https://saref.etsi.org/saref4bldg/Fan> ;
         <https://saref.etsi.org/core/hasState>	<http://www.theworldavatar.com/kb/ontotimeseries/esphome_generic_output_2422cab1-fa7a-4093-a86b-0c3d13732d49> ;
@@ -149,7 +149,7 @@ If you want to spin up this agent as part of a stack, instead of `docker-compose
 - Replace the contents of `config/client.properties` with `config/client.properties_stack` and the contents of `config/esphome-client.properties` with `config/esphome-client.properties_stack`, inserting the name of your stack.
 - Build the image via `docker-compose build`. Do not start the container.
 - Copy the `json` file from the `stack-manager-input-config` folder into `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
-- Go to the stack manager folder by following this route: `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/`, check whether there is a `<STACK NAME>.json` under the sub folder `/inputs/config/` and create one if it doesn't exist. If it exists already, append the agent to the json file. (Read [Stack configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration) for more information.)
+- Go to the stack manager folder by following this route: `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/`, check whether there is a `<STACK NAME>.json` under the sub folder `/inputs/config/` and create one if it doesn't exist. If it exists already, append the agent to the json file. (Read [Stack configuration](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#stack-configuration) for more information.)
 - Start the stack manager as usual. This should start the container.
 
 

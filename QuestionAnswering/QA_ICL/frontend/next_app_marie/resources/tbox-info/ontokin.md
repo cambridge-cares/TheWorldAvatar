@@ -8,7 +8,7 @@ OntoKin is an ontology designed to represent reaction mechanisms. It details set
 
 ### Download
 
-- [OntoKin.owl](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontokin/OntoKin.owl)
+- [OntoKin.owl](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontokin/OntoKin.owl)
 
 ### Access
 
@@ -26,7 +26,7 @@ OntoKin is an ontology designed to represent reaction mechanisms. It details set
 
 ### Preprints
 
-[1] F. Farazi, J. Akroyd, S. Mosbach, P. Buerger, D. Nurkowski, and M. Kraft, "OntoKin: An ontology for chemical kinetic reaction mechanisms", Technical Report 218, c4e-Preprint Series, Cambridge, 2019 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-218.pdf))
+[1] F. Farazi, J. Akroyd, S. Mosbach, P. Buerger, D. Nurkowski, and M. Kraft, "OntoKin: An ontology for chemical kinetic reaction mechanisms", Technical Report 218, c4e-Preprint Series, Cambridge, 2019 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-Preprint-218.pdf))
 
 [2] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, "Linking reaction mechanisms and quantum chemistry: An ontological approach", Technical Report 236, c4e-Preprint Series, Cambridge, 2019 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-236.pdf))
 

@@ -119,7 +119,7 @@ In Docker Desktop:
 
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
-[py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper
+[TimeSeriesClient]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[py4jps]: https://github.com/TheWorldAvatar/baselib/tree/main/python_wrapper
 [properties file]: resources/ts_example.properties
 [http://localhost:65080/]: http://localhost:65080/

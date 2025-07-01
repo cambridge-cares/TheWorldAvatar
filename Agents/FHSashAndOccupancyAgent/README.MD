@@ -1,6 +1,6 @@
 # Fumehood Sash And Occupancy Agent
 
-This agent is designed to query for the sash opening percentage and occupied state of fumehoods and walkin-fumehoods, if any of the fumehoods and walkin-fumehoods is unoccupied and has a sash opening percentage higher than a certain threshold, an email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java) and the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent). The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
+This agent is designed to query for the sash opening percentage and occupied state of fumehoods and walkin-fumehoods, if any of the fumehoods and walkin-fumehoods is unoccupied and has a sash opening percentage higher than a certain threshold, an email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java) and the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent). The agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
 
 ## Usage 
 This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client and remote store client to interact with the KG and database, the KG and database will be required to be set-up beforehand.  
@@ -12,11 +12,11 @@ The [next section](#requirements) will explain the requirements to run the agent
 
 2) It is required to have the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent) set up beforehand.
 
-3) It is required to have the fumehoods and walkin-fumehoods devices already instantiated in the knowledge graph based on [ontoBMS](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobms) and [ontoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice). 
+3) It is required to have the fumehoods and walkin-fumehoods devices already instantiated in the knowledge graph based on [ontoBMS](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobms) and [ontoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice). 
 
 4) In order for the agent to work properly, it is also necessary for the fumehoods and walkin-fumehoods instances to have occupied states and sash opening percentages. 
 
-5) The occupied states and sash opening percentages should be instantiated as timeseries in the knowledge graph via the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). 
+5) The occupied states and sash opening percentages should be instantiated as timeseries in the knowledge graph via the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries). 
 
 An example of the instance can be found below:
 ```

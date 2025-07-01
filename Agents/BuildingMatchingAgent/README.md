@@ -1,7 +1,7 @@
 # Building Matching Agent
 
 ### Introduction
-The Building Matching Agent is used to link a building instantiated in [OntoBuiltEnv](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl) to its corresponding instance instantiated in [OntoCityGML](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocitygml/OntoCityGML.owl). The link is created by using UPRNs as the identifiers.
+The Building Matching Agent is used to link a building instantiated in [OntoBuiltEnv](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobuiltenv/OntoBuiltEnv.owl) to its corresponding instance instantiated in [OntoCityGML](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontocitygml/OntoCityGML.owl). The link is created by using UPRNs as the identifiers.
 
 ### Input
 The agent accepts 3 input parameters in a JSONObject format with the keys: "ocgml", "obe" and "prefixIRI" where, "ocgml" is the endpoint containing buildings instantiated in OntoCityGML, "obe" is the endpoint containing buildings instantiated in OntoBuiltEnv and "prefixIRI" is the complete IRI of the OntoCityGML namespace (i.e. the IRI string used to prefix all OntoCityGml instances at creation). 

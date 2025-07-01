@@ -3,7 +3,7 @@
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding status of components that are controllable via ESPHome.
 It's only purpose is to retrieve new data (if available) from the API and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
-agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
+agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS base lib to interact with both the KG and database.
 
 Before explaining the usage of the agent, we will briefly summarize the ESPHome API that is contacted by one of the classes in this package to retrieve data.
@@ -147,7 +147,7 @@ If you want to spin up this agent as part of a stack, instead of `docker-compose
 - Replace the contents of `config/client.properties` with `config/client.properties_stack`, inserting the name of your stack.
 - Build the image via `docker-compose build`. Do not start the container.
 - Copy the `json` file from the `stack-manager-input-config` folder into `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
-- Go to the stack manager folder by following this route: `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/`, check whether there is a `<STACK NAME>.json` under the sub folder `/inputs/config/` and create one if it doesn't exist. If it exists already, append the agent to the json file. (Read [Stack configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration) for more information.)
+- Go to the stack manager folder by following this route: `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/`, check whether there is a `<STACK NAME>.json` under the sub folder `/inputs/config/` and create one if it doesn't exist. If it exists already, append the agent to the json file. (Read [Stack configuration](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#stack-configuration) for more information.)
 - Start the stack manager as usual. This should start the container.
 
 

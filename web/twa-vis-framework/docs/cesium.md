@@ -127,7 +127,7 @@ The default location of the Cesium map can be set using the below format in the 
 
 An example CesiumJS visualisation has been committed to repository to act both as an example, and a template for users putting together new visualisations.
 
-You can find the visualisation, along with documentation of how it was put together, in the [example-cesium-vis](../example-cesium-vis/) directory.
+You can find the visualisation, along with documentation of how it was put together, in the [example](../example/) directory.
 
 <br/>
 <p align="center">

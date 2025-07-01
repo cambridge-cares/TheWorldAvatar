@@ -34,7 +34,7 @@
    * [Adminer interface to the PostgreSQL database with default login settings][postgres_web] (the default password can be found in the `postgis/postgres.env` file)
    * [Ontop web endpoint][ontop_web]
    * [GeoServer web endpoint][geoserver_web]
-
+<!-- markdown-link-check-disable-next-line -->
 [shapefiles]: https://trac.osgeo.org/gdal/wiki/UserDocs/Shapefiles
 [postgres_web]: http://localhost:2311/?pgsql=host.docker.internal%3A2317&username=postgres&db=the_world_avatar
 [ontop_web]: http://localhost:2316/
