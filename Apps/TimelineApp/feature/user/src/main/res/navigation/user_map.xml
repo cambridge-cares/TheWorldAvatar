@@ -63,6 +63,19 @@
             app:uri="timeline://help/recording" />
     </fragment>
 
+    <fragment
+        android:id="@+id/help_faq_fragment"
+        android:name="uk.ac.cam.cares.jps.user.HelpFaqFragment"
+        tools:layout="@layout/help_faq">
+        <deepLink
+            app:uri="timeline://help/faq" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_helpPageFragment_to_helpFaqFragment"
+        app:destination="@id/help_faq_fragment" />
+
+
     <action
         android:id="@+id/action_helpPageFragment_to_helpRecordingFragment"
         app:destination="@id/help_recording_fragment" />

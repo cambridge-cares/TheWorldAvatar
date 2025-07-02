@@ -67,12 +67,12 @@
 
     <string name="help_sensor_settings_html">
     &lt;b&gt;Via Sensor Settings&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
-    1. Tap the profile icon → Sensor Settings.&lt;br/&gt;
+    1. Tap the profile icon > Sensor Settings.&lt;br/&gt;
     2. Toggle the sensors you want to use.&lt;br/&gt;
     3. Check the descriptions under each sensor to understand what it tracks.&lt;br/&gt;
     4. Tap "Start Recording" at the top.&lt;br/&gt;
     5. Grant permissions only for selected sensors.&lt;br/&gt;
-    6. You may leave the page — it keeps recording.&lt;br/&gt;
+    6. You may leave the page. It keeps recording.&lt;br/&gt;
     7. To stop, return and tap "Stop Recording".
     </string>
 

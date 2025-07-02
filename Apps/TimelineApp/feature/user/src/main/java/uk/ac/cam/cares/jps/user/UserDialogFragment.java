@@ -77,6 +77,7 @@ public class UserDialogFragment extends DialogFragment {
         binding.privacySetting.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.healthReport.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.locationHistory.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
+        binding.logOut.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
     }
 
     private void navigate(int uriResId) {
