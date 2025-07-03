@@ -248,6 +248,47 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/footer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="24dp"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:id="@+id/privacy_policy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Privacy Policy"
+                        android:textSize="12sp"
+                        android:textColor="#999999"
+                        android:clickable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:paddingHorizontal="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="•"
+                        android:textSize="12sp"
+                        android:textColor="#999999"
+                        android:paddingHorizontal="4dp" />
+
+                    <TextView
+                        android:id="@+id/terms_service"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Terms of Service"
+                        android:textSize="12sp"
+                        android:textColor="#999999"
+                        android:clickable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:paddingHorizontal="8dp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
