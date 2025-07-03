@@ -130,24 +130,29 @@ public class SensorViewModel extends ViewModel {
      */
     public void startRecording() {
         List<SensorType> sensorsToRecord = selectedSensors.getValue();
-        LOGGER.info("Sensors to record: " + sensorsToRecord);
+        LOGGER.info("Attempting to start recording. Sensors to record: " + sensorsToRecord);
 
         if (sensorsToRecord != null && !sensorsToRecord.isEmpty()) {
             sensorRepository.startRecording(sensorsToRecord, new RepositoryCallback<>() {
                 @Override
                 public void onSuccess(Boolean result) {
                     _isRecording.setValue(result);
+                    LOGGER.info("Recording successfully started.");
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
                     _hasAccountError.setValue(true);
                     _isRecording.setValue(false);
+                    LOGGER.error("Recording failed to start: " + error.getMessage());
                 }
             });
+        } else {
+            LOGGER.warn("startRecording() called but no sensors are selected. Aborting.");
+            _hasAccountError.setValue(true);
+            _isRecording.setValue(false);
         }
     }
-
 
     /**
      * Stop recording

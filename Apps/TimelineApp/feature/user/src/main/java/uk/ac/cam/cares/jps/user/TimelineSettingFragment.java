@@ -24,9 +24,12 @@ public class TimelineSettingFragment extends Fragment {
     private SharedPreferences preferences;
     private static final String PREF_NAME = "TimelinePrefs";
     private static final String KEY_DURATION = "recording_duration";
+    private static final String KEY_AUTOSTART = "autostart_enabled";
+
     private final String[] durations = {
             "15 minutes", "30 minutes", "1 hour", "2 hours", "1 day", "No limit"
     };
+
 
     @Nullable
     @Override
@@ -54,10 +57,17 @@ public class TimelineSettingFragment extends Fragment {
                     Toast.LENGTH_SHORT).show();
         });
 
-        binding.switchAutostart.setOnCheckedChangeListener(
-                (btn, isChecked) -> Toast.makeText(requireContext(),
-                        "Auto-start " + (isChecked ? "enabled" : "disabled"),
-                        Toast.LENGTH_SHORT).show());
+        boolean isAutostartEnabled = preferences.getBoolean(KEY_AUTOSTART, false);
+        binding.switchAutostart.setChecked(isAutostartEnabled);
+        updateAutostartLabel(isAutostartEnabled);
+
+        binding.switchAutostart.setOnCheckedChangeListener((btn, isChecked) -> {
+            preferences.edit().putBoolean(KEY_AUTOSTART, isChecked).apply();
+            updateAutostartLabel(isChecked);
+            Toast.makeText(requireContext(),
+                    "Auto-start " + (isChecked ? "enabled" : "disabled"),
+                    Toast.LENGTH_SHORT).show();
+        });
 
         binding.btnAutoDelete.setOnClickListener(v ->
                 Toast.makeText(requireContext(),
@@ -77,6 +87,11 @@ public class TimelineSettingFragment extends Fragment {
         binding.timelineTopAppbar.setNavigationOnClickListener(view ->
                 requireActivity().getOnBackPressedDispatcher().onBackPressed());
     }
+
+    private void updateAutostartLabel(boolean enabled) {
+        binding.labelAutostart.setText("Auto-Start Recording (" + (enabled ? "on" : "off") + ")");
+    }
+
 
     //just placeholder durations, not implemented yet
     private void setupSpinner() {

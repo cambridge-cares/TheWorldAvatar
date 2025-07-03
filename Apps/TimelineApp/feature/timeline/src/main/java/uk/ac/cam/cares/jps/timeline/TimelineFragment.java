@@ -109,6 +109,13 @@ public class TimelineFragment extends Fragment {
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
         permissionHelper = new PermissionHelper(this);
 
+        SharedPreferences prefs = requireContext().getSharedPreferences("TimelinePrefs", Context.MODE_PRIVATE);
+        boolean autoStartEnabled = prefs.getBoolean("autostart_enabled", false);
+
+        if (autoStartEnabled) {
+            autoStartRecordingIfPossible();
+        }
+
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
             if (hasError != null && hasError) {
                 Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
@@ -357,4 +364,11 @@ public class TimelineFragment extends Fragment {
             mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
         }
     }
+
+    private void autoStartRecordingIfPossible() {
+        sensorViewModel.toggleAllSensors(true);
+        sensorViewModel.startRecording();
+        Toast.makeText(requireContext(), "Auto-start on", Toast.LENGTH_SHORT).show();
+    }
+
 }
