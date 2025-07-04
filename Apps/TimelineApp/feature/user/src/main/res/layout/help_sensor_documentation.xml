@@ -165,6 +165,61 @@
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:src="@drawable/ic_sensor_activity"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Activity icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Gravity"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="#222222"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Measures the force of gravity acting on the device—helps determine tilt, orientation, and motion when combined with other sensors."
+                    android:textSize="14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Data: Gravity vector (X, Y, Z)"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:text="Permission: Not required"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#888888" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_sensor_motion"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="Motion icon" />
@@ -176,7 +231,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:text="Gyroscoper"
+                    android:text="Gyroscope"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -273,6 +328,61 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_sensor_audio"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Audio icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Magnetometer"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#222222"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Measures the strength and direction of Earth’s magnetic field—used to determine compass orientation and detect nearby metal objects."
+                    android:textSize="14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Data: Magnetic field (X, Y, Z)"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:text="Permission: Not required"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#888888" />
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -338,6 +448,8 @@
             </LinearLayout>
         </LinearLayout>
 
+
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -402,6 +514,117 @@
                     android:textColor="#888888" />
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_sensor_audio"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Audio icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Humidity"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#222222"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Detects the amount of moisture in the air—helpful for analyzing comfort, climate, or indoor air quality."
+                    android:textSize="14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Data: Relative Humidity (%)"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:text="Permission: Not required"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#888888" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_sensor_audio"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Audio icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Pressure"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#222222"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Measures atmospheric pressure—commonly used to estimate altitude, detect weather changes, or enhance location precision."
+                    android:textSize="14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:text="Data: Pressure (hectopascals, hPa)"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:text="Permission: Not required"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#888888" />
+            </LinearLayout>
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/sensor_footer"
