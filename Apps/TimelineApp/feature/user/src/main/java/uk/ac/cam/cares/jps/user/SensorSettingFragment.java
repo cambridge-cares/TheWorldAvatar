@@ -128,22 +128,20 @@ public class SensorSettingFragment extends Fragment {
      */
     @SuppressLint("NotifyDataSetChanged")
     private void setupObservers() {
-        binding.startRecordTv.setEnabled(true);
         sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
-            if (isRecording) {
-                binding.startRecordTv.setText(R.string.stop_recording);
-                binding.toggleAllBtn.setEnabled(false);
-                adapter.setTogglesEnabled(false);
-            } else {
-                binding.startRecordTv.setText(R.string.start_recording);
-                binding.toggleAllBtn.setEnabled(true);
-                adapter.setTogglesEnabled(true);
-            }
+            binding.startRecordTv.setText(isRecording ? R.string.stop_recording : R.string.start_recording);
+            binding.toggleAllBtn.setEnabled(!isRecording);
+            adapter.setTogglesEnabled(!isRecording);
+            binding.recordingNoteTv.setVisibility(isRecording ? View.VISIBLE : View.GONE);
         });
+
         adapter.updateSensorItems(sensorViewModel.getSensorItems());
         adapter.notifyDataSetChanged();
+
         sensorViewModel.getAllToggledOn().observe(getViewLifecycleOwner(), this::updateToggleAllState);
     }
+
+
 
     /**
      * Updates the "Toggle All" button state based on whether all sensors are toggled on.
@@ -151,9 +149,11 @@ public class SensorSettingFragment extends Fragment {
      * @param isAllToggledOn A Boolean indicating if all sensors are toggled on.
      */
     private void updateToggleAllState(Boolean isAllToggledOn) {
+        boolean isRecording = Boolean.TRUE.equals(sensorViewModel.getIsRecording().getValue());
         binding.toggleAllBtn.setText(isAllToggledOn ? R.string.toggle_off : R.string.toggle_all);
-        adapter.setTogglesEnabled(isAllToggledOn);
+        adapter.setTogglesEnabled(!isRecording);
     }
+
 
     /**
      * Sets up UI interactions, including the "Toggle All" button functionality and
@@ -161,12 +161,20 @@ public class SensorSettingFragment extends Fragment {
      */
     private void setupUIInteractions() {
         binding.toggleAllBtn.setOnClickListener(v -> {
-            boolean currentToggleState = sensorViewModel.getAllToggledOn().getValue() != null && sensorViewModel.getAllToggledOn().getValue();
+            if (Boolean.TRUE.equals(sensorViewModel.getIsRecording().getValue())) {
+                Toast.makeText(requireContext(), "Stop recording before changing sensor toggles.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            boolean currentToggleState = sensorViewModel.getAllToggledOn().getValue() != null &&
+                    sensorViewModel.getAllToggledOn().getValue();
             sensorViewModel.toggleAllSensors(!currentToggleState);
         });
 
-        binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
+        binding.topAppbar.setNavigationOnClickListener(view1 ->
+                NavHostFragment.findNavController(this).navigateUp());
     }
+
 
     /**
      * Handles the logic for starting or stopping sensor recording when the button is clicked.
@@ -214,7 +222,6 @@ public class SensorSettingFragment extends Fragment {
      * Prompts the user to enable permissions if the haven't yet.
      */
     private void promptGrantPermissions() {
-//        StringBuilder permissionNotGranted = new StringBuilder();
         List<String> permissionNotGranted = new ArrayList<>();
         List<SensorType> selectedSensorTypes = sensorViewModel.getSelectedSensors().getValue();
 

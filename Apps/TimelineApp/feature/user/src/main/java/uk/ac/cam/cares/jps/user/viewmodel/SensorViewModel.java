@@ -106,12 +106,18 @@ public class SensorViewModel extends ViewModel {
      * @param sensorItem the sensor selected to be recorded
      */
     public void toggleSensor(SensorType sensorItem) {
+        if (Boolean.TRUE.equals(_isRecording.getValue())) {
+            LOGGER.warn("Recording is in progress.");
+            return;
+        }
+
         List<SensorType> currentSelectedSensors = new ArrayList<>(Objects.requireNonNull(selectedSensors.getValue()));
         if (currentSelectedSensors.contains(sensorItem)) {
-            currentSelectedSensors.remove(sensorItem);  // Remove sensor if already toggled
+            currentSelectedSensors.remove(sensorItem);
         } else {
-            currentSelectedSensors.add(sensorItem);  // Add sensor if toggled on
+            currentSelectedSensors.add(sensorItem);
         }
+
         selectedSensors.setValue(currentSelectedSensors);
         saveSelectedSensors(currentSelectedSensors);
     }
@@ -241,6 +247,11 @@ public class SensorViewModel extends ViewModel {
      * @param toggle boolean t/f value which denotes if a sensor has or has not been toggled
      */
     public void toggleAllSensors(boolean toggle) {
+        if (Boolean.TRUE.equals(_isRecording.getValue())) {
+            LOGGER.warn("Recording is active.");
+            return;
+        }
+
         List<SensorType> updatedSensorTypes = new ArrayList<>();
         for (SensorItem item : sensorItems) {
             item.setToggled(toggle);
@@ -251,8 +262,8 @@ public class SensorViewModel extends ViewModel {
         selectedSensors.setValue(updatedSensorTypes);
         allToggledOn.setValue(toggle);
         saveSelectedSensors(updatedSensorTypes);
-
     }
+
 
     public List<SensorItem> getSensorItems() {
         return sensorItems;

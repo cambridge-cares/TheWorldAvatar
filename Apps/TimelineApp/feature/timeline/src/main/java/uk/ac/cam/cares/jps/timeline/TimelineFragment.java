@@ -156,39 +156,6 @@ public class TimelineFragment extends Fragment {
     private void setupRecordingButton() {
         FloatingActionButton recordingFab = binding.recordingFab;
 
-        recordingFab.setOnClickListener(v -> {
-            Boolean isRecording = sensorViewModel.getIsRecording().getValue();
-
-            if (isRecording != null && isRecording) {
-                sensorViewModel.stopRecording();
-                sensorViewModel.toggleAllSensors(false);
-            } else {
-                sensorViewModel.toggleAllSensors(true);
-
-                List<SensorType> selectedSensors = sensorViewModel.getSelectedSensors().getValue();
-                if (selectedSensors == null || selectedSensors.isEmpty()) {
-                    Toast.makeText(requireContext(), "No sensors enabled. Cannot start recording.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                List<String> permissions = new ArrayList<>();
-                if (selectedSensors.contains(SensorType.LOCATION) && needToPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-                }
-                if (selectedSensors.contains(SensorType.SOUND) && needToPermissionGranted(Manifest.permission.RECORD_AUDIO)) {
-                    permissions.add(Manifest.permission.RECORD_AUDIO);
-                }
-                if (selectedSensors.contains(SensorType.ACTIVITY) && needToPermissionGranted(Manifest.permission.ACTIVITY_RECOGNITION)) {
-                    permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
-                }
-                if (needToPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)) {
-                    permissions.add(Manifest.permission.POST_NOTIFICATIONS);
-                }
-
-                permissionHelper.requestPermissionsInChain(permissions, () -> sensorViewModel.startRecording());
-            }
-        });
-
         sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
             if (isRecording != null) {
                 int icon = isRecording ? R.drawable.ic_stop : R.drawable.ic_start;
@@ -200,7 +167,41 @@ public class TimelineFragment extends Fragment {
                 recordingFab.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
             }
         });
+
+        recordingFab.setOnClickListener(v -> {
+            Boolean isRecording = sensorViewModel.getIsRecording().getValue();
+
+            if (isRecording != null && isRecording) {
+                sensorViewModel.stopRecording();
+                return;
+            }
+
+            sensorViewModel.toggleAllSensors(true);
+
+            List<SensorType> selectedSensors = sensorViewModel.getSelectedSensors().getValue();
+            if (selectedSensors == null || selectedSensors.isEmpty()) {
+                Toast.makeText(requireContext(), "No sensors enabled. Cannot start recording.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<String> permissions = new ArrayList<>();
+            if (selectedSensors.contains(SensorType.LOCATION) && needToPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            if (selectedSensors.contains(SensorType.SOUND) && needToPermissionGranted(Manifest.permission.RECORD_AUDIO)) {
+                permissions.add(Manifest.permission.RECORD_AUDIO);
+            }
+            if (selectedSensors.contains(SensorType.ACTIVITY) && needToPermissionGranted(Manifest.permission.ACTIVITY_RECOGNITION)) {
+                permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
+            }
+            if (needToPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)) {
+                permissions.add(Manifest.permission.POST_NOTIFICATIONS);
+            }
+
+            permissionHelper.requestPermissionsInChain(permissions, () -> sensorViewModel.startRecording());
+        });
     }
+
 
     private boolean needToPermissionGranted(String permission) {
         return ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED;
