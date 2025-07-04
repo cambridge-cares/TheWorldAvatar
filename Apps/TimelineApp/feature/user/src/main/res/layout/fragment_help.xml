@@ -91,9 +91,6 @@
                     android:id="@+id/help_features_row" />
 
                 <include layout="@layout/help_item"
-                    android:id="@+id/help_location_history_row" />
-
-                <include layout="@layout/help_item"
                     android:id="@+id/help_recording_row" />
 
                 <include layout="@layout/help_item"

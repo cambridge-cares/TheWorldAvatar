@@ -38,7 +38,6 @@ public class HelpPageFragment extends Fragment {
         binding.helpTroubleshootingRow.helpTopicTitle.setText(getString(R.string.help_topic_map));
         binding.helpSensorDocumentationRow.helpTopicTitle.setText(getString(R.string.help_topic_sensor_documentation));
         binding.helpFeaturesRow.helpTopicTitle.setText(getString(R.string.help_topic_helpful_features));
-        binding.helpLocationHistoryRow.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
         binding.helpRecordingRow.helpTopicTitle.setText(getString(R.string.help_topic_recording));
         binding.helpLocationHistoryRow2.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
         binding.helpFaqRow.helpTopicTitle.setText(getString(R.string.help_topic_faq));
