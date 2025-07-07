@@ -1,0 +1,32 @@
+[PrefixDeclaration]
+:                   https://www.theworldavatar.com/kg/
+bot:                https://w3id.org/bot#
+fibo-fnd-arr-id:    https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/
+fibo-fnd-plc-adr:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/
+fibo-fnd-plc-loc:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/
+fibo-fnd-rel-rel:   https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/
+geo:                http://www.opengis.net/ont/geosparql#
+sf:                 http://www.opengis.net/ont/sf
+rdfs:	            http://www.w3.org/2000/01/rdf-schema#
+xsd:                http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Singapore Postcode
+target       :address/{ogc_fid} a fibo-fnd-plc-adr:ConventionalStreetAddress ; 
+                fibo-fnd-plc-adr:hasStreetAddress :address/street/{ogc_fid} ;
+                fibo-fnd-plc-adr:hasPostalCode {postal_code} ;
+                fibo-fnd-plc-loc:hasCityName "Singapore"^^xsd:string ;
+                fibo-fnd-plc-loc:hasCountry <https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Singapore> ;
+                fibo-fnd-arr-id:isIndexTo :location/{ogc_fid} .
+            :address/street/{ogc_fid} a fibo-fnd-plc-adr:StreetAddress ;
+                fibo-fnd-plc-adr:hasPrimaryAddressNumber :address/street/block/{ogc_fid} ; 
+                fibo-fnd-plc-adr:hasStreetName :address/street/name/{ogc_fid} .
+            :address/street/block/{ogc_fid} a fibo-fnd-plc-adr:PrimaryAddressNumber ;
+                fibo-fnd-rel-rel:hasTag {block_number} .
+            :address/street/name/{ogc_fid} a fibo-fnd-plc-adr:StreetName ;
+                fibo-fnd-rel-rel:hasTag {road_name} .
+            :location/{ogc_fid} a fibo-fnd-plc-loc:PhysicalLocation ;
+                a sf:Point; 
+                geo:asWKT "{geom}"^^geo:wktLiteral .
+source		SELECT ogc_fid, building, block_number, road_name, postal_code, ST_ASTEXT(wkb_geometry) as geom FROM sgpostcode
+]]

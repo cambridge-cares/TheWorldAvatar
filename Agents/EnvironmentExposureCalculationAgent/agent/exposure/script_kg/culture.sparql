@@ -1,0 +1,36 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX sch: <https://schema.org/>
+PREFIX ontosealevel:	<https://www.theworldavatar.com/kg/ontosealevel/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# NOTICE: this is template file for getting culture env feature. Should be redesigned after a proper ontology is done.
+
+SELECT  ?iri ?type ?name ?description ?geom ?type_label
+WHERE{ 
+{
+  ?iri a ontosealevel:Museum.
+  BIND(ontosealevel:Museum AS ?type).
+  BIND("museum" AS ?type_label)
+}
+UNION
+{
+  ?iri a ontosealevel:TouristAttraction.
+  BIND(ontosealevel:TouristAttraction AS ?type).
+  BIND("touristattraction" AS ?type_label)
+}
+UNION
+{
+  ?iri a ontosealevel:HeritageTree.
+  BIND(ontosealevel:HeritageTree AS ?type).
+  BIND("heritagetree" AS ?type_label)
+}
+UNION
+{
+  ?iri a ontosealevel:Monument.
+  BIND(ontosealevel:Monument AS ?type).
+  BIND("monument" AS ?type_label)
+}
+
+
+  ?iri sch:name ?name ; rdfs:label ?description; geo:hasGeometry/geo:asWKT ?geom.
+}
