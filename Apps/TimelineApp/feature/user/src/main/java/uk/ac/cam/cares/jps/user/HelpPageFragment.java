@@ -21,7 +21,6 @@ public class HelpPageFragment extends Fragment {
     private FragmentHelpBinding binding;
 
     public HelpPageFragment() {
-        // Required empty constructor
     }
 
     @Nullable
@@ -39,7 +38,7 @@ public class HelpPageFragment extends Fragment {
         binding.helpSensorDocumentationRow.helpTopicTitle.setText(getString(R.string.help_topic_sensor_documentation));
         binding.helpFeaturesRow.helpTopicTitle.setText(getString(R.string.help_topic_helpful_features));
         binding.helpRecordingRow.helpTopicTitle.setText(getString(R.string.help_topic_recording));
-        binding.helpLocationHistoryRow2.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
+        binding.helpLocationHistoryRow.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
         binding.helpFaqRow.helpTopicTitle.setText(getString(R.string.help_topic_faq));
 
         binding.helpMapInteractionRow.getRoot().setOnClickListener(v -> {
@@ -67,8 +66,10 @@ public class HelpPageFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(action);
         });
 
-
-
+        binding.helpGettingStartedRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpGettingStartedFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
 
         return binding.getRoot();
     }

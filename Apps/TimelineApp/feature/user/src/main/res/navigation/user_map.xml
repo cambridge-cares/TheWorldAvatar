@@ -87,6 +87,19 @@
             app:uri="timeline://help/map" />
     </fragment>
 
+    <fragment
+        android:id="@+id/help_getting_started_fragment"
+        android:name="uk.ac.cam.cares.jps.user.HelpGettingStartedFragment"
+        tools:layout="@layout/help_getting_started">
+        <deepLink
+            app:uri="timeline://help/getting_started" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_helpPageFragment_to_helpGettingStartedFragment"
+        app:destination="@id/help_getting_started_fragment" />
+
+
     <action
         android:id="@+id/action_helpPageFragment_to_helpFaqFragment"
         app:destination="@id/help_faq_fragment" />
