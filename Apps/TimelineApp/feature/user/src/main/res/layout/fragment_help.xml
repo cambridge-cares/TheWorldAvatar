@@ -82,7 +82,7 @@
                     android:id="@+id/help_getting_started_row" />
 
                 <include layout="@layout/help_item"
-                    android:id="@+id/help_troubleshooting_row" />
+                    android:id="@+id/help_map_interaction_row" />
 
                 <include layout="@layout/help_item"
                     android:id="@+id/help_sensor_documentation_row" />

@@ -35,12 +35,17 @@ public class HelpPageFragment extends Fragment {
 
         binding.helpAboutRow.helpTopicTitle.setText(getString(R.string.help_topic_about));
         binding.helpGettingStartedRow.helpTopicTitle.setText(getString(R.string.help_topic_getting_started));
-        binding.helpTroubleshootingRow.helpTopicTitle.setText(getString(R.string.help_topic_map));
+        binding.helpMapInteractionRow.helpTopicTitle.setText(getString(R.string.help_topic_map));
         binding.helpSensorDocumentationRow.helpTopicTitle.setText(getString(R.string.help_topic_sensor_documentation));
         binding.helpFeaturesRow.helpTopicTitle.setText(getString(R.string.help_topic_helpful_features));
         binding.helpRecordingRow.helpTopicTitle.setText(getString(R.string.help_topic_recording));
         binding.helpLocationHistoryRow2.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
         binding.helpFaqRow.helpTopicTitle.setText(getString(R.string.help_topic_faq));
+
+        binding.helpMapInteractionRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpMapFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
 
         binding.helpAboutRow.getRoot().setOnClickListener(v -> {
             NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpAboutFragment();
@@ -56,6 +61,14 @@ public class HelpPageFragment extends Fragment {
             NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpFaqFragment();
             NavHostFragment.findNavController(this).navigate(action);
         });
+
+        binding.helpSensorDocumentationRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpSensorFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
+
+
+
 
         return binding.getRoot();
     }

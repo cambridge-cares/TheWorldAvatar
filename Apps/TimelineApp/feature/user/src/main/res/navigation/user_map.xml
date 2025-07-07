@@ -64,11 +64,27 @@
     </fragment>
 
     <fragment
+        android:id="@+id/help_sensor_fragment"
+        android:name="uk.ac.cam.cares.jps.user.HelpSensorFragment"
+        tools:layout="@layout/help_sensor_documentation">
+        <deepLink
+            app:uri="timeline://help/sensor" />
+    </fragment>
+
+    <fragment
         android:id="@+id/help_faq_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpFaqFragment"
         tools:layout="@layout/help_faq">
         <deepLink
             app:uri="timeline://help/faq" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/help_map_fragment"
+        android:name="uk.ac.cam.cares.jps.user.HelpMapFragment"
+        tools:layout="@layout/help_map_interactions">
+        <deepLink
+            app:uri="timeline://help/map" />
     </fragment>
 
     <action
@@ -79,6 +95,14 @@
     <action
         android:id="@+id/action_helpPageFragment_to_helpRecordingFragment"
         app:destination="@id/help_recording_fragment" />
+
+    <action
+        android:id="@+id/action_helpPageFragment_to_helpMapFragment"
+        app:destination="@id/help_map_fragment" />
+
+    <action
+        android:id="@+id/action_helpPageFragment_to_helpSensorFragment"
+        app:destination="@id/help_sensor_fragment" />
 
 
     <action
