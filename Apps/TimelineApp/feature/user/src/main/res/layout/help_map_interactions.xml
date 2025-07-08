@@ -16,7 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:navigationIcon="@drawable/back"
         app:navigationIconTint="?attr/colorOnSurface"
-        app:title="Map Interactions"
         app:titleCentered="true" />
 
     <androidx.core.widget.NestedScrollView

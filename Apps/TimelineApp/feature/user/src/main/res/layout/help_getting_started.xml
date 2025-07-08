@@ -59,15 +59,6 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="20dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Step 1"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="4dp" />
 
             <LinearLayout
                 android:id="@+id/step1_card"
@@ -84,15 +75,6 @@
                     android:text="Sign in or create an account to save preferences, link your data, and sync across devices securely.." />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Step 2"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="4dp" />
 
             <LinearLayout
                 android:id="@+id/step2_card"
@@ -109,15 +91,7 @@
                     android:text="Timeline uses your device's GPS and motion sensors. Grant location permission when prompted to ensure accurate tracking." />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Step 3"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="4dp" />
+
 
             <LinearLayout
                 android:id="@+id/step3_card"
@@ -134,16 +108,6 @@
                     android:text="Go to Sensor Settings to enable sensors like location, movement, or battery. Toggle only what’s useful to you." />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Step 4"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="4dp" />
-
             <LinearLayout
                 android:id="@+id/step4_card"
                 style="@style/HelpCardStyle">
@@ -159,15 +123,6 @@
                     android:text="Tap the floating “Start Recording” button on the main screen or from the Timeline Settings page to begin logging your movements." />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Step 5"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="4dp" />
 
 
             <LinearLayout
