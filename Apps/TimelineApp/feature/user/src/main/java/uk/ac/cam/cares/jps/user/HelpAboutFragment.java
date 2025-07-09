@@ -20,6 +20,7 @@ public class HelpAboutFragment extends Fragment {
     private HelpAboutBinding binding;
 
     public HelpAboutFragment() {
+
     }
 
     @Nullable
