@@ -20,7 +20,6 @@ public class HelpSensorFragment extends Fragment {
     private HelpSensorDocumentationBinding binding;
 
     public HelpSensorFragment() {
-        // Required empty public constructor
     }
 
     @Override
