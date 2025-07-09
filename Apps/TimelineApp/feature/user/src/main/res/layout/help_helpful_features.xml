@@ -15,6 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:navigationIcon="@drawable/back"
         app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Getting Started"
         app:titleCentered="true" />
 
     <androidx.core.widget.NestedScrollView
@@ -36,7 +37,7 @@
             android:paddingBottom="32dp">
 
             <TextView
-                android:id="@+id/helpful_features_title"
+                android:id="@+id/getting_started_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Discover helpful features"

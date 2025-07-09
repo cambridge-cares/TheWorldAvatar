@@ -88,38 +88,12 @@
     </fragment>
 
     <fragment
-        android:id="@+id/help_features_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpFeaturesFragment"
-        tools:layout="@layout/help_helpful_features">
-        <deepLink
-            app:uri="timeline://help/features" />
-    </fragment>
-
-
-    <fragment
         android:id="@+id/help_getting_started_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpGettingStartedFragment"
         tools:layout="@layout/help_getting_started">
         <deepLink
             app:uri="timeline://help/getting_started" />
     </fragment>
-
-    <fragment
-        android:id="@+id/help_location_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpLocationFragment"
-        tools:layout="@layout/help_location_history">
-        <deepLink
-            app:uri="timeline://help/location" />
-    </fragment>
-
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpLocationFragment"
-        app:destination="@id/help_location_fragment" />
-
-
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpFeaturesFragment"
-        app:destination="@id/help_features_fragment" />
 
     <action
         android:id="@+id/action_helpPageFragment_to_helpGettingStartedFragment"

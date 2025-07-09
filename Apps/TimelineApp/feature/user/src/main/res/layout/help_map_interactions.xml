@@ -16,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:navigationIcon="@drawable/back"
         app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Map Interactions"
         app:titleCentered="true" />
 
     <androidx.core.widget.NestedScrollView
@@ -42,7 +43,7 @@
                 android:src="@drawable/ic_map"
                 android:contentDescription="Map icon"
                 android:layout_marginTop="12dp"
-                app:tint="#3b4279" />
+                android:tint="#3b4279" />
 
             <TextView
                 android:layout_width="wrap_content"

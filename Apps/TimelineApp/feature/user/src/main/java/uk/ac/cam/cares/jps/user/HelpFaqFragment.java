@@ -22,6 +22,7 @@ public class HelpFaqFragment extends Fragment {
     private HelpFaqBinding binding;
 
     public HelpFaqFragment() {
+        // Required empty public constructor
     }
 
     @Nullable

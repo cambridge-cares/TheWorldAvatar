@@ -22,6 +22,7 @@ public class HelpRecordingFragment extends Fragment {
     private HelpRecordingBinding binding;
 
     public HelpRecordingFragment() {
+        // Required empty public constructor
     }
 
     @Nullable
