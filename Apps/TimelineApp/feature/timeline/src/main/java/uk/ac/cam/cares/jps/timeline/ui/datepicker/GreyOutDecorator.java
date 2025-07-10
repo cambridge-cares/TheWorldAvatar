@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.timeline.ui.datepicker;
 
-import static android.os.Build.VERSION_CODES.R;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Parcel;
@@ -42,8 +40,19 @@ public class GreyOutDecorator extends DayViewDecorator {
     @Nullable
     @Override
     public ColorStateList getTextColor(@NonNull Context context, int year, int month, int day, boolean valid, boolean selected) {
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        boolean isToday = year == today.get(java.util.Calendar.YEAR) &&
+                (month + 1) == (today.get(java.util.Calendar.MONTH) + 1) &&
+                day == today.get(java.util.Calendar.DAY_OF_MONTH);
+
+        if (isToday) {
+            int readableColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnPrimary, GreyOutDecorator.class.getSimpleName());
+            return ColorStateList.valueOf(readableColor);
+        }
+
         return shouldShowGreyOut(year, month, day, valid, selected) ? greyColor : highlightColor;
     }
+
 
     @Override
     public int describeContents() {
