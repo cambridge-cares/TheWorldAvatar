@@ -41,6 +41,16 @@ public class HelpPageFragment extends Fragment {
         binding.helpLocationHistoryRow.helpTopicTitle.setText(getString(R.string.help_topic_location_history));
         binding.helpFaqRow.helpTopicTitle.setText(getString(R.string.help_topic_faq));
 
+        binding.helpFeaturesRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpFeaturesFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
+
+        binding.helpLocationHistoryRow.getRoot().setOnClickListener(v -> {
+            NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpLocationFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
+
         binding.helpMapInteractionRow.getRoot().setOnClickListener(v -> {
             NavDirections action = HelpPageFragmentDirections.actionHelpPageFragmentToHelpMapFragment();
             NavHostFragment.findNavController(this).navigate(action);
