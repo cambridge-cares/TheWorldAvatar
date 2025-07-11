@@ -5,22 +5,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.HelpAboutBinding;
+import uk.ac.cam.cares.jps.user.viewmodel.TooltipTriggerViewModel;
+import uk.ac.cam.cares.jps.user.R;
 
 @AndroidEntryPoint
 public class HelpAboutFragment extends Fragment {
 
     private HelpAboutBinding binding;
+    private TooltipTriggerViewModel tooltipTriggerViewModel;
 
-    public HelpAboutFragment() {
-    }
+    public HelpAboutFragment() {}
 
     @Nullable
     @Override
@@ -34,6 +38,8 @@ public class HelpAboutFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tooltipTriggerViewModel = new ViewModelProvider(requireActivity()).get(TooltipTriggerViewModel.class);
+
         binding.section1Row.setOnClickListener(v -> toggleSectionVisibility(binding.section1Subtitle));
         binding.section2Row.setOnClickListener(v -> toggleSectionVisibility(binding.section2Subtitle));
         binding.section3Row.setOnClickListener(v -> toggleSectionVisibility(binding.section3Subtitle));
@@ -41,14 +47,16 @@ public class HelpAboutFragment extends Fragment {
         binding.topAppbar.setNavigationOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigateUp());
 
+        binding.btnTriggerTooltips.setOnClickListener(v -> {
+            tooltipTriggerViewModel.requestTooltipTrigger();
+            Toast.makeText(requireContext(), "Tooltips will show on the main screen.", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigateUp();
+            NavHostFragment.findNavController(this).navigateUp();
+        });
+
     }
 
-    public void toggleSectionVisibility(TextView subtitle) {
-        if (subtitle.getVisibility() == View.VISIBLE) {
-            subtitle.setVisibility(View.GONE);
-        } else {
-            subtitle.setVisibility(View.VISIBLE);
-        }
+    private void toggleSectionVisibility(TextView subtitle) {
+        subtitle.setVisibility(subtitle.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
-
 }
