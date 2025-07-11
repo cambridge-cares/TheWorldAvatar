@@ -54,6 +54,7 @@
     <string name="sensor_fragment_link">android-app://uk.ac.cam.cares.jps.app/sensor</string>
     <string name="account_setting_link">android-app://uk.ac.cam.cares.jps.app/account</string>
     <string name="timeline_setting_link">android-app://uk.ac.cam.cares.jps.app/timeline/setting</string>
+    <string name="onboarding_fragment_link">android-app://uk.ac.cam.cares.jps.app/onboarding</string>
     <string name="toggle_all">Toggle All</string>
     <string name="toggle_off">Toggle Off</string>
     <string name="help_quick_start_html">
