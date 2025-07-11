@@ -7,663 +7,959 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
-
         <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/top_appbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:navigationIcon="@drawable/back"
-                app:navigationIconTint="?attr/colorOnSurface"
-                app:title="Help Page"
-                app:titleCentered="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+            android:id="@+id/top_appbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:navigationIcon="@drawable/back"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:title="Sensors &amp; Permissions"
+            app:titleCentered="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/help_scroll_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:color/white"
             android:clipToPadding="false"
             android:padding="24dp"
+            android:background="@android:color/white"
             app:layout_constraintTop_toBottomOf="@id/top_appbar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:paddingBottom="32dp">
-
-            <TextView
-                android:id="@+id/sensor_doc_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sensors &amp; Permissions"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#222222"
-                android:letterSpacing="0.02"
-                android:layout_marginBottom="6dp" />
-
-            <TextView
-                android:id="@+id/sensor_doc_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Learn what each sensor does and why it’s used."
-                android:textSize="15sp"
-                android:textColor="#666666"
-                android:layout_marginBottom="20dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="• Motion Sensors"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#444444"
-                android:layout_marginBottom="10dp" />
-
             <LinearLayout
+                android:id="@+id/sensor_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingBottom="32dp">
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_accelerometer"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Motion icon" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/sensor_doc_title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="Sensors &amp; Permissions"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#222222"
+                    android:layout_marginBottom="6dp" />
 
-                    <TextView
-                        android:text="Accelerometer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Tracks how your device moves—used to detect steps, shakes, or orientation."
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Data: X, Y, Z acceleration"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="#333333" />
-
-                    <TextView
-                        android:text="Permission: Not required"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_activity"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Activity icon" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/sensor_doc_subtitle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="Learn what each sensor does and why it’s used."
+                    android:textSize="15sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="20dp" />
 
-                    <TextView
-                        android:text="Activity Recognition"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Estimates your movement type—walking, cycling, or stationary—for smarter context tracking."
-                        android:textSize="14sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Data: Activity type &amp; confidence"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
-
-                    <TextView
-                        android:text="Permission: ACTIVITY_RECOGNITION"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_gravity"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Activity icon" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="• Motion Sensors"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="10dp" />
 
-                    <TextView
-                        android:text="Gravity"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Measures the force of gravity acting on the device—helps determine tilt, orientation, and motion when combined with other sensors."
-                        android:textSize="14sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Data: Gravity vector (X, Y, Z)"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
-
-                    <TextView
-                        android:text="Permission: Not required"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_gyro"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Motion icon" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_accelerometer"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
 
-                    <TextView
-                        android:text="Gyroscope"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Tracks your phone’s rotation. Often used with the accelerometer to better understand movement."
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Data: Rotation rate (X, Y, Z)"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="#333333" />
+                        <LinearLayout
+                            android:id="@+id/header_accelerometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                    <TextView
-                        android:text="Permission: Not required"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_accelerometer"
+                                android:contentDescription="Accelerometer icon"
+                                android:layout_marginEnd="12dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="• Location"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#444444"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Accelerometer"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
+                            <ImageView
+                                android:id="@+id/icon_expand_accelerometer"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_location"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Location icon" />
+                        <LinearLayout
+                            android:id="@+id/content_accelerometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tracks how your device moves—used to detect steps, shakes, or orientation."
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: X, Y, Z acceleration"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_activity"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
 
-                    <TextView
-                        android:text="Location (GPS)"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Records where you are. Enables route tracking, trip summaries, and map visualization."
-                        android:textSize="14sp"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Data: Latitude, Longitude, Speed"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
+                        <LinearLayout
+                            android:id="@+id/header_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                    <TextView
-                        android:text="Permission: ACCESS_FINE_LOCATION"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_activity"
+                                android:contentDescription="Activity icon"
+                                android:layout_marginEnd="12dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Activity Recognition"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_magnet"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Magnetometer icon" />
+                            <ImageView
+                                android:id="@+id/icon_expand_activity"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                        <LinearLayout
+                            android:id="@+id/content_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Estimates your movement type—walking, cycling, or stationary—for smarter context tracking."
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Activity type &amp; confidence"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: ACTIVITY_RECOGNITION"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_gravity"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
 
-                    <TextView
-                        android:text="Magnetometer"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Measures the strength and direction of Earth’s magnetic field—used to determine compass orientation and detect nearby metal objects."
-                        android:textSize="14sp"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Data: Magnetic field (X, Y, Z)"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
+                        <LinearLayout
+                            android:id="@+id/header_gravity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                    <TextView
-                        android:text="Permission: Not required"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_gravity"
+                                android:contentDescription="Gravity icon"
+                                android:layout_marginEnd="12dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="• Audio"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#444444"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Gravity"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
+                            <ImageView
+                                android:id="@+id/icon_expand_gravity"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_audio"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Audio icon" />
+                        <LinearLayout
+                            android:id="@+id/content_gravity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                            <TextView
+                                android:text="Measures the force of gravity acting on the device—helps determine tilt, orientation, and motion when combined with other sensors."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Gravity vector (X, Y, Z)"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_gyroscope"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
 
-                    <TextView
-                        android:text="Microphone (Ambient Sound)"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Captures ambient sound levels—used to understand noise exposure (no recordings stored)."
-                        android:textSize="14sp"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Data: Decibel (dB) levels"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
+                        <LinearLayout
+                            android:id="@+id/header_gyroscope"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                    <TextView
-                        android:text="Permission: RECORD_AUDIO"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_gyro"
+                                android:contentDescription="Gyroscope icon"
+                                android:layout_marginEnd="12dp" />
 
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Gyroscope"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
 
+                            <ImageView
+                                android:id="@+id/icon_expand_gyroscope"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="• Environmental Sensors"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#444444"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp" />
+                        <LinearLayout
+                            android:id="@+id/content_gyroscope"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
+                            <TextView
+                                android:text="Tracks your phone’s rotation. Often used with the accelerometer to better understand movement."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_light"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Light icon" />
+                            <TextView
+                                android:text="Data: Rotation rate (X, Y, Z)"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="• Location"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="10dp" />
 
-                    <TextView
-                        android:text="Light"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Senses the lighting around your device—can help detect ambient brightness or daylight exposure."
-                        android:textSize="14sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Data: Light intensity (lux)"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
-
-                    <TextView
-                        android:text="Permission: RECORD_AUDIO"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_humidity"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Humidity icon" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_location"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
 
-                    <TextView
-                        android:text="Humidity"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Detects the amount of moisture in the air—helpful for analyzing comfort, climate, or indoor air quality."
-                        android:textSize="14sp"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Data: Relative Humidity (%)"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#333333" />
+                        <LinearLayout
+                            android:id="@+id/header_location"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                    <TextView
-                        android:text="Permission: Not required"
-                        android:textSize="13sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
-            </LinearLayout>
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_location"
+                                android:contentDescription="Location icon"
+                                android:layout_marginEnd="12dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_card"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="2dp">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Location (GPS)"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_sensor_pressure"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Pressure icon" />
+                            <ImageView
+                                android:id="@+id/icon_expand_location"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                        <LinearLayout
+                            android:id="@+id/content_location"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="Records where you are. Enables route tracking, trip summaries, and map visualization."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Latitude, Longitude, Speed"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: ACCESS_FINE_LOCATION"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_magnetometer"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
 
-                    <TextView
-                        android:text="Pressure"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#222222"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:text="Measures atmospheric pressure—commonly used to estimate altitude, detect weather changes, or enhance location precision."
-                        android:textSize="14sp"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#444444"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Data: Pressure (hectopascals, hPa)"
-                        android:textSize="13sp"
+                        <LinearLayout
+                            android:id="@+id/header_magnetometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_magnet"
+                                android:contentDescription="Magnetometer icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Magnetometer"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_magnetometer"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_magnetometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="Measures the strength and direction of Earth’s magnetic field—used to determine compass orientation and detect nearby metal objects."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Magnetic field (X, Y, Z)"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Audio"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_microphone"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#333333" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:text="Permission: Not required"
-                        android:textSize="13sp"
+                        <LinearLayout
+                            android:id="@+id/header_microphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_audio"
+                                android:contentDescription="Microphone icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Microphone (Ambient Sound)"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_microphone"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_microphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="Captures ambient sound levels—used to understand noise exposure (no recordings stored)."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Decibel (dB) levels"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: RECORD_AUDIO"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Environmental Sensors"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_light"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#888888" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_light"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_light"
+                                android:contentDescription="Light icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Light"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_light"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_light"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="Senses the lighting around your device—can help detect ambient brightness or daylight exposure."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Light intensity (lux)"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_humidity"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_humidity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_humidity"
+                                android:contentDescription="Humidity icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Humidity"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_humidity"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_humidity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="Detects the amount of moisture in the air—helpful for analyzing comfort, climate, or indoor air quality."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Relative Humidity (%)"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_pressure"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_pressure"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_pressure"
+                                android:contentDescription="Pressure icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Pressure"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_pressure"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_pressure"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="Measures atmospheric pressure—commonly used to estimate altitude, detect weather changes, or enhance location precision."
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="Data: Pressure (hectopascals, hPa)"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="Permission: Not required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+
+
+                <TextView
+                    android:id="@+id/sensor_footer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="All data is stored locally unless you choose to share it. You can review or disable any sensor in Settings."
+                    android:textSize="13sp"
+                    android:textColor="#999999"
+                    android:gravity="center"
+                    android:paddingHorizontal="24dp"
+                    android:layout_marginTop="24dp" />
             </LinearLayout>
-
-
-            <TextView
-                android:id="@+id/sensor_footer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="All data is stored locally unless you choose to share it. You can review or disable any sensor in Settings."
-                android:textSize="13sp"
-                android:textColor="#999999"
-                android:gravity="center"
-                android:paddingHorizontal="24dp"
-                android:layout_marginTop="24dp" />
-                </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
