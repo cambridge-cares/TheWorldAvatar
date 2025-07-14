@@ -114,6 +114,16 @@
                     android:text="While the app works out of the box, you can fine-tune it to suit your needs. Go to Sensor Settings to:\n\n• Enable/disable specific sensors\n• Adjust sampling frequency\n• Reduce battery usage by disabling unused sensors\n\nThis ensures you're collecting only what matters to you."
                     android:textSize="15sp"
                     android:textColor="#444444" />
+
+                <ImageView
+                    android:id="@+id/step2_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/sensor"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Illustration of tooltips"
+                    android:layout_marginTop="8dp"/>
             </LinearLayout>
 
 
@@ -141,7 +151,7 @@
                     android:id="@+id/step3_subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your data stays on your device unless you choose to export it. You can delete sessions anytime under Timeline Settings > Location History.\n\nAlso:\n• Set auto-delete timeframes\n• Manually clear sessions by date\nYou're always in control."
+                    android:text="Your data stays on your device unless you choose to export it. You can delete sessions anytime under Timeline Settings > Location History.\n\n• Set auto-delete timeframes\n• Manually clear sessions by date\nYou're always in control."
                     android:textSize="15sp"
                     android:textColor="#444444" />
             </LinearLayout>
@@ -170,9 +180,19 @@
                     android:id="@+id/step5_subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="When enabled, this feature automatically starts sensor recording the moment you open the app — no need to tap any buttons. \n\nYou can toggle this in Sensor Settings > Auto-Start Recording.\n\nThis is ideal if you want seamless, passive tracking without manual input."
+                    android:text="When enabled, this feature automatically starts sensor recording the moment you open the app — no need to tap any buttons. \n\nYou can toggle this in Timeline Settings > Auto-Start Recording.\n\nThis is ideal if you want seamless, passive tracking without manual input."
                     android:textSize="15sp"
                     android:textColor="#444444" />
+
+                <ImageView
+                    android:id="@+id/step5_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/start"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Illustration of tooltips"
+                    android:layout_marginTop="8dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -202,6 +222,16 @@
                     android:text="New to Timeline? Don’t worry — tooltips will guide you through key features the first time you use the app. These popups explain buttons, panels, and map tools.\n\nYou can dismiss tips anytime, and even revisit them later through Help > About ."
                     android:textSize="15sp"
                     android:textColor="#444444" />
+
+                <ImageView
+                    android:id="@+id/step7_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/tooltip"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Illustration of tooltips"
+                    android:layout_marginTop="8dp"/>
             </LinearLayout>
 
 
