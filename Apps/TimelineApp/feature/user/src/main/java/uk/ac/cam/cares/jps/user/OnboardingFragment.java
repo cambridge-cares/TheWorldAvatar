@@ -121,11 +121,6 @@ public class OnboardingFragment extends Fragment {
             throw new RuntimeException(e);
         }
 
-        SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        if (!prefs.getBoolean(SEEN_KEY, false)) {
-            prefs.edit().putBoolean(SEEN_KEY, true).apply();
-        }
-
         setupOnboardingPager();
         setupButtons();
 

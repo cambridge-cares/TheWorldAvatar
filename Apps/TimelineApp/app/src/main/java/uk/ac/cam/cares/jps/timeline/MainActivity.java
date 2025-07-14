@@ -34,26 +34,5 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Check if onboarding was already seen
-        SharedPreferences prefs = getSharedPreferences("onboarding", MODE_PRIVATE);
-        boolean hasSeenOnboarding = prefs.getBoolean("seen", false);
-
-        if (hasSeenOnboarding) {
-            new Handler(Looper.getMainLooper()).post(() -> {
-                NavHostFragment navHostFragment =
-                        (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                if (navHostFragment != null) {
-                    NavController navController = navHostFragment.getNavController();
-                    Uri uri = Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.onboarding_fragment_link));
-                    NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                            .fromUri(uri)
-                            .build();
-                    navController.navigate(request);
-                }
-            });
-        }
     }
-
-
 }
