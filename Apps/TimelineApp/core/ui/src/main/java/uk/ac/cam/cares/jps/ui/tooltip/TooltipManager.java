@@ -170,8 +170,7 @@ public class TooltipManager {
             overlayView.bringToFront();
         });
 
-
-        // Add tooltip
+        //Add tooltip
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             rootOverlay.addView(tooltipView);
             tooltipView.bringToFront();
