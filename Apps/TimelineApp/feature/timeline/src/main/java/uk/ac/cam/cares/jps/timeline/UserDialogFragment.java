@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.timeline;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -21,8 +21,8 @@ import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import kotlin.Pair;
-import uk.ac.cam.cares.jps.user.databinding.FragmentUserDialogBinding;
+
+import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentUserDialogBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 import uk.ac.cam.cares.jps.ui.UiUtils;
@@ -65,7 +65,7 @@ public class UserDialogFragment extends DialogFragment {
                 sensorViewModel.clearManagers(status.getSecond());
 
                 dismiss();
-                navigate(R.string.onboarding_fragment_link);
+                navigate(uk.ac.cam.cares.jps.user.R.string.onboarding_fragment_link);
             } else {
                 Toast.makeText(requireContext(), uk.ac.cam.cares.jps.loginmodule.R.string.cancel_logout, Toast.LENGTH_SHORT).show();
             }
@@ -79,22 +79,22 @@ public class UserDialogFragment extends DialogFragment {
 
         binding.accountSetting.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.account_setting_link);
+            navigate(uk.ac.cam.cares.jps.user.R.string.account_setting_link);
         });
 
         binding.sensorSetting.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.sensor_fragment_link);
+            navigate(uk.ac.cam.cares.jps.user.R.string.sensor_fragment_link);
         });
 
         binding.helpPage.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.help_fragment_link);
+            navigate(uk.ac.cam.cares.jps.user.R.string.help_fragment_link);
         });
 
         binding.timelineSetting.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.timeline_setting_link);
+            navigate(uk.ac.cam.cares.jps.user.R.string.timeline_setting_link);
         });
 
         binding.privacySetting.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));

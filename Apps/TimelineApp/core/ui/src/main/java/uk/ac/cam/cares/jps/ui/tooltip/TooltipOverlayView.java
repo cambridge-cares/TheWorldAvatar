@@ -51,7 +51,7 @@ public class TooltipOverlayView extends View {
     }
 
     /**
-     * Sets rounded corner radius of the hole.
+     * Sets rounded corner radius.
      */
     public void setCornerRadius(float radius) {
         this.cornerRadius = radius;

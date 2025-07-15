@@ -51,7 +51,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipSequence;
-import uk.ac.cam.cares.jps.user.UserDialogFragment;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.TooltipTriggerViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
