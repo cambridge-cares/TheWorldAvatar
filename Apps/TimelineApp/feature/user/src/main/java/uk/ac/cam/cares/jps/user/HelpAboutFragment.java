@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.user;
 
+import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +50,9 @@ public class HelpAboutFragment extends Fragment {
                 NavHostFragment.findNavController(this).navigateUp());
 
         binding.btnTriggerTooltips.setOnClickListener(v -> {
+            SharedPreferences prefs = requireContext().getSharedPreferences("tooltip_prefs", Context.MODE_PRIVATE);
+            prefs.edit().putBoolean("tooltip_skip", false).apply();
+
             tooltipTriggerViewModel.requestTooltipTrigger();
             Toast.makeText(requireContext(), "Tooltips will show on the main screen.", Toast.LENGTH_SHORT).show();
             NavHostFragment.findNavController(this).navigateUp();
