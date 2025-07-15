@@ -7,24 +7,4 @@
     <include app:graph="@navigation/timeline_map"/>
     <include app:graph="@navigation/user_map"/>
 
-    <action
-        android:id="@+id/action_global_account_setting"
-        app:destination="@id/account_setting" />
-
-    <action
-        android:id="@+id/action_global_sensor_setting"
-        app:destination="@id/sensor_setting" />
-
-    <action
-        android:id="@+id/action_global_privacy_setting"
-        app:destination="@id/privacy_setting" />
-
-    <action
-        android:id="@+id/action_global_help_page"
-        app:destination="@id/help_page" />
-
-    <action
-        android:id="@+id/action_global_timeline_setting"
-        app:destination="@id/timeline_setting" />
-
 </navigation>
