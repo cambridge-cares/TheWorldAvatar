@@ -119,12 +119,6 @@ public class SensorViewModel extends ViewModel {
         }
 
         selectedSensors.setValue(currentSelectedSensors);
-        saveSelectedSensors(currentSelectedSensors);
-    }
-
-    // Updated method to use sensorCollectionStateManagerRepository
-    private void saveSelectedSensors(List<SensorType> sensors) {
-        sensorCollectionStateManagerRepository.setSelectedSensors(sensors);
     }
 
     public LiveData<List<SensorType>> getSelectedSensors() {
@@ -166,7 +160,6 @@ public class SensorViewModel extends ViewModel {
     public void stopRecording() {
         sensorRepository.stopRecording();
         _isRecording.setValue(false);
-        sensorCollectionStateManagerRepository.setTaskId("");
         toggleAllSensors(false);
     }
 
@@ -261,7 +254,6 @@ public class SensorViewModel extends ViewModel {
         }
         selectedSensors.setValue(updatedSensorTypes);
         allToggledOn.setValue(toggle);
-        saveSelectedSensors(updatedSensorTypes);
     }
 
 
@@ -270,7 +262,7 @@ public class SensorViewModel extends ViewModel {
     }
 
     private void loadSelectedSensors() {
-        sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<List<SensorType>>() {
+        sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<>() {
             @Override
             public void onSuccess(List<SensorType> loadedSelectedSensors) {
                 selectedSensors.setValue(loadedSelectedSensors);
