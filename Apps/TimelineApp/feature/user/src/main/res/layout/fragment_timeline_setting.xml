@@ -21,7 +21,7 @@
                 android:id="@+id/timeline_top_appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorSurfaceVariant"
+                android:background="	#E0E0E0"
                 android:fitsSystemWindows="true"
                 app:navigationIcon="@drawable/back"
                 app:navigationIconTint="?attr/colorOnSurface"
