@@ -51,12 +51,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipSequence;
-import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
-import uk.ac.cam.cares.jps.user.viewmodel.TooltipTriggerViewModel;
+import uk.ac.cam.cares.jps.timeline.viewmodel.RecordingViewModel;
+import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {
@@ -74,7 +75,7 @@ public class TimelineFragment extends Fragment {
     private LocationCallback locationCallback;
     private ActivityResultLauncher<String> locationPermissionLauncher;
 
-    private SensorViewModel sensorViewModel;
+    private RecordingViewModel sensorViewModel;
     private TooltipTriggerViewModel tooltipTriggerViewModel;
     private PermissionHelper permissionHelper;
 
@@ -94,7 +95,7 @@ public class TimelineFragment extends Fragment {
         mapView = binding.mapView;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
+        sensorViewModel = new ViewModelProvider(requireActivity()).get(RecordingViewModel.class);
         tooltipTriggerViewModel = new ViewModelProvider(requireActivity()).get(TooltipTriggerViewModel.class);
         if (tooltipTriggerViewModel.isTriggerPending()) {
             tooltipTriggerViewModel.clearTrigger();
@@ -129,12 +130,17 @@ public class TimelineFragment extends Fragment {
             autoStartRecordingIfPossible();
         }
 
+        UserAccountViewModel userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
+        userAccountViewModel.fetchAndSetUserInfo();
+
+
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
             if (Boolean.TRUE.equals(hasError)) {
                 Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void handleTooltipTrigger() {
         tooltipTriggerViewModel.getShouldTriggerTooltips().observe(getViewLifecycleOwner(), shouldTrigger -> {

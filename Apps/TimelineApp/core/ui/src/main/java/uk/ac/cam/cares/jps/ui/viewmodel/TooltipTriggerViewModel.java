@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user.viewmodel;
+package uk.ac.cam.cares.jps.ui.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
