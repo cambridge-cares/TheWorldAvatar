@@ -97,10 +97,7 @@ public class TimelineFragment extends Fragment {
 
         sensorViewModel = new ViewModelProvider(requireActivity()).get(RecordingViewModel.class);
         tooltipTriggerViewModel = new ViewModelProvider(requireActivity()).get(TooltipTriggerViewModel.class);
-        if (tooltipTriggerViewModel.isTriggerPending()) {
-            tooltipTriggerViewModel.clearTrigger();
-            showIntroTooltips();
-        }
+        tooltipTriggerViewModel.requestTooltipTrigger();
 
         permissionHelper = new PermissionHelper(this);
 
@@ -133,13 +130,13 @@ public class TimelineFragment extends Fragment {
         UserAccountViewModel userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
         userAccountViewModel.fetchAndSetUserInfo();
 
-
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
             if (Boolean.TRUE.equals(hasError)) {
                 Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
 
     private void handleTooltipTrigger() {
