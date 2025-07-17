@@ -3,7 +3,7 @@
 "redirect_uri": "uk.ac.cam.cares.jps.twatimelineapp:/oauth2redirect",
 "end_session_redirect_uri": "uk.ac.cam.cares.jps.twatimelineapp:/oauth2redirect",
 "authorization_scope": "openid email profile offline_access",
-"discovery_uri": "http://10.25.188.143:3838/keycloak/realms/timeline/.well-known/openid-configuration",
+"discovery_uri": "http://172.30.80.1:3839/keycloak/realms/timeline/.well-known/openid-configuration",
 "authorization_endpoint_uri": "",
 "token_endpoint_uri": "",
 "registration_endpoint_uri": "",
