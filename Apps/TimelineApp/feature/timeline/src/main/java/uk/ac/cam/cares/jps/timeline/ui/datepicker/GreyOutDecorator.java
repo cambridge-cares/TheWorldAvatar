@@ -19,7 +19,6 @@ import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
 
 public class GreyOutDecorator extends DayViewDecorator {
     private ColorStateList greyColor;
-    private ColorStateList normalColor;
     private ColorStateList highlightColor;
 
     private Map<YearMonthCompositeKey, List<Integer>> datesWithTrajectory = new HashMap<>();  // in local timezone
@@ -30,9 +29,6 @@ public class GreyOutDecorator extends DayViewDecorator {
         int textColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOutline, GreyOutDecorator.class.getSimpleName());
         greyColor = ColorStateList.valueOf(textColor);
 
-        //int normalTextColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnBackground, GreyOutDecorator.class.getSimpleName());
-        //normalColor = ColorStateList.valueOf(normalTextColor);
-
         int neonBlue = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, GreyOutDecorator.class.getSimpleName());
         highlightColor = ColorStateList.valueOf(neonBlue);
     }
@@ -41,11 +37,8 @@ public class GreyOutDecorator extends DayViewDecorator {
     @Override
     public ColorStateList getTextColor(@NonNull Context context, int year, int month, int day, boolean valid, boolean selected) {
         java.util.Calendar today = java.util.Calendar.getInstance();
-        boolean isToday = year == today.get(java.util.Calendar.YEAR) &&
-                (month + 1) == (today.get(java.util.Calendar.MONTH) + 1) &&
-                day == today.get(java.util.Calendar.DAY_OF_MONTH);
 
-        if (isToday) {
+        if (selected) {
             int readableColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnPrimary, GreyOutDecorator.class.getSimpleName());
             return ColorStateList.valueOf(readableColor);
         }

@@ -53,7 +53,7 @@
         android:translationY="-40dp"
         android:contentDescription="@string/start_stop_recording"
         android:src="@drawable/ic_start"
-        app:backgroundTint="@color/md_theme_dark_errorContainer"
+        app:backgroundTint="@color/fab_idle"
         app:tint="@android:color/white"
         app:elevation="6dp"
         app:layout_anchor="@id/bottom_sheet_container"
