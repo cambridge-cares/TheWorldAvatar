@@ -115,15 +115,21 @@
                     android:textSize="15sp"
                     android:textColor="#444444" />
 
-                <ImageView
-                    android:id="@+id/step2_image"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/sensor"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="Illustration of tooltips"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/sensor" />
+                </FrameLayout>
             </LinearLayout>
 
 
@@ -184,15 +190,21 @@
                     android:textSize="15sp"
                     android:textColor="#444444" />
 
-                <ImageView
-                    android:id="@+id/step5_image"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/start"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="Illustration of tooltips"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/start" />
+                </FrameLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -223,15 +235,21 @@
                     android:textSize="15sp"
                     android:textColor="#444444" />
 
-                <ImageView
-                    android:id="@+id/step7_image"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/tooltip"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="Illustration of tooltips"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/tooltip" />
+                </FrameLayout>
             </LinearLayout>
 
 
