@@ -85,4 +85,9 @@ public class UserAccountViewModel extends ViewModel {
             _logoutStatus.postValue(new Pair<>(false, ""));
         }
     }
+
+    public void clearLogoutStatus() {
+        _logoutStatus.setValue(null);
+    }
+
 }

@@ -61,6 +61,7 @@ public class UserDialogFragment extends DialogFragment {
             if (status != null && Boolean.TRUE.equals(status.getFirst())) {
                 recordingViewModel.clearManagers(status.getSecond());
                 dismiss();
+                userAccountViewModel.clearLogoutStatus();
                 navigate(uk.ac.cam.cares.jps.timelinemap.R.string.onboarding_fragment_link);
             }
         });
