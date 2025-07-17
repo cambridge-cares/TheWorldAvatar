@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="accountViewModel"
-            type="uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel" />
+            name="userAccountViewModel"
+            type="uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -27,7 +27,7 @@
                 android:id="@+id/user_name_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{accountViewModel.name}"
+                android:text="@{userAccountViewModel.name}"
                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                 android:textStyle="bold"
                 android:textColor="#222222"
@@ -38,7 +38,7 @@
                 android:id="@+id/email_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{accountViewModel.email}"
+                android:text="@{userAccountViewModel.email}"
                 android:textSize="13sp"
                 android:textColor="#888888"
                 android:layout_marginTop="2dp" />

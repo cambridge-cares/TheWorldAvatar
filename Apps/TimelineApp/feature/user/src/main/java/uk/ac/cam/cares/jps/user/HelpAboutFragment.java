@@ -17,7 +17,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.HelpAboutBinding;
-import uk.ac.cam.cares.jps.user.viewmodel.TooltipTriggerViewModel;
+import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
 import uk.ac.cam.cares.jps.user.R;
 
 @AndroidEntryPoint
