@@ -44,10 +44,14 @@ public class UserDialogFragment extends DialogFragment {
         binding = FragmentUserDialogBinding.inflate(inflater, container, false);
         userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
         recordingViewModel = new ViewModelProvider(requireActivity()).get(RecordingViewModel.class);
+
+        userAccountViewModel.registerForLogoutResult(this);
+
         binding.setLifecycleOwner(getViewLifecycleOwner());
         binding.setUserAccountViewModel(userAccountViewModel);
         return binding.getRoot();
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -85,7 +89,8 @@ public class UserDialogFragment extends DialogFragment {
         binding.healthReport.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.locationHistory.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));
 
-        binding.logOut.setOnClickListener(v -> userAccountViewModel.logout(requireContext()));
+        binding.logOut.setOnClickListener(v -> userAccountViewModel.logout());
+
     }
 
     private void navigate(int uriResId) {
