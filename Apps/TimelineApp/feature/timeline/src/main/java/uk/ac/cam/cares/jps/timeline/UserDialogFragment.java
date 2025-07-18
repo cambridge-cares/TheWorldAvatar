@@ -43,7 +43,7 @@ public class UserDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentUserDialogBinding.inflate(inflater, container, false);
         userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        recordingViewModel = new ViewModelProvider(requireActivity()).get(RecordingViewModel.class);
+        recordingViewModel = new ViewModelProvider(this).get(RecordingViewModel.class);
 
         userAccountViewModel.registerForLogoutResult(this);
 
