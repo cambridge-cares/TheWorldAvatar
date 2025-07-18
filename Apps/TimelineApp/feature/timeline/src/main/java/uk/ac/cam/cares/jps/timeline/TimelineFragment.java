@@ -94,14 +94,13 @@ public class TimelineFragment extends Fragment {
         mapView = binding.mapView;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        sensorViewModel = new ViewModelProvider(requireActivity()).get(RecordingViewModel.class);
+        sensorViewModel = new ViewModelProvider(this).get(RecordingViewModel.class);
         tooltipTriggerViewModel = new ViewModelProvider(requireActivity()).get(TooltipTriggerViewModel.class);
         tooltipTriggerViewModel.requestTooltipTrigger();
 
         permissionHelper = new PermissionHelper(this);
 
         handleTooltipTrigger();
-
         setupRecordingButton();
         handleInitialLocationPrompt();
         updateUIForThemeMode(isDarkModeEnabled());
