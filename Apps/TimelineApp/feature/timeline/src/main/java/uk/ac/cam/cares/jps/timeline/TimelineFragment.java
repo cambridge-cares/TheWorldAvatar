@@ -73,7 +73,6 @@ public class TimelineFragment extends Fragment {
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-    private ActivityResultLauncher<String> locationPermissionLauncher;
 
     private RecordingViewModel sensorViewModel;
     private TooltipTriggerViewModel tooltipTriggerViewModel;
@@ -104,7 +103,6 @@ public class TimelineFragment extends Fragment {
         handleTooltipTrigger();
 
         setupRecordingButton();
-        registerPermissionLauncher();
         handleInitialLocationPrompt();
         updateUIForThemeMode(isDarkModeEnabled());
 
@@ -189,36 +187,16 @@ public class TimelineFragment extends Fragment {
                 }
 
                 List<String> permissions = new ArrayList<>();
-                if (sensors.contains(SensorType.LOCATION) && needToPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION))
-                    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-                if (sensors.contains(SensorType.SOUND) && needToPermissionGranted(Manifest.permission.RECORD_AUDIO))
-                    permissions.add(Manifest.permission.RECORD_AUDIO);
-                if (sensors.contains(SensorType.ACTIVITY) && needToPermissionGranted(Manifest.permission.ACTIVITY_RECOGNITION))
-                    permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
-                if (needToPermissionGranted(Manifest.permission.POST_NOTIFICATIONS))
-                    permissions.add(Manifest.permission.POST_NOTIFICATIONS);
+                if (sensors.contains(SensorType.LOCATION)) permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                if (sensors.contains(SensorType.SOUND)) permissions.add(Manifest.permission.RECORD_AUDIO);
+                if (sensors.contains(SensorType.ACTIVITY)) permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
+                permissions.add(Manifest.permission.POST_NOTIFICATIONS);
 
                 permissionHelper.requestPermissionsInChain(permissions, sensorViewModel::startRecording);
             }
         });
     }
 
-    private boolean needToPermissionGranted(String permission) {
-        return ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void registerPermissionLauncher() {
-        locationPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted) {
-                        getAndCenterUserLocation();
-                    } else {
-                        setCameraToDefaultLocation();
-                        Toast.makeText(requireContext(), "Location permission denied. Showing default view.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 
     private void handleInitialLocationPrompt() {
         SharedPreferences prefs = requireContext().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
@@ -226,14 +204,23 @@ public class TimelineFragment extends Fragment {
 
         if (!wasPrompted) {
             prefs.edit().putBoolean("location_permission_prompted", true).apply();
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-        } else if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            getAndCenterUserLocation();
-        } else {
-            setCameraToDefaultLocation();
         }
+
+        permissionHelper.requestPermissionsInChain(
+                List.of(Manifest.permission.ACCESS_FINE_LOCATION),
+                () -> {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        getAndCenterUserLocation();
+                    } else {
+                        setCameraToDefaultLocation();
+                        Toast.makeText(requireContext(), "Location permission denied. Showing default view.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
+
+
 
     private void getAndCenterUserLocation() {
         LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(1000).setNumUpdates(1);
