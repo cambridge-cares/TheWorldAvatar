@@ -36,7 +36,7 @@
                 android:layout_height="64dp"
                 android:src="@drawable/ic_autostart"
                 android:contentDescription="Recording icon"
-                android:tint="#BF1E12"
+                app:tint="#BF1E12"
                 android:layout_marginTop="12dp" />
 
             <TextView

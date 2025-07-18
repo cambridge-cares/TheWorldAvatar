@@ -128,7 +128,7 @@
                         android:layout_height="wrap_content"
                         android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/sensor" />
+                        android:src="@drawable/recording" />
                 </FrameLayout>
             </LinearLayout>
 
