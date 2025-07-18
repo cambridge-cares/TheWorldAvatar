@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.user;
 
 import android.content.SharedPreferences;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -46,8 +48,10 @@ public class HelpAboutFragment extends Fragment {
         binding.section2Row.setOnClickListener(v -> toggleSectionVisibility(binding.section2Subtitle));
         binding.section3Row.setOnClickListener(v -> toggleSectionVisibility(binding.section3Subtitle));
 
-        binding.topAppbar.setNavigationOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigateUp());
+        binding.topAppbar.setNavigationOnClickListener(v -> {
+            NavHostFragment.findNavController(this)
+                    .navigate(Uri.parse(getString(R.string.timeline_fragment_link)));
+        });
 
         binding.btnTriggerTooltips.setOnClickListener(v -> {
             SharedPreferences prefs = requireContext().getSharedPreferences("tooltip_prefs", Context.MODE_PRIVATE);
@@ -55,11 +59,15 @@ public class HelpAboutFragment extends Fragment {
 
             tooltipTriggerViewModel.requestTooltipTrigger();
             Toast.makeText(requireContext(), "Tooltips will show on the main screen.", Toast.LENGTH_SHORT).show();
-            NavHostFragment.findNavController(this).navigateUp();
-            NavHostFragment.findNavController(this).navigateUp();
-        });
 
+            NavHostFragment.findNavController(this)
+                    .navigate(Uri.parse(getString(R.string.timeline_fragment_link)));
+        });
     }
+
+
+
+
 
     private void toggleSectionVisibility(TextView subtitle) {
         subtitle.setVisibility(subtitle.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
