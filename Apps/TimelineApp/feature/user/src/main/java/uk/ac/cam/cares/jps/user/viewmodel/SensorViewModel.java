@@ -106,19 +106,19 @@ public class SensorViewModel extends ViewModel {
      * @param sensorItem the sensor selected to be recorded
      */
     public void toggleSensor(SensorType sensorItem) {
+        if (Boolean.TRUE.equals(_isRecording.getValue())) {
+            LOGGER.warn("Recording is in progress.");
+            return;
+        }
+
         List<SensorType> currentSelectedSensors = new ArrayList<>(Objects.requireNonNull(selectedSensors.getValue()));
         if (currentSelectedSensors.contains(sensorItem)) {
-            currentSelectedSensors.remove(sensorItem);  // Remove sensor if already toggled
+            currentSelectedSensors.remove(sensorItem);
         } else {
-            currentSelectedSensors.add(sensorItem);  // Add sensor if toggled on
+            currentSelectedSensors.add(sensorItem);
         }
-        selectedSensors.setValue(currentSelectedSensors);
-        saveSelectedSensors(currentSelectedSensors);
-    }
 
-    // Updated method to use sensorCollectionStateManagerRepository
-    private void saveSelectedSensors(List<SensorType> sensors) {
-        sensorCollectionStateManagerRepository.setSelectedSensors(sensors);
+        selectedSensors.setValue(currentSelectedSensors);
     }
 
     public LiveData<List<SensorType>> getSelectedSensors() {
@@ -130,24 +130,29 @@ public class SensorViewModel extends ViewModel {
      */
     public void startRecording() {
         List<SensorType> sensorsToRecord = selectedSensors.getValue();
-        LOGGER.info("Sensors to record: " + sensorsToRecord);
+        LOGGER.info("Attempting to start recording. Sensors to record: " + sensorsToRecord);
 
         if (sensorsToRecord != null && !sensorsToRecord.isEmpty()) {
             sensorRepository.startRecording(sensorsToRecord, new RepositoryCallback<>() {
                 @Override
                 public void onSuccess(Boolean result) {
                     _isRecording.setValue(result);
+                    LOGGER.info("Recording successfully started.");
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
                     _hasAccountError.setValue(true);
                     _isRecording.setValue(false);
+                    LOGGER.error("Recording failed to start: " + error.getMessage());
                 }
             });
+        } else {
+            LOGGER.warn("startRecording() called but no sensors are selected. Aborting.");
+            _hasAccountError.setValue(true);
+            _isRecording.setValue(false);
         }
     }
-
 
     /**
      * Stop recording
@@ -155,7 +160,6 @@ public class SensorViewModel extends ViewModel {
     public void stopRecording() {
         sensorRepository.stopRecording();
         _isRecording.setValue(false);
-        sensorCollectionStateManagerRepository.setTaskId("");
         toggleAllSensors(false);
     }
 
@@ -236,6 +240,11 @@ public class SensorViewModel extends ViewModel {
      * @param toggle boolean t/f value which denotes if a sensor has or has not been toggled
      */
     public void toggleAllSensors(boolean toggle) {
+        if (Boolean.TRUE.equals(_isRecording.getValue())) {
+            LOGGER.warn("Recording is active.");
+            return;
+        }
+
         List<SensorType> updatedSensorTypes = new ArrayList<>();
         for (SensorItem item : sensorItems) {
             item.setToggled(toggle);
@@ -245,16 +254,15 @@ public class SensorViewModel extends ViewModel {
         }
         selectedSensors.setValue(updatedSensorTypes);
         allToggledOn.setValue(toggle);
-        saveSelectedSensors(updatedSensorTypes);
-
     }
+
 
     public List<SensorItem> getSensorItems() {
         return sensorItems;
     }
 
     private void loadSelectedSensors() {
-        sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<List<SensorType>>() {
+        sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<>() {
             @Override
             public void onSuccess(List<SensorType> loadedSelectedSensors) {
                 selectedSensors.setValue(loadedSelectedSensors);
@@ -282,3 +290,4 @@ public class SensorViewModel extends ViewModel {
 
 
 }
+ 
