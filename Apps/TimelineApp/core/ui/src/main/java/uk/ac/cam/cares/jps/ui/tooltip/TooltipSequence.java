@@ -19,7 +19,7 @@ public class TooltipSequence {
         tooltipManager.addStep(secondTarget,
                 activity.getString(R.string.tooltip_quick_start_title),
                 activity.getString(R.string.tooltip_quick_start_message),
-                TooltipManager.TooltipStyle.UP);
+                TooltipManager.TooltipStyle.DOWN);
 
         tooltipManager.addStep(thirdTarget,
                 activity.getString(R.string.tooltip_journey_title),
