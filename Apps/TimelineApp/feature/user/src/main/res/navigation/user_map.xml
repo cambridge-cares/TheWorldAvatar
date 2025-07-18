@@ -9,158 +9,110 @@
         android:id="@+id/onboarding_fragment"
         android:name="uk.ac.cam.cares.jps.user.OnboardingFragment"
         tools:layout="@layout/fragment_onboarding">
-        <deepLink
-            app:uri="@string/onboarding_fragment_link" />
+        <deepLink app:uri="@string/onboarding_fragment_link" />
     </fragment>
-
-    <!-- Removed user_fragment: it is now replaced by a DialogFragment -->
 
     <fragment
         android:id="@+id/account_setting"
         android:name="uk.ac.cam.cares.jps.user.AccountSettingFragment"
         tools:layout="@layout/fragment_account_setting">
-        <deepLink
-            app:uri="@string/account_setting_link"/>
+        <deepLink app:uri="@string/account_setting_link"/>
     </fragment>
 
     <fragment
         android:id="@+id/sensor_setting"
         android:name="uk.ac.cam.cares.jps.user.SensorSettingFragment"
         tools:layout="@layout/fragment_sensor_setting">
-        <deepLink
-            app:uri="@string/sensor_fragment_link" />
+        <deepLink app:uri="@string/sensor_fragment_link" />
     </fragment>
 
     <fragment
         android:id="@+id/help_page"
         android:name="uk.ac.cam.cares.jps.user.HelpPageFragment"
         tools:layout="@layout/fragment_help">
-        <deepLink
-            app:uri="@string/help_fragment_link" />
+        <deepLink app:uri="@string/help_fragment_link" />
     </fragment>
 
     <fragment
         android:id="@+id/help_about_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpAboutFragment"
-        tools:layout="@layout/help_about">
-        <deepLink
-            app:uri="timeline://help/about" />
-    </fragment>
+        tools:layout="@layout/help_about" />
 
     <fragment
         android:id="@+id/timeline_setting"
         android:name="uk.ac.cam.cares.jps.user.TimelineSettingFragment"
         tools:layout="@layout/fragment_timeline_setting">
-        <deepLink
-            app:uri="@string/timeline_setting_link" />
+        <deepLink app:uri="@string/timeline_setting_link" />
     </fragment>
 
     <fragment
         android:id="@+id/help_recording_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpRecordingFragment"
-        tools:layout="@layout/help_recording">
-        <deepLink
-            app:uri="timeline://help/recording" />
-    </fragment>
+        tools:layout="@layout/help_recording" />
 
     <fragment
         android:id="@+id/help_sensor_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpSensorFragment"
-        tools:layout="@layout/help_sensor_documentation">
-        <deepLink
-            app:uri="timeline://help/sensor" />
-    </fragment>
+        tools:layout="@layout/help_sensor_documentation" />
 
     <fragment
         android:id="@+id/help_faq_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpFaqFragment"
-        tools:layout="@layout/help_faq">
-        <deepLink
-            app:uri="timeline://help/faq" />
-    </fragment>
+        tools:layout="@layout/help_faq" />
 
     <fragment
         android:id="@+id/help_map_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpMapFragment"
-        tools:layout="@layout/help_map_interactions">
-        <deepLink
-            app:uri="timeline://help/map" />
-    </fragment>
+        tools:layout="@layout/help_map_interactions" />
 
     <fragment
         android:id="@+id/help_features_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpFeaturesFragment"
-        tools:layout="@layout/help_helpful_features">
-        <deepLink
-            app:uri="timeline://help/features" />
-    </fragment>
-
+        tools:layout="@layout/help_helpful_features" />
 
     <fragment
         android:id="@+id/help_getting_started_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpGettingStartedFragment"
-        tools:layout="@layout/help_getting_started">
-        <deepLink
-            app:uri="timeline://help/getting_started" />
-    </fragment>
+        tools:layout="@layout/help_getting_started" />
 
     <fragment
         android:id="@+id/help_location_fragment"
         android:name="uk.ac.cam.cares.jps.user.HelpLocationFragment"
-        tools:layout="@layout/help_location_history">
-        <deepLink
-            app:uri="timeline://help/location" />
-    </fragment>
+        tools:layout="@layout/help_location_history" />
 
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpLocationFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpLocationFragment"
         app:destination="@id/help_location_fragment" />
 
-
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpFeaturesFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpFeaturesFragment"
         app:destination="@id/help_features_fragment" />
 
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpGettingStartedFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpGettingStartedFragment"
         app:destination="@id/help_getting_started_fragment" />
 
-
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpFaqFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpFaqFragment"
         app:destination="@id/help_faq_fragment" />
 
-
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpRecordingFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpRecordingFragment"
         app:destination="@id/help_recording_fragment" />
 
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpMapFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpMapFragment"
         app:destination="@id/help_map_fragment" />
 
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpSensorFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpSensorFragment"
         app:destination="@id/help_sensor_fragment" />
 
-
-    <action
-        android:id="@+id/action_global_account_setting"
+    <action android:id="@+id/action_global_account_setting"
         app:destination="@id/account_setting" />
 
-    <action
-        android:id="@+id/action_global_sensor_setting"
+    <action android:id="@+id/action_global_sensor_setting"
         app:destination="@id/sensor_setting" />
 
-    <action
-        android:id="@+id/action_global_help_page"
+    <action android:id="@+id/action_global_help_page"
         app:destination="@id/help_page" />
 
-    <action
-        android:id="@+id/action_global_timeline_setting"
+    <action android:id="@+id/action_global_timeline_setting"
         app:destination="@id/timeline_setting" />
 
-    <action
-        android:id="@+id/action_helpPageFragment_to_helpAboutFragment"
+    <action android:id="@+id/action_helpPageFragment_to_helpAboutFragment"
         app:destination="@id/help_about_fragment" />
 </navigation>

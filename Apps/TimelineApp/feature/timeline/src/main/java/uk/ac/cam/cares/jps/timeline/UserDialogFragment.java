@@ -62,28 +62,28 @@ public class UserDialogFragment extends DialogFragment {
                 recordingViewModel.clearManagers(status.getSecond());
                 dismiss();
                 userAccountViewModel.clearLogoutStatus();
-                navigate(uk.ac.cam.cares.jps.timelinemap.R.string.onboarding_fragment_link);
+                navigate(uk.ac.cam.cares.jps.utils.R.string.onboarding_fragment_link);
             }
         });
 
         binding.accountSetting.setOnClickListener(v -> {
             dismiss();
-            navigate(uk.ac.cam.cares.jps.timelinemap.R.string.account_setting_link);
+            navigate(uk.ac.cam.cares.jps.utils.R.string.account_setting_link);
         });
 
         binding.sensorSetting.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.sensor_fragment_link);
+            navigate(uk.ac.cam.cares.jps.utils.R.string.sensor_fragment_link);
         });
 
         binding.helpPage.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.help_fragment_link);
+            navigate(uk.ac.cam.cares.jps.utils.R.string.help_fragment_link);
         });
 
         binding.timelineSetting.setOnClickListener(v -> {
             dismiss();
-            navigate(R.string.timeline_setting_link);
+            navigate(uk.ac.cam.cares.jps.utils.R.string.timeline_setting_link);
         });
 
         binding.privacySetting.setOnClickListener(v -> UiUtils.showNotImplementedDialog(requireContext()));

@@ -12,10 +12,4 @@
     <string name="tool_tips">Tool Tips</string>
     <string name="start_stop_recording">Start or Stop Recording</string>
     <string name="tips_information">(1) Click trajectory lines to find the connected information the bottom sheet. \n(2) To view more or less about a trip, click on the trip name.</string>
-    <string name="timeline_fragment_link">android-app://uk.ac.cam.cares.jps.app/timeline</string>
-    <string name="onboarding_fragment_link">android-app://uk.ac.cam.cares.jps.app/onboarding</string>
-    <string name="account_setting_link">android-app://uk.ac.cam.cares.jps.app/account-setting</string>
-    <string name="sensor_fragment_link">android-app://uk.ac.cam.cares.jps.app/sensor</string>
-    <string name="help_fragment_link">android-app://uk.ac.cam.cares.jps.app/help</string>
-    <string name="timeline_setting_link">android-app://uk.ac.cam.cares.jps.app/timeline-setting</string>
 </resources>

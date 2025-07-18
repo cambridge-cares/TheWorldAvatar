@@ -50,7 +50,7 @@ public class HelpAboutFragment extends Fragment {
 
         binding.topAppbar.setNavigationOnClickListener(v -> {
             NavHostFragment.findNavController(this)
-                    .navigate(Uri.parse(getString(R.string.timeline_fragment_link)));
+                    .navigate(Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.timeline_fragment_link)));
         });
 
         binding.btnTriggerTooltips.setOnClickListener(v -> {
@@ -61,7 +61,7 @@ public class HelpAboutFragment extends Fragment {
             Toast.makeText(requireContext(), "Tooltips will show on the main screen.", Toast.LENGTH_SHORT).show();
 
             NavHostFragment.findNavController(this)
-                    .navigate(Uri.parse(getString(R.string.timeline_fragment_link)));
+                    .navigate(Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.timeline_fragment_link)));
         });
     }
 
