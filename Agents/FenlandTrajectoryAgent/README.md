@@ -100,6 +100,16 @@ Example HTTP requests for preprocessing and instantiating data are available in 
 
 Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
+# 5. Jupyter Notebook
+
+A Jupyter notebook is provided in [/notebook](./notebook/) to demonstrate the following functionalities:
+- Fetch environmental features
+- Fetch trajectory data
+- Process trahectory
+- Exposure calculation on area features
+- Exposure calculation on point feature
+
+The setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
 
 &nbsp;
 # Authors
