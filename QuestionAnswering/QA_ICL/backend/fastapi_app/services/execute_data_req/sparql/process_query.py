@@ -76,7 +76,7 @@ class SparqlQueryProcessor:
         self,
         sparql: str,
         entity_bindings: dict[str, list[str]],
-        const_bindings: dict[str, Any],
+        const_bindings: dict[str, str],
     ):
         # because of possible subqueries, VALUES clause need to be inserted
         # at the subqueries where the variable is referenced
@@ -86,40 +86,53 @@ class SparqlQueryProcessor:
                 varnode=varnode,
                 iris=" ".join("<{iri}>".format(iri=iri) for iri in iris),
             )
-            # find triple that includes `varnode`
-            idx = 0
-            while True:
-                idx_varnode = sparql.find(varnode, idx)
-                if idx_varnode < 0:
-                    break
-                idx = idx_varnode + 1
+            self._inject(values_clause, sparql, varnode)
 
-                idx_tripleend = sparql.find(".", idx_varnode)
-                if idx_tripleend < 0:
-                    break
-                fragment = sparql[idx_varnode:idx_tripleend].strip()
-                if "{" in fragment:
-                    continue
-
-                idx_triple_start = self._to_triple_start(sparql, idx=idx_varnode)
-
-                if idx_triple_start < 0:
-                    continue
-                idx += len(values_clause) + 1
-
-                sparql = "{before}{values} {after}".format(
-                    before=sparql[:idx_triple_start],
-                    values=values_clause,
-                    after=sparql[idx_triple_start:],
-                )
+        for var, const_val in const_bindings.items():
+            varnode = f"?{var}"
+            values_clause = "VALUES {varnode} {{ {const_val} }}".format(
+                varnode=varnode,
+                const_val=const_val,
+            )
+            self._inject(values_clause, sparql, varnode)
 
         return sparql
+
+    def _inject(self, values_clause, sparql, varnode):
+        # find triple that includes `varnode`
+        idx = 0
+        while True:
+            idx_varnode = sparql.find(varnode, idx)
+            if idx_varnode < 0:
+                break
+            idx = idx_varnode + 1
+
+            idx_tripleend = sparql.find(".", idx_varnode)
+            if idx_tripleend < 0:
+                break
+            fragment = sparql[idx_varnode:idx_tripleend].strip()
+            if "{" in fragment:
+                continue
+
+            idx_triple_start = self._to_triple_start(sparql, idx=idx_varnode)
+
+            if idx_triple_start < 0:
+                continue
+            idx += len(values_clause) + 1
+
+            sparql = "{before}{values} {after}".format(
+                before=sparql[:idx_triple_start],
+                values=values_clause,
+                after=sparql[idx_triple_start:],
+            )
+        return sparql
+        
 
     def process(
         self,
         sparql: str,
         entity_bindings: dict[str, list[str]],
-        const_bindings: dict[str, Any],
+        const_bindings: dict[str, str],
     ):
         logger.info("Processing SPARQL query...")
 
