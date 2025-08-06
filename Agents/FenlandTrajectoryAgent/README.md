@@ -105,11 +105,11 @@ Additionally, services above can be triggered using Client URL (CURL) from a bas
 A Jupyter notebook is provided in [/notebook](./notebook/) to demonstrate the following functionalities:
 - Fetch environmental features
 - Fetch trajectory data
-- Process trahectory
+- Process trajectory
 - Exposure calculation on area features
 - Exposure calculation on point feature
 
-The setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
+User is required to provide the configuration of knowledge graph and database in [config.env](./notebook/config.env). The complete setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
 
 &nbsp;
 # Authors
