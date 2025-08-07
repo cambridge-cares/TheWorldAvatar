@@ -335,6 +335,10 @@ class ExposureUtils:
                 """
                 self.execute_query(conn, alter_sql, (table_name, col))
 
+                # Step 2: use -1 as the flag, reflecting the incomplete calculation 
+                init_sql = f'UPDATE "{table_name}" SET "{col}" = -1 WHERE "{col}" IS NULL;'
+                self.execute_query(conn, init_sql)
+
             # 9b) Update cumulative columns
             has_tsiri = bool(self.execute_query(
                 conn,
