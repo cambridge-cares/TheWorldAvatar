@@ -29,3 +29,18 @@ class OntomopsGBUType(RDFEntity):
 class OmMeasure(RDFEntity):
     unit: str = RDFField(path=OM2.hasUnit)
     numerical_value: float = RDFField(path=OM2.hasNumericalValue)
+    
+class OntomopCalculatedProperty(RDFEntity):
+    literal_unit: str = RDFField(path=ONTOMOPS.hasLiteralUnit)
+    name: str = RDFField(path=ONTOMOPS.hasName)
+    numerical_value: float = RDFField(path=ONTOMOPS.hasNumericValue)
+    
+class OntomopCalculationParameter(RDFEntity):
+    name: str = RDFField(path=ONTOMOPS.hasName)
+    literal_value: str | None = RDFField(path=ONTOMOPS.hasLiteralValue)
+    numerical_value: float | None = RDFField(path=ONTOMOPS.hasNumericValue)
+    literal_unit: str = RDFField(path=ONTOMOPS.hasLiteralUnit)
+    
+class OntomopSoftware(RDFEntity):
+    version: str = RDFField(path=ONTOMOPS.hasSoftwareVersion)
+    name: str = RDFField(path=ONTOMOPS.hasName)

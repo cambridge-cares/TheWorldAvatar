@@ -86,16 +86,15 @@ class SparqlQueryProcessor:
                 varnode=varnode,
                 iris=" ".join("<{iri}>".format(iri=iri) for iri in iris),
             )
-            self._inject(values_clause, sparql, varnode)
+            sparql = self._inject(values_clause, sparql, varnode)
 
         for var, const_val in const_bindings.items():
             varnode = f"?{var}"
-            values_clause = "VALUES {varnode} {{ {const_val} }}".format(
+            values_clause = "VALUES {varnode} {{ \"{const_val}\" }}".format(
                 varnode=varnode,
                 const_val=const_val,
             )
-            self._inject(values_clause, sparql, varnode)
-
+            sparql = self._inject(values_clause, sparql, varnode)
         return sparql
 
     def _inject(self, values_clause, sparql, varnode):

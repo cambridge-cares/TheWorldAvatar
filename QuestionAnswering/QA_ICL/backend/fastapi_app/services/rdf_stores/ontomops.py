@@ -2,11 +2,14 @@ from functools import cache
 from typing import Annotated
 
 from fastapi import Depends
-from model.kg.ontomops import OmMeasure, OntomopsAM, OntomopsCBU, OntomopsGBU, OntomopsMOP, OntomopsGBUType
+from model.kg.ontomops import OmMeasure, OntomopsAM, OntomopsCBU, OntomopsGBU, OntomopsMOP, OntomopsGBUType, OntomopCalculatedProperty, OntomopCalculationParameter, OntomopSoftware
 from services.rdf_ogm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import SparqlClient, get_ontomops_endpoint
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
     @property
@@ -18,6 +21,9 @@ class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
             "mops:GenericBuildingUnit": self.get_GBUs,
             "mops:GenericBuildingUnitType": self.get_GBUTypes,
             "om:Measure": self.get_Measures,
+            "mops:CalculatedProperty": self.get_CalculatedProperty,
+            "mops:CalculationParameter": self.get_CalculationParameter,
+            "mops:Software": self.get_Software,
         }
 
     def get_MOPs(
@@ -61,6 +67,27 @@ class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
         sparql_client: str | SparqlClient | None = None,
     ):
         return self.get_many(OmMeasure, iris)
+    
+    def get_CalculatedProperty(
+        self, 
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
+        return self.get_many(OntomopCalculatedProperty, iris)
+    
+    def get_CalculationParameter(
+        self, 
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
+        return self.get_many(OntomopCalculationParameter, iris)
+        
+    def get_Software(
+        self, 
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
+        return self.get_many(OntomopSoftware, iris)
 
 
 @cache
