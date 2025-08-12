@@ -39,7 +39,7 @@ class OntomopCalculationParameter(RDFEntity):
     name: str = RDFField(path=ONTOMOPS.hasName)
     literal_value: str | None = RDFField(path=ONTOMOPS.hasLiteralValue)
     numerical_value: float | None = RDFField(path=ONTOMOPS.hasNumericValue)
-    literal_unit: str = RDFField(path=ONTOMOPS.hasLiteralUnit)
+    literal_unit: str | None = RDFField(path=ONTOMOPS.hasLiteralUnit)
     
 class OntomopSoftware(RDFEntity):
     version: str = RDFField(path=ONTOMOPS.hasSoftwareVersion)
