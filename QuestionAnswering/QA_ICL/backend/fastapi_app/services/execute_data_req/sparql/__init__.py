@@ -48,7 +48,7 @@ class SparqlDataReqExecutor:
         self,
         var2cls: dict[str, str],
         entity_bindings: dict[str, list[str]],
-        const_bindings: dict[str, object],
+        const_bindings: dict[str, str],
         req_form: SparqlDataReqForm,
         vis_vars: list[str],
     ):

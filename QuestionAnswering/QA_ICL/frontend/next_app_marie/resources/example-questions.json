@@ -70,7 +70,11 @@
       "What assembly models are representative of icosahedral geometry?",
       "What is the provenance of the information about MOP [V3O2(OH)2(HCO2)3]4[(C6H4)(C3H2N2)2]6?",
       "What MOPs are associated with DOI 10.1016/j.chempr.2017.02.002?",
-      "Which chemical building units are used as 2-linear generic building units?"
+      "Which chemical building units are used as 2-linear generic building units?",
+      "Which MOPs have calculated RMSD to the initial geometry greater than 1.5?",
+      "Which MOPs have a HOMO-LUMO gap less than 1 eV?",
+      "Which MOPs were calculated using the xTB software and a DMF implicit solvation model?",
+      "What calculation parameters (name, numeric value, unit) were used for MOP  [Zr3O(OH)3(C5H5)3]4[(C6H4)(CO2)2]6?"
     ]
   }
 ]
