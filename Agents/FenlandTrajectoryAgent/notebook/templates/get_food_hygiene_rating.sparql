@@ -1,0 +1,11 @@
+PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+SELECT DISTINCT ?id ?longitude ?latitude
+WHERE {
+    ?id a fh:BusinessEstablishment ;
+        geo:hasGeometry ?geo .
+    ?geo wgs:long ?longitude ;
+         wgs:lat ?latitude .
+}

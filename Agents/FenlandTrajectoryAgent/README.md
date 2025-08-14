@@ -100,6 +100,25 @@ Example HTTP requests for preprocessing and instantiating data are available in 
 
 Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
+# 5. Jupyter Notebook
+
+A Jupyter notebook is provided in [/notebook](./notebook/) to demonstrate the following functionalities:
+- Fetch environmental features
+- Fetch trajectory data
+- Process trajectory
+- Exposure calculation on area features
+- Exposure calculation on point feature
+
+## Configuration
+User is required to provide the configuration of knowledge graph and database in [config.env](./notebook/config.env). The complete setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
+
+## Docker Deploy
+User is encouraged to use docker to launch the notebook, where the requirements are pre-installed in the container. However, the `config.env` file and `templates/` folder are bind-mount, allowing any changes made to be reflected immediately inside the container.
+
+Execute the following command in [/notebook](./notebook/) to launch the jupyter notebook.
+```
+docker compose up --build
+```
 
 &nbsp;
 # Authors
