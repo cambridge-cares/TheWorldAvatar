@@ -109,7 +109,16 @@ A Jupyter notebook is provided in [/notebook](./notebook/) to demonstrate the fo
 - Exposure calculation on area features
 - Exposure calculation on point feature
 
+## Configuration
 User is required to provide the configuration of knowledge graph and database in [config.env](./notebook/config.env). The complete setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
+
+## Docker Deploy
+User is encouraged to use docker to launch the notebook, where the requirements are pre-installed in the container. However, the `config.env` file and `templates/` folder are bind-mount, allowing any changes made to be reflected immediately inside the container.
+
+Execute the following command in [/notebook](./notebook/) to launch the jupyter notebook.
+```
+docker compose up --build
+```
 
 &nbsp;
 # Authors
