@@ -3,7 +3,7 @@
     "Name": "asset-manager-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/asset-manager-agent:1.0.2",
+        "Image": "ghcr.io/cambridge-cares/asset-manager-agent:1.1.0",
         "Mounts": [
           {
             "Type": "bind",
@@ -14,11 +14,11 @@
         "Env": [
           "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
           "DB_NAME=postgres",
-          "ENDPOINT_KG_ASSET=http://asset-test-blazegraph:8080/blazegraph/namespace/asset/sparql",
-          "ENDPOINT_KG_OFFICE=http://asset-test-blazegraph:8080/blazegraph/namespace/office/sparql",
-          "ENDPOINT_KG_PURCHASEDOCS=http://asset-test-blazegraph:8080/blazegraph/namespace/purchasedocs/sparql",
-          "ENDPOINT_KG_LAB=http://asset-test-blazegraph:8080/blazegraph/namespace/lab/sparql",
-          "ENDPOINT_KG_BMS=http://asset-test-blazegraph:8080/blazegraph/namespace/bms/sparql",
+          "ENDPOINT_KG_ASSET=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/asset/sparql",
+          "ENDPOINT_KG_OFFICE=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/office/sparql",
+          "ENDPOINT_KG_PURCHASEDOCS=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/purchasedocs/sparql",
+          "ENDPOINT_KG_LAB=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/lab/sparql",
+          "ENDPOINT_KG_BMS=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/bms/sparql",
           "AUTH_KG_USER=user",
           "AUTH_KG_PASS=password",
           "ENDPOINT_PRINTER=http://host.docker.internal:5000/print",

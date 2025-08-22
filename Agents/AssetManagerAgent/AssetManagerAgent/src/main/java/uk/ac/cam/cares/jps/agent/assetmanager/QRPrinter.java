@@ -16,6 +16,7 @@ import com.itextpdf.layout.element.AreaBreak;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.File;
+import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 
@@ -50,11 +51,11 @@ public class QRPrinter {
     String charset = "UTF-8";
     //The paper is assumed to be portrait
     //The office printer is 1200 ppi
-    final Double A4_PIXEL_WIDTH = 9922.; //210 mm
-    final Double A4_PIXEL_HEIGHT = 14032.; //297 mm
+    public static final Double A4_PIXEL_WIDTH = 9922.; //210 mm
+    public static final Double A4_PIXEL_HEIGHT = 14032.; //297 mm
     //With the given ppi, 1 cm corresponds to:
-    final Double PIXEL_PER_CM = 472.44;
-    final Double POINT_PER_CM = 28.346;
+    public static final Double PIXEL_PER_CM = 472.44;
+    public static final Double POINT_PER_CM = 28.346;
     //QR per page (sticker size is targetSize x targetSize+2 cm to accomodate ID text)
     Double targetSize;
     int targetSizePX;
@@ -255,9 +256,20 @@ public class QRPrinter {
                 new File(path));
 
         LOGGER.info("Created QR code for IRI: " + data);
-
     }
 
+    public static ByteArrayOutputStream createQR(String data, String charset, int height, int width) throws WriterException, IOException {
+        BitMatrix matrix = new MultiFormatWriter().encode(
+                new String(data.getBytes(charset), charset),
+                BarcodeFormat.QR_CODE, width, height);
 
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        MatrixToImageWriter.writeToStream(matrix, "PNG", outputStream);
+
+        LOGGER.info("Created QR code for IRI: " + data);
+
+        return outputStream;
+    }
 
 }
