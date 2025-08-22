@@ -20,7 +20,7 @@ class TestAgent(unittest.TestCase):
         dummyConnection.connect(0)
         extractedD = dummyConnection.readMultiple("", {})
         print(extractedD)
-        self.assertEqual(extractedD, [37.4429])
+        self.assertEqual(extractedD, 37.4429)
 
 
 if __name__ == '__main__':
