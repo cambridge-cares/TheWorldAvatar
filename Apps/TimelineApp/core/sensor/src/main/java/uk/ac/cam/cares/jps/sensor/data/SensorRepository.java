@@ -47,6 +47,7 @@ public class SensorRepository {
      */
     public void startRecording(List<SensorType> selectedSensorTypes, RepositoryCallback<Boolean> callback) {
         LOGGER.info("start recording with selected sensors");
+        sensorCollectionStateManagerRepository.setSelectedSensors(selectedSensorTypes);
         prepareAndStartCollection(selectedSensorTypes, callback);
     }
 
@@ -92,6 +93,8 @@ public class SensorRepository {
         LOGGER.info("stop recording");
         context.stopService(serviceIntent);
         sensorCollectionStateManagerRepository.setRecordingState(false);
+        sensorCollectionStateManagerRepository.setTaskId("");
+        sensorCollectionStateManagerRepository.setSelectedSensors(new ArrayList<>());
     }
 
     /**

@@ -10,27 +10,24 @@
         android:layout_height="match_parent"
         app:mapbox_cameraTargetLat="1.2966"
         app:mapbox_cameraTargetLng="103.7764"
-        app:mapbox_cameraZoom="13.0"/>
+        app:mapbox_cameraZoom="15.0" />
 
     <com.google.android.material.appbar.AppBarLayout
-        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/Widget.GradientToolBar"
-        android:id="@+id/app_bar_layout"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:background="@android:color/transparent"
             android:id="@+id/map_top_appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:fitsSystemWindows="true"
             app:title="TWA Timeline"
             app:titleCentered="true"
-            app:menu="@menu/timeline_menu"
-            />
-
+            app:menu="@menu/timeline_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -44,8 +41,23 @@
         app:behavior_hideable="false"
         android:clickable="true"
         android:focusable="true"
-        android:elevation="5dp"
-        />
+        android:elevation="5dp" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recording_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="0dp"
+        android:translationY="-40dp"
+        android:contentDescription="@string/start_stop_recording"
+        android:src="@drawable/ic_start"
+        app:backgroundTint="@color/fab_idle"
+        app:tint="@android:color/white"
+        app:elevation="6dp"
+        app:layout_anchor="@id/bottom_sheet_container"
+        app:layout_anchorGravity="top|start" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
