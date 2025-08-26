@@ -1,0 +1,6 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+
+SELECT DISTINCT ?crs WHERE {{
+  ?feature a <{env_data_iri}> ;
+           geo:hasGeometry/geo:crs ?crs .
+}}
