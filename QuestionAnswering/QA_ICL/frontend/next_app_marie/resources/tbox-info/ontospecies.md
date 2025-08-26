@@ -8,7 +8,7 @@ OntoSpecies serves as core ontology within TWA chemistry domain. It is an ontolo
 
 ### Download
 
-- [OntoSpecies_v2.owl](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies/OntoSpecies_v2.owl)
+- [OntoSpecies_v2.owl](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontospecies/OntoSpecies_v2.owl)
 
 ### Access
 

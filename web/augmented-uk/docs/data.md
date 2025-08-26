@@ -38,14 +38,14 @@ Data directories:
 
 Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES); note this was formally published by the Department for Business, Energy and Industrial Strategy (BEIS) before it was dissolved, subsequent publications should be from the new Department for Energy Security and Net Zero (DESNZ).
 
-Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
+Read the associated [DUKES Data](./data-dukes.md) page for details on how the DUKES data was acquired and processed.
 
 #### Associated files
 
-- [Uploader config](./augmented-uk/config/uploader/config/dukes_2023.json)
-- [Ontop mapping](./augmented-uk/config/uploader/data/dukes_2023/dukes_2023.obda)
+- [Uploader config](../inputs/uploader/config/dukes2023.json)
+- [Ontop mapping](../inputs/uploader/data/dukes_2023/dukes_2023.obda)
   - Note that at the time of writing, this mapping utilises TBoxes that do not appear within the OntoEIP ontology. Nothing in the mapping contradicts the ontology, but the existing ontology does not contain enough concepts to cover all of the concepts provided by DUKES.
-- [OntoEIP ontology](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoeip)
+- [OntoEIP ontology](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoeip)
   - Note that when uploading the ontology files, you may need to rename any Turtle files with the `.ttl` extension. The stack data uploader assumes that `.owl` files are using the XML format, if an `.owl` file is using Turtle then this will cause errors during upload.
 
 Open the OntoEIP ontology link and find the resource_network folder. Put 'resource_network.ttl' into 'inputs/data/ontoeip' folder. Contact CMCL if you need the newest dukes data.
@@ -65,10 +65,10 @@ No pre-processing is needed on this data set, we're using it as is.
 
 #### Associated files
 
-- [Uploader config](./augmented-uk/config/uploader/config/population.json)
-- [Geospatial SQL Query](./augmented-uk/config/uploader/config/sql/dukes_2023_pop.sql)
+- [Uploader config](../inputs/uploader/config/population.json)
+- [Geospatial SQL Query](../inputs/uploader/config/sql/dukes_2023_pop.sql)
   - An SQL query to determine the number of people within a 1KM radius of each power plant.
-- [Raster style](./augmented-uk/config/uploader/config/sld/uk-population-style.sld)
+- [Raster style](../inputs/uploader/config/sld/uk-population-style.sld)
   - SLD file to style the population raster data in GeoServer.
 
 ### Digest of UK Energy Statistics (DUKES)
@@ -87,5 +87,5 @@ Shapefiles are obtained from [national forestry inventory 2020](https://data-for
 
 ### Streetlamps, traffic signals and England highways
 
-Links to sources (mostly local council data portals) are in each relevant [data folder](inputs/config/uploader/data).
+Links to sources (mostly local council data portals) are in each relevant [data folder](../inputs/uploader/data).
 

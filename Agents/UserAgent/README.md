@@ -72,7 +72,7 @@ Check this Keycloak [guide](https://www.keycloak.org/docs/latest/authorization_s
 ### 4.3 Starting with the stack-manager
 The agent has been implemented to work in the stack, which requires the UserAgent Docker container to be deployed in the stack. To do so, place [user-agent.json](stack-manager-config/inputs/config/services/user-agent.json) in the [stack-manager config directory].
 
-Then, run `./stack.sh start <STACK NAME>` in the [stack-manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) main folder. This will spin up the agent in the stack.
+Then, run `./stack.sh start <STACK NAME>` in the [stack-manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) main folder. This will spin up the agent in the stack.
 
 ## 5. Build and debug
 ## 5.1 Credentials
@@ -93,5 +93,5 @@ To debug the agent, replace [`user-agent-debug.json`](stack-manager-config/input
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
 
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services

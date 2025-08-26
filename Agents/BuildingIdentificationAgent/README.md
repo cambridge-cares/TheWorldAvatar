@@ -22,18 +22,18 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 #### Stack containers
 
-This agent requires the following tools, which **MUST** run on the same stack. The details for setting them up are explained at [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+This agent requires the following tools, which **MUST** run on the same stack. The details for setting them up are explained at [stack manager page](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 
 (1) PostgreSQL database
 
-The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the 'postgres' database. The buildings data can be instantiated in the required format by uploading the raw data using the [stack data uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). The user-specified table must be in the same 'postgres' database that contains the buildings data.
+The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the 'postgres' database. The buildings data can be instantiated in the required format by uploading the raw data using the [stack data uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader). The user-specified table must be in the same 'postgres' database that contains the buildings data.
 
 ### 1.2 Docker deployment
 
 - Build this agent's image by executing `docker compose build` within this folder. Do not start the container.
 - Copy the `buildingidentificationagent.json` file from the `stack-manager-input-config` folder into the `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services` folder of the stack manager.
-- Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+- Start the stack manager as usual following [these instructions](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 ## 2. Agent Routes
 

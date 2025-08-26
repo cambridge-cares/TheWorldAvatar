@@ -72,5 +72,5 @@ The scripts within the `kg_utils` subdirectory provide functionality to interact
 
 <!-- Links -->
 [Semantic 3D City Agents README]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[Access Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT
-[run_uprn_agent_in_chunks.py]: \uprn_agent\run_uprn_agent_in_chunks.py
+[Access Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent
+[run_uprn_agent_in_chunks.py]: uprn_agent/run_uprn_agent_in_chunks.py

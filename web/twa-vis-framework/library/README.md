@@ -39,7 +39,7 @@ To function correctly, visualisations using this framework also needs to include
 * [Turf](https://turfjs.org/)
 * [Hummingbird Treeview](https://github.com/hummingbird-dev/hummingbird-treeview)
 
-An example of the required import statements should be available in the example [Mapbox](../example-mapbox-vis/webspace/index.html) and [Cesium](../example-cesium-vis/webspace/index.html) visualisations.
+An example of the required import statements should be available in the example [Mapbox](../example/mapbox.md) and [Cesium](../example/cesium.md) visualisations.
 
 ## Architecture
 
@@ -93,11 +93,11 @@ The following automated GitHub actions have been setup for the TWA-VF (all defin
 
 ## Planned changes
 
-An overview of bug reports, feature requests, and open PRs can be see using the [TWA Visualisation Framework](https://github.com/orgs/cambridge-cares/projects/1) project. Any new reports or requests should be linked to this project to ensure that it contains a complete overview of all related information.
+An overview of bug reports, feature requests, and open PRs can be see using the [TWA Visualisation Framework](https://github.com/TheWorldAvatar/viz) project. Any new reports or requests should be linked to this project to ensure that it contains a complete overview of all related information.
 
 ### Issues
 
-Bugs should be reported as GitHub issues using the `TWA-VF:` prefix along with a short name for the issue. A detailed description of the issue along with reproduction steps, and if possible, [an image of the issue](https://gist.github.com/NawalJAhmed/2168f7659c08b6a033e7f6daf8db69a6).
+Bugs should be reported as GitHub issues using the `TWA-VF:` prefix along with a short name for the issue. A detailed description of the issue along with reproduction steps, and if possible, [an image of the issue](https://gist.github.com/namirjahmed/2168f7659c08b6a033e7f6daf8db69a6).
 
 Issue reporting a bug should also use the provided `bug` tag and link to the TWA Visualisation Framework project.
 

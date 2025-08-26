@@ -1,5 +1,5 @@
 # Singapore Sea-Level Rise
-This repository contains the instructions, directory structure and configurations required to deploy Singapore stack for Sea-Level-Rise analysis which builds on top of the existing [Augmented Singapore](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-singapore-stack/Deploy/stacks/Singapore). 
+This repository contains the instructions, directory structure and configurations required to deploy Singapore stack for Sea-Level-Rise analysis which builds on top of the existing [Augmented Singapore](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore). 
 
 ## Data
 Comprehensive data collated can be found in the [CARES dropbox link](https://www.dropbox.com/scl/fo/s4youc2epx7quqapolgw6/AH_IAMDhH9FppOosYpKd3zs?rlkey=4ab335m057bkv64zs7e8xdn20&dl=0). 
@@ -58,7 +58,7 @@ curl -X POST http://localhost:3838/buildingflooragent/
 ```
 - Check contents of ```gfa_floors.floors```, the number of rows should equate the number of buildings
 ### GFAAgent
-[GFAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Agents/GFAAgent) computes the Gross Floor Area (GFA) and the construction cost of buildings. 
+[GFAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/GFAAgent) computes the Gross Floor Area (GFA) and the construction cost of buildings. 
 
 - Prequisites: 
     1) Floors data added by BuildingFloorAgent
@@ -196,7 +196,7 @@ There are two sets of postcode data from running the stack data uploader with di
 
 2) sgpostcode
    - More comprehensive and updated dataset
-   - Sourced from [https://github.com/isen-ng/singapore-postal-codes-1]
+   - Sourced from https://github.com/isen-ng/singapore-postal-codes-1
    - Linked to buildings using building identification agent by running the HTTP request [postcode_matching.http]
 
 ### data.json

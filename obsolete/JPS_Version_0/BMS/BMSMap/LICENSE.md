@@ -8,7 +8,7 @@ https://github.com/kekscom/Color.js
 Copyright (c) 2017, Jan Marsch
 
 Triangulate.js
-https://github.com/OSMBuildings/Triangulation
+https://github.com/OSMBuildings/Triangulate
 Copyright (c) 2016, Jan Marsch, OSM Buildings
 
 

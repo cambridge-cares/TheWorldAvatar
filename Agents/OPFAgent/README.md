@@ -4,7 +4,7 @@
 The purpose of OPFAgent is to handle HTTP requests to perform Optimal Power Flow (OPF) analysis on a power network instantiated in the knowledge graph. Information about the power network will be retrieved from the triple store and time series data will be extracted from a relational database. After running the simulation, OPF results will be stored back into the relational database as time series data.
 
 ## Requirements
-- In order to run OPFAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md) for Access Agent setup. If running in a stack, create a new namespace in your stack blazegraph called 'storerouter' to store the routing information. Please note that routing information of the target blazegraph should be uploaded accordingly before calling OPFAgent.
+- In order to run OPFAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent/README.md) for Access Agent setup. If running in a stack, create a new namespace in your stack blazegraph called 'storerouter' to store the routing information. Please note that routing information of the target blazegraph should be uploaded accordingly before calling OPFAgent.
 
 - As OPFAgent interacts with time series data stored in a relational database, URL, username and password of the database are required. Refer to the [time series client properties](#time-series-client-properties) section below for more details.
 

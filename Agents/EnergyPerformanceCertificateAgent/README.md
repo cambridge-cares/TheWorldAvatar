@@ -233,7 +233,7 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 [http://localhost:5007/epcagent]: http://localhost:5007/epcagent
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
-[OntoBuiltEnv]: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl
+[OntoBuiltEnv]: https://raw.githubusercontent.com/TheWorldAvatar/ontology/refs/heads/main/ontology/ontobuiltenv/OntoBuiltEnv.owl
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
@@ -241,13 +241,13 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 
 <!-- github -->
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
-[Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack Data Uploader]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-data-uploader/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/BuildingMatchingAgent/credentials
+[Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
+[Stack Data Uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader/README.md
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
