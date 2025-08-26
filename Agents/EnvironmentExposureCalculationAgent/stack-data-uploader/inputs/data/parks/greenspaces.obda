@@ -1,0 +1,10 @@
+[PrefixDeclaration]
+gs:		    https://www.theworldavatar.com/kg/ontogreenspace/
+geo:		http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId	Park
+target		gs:{"ogc_fid"} a gs:Greenspace , geo:Feature ; geo:hasGeometry geo:Geometry{"ogc_fid"} . geo:Geometry{"ogc_fid"} geo:asWKT {wkt}^^geo:wktLiteral . 
+source		SELECT "ogc_fid",  ST_ASTEXT(wkb_geometry) as wkt
+			FROM "public"."parks_2019"
+]]

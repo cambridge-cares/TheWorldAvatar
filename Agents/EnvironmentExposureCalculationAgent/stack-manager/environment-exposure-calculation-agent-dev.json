@@ -1,0 +1,41 @@
+{
+    "ServiceSpec": {
+        "Name": "environment-exposure-calculation-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "environment-exposure-calculation-agent:1.0.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ], "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/EnvironmentExposureCalculationAgent/agent",
+                        "Target": "/agent"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/environment-exposure-calculation-agent/"
+        }
+    }
+}
