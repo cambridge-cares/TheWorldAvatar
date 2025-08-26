@@ -64,14 +64,7 @@ def process_gps_csv_file(csv_file):
         if not all(column in df.columns for column in required_columns) or df[required_columns].isnull().any().any():
             logger.warning(f"Skipping {csv_file} due to missing or incomplete required columns.")
             return None
-        try:
-            point_class = StackClient.stackClients_view.Point().getClass()
-            logger.info(f"Point class imported successfully")
-        except Exception as e:
-            logger.error(f"Failed to create Point instance: {e}")
-            raise e
-        # point_class = StackClient.stackClients_view.Point
-        points = [StackClient.stackClients_view.Point(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
+        points = [StackClient.stackClients_view.Point(float(row['LONGITUDE']), float(row['LATITUDE'])) for _, row in df.iterrows()]
         return {
             'object': os.path.basename(csv_file).replace('.csv', ''),
             'times': [transform_datetime(row['UTC DATE'], row['UTC TIME']) for _, row in df.iterrows()],
@@ -167,10 +160,45 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_c
         ts_client.init_timeseries(dataIRI=dataIRIs, times=times, values=values_list, ts_type=ts_type, time_format=time_format)
 
         logger.info(f"Data for {gps_object['object']} successfully instantiated.")
+        return dataIRIs
     except Exception as e:
         logger.error(f"Error instantiating data for {gps_object['object']}: {e}")
         raise
 
+def update_unix_time(ts_client, dataIRI):
+    """
+    This function is used to add a UNIX column for the timeseries data instantiated by TSClient
+    Note that TSClient has autoCommit settings, thus conn.commit() has been removed in this function
+    """
+    try:
+        with ts_client.connect() as conn:
+            stmt = conn.createStatement()
+            sql_find = f'''
+                SELECT "tableName"
+                FROM "dbTable"
+                WHERE "dataIRI" = '{dataIRI}'
+            '''
+            rs = stmt.executeQuery(sql_find)
+            if rs.next():
+                table_name = rs.getString("tableName")
+                sql_alter = f'''
+                    ALTER TABLE "{table_name}"
+                    ADD COLUMN IF NOT EXISTS "UNIX_time" BIGINT;
+                '''
+                stmt.execute(sql_alter)
+                sql_update = f'''
+                    UPDATE "{table_name}"
+                    SET "UNIX_time" = (EXTRACT(EPOCH FROM "time") * 1000)::BIGINT
+                '''
+                stmt.execute(sql_update)
+                logger.info(f"UNIX_time column updated for table: {table_name}")
+            else:
+                logger.warning(f"No matching table found in dbTable for dataIRI={dataIRI}")
+            stmt.close()
+        return True
+    except Exception as e:
+        logger.error("Error updating UNIX_time column via TSClient: %s", e)
+        return False
 
 if __name__ == '__main__':
     try:

@@ -1,0 +1,68 @@
+{
+    
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "python",
+        "name": "Build and Debug (Flask)",
+        "request": "attach",
+        "host": "localhost",
+        "port": "${input:debug.port}",
+        "preLaunchTask": "compose-build-deploy",
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/agent",
+            "remoteRoot": "/app/agent"
+          }
+        ]
+      },
+      {
+        "type": "python",
+        "name": "Debug (Flask)",
+        "request": "attach",
+        "host": "localhost",
+        "port": "${input:debug.port}",
+        "preLaunchTask": "compose-deploy",
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/agent",
+            "remoteRoot": "/app/agent"
+          }
+        ]
+      },
+  
+      {
+        "type": "python",
+        "name": "Reattach and Debug (Flask)",
+        "request": "attach",
+        "host": "localhost",
+        "port": "${input:debug.port.read}",
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/agent",
+            "remoteRoot": "/app/agent"
+          }
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "id": "debug.port",
+        "type": "command",
+        "command": "shellCommand.execute",
+        "args": {
+          "command": "bash ./stack.sh ports write",
+          "useFirstResult": true
+        }
+      },
+      {
+        "id": "debug.port.read",
+        "type": "command",
+        "command": "shellCommand.execute",
+        "args": {
+          "command": "bash ./stack.sh ports read",
+          "useFirstResult": true
+        }
+      }
+    ]
+  }

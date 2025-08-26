@@ -1,0 +1,6 @@
+PREFIX exposure: <http://www.theworldavatar.com/ontology/OntoEnvExpo/>
+SELECT ?domainName ?featureType
+WHERE {{
+    <{env_data_iri}> exposure:hasDomainName ?domainName ;
+                     exposure:hasFeatureType ?featureType .
+}}
