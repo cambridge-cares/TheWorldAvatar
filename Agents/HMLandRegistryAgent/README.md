@@ -168,6 +168,7 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2023
 [HM Land Registry Open Data]: https://landregistry.data.gov.uk/
 [Price Paid Linked Data]: https://landregistry.data.gov.uk/app/root/doc/ppd
 [UK House Price Index Linked Data]: https://landregistry.data.gov.uk/app/ukhpi/doc
+<!-- markdown-link-check-disable-next-line -->
 [HM Land Registry SPARQL endpoint]: http://landregistry.data.gov.uk/landregistry/query
 
 <!-- github -->

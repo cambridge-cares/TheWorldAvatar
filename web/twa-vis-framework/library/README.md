@@ -97,7 +97,7 @@ An overview of bug reports, feature requests, and open PRs can be see using the 
 
 ### Issues
 
-Bugs should be reported as GitHub issues using the `TWA-VF:` prefix along with a short name for the issue. A detailed description of the issue along with reproduction steps, and if possible, [an image of the issue](https://gist.github.com/namirjahmed/2168f7659c08b6a033e7f6daf8db69a6).
+Bugs should be reported as GitHub issues using the `TWA-VF:` prefix along with a short name for the issue. A detailed description of the issue along with reproduction steps, and if possible, an image of the issue.
 
 Issue reporting a bug should also use the provided `bug` tag and link to the TWA Visualisation Framework project.
 
