@@ -45,21 +45,21 @@ public class TrajectoryByDate {
         long startTime;
 
         List<TrajectorySegment> trajectorySegments = getTrajectorySegments();
-            for (TrajectorySegment segment : trajectorySegments) {
+        for (TrajectorySegment segment : trajectorySegments) {
 
-                String activityType = segment.getActivityType();
-                startTime = segment.getStartTime();
-                long endTime = segment.getEndTime();
-                int distance = segment.getDistanceTraveled();
+            String activityType = segment.getActivityType();
+            startTime = segment.getStartTime();
+            long endTime = segment.getEndTime();
+            int distance = segment.getDistanceTraveled();
 
-                long minutes = (endTime > startTime) ? differenceInTime(startTime, endTime) : 0;
+            long minutes = (endTime > startTime) ? differenceInTime(startTime, endTime) : 0;
 
-                timePerActivityType.putIfAbsent(activityType, new ArrayList<>());
-                Objects.requireNonNull(timePerActivityType.get(activityType)).add(minutes);
+            timePerActivityType.putIfAbsent(activityType, new ArrayList<>());
+            Objects.requireNonNull(timePerActivityType.get(activityType)).add(minutes);
 
-                distancePerActivityType.putIfAbsent(activityType, new ArrayList<>());
-                Objects.requireNonNull(distancePerActivityType.get(activityType)).add(distance);
-            }
+            distancePerActivityType.putIfAbsent(activityType, new ArrayList<>());
+            Objects.requireNonNull(distancePerActivityType.get(activityType)).add(distance);
+        }
         for (String activity : distancePerActivityType.keySet()) {
             int totalDistance = activity.equals("still") ? 0 : Objects.requireNonNull(distancePerActivityType.get(activity)).stream().mapToInt(Integer::intValue).sum();
             long totalTime = Objects.requireNonNull(timePerActivityType.get(activity)).stream().mapToLong(Long::longValue).sum();
@@ -74,49 +74,52 @@ public class TrajectoryByDate {
     private List<Session> parseForUniqueSessions(String trajectory) {
         JSONObject trajectoryStr;
         List<Session> sessions = new ArrayList<>();
-        try{
+        try {
             trajectoryStr = new JSONObject(trajectory);
             JSONArray features = trajectoryStr.getJSONArray("features");
 
             List<String> parsedSessionIds = new ArrayList<>();
             int sessionTitleNumber = 0;
-                            
-            for(int i = 0; i < features.length(); i++) {
-                
+            int numberInSession = 0;
+
+            for (int i = 0; i < features.length(); i++) {
+
                 JSONObject feature = features.getJSONObject(i);
                 JSONObject properties = feature.getJSONObject("properties");
 
 
                 String sessionId = properties.optString("session_id", "unknown");
 
-                if(!parsedSessionIds.contains(sessionId)) {
+                if (!parsedSessionIds.contains(sessionId)) {
                     List<TrajectorySegment> segmentsInSession = new ArrayList<>();
 
                     parsedSessionIds.add(sessionId);
                     sessionTitleNumber++;
+                    numberInSession = 0;
                     String sessionTitle = "Trip " + sessionTitleNumber;
-                    for(int j = i; j < features.length(); j++) {
+                    for (int j = i; j < features.length(); j++) {
 
                         JSONObject feature2 = features.getJSONObject(j);
                         JSONObject properties2 = feature2.getJSONObject("properties");
 
-                        if(properties2.optString("session_id", "unknown").equals(sessionId)) {
+                        if (properties2.optString("session_id", "unknown").equals(sessionId)) {
+                            numberInSession++;
                             long startTime = properties2.optLong("start_time", 0);
                             long endTime = properties2.optLong("end_time", 0);
                             int id = properties2.optInt("id", 0);
                             String activityType = properties2.optString("activity_type", "unknown");
                             JSONObject geom = feature2.optJSONObject("geometry");
+                            JSONArray bbox = feature2.optJSONArray("bbox");
                             int distanceTraveled = properties2.optInt("distance_traveled", 0);
                             String iri = properties2.optString("iri", "unknown");
 
-                            segmentsInSession.add((new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, distanceTraveled, iri)));
+                            segmentsInSession.add((new TrajectorySegment(startTime, endTime, id, activityType, sessionId, geom, bbox, distanceTraveled, iri, sessionTitleNumber, numberInSession)));
                         }
                     }
                     sessions.add(new Session(sessionId, sessionTitle, segmentsInSession));
                 }
             }
-        }
-        catch(JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return sessions;

@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -28,6 +30,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -126,7 +129,22 @@ public class OpenMeteoAgent extends JPSAgent {
         stackName = StackClient.getStackName();
         stackAccessAgentBase = stackAccessAgentBase.replace(STACK_NAME, stackName);
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
+        ensureDatabaseExist(dbName);
         setTimeSeriesTypes();
+
+    }
+	
+	private void ensureDatabaseExist(String dbName) {
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            return;
+        } catch (SQLException e) {
+            if ("3D000".equals(e.getSQLState())) {
+                // Database does not exist
+                PostGISClient.getInstance().createDatabase(dbName);
+            } else {
+                throw new RuntimeException("Unexpected SQLstate: " + e.getSQLState(), e);
+            }
+        }
     }
 
     @Override

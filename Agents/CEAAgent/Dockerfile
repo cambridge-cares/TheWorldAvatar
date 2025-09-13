@@ -1,7 +1,7 @@
 #==================================================================================================
 # First stage: build cea
 #==================================================================================================
-FROM cityenergyanalyst/cea:v3.39.2 as cea
+FROM cityenergyanalyst/cea:v3.39.4 as cea
 
 #==================================================================================================
 # Second stage: build jar file
@@ -48,5 +48,5 @@ RUN /opt/conda/bin/python3 -m pip install rasterio fiona pysal
 SHELL ["/bin/bash", "-c"]
 
 # Start the Tomcat server
-ENTRYPOINT ["java", "-cp", "target/cea-agent-3.6.0-jar-with-dependencies.jar", "uk.ac.cam.cares.jps.agent.cea.Main"]
+ENTRYPOINT ["java", "-cp", "target/cea-agent-3.7.0-jar-with-dependencies.jar", "uk.ac.cam.cares.jps.agent.cea.Main"]
 #==================================================================================================

@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/AssetManagerAgent
-RUN mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package -Dmaven.test.skip=true
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
@@ -36,7 +36,7 @@ ENV TSSEARCH "/root/tsSearch.properties"
 ENV FOLDERQR "/root/folderQR/"
 ENV FOLDERMANUAL "/root/manuals/"
 
-COPY --from=builder /root/AssetManagerAgent/output/asset-manager-agent##1.0.1.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/AssetManagerAgent/output/asset-manager-agent##1.1.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

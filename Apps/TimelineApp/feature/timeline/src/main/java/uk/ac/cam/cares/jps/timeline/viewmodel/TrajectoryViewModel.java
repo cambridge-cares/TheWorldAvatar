@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import uk.ac.cam.cares.jps.data.TrajectoryRepository;
  *
  */
 @HiltViewModel
-public class TrajectoryViewModel extends ViewModel {
+public class TrajectoryViewModel extends ViewModel implements SegmentClickInterface {
 
     private final TrajectoryRepository trajectoryRepository;
     private final MutableLiveData<TrajectoryByDate> _trajectory = new MutableLiveData<>();
@@ -72,9 +73,9 @@ public class TrajectoryViewModel extends ViewModel {
         });
     }
 
-    public void setClicked(Integer segmentId) {
-        
-        if (segmentId == null) {
+    @Override
+    public void setClickedSegment(Integer segmentId, String sessionId) {
+        if (segmentId == null || sessionId == null) {
             _clickedSegment.postValue(null);
             Log.d("invalid click", "No point clicked or not on a segment.");
             return;
@@ -87,13 +88,12 @@ public class TrajectoryViewModel extends ViewModel {
             return;
         }
 
-       for(TrajectorySegment segment:trajectorySegments) {
-        if(segment.getId() == segmentId) {
-            _clickedSegment.postValue(segment);
-            return;
+        for (TrajectorySegment segment : trajectorySegments) {
+            if (segment.getId() == segmentId && segment.getSessionId().equals(sessionId)) {
+                _clickedSegment.postValue(segment);
+                return;
+            }
         }
-       }
-        
     }
 
     public void removeAllClicked() {

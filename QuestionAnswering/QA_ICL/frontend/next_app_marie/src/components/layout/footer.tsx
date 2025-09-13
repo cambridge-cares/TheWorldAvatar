@@ -10,9 +10,9 @@ import CARESLogo from '@/public/images/cares_short_logo_processed.svg'
 const ORGS = [
   {
     imgSrc: CMCLLogo,
-    label: 'CMCL Innovations',
-    url: 'https://cmclinnovations.com',
-    displayUrl: 'cmclinnovations.com',
+    label: 'CMCL',
+    url: 'https://cmcl.io/',
+    displayUrl: 'cmcl.io',
   },
   {
     imgSrc: COMOLogo,

@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,27 +13,33 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.ActivityItem;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
+import uk.ac.cam.cares.jps.timeline.viewmodel.SegmentClickInterface;
 import uk.ac.cam.cares.jps.timelinemap.R;
+
 /**
  * Adapter class for recyclerview to view activity summary information.
  */
 public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapter.ActivityItemViewHolder> {
     private final List<ActivityItem> activityList;
+    private final SegmentClickInterface segmentClickInterface;
+    private String sessionId;
 
-    public ActivityItemAdapter(List<ActivityItem> activityList, TrajectorySegment clickedSegment) {
+    public ActivityItemAdapter(List<ActivityItem> activityList,
+                               String sessionId,
+                               TrajectorySegment clickedSegment,
+                               SegmentClickInterface segmentClickInterface) {
         this.activityList = activityList;
+        this.segmentClickInterface = segmentClickInterface;
+        this.sessionId = sessionId;
 
-        for(ActivityItem item : activityList) {
-            if(clickedSegment == null) {
+        for (ActivityItem item : activityList) {
+            if (clickedSegment == null) {
                 item.setClicked(false);
-            }
-            else if(item.getId() == clickedSegment.getId()) {
-                item.setClicked(!item.getClicked());
-            }
-            else {
+            } else if (item.getId() == clickedSegment.getId() && sessionId.equals(clickedSegment.getSessionId())) {
+                item.setClicked(true);
+            } else {
                 item.setClicked(false);
             }
         }
@@ -59,22 +66,21 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         validActivities.add("unknown");
 
 
-        if(validActivities.contains(activityItem.getActivityType())) {
+        if (validActivities.contains(activityItem.getActivityType())) {
             holder.activityType.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             holder.activityType.setVisibility(View.GONE);
         }
 
         holder.timeSummary.setText(activityItem.getTimeSummary());
 
-        holder.clicked.setImageResource(R.drawable.baseline_keyboard_double_arrow_left_24);
-        if(activityItem.getClicked()) {
+        if (activityItem.getClicked()) {
             holder.clicked.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             holder.clicked.setVisibility(View.GONE);
         }
+
+        holder.view.setOnClickListener(v -> segmentClickInterface.setClickedSegment(activityItem.getId(), sessionId));
 
     }
 
@@ -83,10 +89,20 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
         return activityList.size();
     }
 
+    public int getFirstClickedItemPosition() {
+        for (int i = 0; i < activityList.size(); i++) {
+            if (activityList.get(i).getClicked()) {
+                return i;
+            }
+        }
+        return RecyclerView.NO_POSITION;
+    }
+
     static class ActivityItemViewHolder extends RecyclerView.ViewHolder {
         ImageView activityType;
         TextView timeSummary;
         ImageView clicked;
+        View view;
 
         public ActivityItemViewHolder(@NonNull View activityView) {
             super(activityView);
@@ -94,6 +110,8 @@ public class ActivityItemAdapter extends RecyclerView.Adapter<ActivityItemAdapte
             activityType = activityView.findViewById(R.id.activityType);
             timeSummary = activityView.findViewById(R.id.timeSummary);
             clicked = activityView.findViewById(R.id.clicked);
+
+            view = activityView;
         }
     }
 

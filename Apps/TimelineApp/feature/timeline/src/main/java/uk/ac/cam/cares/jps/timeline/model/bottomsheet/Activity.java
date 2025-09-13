@@ -12,20 +12,20 @@ public abstract class Activity {
     }
 
     private int setActivityImage(String activity) {
-       int activityImage = switch (activity) {
-           case "walking" -> R.drawable.baseline_directions_walk_24;
-           case "vehicle" -> R.drawable.baseline_directions_car_24;
-           case "bike" -> R.drawable.baseline_directions_bike_24;
-           case "still" -> R.drawable.baseline_man_24;
-           default -> R.drawable.baseline_arrow_circle_right_24;
-       };
+        int activityImage = switch (activity) {
+            case "walking" -> R.drawable.baseline_directions_walk_24;
+            case "vehicle" -> R.drawable.baseline_directions_car_24;
+            case "bike" -> R.drawable.baseline_directions_bike_24;
+            case "still" -> R.drawable.baseline_man_24;
+            default -> R.drawable.baseline_arrow_circle_right_24;
+        };
 
         return activityImage;
     }
 
     abstract String toHoursAndMinutes(long timestamp);
 
-    
+
     public String getActivityType() {
         return activityType;
     }
@@ -36,6 +36,5 @@ public abstract class Activity {
 
     public abstract String getTimeSummary();
 
-    
 
 }

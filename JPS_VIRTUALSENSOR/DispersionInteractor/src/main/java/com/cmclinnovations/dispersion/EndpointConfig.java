@@ -31,7 +31,7 @@ public class EndpointConfig {
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
 
-        OntopEndpointConfig ontopEndpointConfig = OntopClient.getInstance().getEndpoint();
+        OntopEndpointConfig ontopEndpointConfig = OntopClient.getInstance(Config.ONTOP_CONTAINER_NAME).readEndpointConfig();
         this.ontopurl = ontopEndpointConfig.getUrl();
 
     }

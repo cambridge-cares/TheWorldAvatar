@@ -536,13 +536,13 @@ public class QueryClient {
 
         LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
         GDALClient gdalclient = GDALClient.getInstance();
-        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.SENSORS_TABLE_NAME, feature.toString(),
+        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.SCHEMA, Config.SENSORS_TABLE_NAME, feature.toString(),
                 new Ogr2OgrOptions(), true);
 
         LOGGER.info("Creating virtual sensors layer in Geoserver");
         GeoServerClient geoserverclient = GeoServerClient.getInstance();
         geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-        geoserverclient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.SENSORS_TABLE_NAME,
+        geoserverclient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.SCHEMA, Config.SENSORS_TABLE_NAME,
                 new GeoServerVectorSettings());
     }
 

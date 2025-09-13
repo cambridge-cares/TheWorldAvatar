@@ -10,7 +10,6 @@ class TestAgentInit(unittest.TestCase):
     def test_agent_init(self):
         init()
         #expect to get new table in sql and new triples in blazegraph
-        #TODO: config docker to connect to host-host postsql
         import psycopg2
         #check table is created
         JAVA_PROPERTIES = config.parsedConfig.readProperties()

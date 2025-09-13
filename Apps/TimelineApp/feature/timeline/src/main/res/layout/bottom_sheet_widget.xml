@@ -29,21 +29,22 @@
             android:contentDescription="@string/last_date_button" />
 
         <LinearLayout
+            android:id="@+id/date_picker_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:id="@+id/date_picker_layout"
             android:background="@drawable/ripple"
             android:clickable="true">
+
             <TextView
+                android:id="@+id/date_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/component_margin_small"
                 android:text="Mon, March 14, 2024"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:id="@+id/date_tv"/>
+                android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <ImageButton
                 android:layout_width="wrap_content"
@@ -51,8 +52,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/component_margin_small"
                 android:background="@drawable/baseline_arrow_drop_down_24"
-                android:contentDescription="@string/date_picker_button"
-                />
+                android:contentDescription="@string/date_picker_button" />
         </LinearLayout>
 
         <ImageButton
@@ -63,67 +63,47 @@
             android:contentDescription="@string/next_date_button" />
     </LinearLayout>
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/component_margin_small"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:id="@+id/progress_linear"/>
-        
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/summary_recycler_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="true"
-                android:overScrollMode="always"
-                android:scrollbars="horizontal"
-                android:fadingEdge="none" />
-        </LinearLayout>
-
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/sessions_recycler_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:nestedScrollingEnabled="true"
-    android:overScrollMode="always"
-    android:scrollbars="vertical"
-    android:fadingEdge="none"
-    android:scrollbarStyle="insideOverlay"  
-    android:layout_marginBottom="8dp"  
-    />
+        <TextView
+            android:id="@+id/trajectory_info_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/more_information_about_the_trajectory_will_be_shown_here"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:visibility="gone" />
 
     </LinearLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="@dimen/component_margin_small"
+        android:indeterminate="true" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/summary_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fadingEdge="none"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="always"
+        android:scrollbars="horizontal" />
 
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/more_information_about_the_trajectory_will_be_shown_here"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                android:gravity="center"
-                android:id="@+id/trajectory_info_tv"
-                android:visibility="gone"/>
-
-        </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sessions_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/component_margin_xl"
+        android:overScrollMode="never"
+        android:scrollbars="vertical" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

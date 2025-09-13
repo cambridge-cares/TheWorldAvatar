@@ -6,24 +6,30 @@ package uk.ac.cam.cares.jps.timeline.model.bottomsheet;
 public class ActivitySummary extends Activity {
     private final String totalDistance; //meters
     private final String totalTimeSummary; //hours and minutes
+    private boolean clicked;
 
     public ActivitySummary(String activityType, int totalDistance, long totalTime) {
         super(activityType);
         this.totalDistance = totalDistance + " m";
         this.totalTimeSummary = toHoursAndMinutes(totalTime);
+        this.clicked = true;
     }
 
+    public void setClicked(boolean isClicked) {
+        this.clicked = isClicked;
+    }
 
-
+    public boolean isClicked() {
+        return this.clicked;
+    }
 
 
     String toHoursAndMinutes(long totalTimeInMinutes) {
         int hours = (int) (totalTimeInMinutes / 60);
         int minutes = (int) (totalTimeInMinutes - (hours * 60));
-        if(hours > 0) {
+        if (hours > 0) {
             return hours + " hr " + minutes + " min";
-        }
-        else return  minutes + " min";
+        } else return minutes + " min";
     }
 
     public String getTotalDistance() {

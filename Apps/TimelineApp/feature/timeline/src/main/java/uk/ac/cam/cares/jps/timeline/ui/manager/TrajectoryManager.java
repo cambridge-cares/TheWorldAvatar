@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
 import uk.ac.cam.cares.jps.timeline.viewmodel.NormalBottomSheetViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
@@ -54,8 +56,10 @@ public class TrajectoryManager {
     private final Map<String, String> activityColors = new HashMap<>();
     private String layerId;
 
+
     /**
      * Constructor of the class
+     *
      * @param fragment Host fragment
      * @param mapView  Mapbox map view
      */
@@ -69,18 +73,22 @@ public class TrajectoryManager {
         activityColors.put("bike", getColorHex(fragment.requireContext(), com.google.android.material.R.attr.colorTertiary));
         activityColors.put("default", getColorHex(fragment.requireContext(), R.attr.colorDefault));
 
+        String selectedColor = getColorHex(fragment.requireContext(), R.attr.colorSelected);
+
         trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryByDate -> {
+            trajectoryViewModel.removeAllClicked();
             if (!trajectoryByDate.getDate().equals(normalBottomSheetViewModel.selectedDate.getValue())) {
+                // trajectoryViewModel.setClicked(null);
                 trajectoryViewModel.setFetching(true);
                 return;
             }
 
             mapView.getMapboxMap().getStyle(style -> {
+                // trajectoryViewModel.setClicked(null);
                 removeAllLayers(style);
-                trajectoryViewModel.removeAllClicked();
                 if (!trajectoryByDate.getTrajectoryStr().isEmpty()) {
                     paintTrajectoryByActivity(style, trajectoryByDate, activityColors, "default");
-                    addTrajectoryClickListener(mapView);
+                    addTrajectoryClickListener(mapView, selectedColor, fragment.getViewLifecycleOwner());
                 }
             });
 
@@ -98,7 +106,7 @@ public class TrajectoryManager {
     /**
      * Adds a click listener to detect which trajectory segment was clicked.
      */
-    private void addTrajectoryClickListener(MapView mapView) {
+    private void addTrajectoryClickListener(MapView mapView, String selectedColor, LifecycleOwner lifecycleOwner) {
         GesturesPlugin gesturesPlugin = GesturesUtils.getGestures(mapView);
 
         gesturesPlugin.addOnMapClickListener(point -> {
@@ -118,27 +126,77 @@ public class TrajectoryManager {
                             QueriedFeature clickedFeature = result.getValue().get(0).getQueriedFeature();
                             Feature feature = clickedFeature.getFeature();
 
-
                             Integer segmentId = feature.hasProperty("id") ? feature.getNumberProperty("id").intValue() : null;
+                            String sessionId = feature.hasProperty("session_id") ? feature.getStringProperty("session_id") : null;
 
-                            if (segmentId != null) {
-                                Log.d("TrajectoryClick", "Segment clicked: " + segmentId);
-                                trajectoryViewModel.setClicked(segmentId);
+                            if (segmentId != null && sessionId != null) {
+                                trajectoryViewModel.setClickedSegment(segmentId, sessionId);
                             } else {
-                                Log.d("TrajectoryClick", "Feature clicked but no valid segment ID found.");
-                                trajectoryViewModel.setClicked(null);
+                                trajectoryViewModel.setClickedSegment(null, null);
                             }
                         } else {
-                            Log.d("TrajectoryClick", "No trajectory segment clicked.");
-                            trajectoryViewModel.setClicked(null);
+                            trajectoryViewModel.setClickedSegment(null, null);
                         }
                     }
             );
 
             return true;
         });
+
+        trajectoryViewModel.clickedSegment.observe(lifecycleOwner, clickedSegment -> {
+            removeHighlightLayer(mapView.getMapboxMap().getStyle());
+            if (clickedSegment != null) {
+                highlightTrajectorySegment(mapView.getMapboxMap().getStyle(), clickedSegment, selectedColor);
+                resetCameraCentre(mapView, clickedSegment.getBbox());
+            }
+        });
     }
 
+    private void removeHighlightLayer(Style style) {
+        if (style != null && style.styleLayerExists("highlight_layer")) {
+            style.removeStyleLayer("highlight_layer");
+        }
+    }
+
+    private void highlightTrajectorySegment(Style style, TrajectorySegment clickedSegment, String selectedColor) {
+        removeHighlightLayer(style); // Ensure no duplicate highlights
+
+        try {
+            JSONObject paint = new JSONObject();
+            paint.put("line-color", selectedColor);
+            paint.put("line-width", 8);
+
+            JSONArray filter = new JSONArray();
+            filter.put("all");
+
+            JSONArray idFilter = new JSONArray();
+            idFilter.put("==");
+            idFilter.put("id");
+            idFilter.put(clickedSegment.getId());
+
+            JSONArray sessionFilter = new JSONArray();
+            sessionFilter.put("==");
+            sessionFilter.put("session_id");
+            sessionFilter.put(clickedSegment.getSessionId());
+
+            filter.put(idFilter);
+            filter.put(sessionFilter);
+
+            JSONObject layerJson = new JSONObject();
+            layerJson.put("id", "highlight_layer");
+            layerJson.put("type", "line");
+            layerJson.put("source", "trajectory_default");
+            layerJson.put("filter", filter);
+            layerJson.put("paint", paint);
+
+            style.addStyleLayer(
+                    Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()),
+                    new LayerPosition(null, null, null)
+            );
+        } catch (JSONException e) {
+            LOGGER.error("Error highlighting trajectory segment", e);
+        }
+    }
 
     /**
      * Paints the trajectory on the map, ensuring each segment gets a unique ID.
@@ -154,8 +212,8 @@ public class TrajectoryManager {
         }
 
         Expected<String, None> success = style.addStyleSource(
-            "trajectory_" + mode,
-            Objects.requireNonNull(Value.fromJson(sourceJson.toString()).getValue())
+                "trajectory_" + mode,
+                Objects.requireNonNull(Value.fromJson(sourceJson.toString()).getValue())
         );
         LOGGER.debug("trajectory: source created " + (success.isError() ? success.getError() : "success"));
 
@@ -168,12 +226,12 @@ public class TrajectoryManager {
 
             this.layerId = "trajectory_layer_" + mode;
 
-            
-            JSONArray colorExpression = new JSONArray();
-            colorExpression.put("match"); 
-            colorExpression.put(new JSONArray().put("get").put("activity_type")); 
 
-            
+            JSONArray colorExpression = new JSONArray();
+            colorExpression.put("match");
+            colorExpression.put(new JSONArray().put("get").put("activity_type"));
+
+
             for (Map.Entry<String, String> entry : activityColors.entrySet()) {
                 if (!entry.getKey().equals("default")) {
                     colorExpression.put(entry.getKey());
@@ -181,7 +239,7 @@ public class TrajectoryManager {
                 }
             }
 
-        
+
             colorExpression.put(activityColors.get("default"));
 
             JSONObject paint = new JSONObject();
@@ -192,14 +250,29 @@ public class TrajectoryManager {
             throw new RuntimeException(e);
         }
 
-        
+
         Expected<String, None> layerSuccess = style.addStyleLayer(
-            Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()),
-            new LayerPosition(null, null, null)
+                Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()),
+                new LayerPosition(null, null, null)
         );
         LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
 
         layerNames.add(mode);
+    }
+
+    private void resetCameraCentre(MapView mapView, JSONArray bbox) {
+        mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
+            Point newCenter = getBBoxCenter(bbox);
+            if (newCenter == null) {
+                return null;
+            }
+            plugin.flyTo(new CameraOptions.Builder()
+                            .center(newCenter)
+                            .build(),
+                    new MapAnimationOptions.Builder().duration(2000).build(),
+                    null);
+            return null;
+        });
     }
 
     private void resetCameraCentre(MapView mapView, TrajectoryByDate trajectoryByDate) {
@@ -207,18 +280,7 @@ public class TrajectoryManager {
             JSONObject jsonObject = new JSONObject(trajectoryByDate.getTrajectoryStr());
             JSONArray bbox = jsonObject.getJSONArray("bbox");
 
-            mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
-                Point newCenter = getBBoxCenter(bbox);
-                if (newCenter == null) {
-                    return null;
-                }
-                plugin.flyTo(new CameraOptions.Builder()
-                                .center(newCenter)
-                                .build(),
-                        new MapAnimationOptions.Builder().duration(2000).build(),
-                        null);
-                return null;
-            });
+            resetCameraCentre(mapView, bbox);
         } catch (JSONException e) {
             LOGGER.info("No trajectory retrieved, no need to reset camera");
         }
@@ -235,22 +297,38 @@ public class TrajectoryManager {
     }
 
     private void removeAllLayers(Style style) {
-        List<String> failureLayers = new ArrayList<>();
-        List<String> failureSources = new ArrayList<>();
+        try {
 
-        for (String name : layerNames) {
-            Expected<String, None> successLayer = style.removeStyleLayer("trajectory_layer_" + name);
-            Expected<String, None> successSource = style.removeStyleSource("trajectory_" + name);
+            List<String> failureLayers = new ArrayList<>();
+            List<String> failureSources = new ArrayList<>();
 
-            if (successLayer.isError()) failureLayers.add("trajectory_layer_" + name);
-            if (successSource.isError()) failureSources.add("trajectory_" + name);
+            if (style.styleLayerExists("highlight_layer")) {
+                style.removeStyleLayer("highlight_layer");
+                LOGGER.debug("Removed highlight_layer");
+            }
+
+            for (String name : layerNames) {
+                String layerName = "trajectory_layer_" + name;
+                String sourceName = "trajectory_" + name;
+
+                Expected<String, None> layerResult = style.removeStyleLayer(layerName);
+                Expected<String, None> sourceResult = style.removeStyleSource(sourceName);
+
+                if (layerResult.isError()) failureLayers.add(layerName);
+                if (sourceResult.isError()) failureSources.add(sourceName);
+                else LOGGER.debug("Removed layer and source: " + layerName + ", " + sourceName);
+            }
+
+            if (!failureLayers.isEmpty() || !failureSources.isEmpty()) {
+                LOGGER.error("Failed to remove layers: " + String.join(", ", failureLayers));
+                LOGGER.error("Failed to remove sources: " + String.join(", ", failureSources));
+            }
+
+            layerNames.clear();
+
+        } catch (Exception e) {
+            LOGGER.error("Exception while removing layers and sources", e);
         }
 
-        if (!failureLayers.isEmpty() || !failureSources.isEmpty()) {
-            LOGGER.error("Failed to remove layers: " + String.join(", ", failureLayers));
-            LOGGER.error("Failed to remove sources: " + String.join(", ", failureSources));
-        }
-
-        layerNames.clear();
     }
 }

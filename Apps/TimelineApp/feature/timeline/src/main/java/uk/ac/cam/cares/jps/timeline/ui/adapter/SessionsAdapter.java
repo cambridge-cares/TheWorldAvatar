@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.timeline.ui.adapter;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
+import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,22 +19,25 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.timeline.model.bottomsheet.Session;
 import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectorySegment;
+import uk.ac.cam.cares.jps.timeline.viewmodel.SegmentClickInterface;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 
 public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.SessionsViewHolder> {
     private List<Session> sessionList;
     private TrajectorySegment clickedSegment;
-    private final RecyclerView.RecycledViewPool activitySummaryViewPool = new RecyclerView.RecycledViewPool();
+    private final RecyclerView.RecycledViewPool sharedViewPool = new RecyclerView.RecycledViewPool();
+    private final SegmentClickInterface segmentClickInterface;
 
-    public SessionsAdapter() {
+    public SessionsAdapter(SegmentClickInterface segmentClickInterface) {
         this.sessionList = new ArrayList<>();
+        this.segmentClickInterface = segmentClickInterface;
     }
 
     public void setUniqueSessionsList(List<Session> sessionList, TrajectorySegment clickedSegment) {
         this.sessionList = new ArrayList<>(sessionList);
         this.clickedSegment = clickedSegment;
-        notifyDataSetChanged(); 
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -44,28 +52,51 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         Session session = sessionList.get(position);
         holder.sessionTitle.setText(session.getSessionTitle());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(
-                holder.activitySummaryRecyclerView.getContext(),
-                LinearLayoutManager.VERTICAL,
-                false
-        );
-        layoutManager.setInitialPrefetchItemCount(session.getShownList().size());
+        NonScrollableLinearLayoutManager layoutManager = new NonScrollableLinearLayoutManager(holder.activityRecyclerView.getContext());
 
-        // Ensure ActivityItemAdapter receives the updated clickedId
-        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getShownList(), clickedSegment);
-        holder.activitySummaryRecyclerView.setLayoutManager(layoutManager);
-        holder.activitySummaryRecyclerView.setAdapter(activityItemAdapter);
-        holder.activitySummaryRecyclerView.setRecycledViewPool(activitySummaryViewPool);
+        ActivityItemAdapter activityItemAdapter = new ActivityItemAdapter(session.getActivityList(),
+                session.getSessionId(),
+                clickedSegment,
+                segmentClickInterface);
+        holder.activityRecyclerView.setLayoutManager(layoutManager);
+        holder.activityRecyclerView.setAdapter(activityItemAdapter);
+        holder.activityRecyclerView.setRecycledViewPool(sharedViewPool);
+        holder.activityRecyclerView.setHasFixedSize(false);
 
-        holder.dropdownLayout.setOnClickListener(view -> {
-            if (!session.getShownList().isEmpty()) {
-                session.setShownListAsEmptyList();
-                setClickedSegment(null);
-            } else {
-                session.setShownListAsActivityList();
-            }
-            notifyItemChanged(position);
-        });
+        // TODO: height measurement will break the scroll of recyclerview
+//        holder.activityRecyclerView.post(() -> {
+//            ViewGroup.LayoutParams params = holder.activityRecyclerView.getLayoutParams();
+//
+//            if (clickedSegment != null) {
+//                int maxHeightPx = (int) TypedValue.applyDimension(
+//                        TypedValue.COMPLEX_UNIT_DIP, 500,
+//                        holder.activityRecyclerView.getResources().getDisplayMetrics()
+//                );
+//
+//                // Measure content height
+//                int totalHeight = 0;
+//                for (int i = 0; i < holder.activityRecyclerView.getChildCount(); i++) {
+//                    View child = holder.activityRecyclerView.getChildAt(i);
+//                    if (child != null) {
+//                        totalHeight += child.getMeasuredHeight();
+//                    }
+//                }
+//
+//                params.height = Math.min(totalHeight, maxHeightPx); // Dynamic sizing
+//            } else {
+//                params.height = ViewGroup.LayoutParams.MATCH_PARENT; // Full height if no clickedSegment
+//            }
+//
+//            holder.activityRecyclerView.setLayoutParams(params);
+//        });
+
+        // TODO: scrollTo not really work without height measurement
+        // Ensure we scroll to the correct activity within the session
+//        if (clickedSegment != null && session.containsSegment(clickedSegment)) {
+//            holder.activityRecyclerView.post(() ->
+//                    layoutManager.scrollToPositionWithOffset(clickedSegment.getNumberInSession() - 1, 0)
+//            );
+//        }
     }
 
     @Override
@@ -75,26 +106,39 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
     public void setClickedSegment(TrajectorySegment clickedSegment) {
         this.clickedSegment = clickedSegment;
-        // Find which session contains the clicked segment and update only that session
-        for (int i = 0; i < sessionList.size(); i++) {
-            Session session = sessionList.get(i);
-            if (session.containsSegment(clickedSegment) || clickedSegment == null) { // Assuming a helper method
-                notifyItemChanged(i);
-                return;
-            }
+        notifyDataSetChanged();
+    }
+
+    public class NonScrollableLinearLayoutManager extends LinearLayoutManager {
+
+        public NonScrollableLinearLayoutManager(Context context) {
+            super(context, VERTICAL, false);
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            return false;
         }
     }
 
     public static class SessionsViewHolder extends RecyclerView.ViewHolder {
         TextView sessionTitle;
-        RecyclerView activitySummaryRecyclerView;
+        RecyclerView activityRecyclerView;
         View dropdownLayout;
 
         public SessionsViewHolder(@NonNull View sessionView) {
             super(sessionView);
             sessionTitle = sessionView.findViewById(R.id.session_id);
-            activitySummaryRecyclerView = sessionView.findViewById(R.id.activity_items);
-            dropdownLayout = sessionView.findViewById(R.id.session_dropdown_layout); 
+            activityRecyclerView = sessionView.findViewById(R.id.activity_items);
+            dropdownLayout = sessionView.findViewById(R.id.session_dropdown_layout);
+
+            dropdownLayout.setOnClickListener(view -> {
+                if (activityRecyclerView.getVisibility() == VISIBLE) {
+                    activityRecyclerView.setVisibility(GONE);
+                } else {
+                    activityRecyclerView.setVisibility(VISIBLE);
+                }
+            });
         }
     }
 }

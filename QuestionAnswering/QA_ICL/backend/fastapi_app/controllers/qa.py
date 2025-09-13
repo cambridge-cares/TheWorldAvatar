@@ -96,6 +96,32 @@ class DataSupporter:
             nlq=rewritten_query, translation_context=translation_context
         )
         logger.info(f"Predicted data request: {data_req}")
+        
+        def save_and_get_response():
+            logger.info("Saving QA request artifact...")
+            request_id = self.artifact_store.save(
+                QARequestArtifact(
+                    nlq=query,
+                    nlq_rewritten=rewritten_query if rewritten_query != query else None,
+                    data_req=data_req,
+                    data=data_artifact if data_artifact else None,
+                )
+            )
+            logger.info("Done")
+
+            return QAResponse(
+                request_id=request_id,
+                metadata=QAResponseMetadata(
+                    rewritten_question=(
+                        rewritten_query if rewritten_query != query else None
+                    ),
+                    translation_context=translation_context,
+                    data_request=data_req,
+                    linked_variables=var2iris if var2iris else dict(),
+                ),
+                data=data if data else list(),
+                visualisation=vis_var2structs if vis_var2structs else dict(),
+            )
 
         if data_req is None:
             # Handle case where no data request could be generated
@@ -103,87 +129,71 @@ class DataSupporter:
             var2iris = dict()
             vis_var2structs: dict[str, list[ChemicalStructureData]] = dict()
             data = list()
-        else:
-            # Step 4: Entity linking
-            logger.info(
-                f"Performing entity linking for bindings: {data_req.entity_bindings}"
-            )
-            var2cls = data_req.var2cls or None
-            var2iris = {
-                var: list(
-                    set(
-                        [
-                            iri
-                            for val in values
-                            for iri in self.entity_store.link(
-                                cls=var2cls and var2cls.get(var),
-                                text=val if isinstance(val, str) else None,
-                                identifier=val if isinstance(val, dict) else dict(),
-                            )  # TODO: handle when no IRIs are returned
-                        ]
-                    )
+            return save_and_get_response()
+
+        # Step 4: Entity linking
+        logger.info(
+            f"Performing entity linking for bindings: {data_req.entity_bindings}"
+        )
+        var2cls = data_req.var2cls or None
+        var2iris = {
+            var: list(
+                set(
+                    [
+                        iri
+                        for val in values
+                        for iri in self.entity_store.link(
+                            cls=var2cls and var2cls.get(var),
+                            text=val if isinstance(val, str) else None,
+                            identifier=val if isinstance(val, dict) else dict(),
+                        )
+                    ]
                 )
-                for var, values in data_req.entity_bindings.items()
-            }
-            logger.info(f"Linked IRIs: {var2iris}")
-
-            # Step 5: Execute data request
-            logger.info("Executing data request...")
-            data, data_artifact, vis_var2iris = self.executor.exec(
-                var2cls=data_req.var2cls,
-                entity_bindings=var2iris,
-                const_bindings=data_req.const_bindings,
-                req_form=data_req.req_form,
-                vis_vars=data_req.visualise,
             )
-            logger.info("Done")
+            for var, values in data_req.entity_bindings.items()
+        }
+        logger.info(f"Linked IRIs: {var2iris}")
 
-            # Step 6: Retrieve visualisation data
-            logger.info("Retrieving visualisation data...")
-            clses = [     
-                data_req.var2cls.get(var)
-                for var in data_req.visualise
-                for _ in vis_var2iris.get(var, [])
-            ]
-            iris = [
-                iri for var in data_req.visualise for iri in vis_var2iris.get(var, [])
-            ]
-            chem_struct_data = self.vis_data_store.get(cls=clses, iris=iris)
+        if any(len(iri) == 0 for iri in var2iris.values()) :
+            # No iri matched, return to caller
+            data_artifact = None
+            vis_var2structs: dict[str, list[ChemicalStructureData]] = dict()
+            data = list()
+            return save_and_get_response()
 
-            iri2var = {iri: var for var, iris in vis_var2iris.items() for iri in iris}
-            vis_var2structs = defaultdict(list)
-            for iri, datum in zip(iris, chem_struct_data):
-                if iri not in iri2var or not datum:
-                    continue
-                vis_var2structs[iri2var[iri]].append(datum)
-            logger.info("Done")
-
-        # Step 7: Save QA request artifact
-        logger.info("Saving QA request artifact...")
-        request_id = self.artifact_store.save(
-            QARequestArtifact(
-                nlq=query,
-                nlq_rewritten=rewritten_query if rewritten_query != query else None,
-                data_req=data_req,
-                data=data_artifact,
-            )
+        # Step 5: Execute data request
+        logger.info("Executing data request...")
+        data, data_artifact, vis_var2iris = self.executor.exec(
+            var2cls=data_req.var2cls,
+            entity_bindings=var2iris,
+            const_bindings=data_req.const_bindings,
+            req_form=data_req.req_form,
+            vis_vars=data_req.visualise,
         )
         logger.info("Done")
 
-        # Return structured response
-        return QAResponse(
-            request_id=request_id,
-            metadata=QAResponseMetadata(
-                rewritten_question=(
-                    rewritten_query if rewritten_query != query else None
-                ),
-                translation_context=translation_context,
-                data_request=data_req,
-                linked_variables=var2iris,
-            ),
-            data=data,
-            visualisation=vis_var2structs,
-        )
+        # Step 6: Retrieve visualisation data
+        logger.info("Retrieving visualisation data...")
+        clses = [     
+            data_req.var2cls.get(var)
+            for var in data_req.visualise
+            for _ in vis_var2iris.get(var, [])
+        ]
+        iris = [
+            iri for var in data_req.visualise for iri in vis_var2iris.get(var, [])
+        ]
+        chem_struct_data = self.vis_data_store.get(cls=clses, iris=iris)
+
+        iri2var = {iri: var for var, iris in vis_var2iris.items() for iri in iris}
+        vis_var2structs = defaultdict(list)
+        for iri, datum in zip(iris, chem_struct_data):
+            if iri not in iri2var or not datum:
+                continue
+            vis_var2structs[iri2var[iri]].append(datum)
+        logger.info("Done")
+
+        # Step 7: Save QA request artifact
+        return save_and_get_response()
 
 
 @cache

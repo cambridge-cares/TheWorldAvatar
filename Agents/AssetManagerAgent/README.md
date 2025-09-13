@@ -2,7 +2,7 @@
 # Asset Manager Agent
 An agent designed to manage the asset instances in the knowledge graph. The agent is designed to work together with the [Asset Management App](LINK TO APP REPO HERE).
 
-Currently the agent is capable of:
+Currently, the agent is capable of:
 - Instantiating asset data
 - Print asset QR code
 - Retrieving asset data
@@ -45,7 +45,7 @@ The target printer need to be installed first in the host of the server. The ins
 The printing server could be packaged as either a .exe file or run as is a Flask server. The .exe format is provided in case running the server as a Python application is unfavourable. **It is recommended to create a new virtual environment before installing/ running the server.**
 A requirement.txt file is included in the repository to use:
 ```bash
-pip install ./PrintingServer/requirements.txt
+pip install -r ./PrintingServer/requirements.txt
 ```
 To run the printing server, go to `./PrintingServer/`:
 ```bash
@@ -56,15 +56,15 @@ If successful, a terminal showing the IP address of the printing server will be 
 The printing server will look for an environment variable called `PRINTERSERVER_PRINTER`. This value of the variable should be the target printer name. 
 
 ### Agent
-Update the following files in the `./config` folder:
-- `/agent.properties`:
-    - `endpoint.kg.[NAMESPACE]`: The SPARQL endpoint of each respective NAMEPSACE. The namespaces are divided based on the explanation in [Structure](#structure).
-    - `auth.kg.user` and `auth.kg.pass`: Blazegraph authentication. Can be left blank if no authentication is needed.
-    - `endpoint.printer`: Printer server endpoint.
-    - `target_qr_size`: QR code size target in cm.
-    - `url.manual`: URL for the accessing the asset’s manual. The URL produced will have the manual name appended to the end of the URL.
-    - `url.docupload`: URL to the document upload agent for uploading files
+Update the following environment variables in `./stack-manger-input-config-service/asset-manager-agent.json`:
+- `ENDPOINT_KG_[NAMESPACE]`: The SPARQL endpoint of each respective NAMEPSACE. The namespaces are divided based on the explanation in [Structure](#structure).
+- `AUTH_KG_USER` and `AUTH_KG_PASS`: Blazegraph authentication. Can be left blank if no authentication is needed.
+- `ENDPOINT_PRINTER`: Printer server endpoint.
+- `TARGET_QR_SIZE`: QR code size target in cm.
+- `URL_MANUAL`: URL for the accessing the asset’s manual. The URL produced will have the manual name appended to the end of the URL.
+- `URL_DOCUPLOAD`: URL to the document upload agent for uploading files
 
+Update the following files in the `./config` folder:
 - `/ontologyMap.properties`: A map of the asset type and their IRIs. Refer to the available values in [AssetClass](#instantiation)
 
 - `/tsSearch.properties`: Parameters of asset timeseries data search on retrieve. The details of this timeseries search on retrieve can be read further at [/retrieve](#retrieval).
@@ -522,6 +522,35 @@ Content-Type: application/json
         
     }
 }
+```
+
+
+#### QR image return
+##### - `/getqrcode`
+Returns the QR code of the given asset data IRI to the Post request.
+
+The parameter accepted:
+- ID : The ID or IRI of the device.
+
+Example request:
+- Request
+```
+POST /asset-manager-agent/getqrcode HTTP/1.1
+Content-Type: application/json
+
+{
+    "assetData":{
+        "ID": "https://www.theworldavatar.com/kg/ontoelecpowerequipment/ACPowerQualityAnalyser_8bb4aef6-459e-49e7-9a79-e0c313455e15"
+    }
+}
+```
+- cURL command to save the QR code image as an image file, as command line cannot display image
+```
+curl -X POST "http://localhost:3838/asset-manager-agent/getqrcode"   -H "Content-Type: application/json"   -d '{
+    "assetData": {
+      "IRI": "https://www.theworldavatar.com/kg/ontoelecpowerequipment/ACPowerQualityAnalyser_8bb4aef6-459e-49e7-9a79-e0c313455e15"
+    }
+  }'   --output qr.png
 ```
 
 ### *Regarding Unit Tests*

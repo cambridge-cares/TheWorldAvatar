@@ -1,0 +1,4 @@
+inputs/data/user_agent_keycloak.json
+
+inputs/secrets/*
+!inputs/secrets/readme.md
