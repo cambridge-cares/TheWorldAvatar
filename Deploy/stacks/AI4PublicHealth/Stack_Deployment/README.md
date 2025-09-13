@@ -140,7 +140,7 @@ Jiying Chen (jc2341@cam.ac.uk), Nov 2024
 [Remote - SSH]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh
 [Docker]: https://code.visualstudio.com/docs/containers/overview
 [REST Client]: https://marketplace.visualstudio.com/items?itemName=humao.rest-client
-[Stack Manager README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack Manager README]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
 [OntoFHRS]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontofhrs
 [OntoPOI]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontopoi
 [OntoGreenspace]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontogreenspace
@@ -153,9 +153,9 @@ Jiying Chen (jc2341@cam.ac.uk), Nov 2024
 [Mapbox visualisation guidance]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/web/twa-vis-framework/docs/mapbox.md
 
 <!-- Stack references -->
-[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Stack Data Uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Stack Data Uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
 
 <!-- Agents -->
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent
@@ -164,8 +164,8 @@ Jiying Chen (jc2341@cam.ac.uk), Nov 2024
 [AirQuality Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AirQualityAgent
 
 <!-- Files -->
-[xml_converter]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AI-for-Healthcare/Deploy/stacks/AI4PublicHealth/Common_Script/xml_converter
-[FoodHygieneRating]: ./stack-data-uploader/obda_mappings/FoodHygieneRating.obda
-[here]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-AI-for-Healthcare/Agents/FenlandTrajectoryAgent/README.md
+[xml_converter]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/AI4PublicHealth/Common_Script/xml_converter
+[FoodHygieneRating]: ./stack-data-uploader/data/FoodHygiene/FoodHygieneRating.obda
+[here]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FenlandTrajectoryAgent/README.md
 [OntoDevice]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontodevice
-[mapping folder]: ./stack-data-uploader/obda_mappings
+[mapping folder]: ./stack-data-uploader/data

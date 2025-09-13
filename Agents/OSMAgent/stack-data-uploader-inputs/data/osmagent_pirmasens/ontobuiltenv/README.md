@@ -1,1 +1,1 @@
-Add OntoBuiltEnv.owl file here from https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv
+Add OntoBuiltEnv.owl file here from https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobuiltenv

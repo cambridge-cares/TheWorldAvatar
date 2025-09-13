@@ -44,7 +44,7 @@ The data needed to estimate the heat emissions of various types of industrial fa
 
 
 ##### Stack containers
-If the agent is being run as part of a stack, the user can opt to use a namespace located in the stack blazegraph. The procedure for spinning up the stack is described at [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+If the agent is being run as part of a stack, the user can opt to use a namespace located in the stack blazegraph. The procedure for spinning up the stack is described at [stack manager page](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 
 #### 1.2 Docker Deployment
 

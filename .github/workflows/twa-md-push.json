@@ -1,0 +1,66 @@
+{
+    "ignorePatterns": [
+        {
+            "pattern": "http://localhost(:\\d+)?(/[^ ]*)?"
+        },
+        {
+            "pattern": "http://HOST:PORT?(/[^ ]*)?"
+        },
+        {
+            "pattern": "https://www.cmegroup.com?(/[^ ]*)?"
+        },
+        {
+            "pattern": "https?://(www\\.)?theworldavatar.com(/[^ ]*)?"
+        },
+        {
+            "pattern": "https://abc.xyz?(/[^ ]*)?"
+        },
+        {
+            "pattern": "https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/?"
+        },
+        {
+            "pattern": "https?://twitter.com/?"
+        },
+        {
+            "pattern": "https?://www.w3.org/?"
+        },
+        {
+            "pattern": "https?://www.ontology-of-units-of-measure.org/?"
+        },
+        {
+            "pattern": "https?://kg.cmclinnovations.com/mods-agent(/[^ ]*)?"
+        },
+        {
+            "pattern": "https?://github.com/[^/]+/[^/]+/issues(/[^ ]*)?"
+        },
+        {
+            "pattern": "https?://www.dropbox.com/?"
+        },
+        {
+            "pattern": "https?://docs.unity3d.com/?"
+        },
+        {
+            "pattern": "#(/[^ ]*)?"
+        },
+        {
+            "pattern": "/user(/[^ ]*)?"
+        },
+        {
+            "pattern": "/explore(/[^ ]*)?"
+        },
+        {
+            "pattern": "/images/defaults(/[^ ]*)?"
+        },
+        {
+            "pattern": "mailto:(/[^ ]*)?"
+        }
+    ],
+    "retryCount": 3,
+    "aliveStatusCodes": [
+        200,
+        202,
+        403,
+        503,
+        0
+    ]
+}

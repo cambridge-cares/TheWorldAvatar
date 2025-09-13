@@ -20,7 +20,7 @@ The World Avatar represents information in a dynamic knowledge graph using techn
 Listed below are a number of the key technical features available within The World Avatar ecosystem. More information on these, and other features, can be seen on [The World Avatar Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki).
 
 **TWA Stack:**<br/>
-The knowledge graph and its agents are hosted using collections of containers. How to use them is explained in the [stack manager](./Deploy/stacks/dynamic/stack-manager) and [stack data uploader](./Deploy/stacks/dynamic/stack-data-uploader) folders.
+The knowledge graph and its agents are hosted using collections of containers. How to use them is explained in the [stack manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) and [stack data uploader](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader) folders.
 
 **TWA Base Library:**<br/>
 The [base lib](./JPS_BASE_LIB) is a collection of functionality that is shared among many parts of the code. Core functions include the ability to generate and upload TBoxes, query KGs and RDBs, implement RESTful APIs, and triple cloning.

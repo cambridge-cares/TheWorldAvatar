@@ -60,7 +60,7 @@ bash ./stack.sh remove CamElyWis-DT -v
 # Remove individual service
 bash ./stack.sh remove CamElyWis-DT <service name>
 ```
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](https://github.com/TheWorldAvatar/stack/blob/main/stack-manager/README.md).
 
 ### Spinning Up the Stack Remotely via SSH
 
@@ -135,9 +135,9 @@ The [Feature Info Agent] serves as an access point for the visualisation, enabli
 [Feature Info Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
 
 <!-- Stack references -->
-[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Stack data uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[Stack manager]: https://github.com/TheWorldAvatar/stack/blob/main/stack-manager/README.md
 [fia_queries]: ./Stack-manager/inputs/data/fia-queries
 
 

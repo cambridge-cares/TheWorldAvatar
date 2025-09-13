@@ -11,7 +11,7 @@ The TravellingSalesmanAgent is an agent that
 
 ### 2.1. Stack Set Up
 
-The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack. Several pre-configured examples for the different use cases for King's Lynn can be found in [stack-data-uploader-inputs](stack-data-uploader-inputs/).
+The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack. Several pre-configured examples for the different use cases for King's Lynn can be found in [inputs](inputs/).
 
 ## 3. Agent Configuration
 
@@ -101,7 +101,7 @@ The debugger port will be available at 5005.
 
 ### 7.1 Feature Info Agent
 
-1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
+1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/data), following instruction [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#example---including-a-visualisation).
 
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services

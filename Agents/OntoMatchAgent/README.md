@@ -112,7 +112,7 @@ The Python script ``coordinator.py`` is called with the following parameters:
 --config            the JSON config file
 ```
 
-The config file is a JSON file containing several blocks for configuration. In the following, we will explain each block for the config file [conf_power_plant_DEU_auto_5_geo_http_link.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/OntoMatchAgent/conf/power_plant_DEU/conf_power_plant_DEU_auto_5_geo_http_link.json) used above.
+The config file is a JSON file containing several blocks for configuration. In the following, we will explain each block for the config file [conf_power_plant_DEU_auto_5_geo_http_link.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/OntoMatchAgent/tests/conf/conf_power_plant_DEU_auto_geo.json) used above.
 
 The first block only specifies the random seed:
 
@@ -199,4 +199,4 @@ Andreas Eibeck, Shaocong Zhang
 * Preprint [A Simple and Effective Approach to Unsupervised Instance Matching and its Application to Linked Data of Power Plants](https://como.ceb.cam.ac.uk/preprints/293/)
 * OntoMatchAgent is part of [The World Avatar](http://theworldavatar.com/) at [CARES](https://www.cares.cam.ac.uk/)
 * [Knowledge graphs](https://como.ceb.cam.ac.uk/research/cps/) at the [Computational Modelling Group](https://como.ceb.cam.ac.uk/)
-* [Universal Digital Twin and Knowledge graphs](https://cmclinnovations.com/digitalisation/knowledge-graphs/) at [CMCL](https://cmclinnovations.com/)
+* [CMCL](https://cmclinnovations.com/)

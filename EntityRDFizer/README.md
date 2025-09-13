@@ -3,7 +3,7 @@
 The `entityrdfizer` project is designed to convert entities of any domain and their data and metadata into RDF.
 It requires the entities and their data to be provided as inputs in an ABox CSV template, that is
 filled in with data. A group of ABox CSV template files are provided under the following URL:
-https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/KBTemplates/ABox
+https://github.com/TheWorldAvatar/ontology/blob/main/templates/ABox
 
 # Installation #
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.

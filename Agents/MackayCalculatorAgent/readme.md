@@ -102,5 +102,5 @@ For example, to start it on your local machine and on port 5000:
 flask run --host=0.0.0.0 --port=5000
 ```
 [MacKay Data Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MackayDataAgent
-[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
-[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
+[Derived Information Framework]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation
+[OntoTimeSeries]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries
