@@ -1,8 +1,9 @@
+from datetime import date
 from enum import Enum
 
 from pydantic import Field, create_model
 from rdflib import SKOS
-from rdflib.namespace import RDFS
+from rdflib.namespace import RDFS, RDF
 
 from constants.namespace import GC, ONTOSPECIES
 from model.rdf_ogm import RDFEntity, RDFField
@@ -19,10 +20,23 @@ class OntospeciesHasValueHasUnit(RDFEntity):
 
 
 class OntospeciesProperty(OntospeciesHasValueHasUnit):
-    ReferenceState: OntospeciesHasValueHasUnit | None = RDFField(
+    referenceState: OntospeciesHasValueHasUnit | None = RDFField(
         path=ONTOSPECIES.hasReferenceState
     )
-    Provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
+    provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
+    dateOfAccess: str | None = RDFField(path=ONTOSPECIES.dateOfAccess)
+    value: str | None = RDFField(path=ONTOSPECIES.value)
+    originalData: str | None = RDFField(path=ONTOSPECIES.originalDataString)
+    isRecomended: bool | None = RDFField(path=ONTOSPECIES.isRecomended)
+    
+
+class OntospeciesDissociationConstant(OntospeciesProperty):
+    comment: str | None = RDFField(path=RDFS.comment)
+    method: str | None = RDFField(path=ONTOSPECIES.hasMethod / RDFS.label)
+    assessment: str | None = RDFField(path=ONTOSPECIES.hasAssessment)
+    relatedAcidityLabel: str | None = RDFField(path=ONTOSPECIES.relatedAcidityLabel)
+    dissociationConstantType: str = RDFField(path=RDF.type)
+    index: str | None = RDFField(path=ONTOSPECIES.hasIndex / ONTOSPECIES.value)
 
 
 class GcAtom(RDFEntity):
@@ -49,7 +63,7 @@ class OntospeciesUse(RDFEntity):
 
 
 class OntospeciesSpeciesBase(RDFEntity):
-    label: str | None = RDFField(path=RDFS.label)
+    label: str | None = RDFField(path=RDFS.label | (ONTOSPECIES.hasIdentifier / ONTOSPECIES.value))
     IUPACName: str | None = RDFField(path=ONTOSPECIES.hasIUPACName / ONTOSPECIES.value)
     InChI: str = RDFField(path=ONTOSPECIES.hasInChI / ONTOSPECIES.value)
 
@@ -69,7 +83,7 @@ class SpeciesPropertyKey(str, Enum):
     COMPOUND_COMPLEXITY = "CompoundComplexity"
     COVALENT_UNIT_COUNT = "CovalentUnitCount"
     DENSITY = "Density"
-    DISSOCIATION_CONSTANTS = "DissociationConstants"
+    DISSOCIATION_CONSTANTS = "DissociationConstants"  # this is for web species search and explorer, not for OGM
     ENTHALPY_OF_SUBLIMATION = "EnthalpyofSublimation"
     EXACT_MASS = "ExactMass"
     FLASH_POINT = "FlashPoint"
