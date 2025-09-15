@@ -60,6 +60,7 @@ class SparqlDataReqExecutor:
         )
         logger.info("Processed query:\n" + query)
 
+        # TODO: modify this to accept multiple triple stores
         kg = self.ns2kg.get(req_form.triplestore)
         if kg is None:
             raise TriplestoreNotFound(
