@@ -90,9 +90,13 @@ class SparqlQueryProcessor:
 
         for var, const_val in const_bindings.items():
             varnode = f"?{var}"
-            values_clause = "VALUES {varnode} {{ \"{const_val}\" }}".format(
+            if isinstance(const_val, list):
+                val = " ".join(["\"{v}\"".format(v=v) for v in const_val])
+            else:
+                val = "\"{const_val}\"".format(const_val=const_val)
+            values_clause = "VALUES {varnode} {{ {val} }}".format(
                 varnode=varnode,
-                const_val=const_val,
+                val=val,
             )
             sparql = self._inject(values_clause, sparql, varnode)
         return sparql
