@@ -19,6 +19,7 @@ def csvrow2jsonobj(row: pd.Series):
     clses = parse_json_if_not_na(row["var2cls"])
     entity_bindings = parse_json_if_not_na(row["entity_bindings"])
     const_bindings = parse_json_if_not_na(row["const_bindings"])
+    pkeys = parse_json_if_not_na(row["sparql_pkeys"])
 
     if row["target"] == "sparql":
         req_form = {
@@ -28,9 +29,9 @@ def csvrow2jsonobj(row: pd.Series):
                 for k, v in {
                     "triplestore": row["sparql_triplestore"],
                     "query": row["sparql_query"],
-                    "pkeys": parse_json_if_not_na(row["sparql_pkeys"]),
+                    "pkeys": pkeys if pkeys else [],
                 }.items()
-                if v
+                if v or len(v) == 0
             },
         }
     elif row["target"] == "func":
