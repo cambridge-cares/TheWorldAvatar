@@ -70,10 +70,10 @@ class TritonEmbedder(IEmbedder):
             input_tensors = [
                 InferInput(
                     "input_ids", encoded.input_ids.shape, datatype="INT64"
-                ).set_data_from_numpy(encoded.input_ids),
+                ).set_data_from_numpy(encoded.input_ids.astype("int64")),
                 InferInput(
                     "attention_mask", encoded.attention_mask.shape, datatype="INT64"
-                ).set_data_from_numpy(encoded.attention_mask),
+                ).set_data_from_numpy(encoded.attention_mask.astype("int64")),
             ]
             response = self.client.infer(model_name=self.model, inputs=input_tensors)
             arrs.append(response.as_numpy("sentence_embedding"))
