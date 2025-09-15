@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import CMCLLogo from '@/public/images/cmcl.svg'
 import COMOLogo from '@/public/images/como_logo_processed.svg'
 import CARESLogo from '@/public/images/cares_short_logo_processed.svg'
+import MITLogo from '@/public/images/MIT-logo-transparent-cropped.png'
 
 const URL_AND_LOGO_LST = [
   {
@@ -22,6 +23,11 @@ const URL_AND_LOGO_LST = [
     imgSrc: CARESLogo,
     imgAlt: 'CARES logo',
   },
+  {
+    url: 'https://www.mit.edu/',
+    imgSrc: MITLogo,
+    imgAlt: 'MIT logo',
+  },
 ]
 export default function Header({
   className,
@@ -38,7 +44,7 @@ export default function Header({
         </div>
         <div className='flex'>
           {URL_AND_LOGO_LST.map(({ url, imgSrc, imgAlt }, i) => (
-            <a key={i} href={url} target='_blank'>
+            <a key={i} href={url} target='_blank' className="flex items-center justify-center">
               <Image src={imgSrc} width={140} height={80} alt={imgAlt}></Image>
             </a>
           ))}
