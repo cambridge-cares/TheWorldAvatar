@@ -59,7 +59,8 @@ export default function Footer({
               <Image
                 src={imgSrc}
                 width={140}
-                height={80}
+                height={66}
+                style={{ height: "66px", width: "140px", objectFit: "contain" }}
                 alt={`${label} logo`}
               />
               <div className='text-gray-400'>{label}</div>
