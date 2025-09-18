@@ -16,16 +16,15 @@ class PeriodictableElement(RDFEntity):
 
 class OntospeciesHasValueHasUnit(RDFEntity):
     value: str = RDFField(path=ONTOSPECIES.value)
-    unit: str | None = RDFField(path=ONTOSPECIES.unit / RDFS.label)
+    unit: str | None = RDFField(path=(ONTOSPECIES.unit / RDFS.label) | ONTOSPECIES.unit)
 
 
 class OntospeciesProperty(OntospeciesHasValueHasUnit):
     referenceState: OntospeciesHasValueHasUnit | None = RDFField(
         path=ONTOSPECIES.hasReferenceState
     )
-    provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
+    provenance: list[str] | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
     dateOfAccess: str | None = RDFField(path=ONTOSPECIES.dateOfAccess)
-    value: str | None = RDFField(path=ONTOSPECIES.value)
     originalData: str | None = RDFField(path=ONTOSPECIES.originalDataString)
     isRecomended: bool | None = RDFField(path=ONTOSPECIES.isRecomended)
     
