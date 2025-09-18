@@ -439,20 +439,32 @@ WHERE {{
 
         def resolve_field_value_batch(field: str, info: FieldInfo):
             annotation = info.annotation
-            if annotation and get_origin(annotation) is list:
-                t = get_args(annotation)[0]
-                iri2values = field2iri2values[field]
-                if issubclass(t, RDFEntity):
-                    flattened = [v for values in iri2values.values() for v in values]
-                    models = [x for x in self.get_many(t, flattened) if x]
-                    count = 0
-                    out: dict[str, list[RDFEntity]] = dict()
-                    for iri, iri2values in iri2values.items():
-                        out[iri] = models[count : count + len(iri2values)]
-                        count += len(iri2values)
-                    return out
+            if not annotation:
+                pass
+            else:       
+                def list_values_process(t):
+                    iri2values = field2iri2values[field]    
+                    if issubclass(t, RDFEntity):
+                        flattened = [v for values in iri2values.values() for v in values]
+                        models = [x for x in self.get_many(t, flattened) if x]
+                        count = 0
+                        out: dict[str, list[RDFEntity]] = dict()
+                        for iri, iri2values in iri2values.items():
+                            out[iri] = models[count : count + len(iri2values)]
+                            count += len(iri2values)
+                        return out
+                    else:
+                        return iri2values
+                    
+                origin = get_origin(annotation)
+                args = get_args(annotation) 
+                   
+                if origin == list:
+                    return list_values_process(args[0])
                 else:
-                    return iri2values
+                    for arg in args:
+                        if get_origin(arg) is list:
+                            return list_values_process(get_args(arg)[0])
 
             iri2values = field2iri2values[field]
             iri2value = {
