@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import CMCLLogo from '@/public/images/cmcl.svg'
 import COMOLogo from '@/public/images/como_logo_processed.svg'
 import CARESLogo from '@/public/images/cares_short_logo_processed.svg'
-import MITLogo from '@/public/images/MIT-logo-transparent-cropped.png'
+import MITLogo from '@/public/images/MIT_Logo_and_Wordmark.svg'
 
 const URL_AND_LOGO_LST = [
   {
