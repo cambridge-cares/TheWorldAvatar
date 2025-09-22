@@ -1,0 +1,39 @@
+{
+  "database": "postgres",
+  "workspace": "the_world_avatar",
+  "datasetDirectory": "PointsOfInterest",
+  "skip": false,
+  "dataSubsets": [
+    {
+      "type": "vector",
+      "skip": false,
+      "schema": "public",
+      "table": "points_of_interest",
+      "subdirectory": "vector",
+      "ogr2ogrOptions": {
+        "layerCreationOptions": {
+          "GEOMETRY_NAME": "geom",
+          "SEPARATOR": "COMMA"
+        },
+        "sridIn": "EPSG:27700",
+        "sridOut": "EPSG:4326",
+        "inputDatasetOpenOptions": {
+          "X_POSSIBLE_NAMES": "feature_easting",
+          "Y_POSSIBLE_NAMES": "feature_northing"
+        }
+      },
+      "geoServerSettings": {
+        "virtualTable": {
+          "name": "points_of_interest_sports_and_entertainment",
+          "sql": "SELECT geom, \"ref_no\", \"name\", \"pointx_class\", \"feature_easting\", \"feature_northing\", \"pos_accuracy\", \"uprn\", \"topo_toid\", \"topo_toid_version\", \"usrn\", \"usrn_mi\", \"distance\", \"address_detail\", \"street_name\", \"locality\", \"geographic_county\", \"postcode\", \"admin_boundary\", \"telephone_number\", \"url\", \"brand\", \"qualifier_type\", \"qualifier_data\", \"provenance\", \"supply_date\" FROM points_of_interest WHERE \"pointx_class\" LIKE '4%'",
+          "escapeSql": false,
+          "geometry": {
+            "name": "geom",
+            "type": "Point",
+            "srid": 4326
+          }
+        }
+      }
+    }
+  ]
+}
