@@ -8,6 +8,7 @@ from services.sparql import (
     get_ontokin_endpoint,
     get_ontomops_endpoint,
     get_ontospecies_endpoint,
+    get_ontospecies_endpoint_v3,
     get_ontozeolite_endpoint,
 )
 from services.sparql import (
@@ -17,10 +18,11 @@ from services.sparql import (
 )
 from utils.collections import FrozenDict
 
-
+# TODO: ONTOSPECIES_V3 should be remove after merging
 @cache
 def get_ns2endpoint(
     ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)],
+    ontospecies_endpoint_v3: Annotated[str, Depends(get_ontospecies_endpoint_v3)],
     ontokin_endpoint: Annotated[str, Depends(get_ontokin_endpoint)],
     ontocompchem_endpoint: Annotated[str, Depends(get_ontocompchem_endpoint)],
     ontozeolite_endpoint: Annotated[str, Depends(get_ontozeolite_endpoint)],
@@ -32,6 +34,7 @@ def get_ns2endpoint(
     return FrozenDict.from_dict(
         {
             "ontospecies": ontospecies_endpoint,
+            "ontospecies_v3": ontospecies_endpoint_v3,
             "ontokin": ontokin_endpoint,
             "ontocompchem": ontocompchem_endpoint,
             "ontozeolite": ontozeolite_endpoint,

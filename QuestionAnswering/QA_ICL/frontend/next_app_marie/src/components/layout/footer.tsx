@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import CMCLLogo from '@/public/images/cmcl.svg'
 import COMOLogo from '@/public/images/como_logo_processed.svg'
 import CARESLogo from '@/public/images/cares_short_logo_processed.svg'
+import MITLogo from '@/public/images/MIT_Logo_and_Wordmark.svg'
 
 const ORGS = [
   {
@@ -26,6 +27,12 @@ const ORGS = [
     url: 'https://cares.cam.ac.uk/',
     displayUrl: 'cares.cam.ac.uk',
   },
+  {
+    imgSrc: MITLogo,
+    label: 'MIT',
+    url: 'https://www.mit.edu/',
+    displayUrl: 'mit.edu',
+  },
 ]
 
 export default function Footer({
@@ -40,19 +47,20 @@ export default function Footer({
       )}
       {...props}
     >
-      <p className='text-gray-400 text-center max-w-3xl'>
+      <p className='text-gray-400 text-center max-w-4xl'>
         This content was developed, tested, and documented by the following
         commercial and academic partners. For more information on each
         institution, please follow the links listed below.
       </p>
-      <div className='w-full grid md:grid-cols-3'>
+      <div className='w-full grid md:grid-cols-4'>
         {ORGS.map(({ imgSrc, label, url, displayUrl }, i) => (
           <div key={i} className='flex justify-center'>
-            <div className='flex flex-col justify-end items-center'>
+            <div className='flex flex-col justify-center items-center h-full'>
               <Image
                 src={imgSrc}
                 width={140}
-                height={80}
+                height={66}
+                style={{ height: "66px", width: "140px", objectFit: "contain" }}
                 alt={`${label} logo`}
               />
               <div className='text-gray-400'>{label}</div>
