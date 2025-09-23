@@ -7,6 +7,7 @@ services:
   triton:
     build:
       context: triton_inference_server
+    image: triton-marie:1.0.0
     container_name: triton-marie
     shm_size: 256m
     ports:
@@ -14,6 +15,7 @@ services:
   fastapi:
     build:
       context: fastapi_app
+    image: fastapi_app-marie:1.0.0
     container_name: fastapi_app-marie
     environment:
       - APP_ENV=prod
