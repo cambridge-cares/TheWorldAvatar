@@ -1,6 +1,6 @@
 [
   {
-    "heading": "Chemical Species (PubChem) Properties",
+    "heading": "Chemical Species (general)",
     "questions": [
       "What is the charge of benzene?",
       "How many hydrogen bonds can an ethylene glycol molecule accept and donate?",
@@ -16,7 +16,7 @@
     ]
   },
   {
-    "heading": "Chemical Species (IUPAC) Properties",
+    "heading": "Chemical Species (acid-base ionisation constants)",
     "questions": [
       "What pK values are reported for InChI 1S/C2H6N2/c1-2(3)4/h1H3,(H3,3,4)?",
       "List all compounds that have both pKa and pKb measurements.",
