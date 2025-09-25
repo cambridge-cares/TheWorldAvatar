@@ -1,0 +1,6 @@
+twa
+pandas>=1.4.0
+psycopg2-binary
+matplotlib
+shapely
+pyproj
