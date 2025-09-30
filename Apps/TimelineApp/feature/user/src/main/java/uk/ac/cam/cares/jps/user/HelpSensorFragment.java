@@ -38,6 +38,7 @@ public class HelpSensorFragment extends Fragment {
         setupExpandable(binding.contentGyroscope, binding.iconExpandGyroscope);
         setupExpandable(binding.contentLocation, binding.iconExpandLocation);
         setupExpandable(binding.contentMagnetometer, binding.iconExpandMagnetometer);
+        setupExpandable(binding.contentMicrophone, binding.iconExpandMicrophone);
         setupExpandable(binding.contentLight, binding.iconExpandLight);
         setupExpandable(binding.contentHumidity, binding.iconExpandHumidity);
         setupExpandable(binding.contentPressure, binding.iconExpandPressure);
