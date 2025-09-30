@@ -1,0 +1,33 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+build/
+dist/
+*~*
+.idea/
+py4jps/
+coverage.xml
+.coverage
+*.gv
+*.png
+geckodriver.log
+assets
+
+# Directories
+tmp_base/
+tmp_stack/
+output/*
+data/*
+!.gitignore
+
+# User defined
+*.egg-info
+
+# output file
+agent/output/output_files/*
+
+# data file
+stack-data-uploader/inputs/data/parks/MasterPlan2019SDCPParkandOpenSpacelayer/*
+stack-data-uploader/inputs/data/parks/MP14SDCPPWPLANParksandOpenSpaceSHP/*
+stack-data-uploader/inputs/data/parks/NParksParksandNatureReserves/*
+stack-data-uploader/inputs/data/sgpostcode/postcode/*

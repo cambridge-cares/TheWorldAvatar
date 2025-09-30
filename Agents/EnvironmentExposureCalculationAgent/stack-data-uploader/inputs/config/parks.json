@@ -1,0 +1,67 @@
+{
+    "name": "parks",
+    "database": "postgres",
+    "workspace": "twa",
+    "skip": false,
+    "datasetDirectory": "parks",
+    "dataSubsets": [
+        {
+            "name": "parks_2023",
+            "type": "vector",
+            "subdirectory": "NParksParksandNatureReserves",
+            "skip": false,
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "parks_2023",
+                    "sql": "SELECT * FROM parks_2023",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "name": "parks_2016", 
+            "type": "vector",
+            "subdirectory": "MP14SDCPPWPLANParksandOpenSpaceSHP",
+            "skip": false,
+            "sql": "@/inputs/data/parks/sql/parks_ura.sql",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:3414",
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "parks_2016",
+                    "sql": "SELECT * FROM parks_2016"
+                }
+            }
+        },
+        {
+            "name": "parks_2019",
+            "type": "vector",
+            "subdirectory": "MasterPlan2019SDCPParkandOpenSpacelayer",
+            "skip": false,
+            "sql": "@/inputs/data/parks/sql/parks_ura_geojson.sql",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "parks_2019",
+                    "sql": "SELECT * FROM parks_2019",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "greenspaces.obda"
+    ]
+}
