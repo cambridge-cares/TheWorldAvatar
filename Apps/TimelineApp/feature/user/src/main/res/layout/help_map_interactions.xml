@@ -220,21 +220,18 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:background="#E0E0E0"
+                        android:layout_height="235dp"
                         android:layout_marginBottom="4dp"
                         android:clipToOutline="true"
                         android:foreground="?attr/selectableItemBackground">
 
-                        <TextView
+                        <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="[Image: Screenshot of the map view showing colored trajectory lines, blue dot for user, and session pins with arrows pointing to them]"
-                            android:textColor="#777777"
-                            android:textSize="14sp"
-                            android:gravity="center"
-                            android:layout_gravity="center"
-                            android:padding="16dp" />
+                            android:adjustViewBounds="true"
+                            android:contentDescription="@string/timeline_trajectory_image"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/map" />
                     </FrameLayout>
 
                     <TextView
