@@ -42,7 +42,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Recording"
+                android:text="@string/recording_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#222222"
@@ -53,7 +53,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Track your movement using the recording button on the main screen."
+                android:text="@string/recording_description"
                 android:textSize="15sp"
                 android:textColor="#666666"
                 android:gravity="center"
@@ -72,7 +72,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="What does 'recording' mean?"
+                    android:text="@string/recording_overview_title"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -81,7 +81,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Recording activates your device’s sensors and location to track your movement over time. These are saved as sessions you can view later."
+                    android:text="@string/recording_overview_description"
                     android:textSize="15sp"
                     android:textColor="#444444" />
             </LinearLayout>
@@ -99,7 +99,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="How to start/stop recording"
+                    android:text="@string/recording_on_off"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -119,7 +119,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:contentDescription="Screenshot of the recording button on the main screen"
+                    android:contentDescription="@string/recording_quick_start_image"
                     android:scaleType="centerCrop"
                     android:src="@drawable/quickstart" />
 
@@ -139,7 +139,7 @@
                     android:layout_marginBottom="4dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/recording"
-                    android:contentDescription="Screenshot of the sensor settings recording screen" />
+                    android:contentDescription="@string/recording_setting_image" />
             </LinearLayout>
 
 
@@ -154,7 +154,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="What happens after?"
+                    android:text="@string/recording_after_data_collection_title"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -163,7 +163,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your recorded data appears in the timeline bar and map view. You can explore each session, view trajectories, and check time intervals."
+                    android:text="@string/recording_after_data_collection_description"
                     android:textSize="15sp"
                     android:textColor="#444444" />
             </LinearLayout>
@@ -175,7 +175,7 @@
                 android:layout_marginTop="24dp"
                 android:gravity="center"
                 android:paddingHorizontal="24dp"
-                android:text="Tip: Once recording starts, you can freely navigate the app or even lock your screen. Data will continue to log in the background until stopped."
+                android:text="@string/recording_tips"
                 android:textColor="#999999"
                 android:textSize="14sp" />
         </LinearLayout>

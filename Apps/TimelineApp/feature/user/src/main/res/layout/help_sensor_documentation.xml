@@ -44,7 +44,7 @@
                     android:id="@+id/sensor_doc_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sensors &amp; Permissions"
+                    android:text="@string/sensor_permission_title"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="#222222"
@@ -54,7 +54,7 @@
                     android:id="@+id/sensor_doc_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Learn what each sensor does and why it’s used."
+                    android:text="@string/sensor_permission_description"
                     android:textSize="15sp"
                     android:textColor="#666666"
                     android:layout_marginBottom="20dp" />
@@ -62,9 +62,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• Motion Sensors"
+                    android:text="@string/motion_sensors"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textColor="#444444"
                     android:layout_marginBottom="10dp" />
 
@@ -99,14 +99,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_accelerometer"
-                                android:contentDescription="Accelerometer icon"
+                                android:contentDescription="@string/accelerometer_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Accelerometer"
+                                android:text="@string/accelerometer"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -130,20 +130,20 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Tracks how your device moves—used to detect steps, shakes, or orientation."
+                                android:text="@string/acceleration_description"
                                 android:textSize="14sp"
                                 android:textColor="#444444"
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: X, Y, Z acceleration"
+                                android:text="@string/acceleration_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -184,14 +184,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_activity"
-                                android:contentDescription="Activity icon"
+                                android:contentDescription="@string/activity_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Activity Recognition"
+                                android:text="@string/activity_recognition"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -215,20 +215,20 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Estimates your movement type—walking, cycling, or stationary—for smarter context tracking."
+                                android:text="@string/activity_recognition_description"
                                 android:textSize="14sp"
                                 android:textColor="#444444"
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Activity type &amp; confidence"
+                                android:text="@string/activity_recognition_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: ACTIVITY_RECOGNITION"
+                                android:text="@string/permission_activity_recognition"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -269,14 +269,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_gravity"
-                                android:contentDescription="Gravity icon"
+                                android:contentDescription="@string/gravity_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Gravity"
+                                android:text="@string/gravity"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -298,7 +298,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Measures the force of gravity acting on the device—helps determine tilt, orientation, and motion when combined with other sensors."
+                                android:text="@string/gravity_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -306,14 +306,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Gravity vector (X, Y, Z)"
+                                android:text="@string/gravity_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -354,14 +354,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_gyro"
-                                android:contentDescription="Gyroscope icon"
+                                android:contentDescription="@string/gyroscope_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Gyroscope"
+                                android:text="@string/gyroscope"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -383,7 +383,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Tracks your phone’s rotation. Often used with the accelerometer to better understand movement."
+                                android:text="@string/gyroscope_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -391,14 +391,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Rotation rate (X, Y, Z)"
+                                android:text="@string/gyroscope_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -411,9 +411,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• Location"
+                    android:text="@string/location"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textColor="#444444"
                     android:layout_marginBottom="10dp" />
 
@@ -448,14 +448,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_location"
-                                android:contentDescription="Location icon"
+                                android:contentDescription="@string/location_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Location (GPS)"
+                                android:text="@string/location_gps"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -477,7 +477,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Records where you are. Enables route tracking, trip summaries, and map visualization."
+                                android:text="@string/location_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -485,14 +485,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Latitude, Longitude, Speed"
+                                android:text="@string/location_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: ACCESS_FINE_LOCATION"
+                                android:text="@string/permission_access_fine_location"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -533,14 +533,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_magnet"
-                                android:contentDescription="Magnetometer icon"
+                                android:contentDescription="@string/magnetometer_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Magnetometer"
+                                android:text="@string/magnetometer"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -562,7 +562,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Measures the strength and direction of Earth’s magnetic field—used to determine compass orientation and detect nearby metal objects."
+                                android:text="@string/magnetometer_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -570,14 +570,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Magnetic field (X, Y, Z)"
+                                android:text="@string/magnetometer_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -590,9 +590,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• Audio"
+                    android:text="@string/audio"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="10dp" />
@@ -628,14 +628,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_audio"
-                                android:contentDescription="Microphone icon"
+                                android:contentDescription="@string/microphone_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Microphone (Ambient Sound)"
+                                android:text="@string/microphone_title"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -657,7 +657,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Captures ambient sound levels—used to understand noise exposure (no recordings stored)."
+                                android:text="@string/microphone_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -665,14 +665,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Decibel (dB) levels"
+                                android:text="@string/microphone_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: RECORD_AUDIO"
+                                android:text="@string/permission_record_audio"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -685,9 +685,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• Environmental Sensors"
+                    android:text="@string/environmental_sensors"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="10dp" />
@@ -723,14 +723,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_light"
-                                android:contentDescription="Light icon"
+                                android:contentDescription="@string/light_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Light"
+                                android:text="@string/light"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -752,7 +752,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Senses the lighting around your device—can help detect ambient brightness or daylight exposure."
+                                android:text="@string/light_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -760,14 +760,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Light intensity (lux)"
+                                android:text="@string/light_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -808,14 +808,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_humidity"
-                                android:contentDescription="Humidity icon"
+                                android:contentDescription="@string/humidity_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Humidity"
+                                android:text="@string/humidity"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -837,7 +837,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Detects the amount of moisture in the air—helpful for analyzing comfort, climate, or indoor air quality."
+                                android:text="@string/humidity_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -845,14 +845,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Relative Humidity (%)"
+                                android:text="@string/data_relative_humidity2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -893,14 +893,14 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_sensor_pressure"
-                                android:contentDescription="Pressure icon"
+                                android:contentDescription="@string/pressure_icon"
                                 android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Pressure"
+                                android:text="@string/pressure"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#222222" />
@@ -922,7 +922,7 @@
                             android:paddingTop="12dp">
 
                             <TextView
-                                android:text="Measures atmospheric pressure—commonly used to estimate altitude, detect weather changes, or enhance location precision."
+                                android:text="@string/pressure_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
@@ -930,14 +930,14 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
-                                android:text="Data: Pressure (hectopascals, hPa)"
+                                android:text="@string/pressure_description2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
                                 android:textColor="#333333" />
 
                             <TextView
-                                android:text="Permission: Not required"
+                                android:text="@string/permission_not_required"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="13sp"
@@ -953,7 +953,7 @@
                     android:id="@+id/sensor_footer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="All data is stored locally unless you choose to share it. You can review or disable any sensor in Settings."
+                    android:text="@string/sensor_tips"
                     android:textSize="13sp"
                     android:textColor="#999999"
                     android:gravity="center"

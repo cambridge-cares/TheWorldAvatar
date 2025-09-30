@@ -42,14 +42,14 @@
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:src="@drawable/twa_logo"
-                android:contentDescription="Timeline icon"
+                android:contentDescription="@string/twa_icon"
                 android:layout_marginTop="12dp" />
 
             <TextView
                 android:id="@+id/about_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="About Timeline"
+                android:text="@string/about_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#222222"
@@ -60,7 +60,7 @@
                 android:id="@+id/about_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Understand what Timeline does and how it helps you track movement."
+                android:text="@string/about_description"
                 android:textSize="15sp"
                 android:textColor="#666666"
                 android:gravity="center"
@@ -81,7 +81,7 @@
                     android:id="@+id/help_card_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Need help using Timeline?"
+                    android:text="@string/about_builtin_help_title"
                     android:textSize="17sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -91,7 +91,7 @@
                     android:id="@+id/help_card_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New? Learn how timeline works."
+                    android:text="@string/about_builtin_help_description"
                     android:textSize="15sp"
                     android:textColor="#444444" />
 
@@ -99,7 +99,7 @@
                     android:id="@+id/btn_trigger_tooltips"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Show me how this works"
+                    android:text="@string/about_builtin_help_button"
                     android:paddingHorizontal="24dp"
                     android:paddingVertical="10dp"
                     android:textColor="@android:color/white"
@@ -119,13 +119,6 @@
                 android:clickable="true"
                 android:focusable="true">
 
-                <ImageView
-                    android:id="@+id/ic_article"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_article"
-                    android:contentDescription="Article Icon"
-                    android:layout_marginEnd="8dp" />
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -137,7 +130,7 @@
                         android:id="@+id/section1_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="What is Timeline?"
+                        android:text="@string/about_what_is_timeline_title"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="#111111"
@@ -147,7 +140,7 @@
                         android:id="@+id/section1_subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Timeline is a smart location tracker that automatically logs where you’ve been, when, and for how long."
+                        android:text="@string/about_what_is_timeline_title_description"
                         android:textSize="15sp"
                         android:textColor="#444444"
                         android:visibility="gone" />
@@ -166,14 +159,6 @@
                 android:clickable="true"
                 android:focusable="true">
 
-                <ImageView
-                    android:id="@+id/ic_article_2"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_article"
-                    android:contentDescription="Article Icon"
-                    android:layout_marginEnd="8dp" />
-
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -184,7 +169,7 @@
                         android:id="@+id/section2_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="What is it used for?"
+                        android:text="@string/about_timeline_usage_title"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="#111111"
@@ -194,7 +179,7 @@
                         android:id="@+id/section2_subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Great for fieldwork, travel logs, or daily tracking. Your data stays on your device unless you choose to share it."
+                        android:text="@string/about_usage_description"
                         android:textSize="15sp"
                         android:textColor="#444444"
                         android:visibility="gone" />
@@ -213,14 +198,6 @@
                 android:clickable="true"
                 android:focusable="true">
 
-                <ImageView
-                    android:id="@+id/ic_article_1"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_article"
-                    android:contentDescription="Article Icon"
-                    android:layout_marginEnd="8dp" />
-
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -231,7 +208,7 @@
                         android:id="@+id/section3_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Where can I see my timeline?"
+                        android:text="@string/about_timeline_title"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="#111111"
@@ -241,7 +218,7 @@
                         android:id="@+id/section3_subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="On the main screen, scroll the bottom of the bottom sheet. Each date shows sessions recorded throughout the day."
+                        android:text="@string/about_timeline_description"
                         android:textSize="15sp"
                         android:textColor="#444444"
                         android:layout_marginBottom="12dp"
@@ -249,35 +226,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="#E0E0E0"
-                android:layout_marginBottom="4dp"
-                android:backgroundTint="#E0E0E0"
-                android:clipToOutline="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="[Image: A picture of the bottom container UI in the main screen with an arrow pointing to the dates]"
-                    android:textColor="#777777"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:padding="16dp" />
-            </FrameLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="You're always in control. Timeline never stores data remotely unless you say so."
-                android:textSize="14sp"
-                android:textColor="#999999"
-                android:layout_marginTop="24dp"
-                android:gravity="center"
-                android:paddingHorizontal="24dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

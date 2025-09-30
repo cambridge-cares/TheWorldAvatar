@@ -40,14 +40,14 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/ic_map"
-                android:contentDescription="Map icon"
+                android:contentDescription="@string/map_icon"
                 android:layout_marginTop="12dp"
                 app:tint="#3b4279" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Map"
+                android:text="@string/map_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#222222"
@@ -57,7 +57,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Learn how to explore and interact with your timeline map."
+                android:text="@string/map_description"
                 android:textSize="15sp"
                 android:textColor="#666666"
                 android:gravity="center"
@@ -78,7 +78,7 @@
                     android:id="@+id/title_map_overview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="What does the map show?"
+                    android:text="@string/map_overview_title"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -98,7 +98,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="The map displays your movement as colored trajectory lines. Markers indicate start and end points, and a blue dot shows your current location."
+                        android:text="@string/map_overview_description"
                         android:textSize="15sp"
                         android:textColor="#444444" />
                 </LinearLayout>
@@ -119,7 +119,7 @@
                     android:id="@+id/title_map_usage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How do I use the map?"
+                    android:text="@string/map_usage_title"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -139,7 +139,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="• Map Navigation"
+                        android:text="@string/nmap_navigation_title"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#111111"
@@ -148,7 +148,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="• Pinch to zoom in or out.\n• Drag with one finger to move around the map.\n• Double tap to quickly zoom in."
+                        android:text="@string/map_navigation_description1"
                         android:textSize="15sp"
                         android:textColor="#444444"
                         android:layout_marginBottom="12dp" />
@@ -156,7 +156,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tap on a session pin to view its details. Colored lines reflect session activity, and timestamps help track when events occurred."
+                        android:text="@string/map_navigation_description2"
                         android:textSize="15sp"
                         android:textColor="#444444"
                         android:layout_marginBottom="12dp"/>
@@ -164,7 +164,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="• Starting Position"
+                        android:text="@string/starting_position_title"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#222222"
@@ -173,7 +173,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="When the app starts, the map auto-focuses on your most current location. Tap the positioning button to recenter anytime [Coming Soon]."
+                        android:text="@string/map_starting_position_description"
                         android:textSize="15sp"
                         android:textColor="#444444" />
                 </LinearLayout>
@@ -193,7 +193,7 @@
                     android:id="@+id/title_icon_legend"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="What do the icons and colors mean?"
+                    android:text="@string/map_icon_legend_title"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
@@ -213,7 +213,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Blue dot: your current position.\nColored paths: your recorded routes.\nPins: start/end of sessions. Tap them to view more info."
+                        android:text="@string/map_icon_legend_description"
                         android:textSize="15sp"
                         android:textColor="#444444"
                         android:layout_marginBottom="12dp" />
@@ -240,7 +240,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Quick Summary"
+                        android:text="@string/map_quick_summary_title"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#222222"
@@ -250,7 +250,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="• Travel mode icons show how you moved (e.g., walking, bus).\n• Total time per transport is displayed beside its icon.\n• Timestamps and location names show the order and duration of stops."
+                        android:text="@string/map_quick_summary_description"
                         android:textSize="15sp"
                         android:textColor="#444444" />
                 </LinearLayout>
@@ -260,7 +260,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tip: Sessions can also be accessed from the bottom timeline bar on the home screen."
+                android:text="@string/map_tip"
                 android:textSize="14sp"
                 android:textColor="#999999"
                 android:layout_marginTop="24dp"

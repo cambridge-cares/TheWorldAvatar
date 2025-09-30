@@ -42,7 +42,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FAQ"
+                android:text="@string/faq_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#222222"
@@ -51,7 +51,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Got questions? Here are some helpful answers."
+                android:text="@string/faq_description"
                 android:textSize="15sp"
                 android:textColor="#666666"
                 android:gravity="center"
@@ -72,7 +72,7 @@
                     android:id="@+id/faq1_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="What happens if I don’t grant permission for some sensors?"
+                    android:text="@string/faw_no_permission_grant_title"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#111111" />
@@ -81,7 +81,7 @@
                     android:id="@+id/faq1_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="If you deny permission for a sensor, that sensor will be disabled during recording. Other enabled sensors will continue functioning. You can always enable them later in Sensor Settings."
+                    android:text="@string/faw_no_permission_grant_description"
                     android:textSize="15sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
@@ -102,7 +102,7 @@
                     android:id="@+id/faq2_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Will my data be automatically deleted?"
+                    android:text="@string/faq_auto_delete_data_title"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#111111" />
@@ -111,67 +111,7 @@
                     android:id="@+id/faq2_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No. All session data stays on your device until you manually delete it via the Timeline Settings page."
-                    android:textSize="15sp"
-                    android:textColor="#444444"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/faq3_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/faq3_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="How is my recording data stored?"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#111111" />
-
-                <TextView
-                    android:id="@+id/faq3_answer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Your data is stored locally, session by session. It includes movement data, time intervals, and optional sensor input. No cloud backup is done unless enabled separately."
-                    android:textSize="15sp"
-                    android:textColor="#444444"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/faq4_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/faq4_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="What insights can I gain from using this app?"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#111111" />
-
-                <TextView
-                    android:id="@+id/faq4_answer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="You’ll see where you’ve been, how you traveled, how long you stayed, and how often you return to places. It’s a helpful way to reflect on routines, mobility, and travel time."
+                    android:text="@string/faq_auto_delete_data_description"
                     android:textSize="15sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
@@ -192,7 +132,7 @@
                     android:id="@+id/faq5_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How do I delete my data manually?"
+                    android:text="@string/faq_data_deletion_title"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#111111" />
@@ -201,7 +141,67 @@
                     android:id="@+id/faq5_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Navigate to the User Menu > Timeline Settings. There, you’ll find options to delete specific sessions or clear all history."
+                    android:text="@string/faq_data_deletion_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq3_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq3_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_data_storage_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq3_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_data_storage_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq4_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq4_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_insights_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq4_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faw_insights_description"
                     android:textSize="15sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
@@ -222,7 +222,7 @@
                     android:id="@+id/faq6_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="What happens if I force stop the app while recording?"
+                    android:text="@string/faq_force_stop_app_title"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#111111" />
@@ -231,7 +231,7 @@
                     android:id="@+id/faq6_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="If the app is force stopped, sensor recording will halt and data will not be saved for that session. It’s best to stop recording manually."
+                    android:text="@string/faq_force_stop_description"
                     android:textSize="15sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
@@ -252,7 +252,7 @@
                     android:id="@+id/faq7_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Why is the map not showing my full route?"
+                    android:text="@string/faq_missing_route_title"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#111111" />
@@ -261,7 +261,7 @@
                     android:id="@+id/faq7_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="This may be due to GPS signal issues, battery optimization settings, or missing permissions. Make sure the app has location access and is not being restricted in the background."
+                    android:text="@string/faq_missing_route_description"
                     android:textSize="15sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"
@@ -282,7 +282,7 @@
                     android:id="@+id/faq8_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How does location tracking work?"
+                    android:text="@string/faq_location_tracking_working_principle_title"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#111111" />
@@ -291,67 +291,7 @@
                     android:id="@+id/faq8_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Timeline collects your GPS location periodically and logs time spent at places. It does not run continuously and minimizes battery usage."
-                    android:textSize="15sp"
-                    android:textColor="#444444"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/faq9_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/faq9_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Will my data be automatically deleted?"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#111111" />
-
-                <TextView
-                    android:id="@+id/faq9_answer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="No. All session data stays on your device until you manually delete it via the Timeline Settings page."
-                    android:textSize="15sp"
-                    android:textColor="#444444"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/faq10_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/faq10_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Is my data private?"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#111111" />
-
-                <TextView
-                    android:id="@+id/faq10_answer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Yes. All data is stored only on your device. Timeline does not share anything unless you manually export it."
+                    android:text="@string/faq_location_tracking_working_principle_description"
                     android:textSize="15sp"
                     android:textColor="#444444"
                     android:layout_marginTop="8dp"

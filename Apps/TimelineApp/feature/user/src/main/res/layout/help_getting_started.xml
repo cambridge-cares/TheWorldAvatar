@@ -41,7 +41,7 @@
                 android:id="@+id/getting_started_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Getting Started with Timeline"
+                android:text="@string/get_start_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#222222"
@@ -52,7 +52,7 @@
                 android:id="@+id/getting_started_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="This page will help you do the set up, learn the basics, and start logging your journey automatically with Timeline."
+                android:text="@string/get_start_description"
                 android:textSize="15sp"
                 android:textColor="#666666"
                 android:gravity="center"
@@ -67,12 +67,12 @@
                 <TextView
                     android:id="@+id/step1_title"
                     style="@style/HelpCardTitle"
-                    android:text="Set Up Your Account" />
+                    android:text="@string/set_up_your_account" />
 
                 <TextView
                     android:id="@+id/step1_subtitle"
                     style="@style/HelpCardSubtitle"
-                    android:text="Sign in or create an account to save preferences, link your data, and sync across devices securely.." />
+                    android:text="@string/set_up_account_description" />
             </LinearLayout>
 
 
@@ -83,12 +83,12 @@
                 <TextView
                     android:id="@+id/step2_title"
                     style="@style/HelpCardTitle"
-                    android:text=" Allow Location Access" />
+                    android:text="@string/allow_location_access" />
 
                 <TextView
                     android:id="@+id/step2_subtitle"
                     style="@style/HelpCardSubtitle"
-                    android:text="Timeline uses your device's GPS and motion sensors. Grant location permission when prompted to ensure accurate tracking." />
+                    android:text="@string/allow_location_access_description" />
             </LinearLayout>
 
 
@@ -100,12 +100,12 @@
                 <TextView
                     android:id="@+id/step3_title"
                     style="@style/HelpCardTitle"
-                    android:text="Choose What to Track" />
+                    android:text="@string/choose_what_to_track" />
 
                 <TextView
                     android:id="@+id/step3_subtitle"
                     style="@style/HelpCardSubtitle"
-                    android:text="Go to Sensor Settings to enable sensors like location, movement, or battery. Toggle only what’s useful to you." />
+                    android:text="@string/choose_what_to_track_description" />
             </LinearLayout>
 
             <LinearLayout
@@ -115,12 +115,12 @@
                 <TextView
                     android:id="@+id/step4_title"
                     style="@style/HelpCardTitle"
-                    android:text="Start Recording" />
+                    android:text="@string/get_start_start_recording" />
 
                 <TextView
                     android:id="@+id/step4_subtitle"
                     style="@style/HelpCardSubtitle"
-                    android:text="Tap the floating “Start Recording” button on the main screen or from the Timeline Settings page to begin logging your movements." />
+                    android:text="@string/get_start_start_recording_description" />
             </LinearLayout>
 
 
@@ -132,37 +132,18 @@
                 <TextView
                     android:id="@+id/step5_title"
                     style="@style/HelpCardTitle"
-                    android:text="View Your History" />
+                    android:text="@string/view_your_history" />
 
                 <TextView
                     android:id="@+id/step5_subtitle"
                     style="@style/HelpCardSubtitle"
-                    android:text="Swipe up the bottom sheet on the map to see daily summaries. Tap a date to explore detailed movement sessions.." />
+                    android:text="@string/view_your_history_description" />
             </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/getting_started_image_placeholder"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="16dp"
-                android:background="#E0E0E0"
-                android:foreground="?attr/selectableItemBackground"
-                android:clipToOutline="true">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="[Image Placeholder: Getting Started Overview]"
-                    android:textColor="#777777"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:padding="16dp" />
-            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Need more help? Tap the Help icon in the top-right menu to contact support or revisit tutorials."
+                android:text="@string/get_start_tips"
                 android:textSize="14sp"
                 android:textColor="#999999"
                 android:layout_marginTop="24dp"
