@@ -50,10 +50,6 @@ public class SensorSettingFragment extends Fragment {
     private SensorViewModel sensorViewModel;
     private AccountViewModel accountViewModel;
     private SensorAdapter adapter;
-    private Runnable locationPermissionCallback;
-    private Runnable audioPermissionCallback;
-    private Runnable activityRecognitionPermissionCallback;
-    private Runnable notificationPermissionCallback;
 
     private final PermissionHelper permissionHelper = new PermissionHelper(this);
 
