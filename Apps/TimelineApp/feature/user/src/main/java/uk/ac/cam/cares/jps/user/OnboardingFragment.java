@@ -53,9 +53,6 @@ public class OnboardingFragment extends Fragment {
 
     private ActivityResultLauncher<Intent> authorizationLauncher;
 
-    private static final String PREF_NAME = "onboarding";
-    private static final String SEEN_KEY = "seen";
-
     private Handler autoSlideHandler;
     private Runnable autoSlideRunnable;
     private boolean userSwiped = false;
@@ -119,11 +116,6 @@ public class OnboardingFragment extends Fragment {
             }
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
-        }
-
-        SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        if (!prefs.getBoolean(SEEN_KEY, false)) {
-            prefs.edit().putBoolean(SEEN_KEY, true).apply();
         }
 
         setupOnboardingPager();
