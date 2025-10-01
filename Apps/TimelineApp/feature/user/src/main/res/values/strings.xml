@@ -224,6 +224,14 @@
     <string name="view_your_history">View Your History</string>
     <string name="view_your_history_description">Swipe up the bottom sheet on the map to see daily summaries. Tap a date to explore detailed movement sessions..</string>
     <string name="get_start_tips">Need more help? Tap the Help icon in the top-right menu to contact support or revisit tutorials.</string>
+    <string name="upload_frequency">Upload Frequency</string>
+    <string name="upload_frequency_description">Control how frequent you would like the app to upload data to cloud</string>
+    <string name="recording_note">Note: Sensors cannot be toggled while recording is active.</string>
+    <string name="auto_start_description">Automatically start recording your activity when the app is opened</string>
+    <string name="auto_start_recording_off">Auto-Start Recording (off)</string>
+    <string name="auto_delete_on_off">Auto-delete (off)</string>
+    <string name="auto_delete_on_off_option">Choose an auto-delete option</string>
+    <string name="auto_delete_on_off_description">Automatically delete old location data after a chosen period</string>
 
 
 </resources>

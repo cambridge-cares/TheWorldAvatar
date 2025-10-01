@@ -9,4 +9,14 @@
     <style name="Widget.TWA.BottomSheet" parent="Widget.Material3.BottomSheet">
         <item name="backgroundTint">?attr/colorSurfaceVariant</item>
     </style>
+
+    <style name="SubText" parent="@android:style/TextAppearance">
+        <item name="android:textSize"> 14sp </item>
+        <item name="android:textColor"> #888888 </item>
+    </style>
+
+    <style name="Description" parent="@android:style/TextAppearance">
+        <item name="android:textSize"> 15sp </item>
+        <item name="android:textColor"> #444444 </item>
+    </style>
 </resources>

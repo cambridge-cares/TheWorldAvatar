@@ -49,14 +49,6 @@ public class TimelineSettingFragment extends Fragment {
     }
 
     private void initListeners() {
-        binding.btnToggleTimeline.setOnClickListener(v -> {
-            boolean currentlyOn = binding.btnToggleTimeline.getText().toString().equals("Turn Off");
-            binding.btnToggleTimeline.setText(currentlyOn ? "Turn On" : "Turn Off");
-            Toast.makeText(requireContext(),
-                    "Recording " + (currentlyOn ? "stopped" : "started"),
-                    Toast.LENGTH_SHORT).show();
-        });
-
         boolean isAutostartEnabled = preferences.getBoolean(KEY_AUTOSTART, false);
         binding.switchAutostart.setChecked(isAutostartEnabled);
         updateAutostartLabel(isAutostartEnabled);
@@ -72,11 +64,6 @@ public class TimelineSettingFragment extends Fragment {
         binding.btnAutoDelete.setOnClickListener(v ->
                 Toast.makeText(requireContext(),
                         "Auto-delete options coming soon",
-                        Toast.LENGTH_SHORT).show());
-
-        binding.btnViewHistory.setOnClickListener(v ->
-                Toast.makeText(requireContext(),
-                        "History viewer coming soon",
                         Toast.LENGTH_SHORT).show());
 
         binding.btnDeleteAll.setOnClickListener(v ->
