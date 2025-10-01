@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.sensor.source.network;
 
 
 
-import static uk.ac.cam.cares.jps.utils.di.UtilsModule.compressData;
+import static uk.ac.cam.cares.jps.utils.Utils.compressData;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
