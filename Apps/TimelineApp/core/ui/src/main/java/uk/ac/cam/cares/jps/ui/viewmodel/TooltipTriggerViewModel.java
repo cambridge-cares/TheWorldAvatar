@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 public class TooltipTriggerViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> shouldTriggerTooltip = new MutableLiveData<>(false);
-
     public LiveData<Boolean> getShouldTriggerTooltips() {
         return shouldTriggerTooltip;
     }

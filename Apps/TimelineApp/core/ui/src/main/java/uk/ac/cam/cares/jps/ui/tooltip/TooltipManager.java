@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.ui.R;
 import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
+import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
 
 public class TooltipManager {
 
@@ -113,7 +115,6 @@ public class TooltipManager {
         TextView titleView = tooltipView.findViewById(R.id.tooltip_title);
         TextView messageView = tooltipView.findViewById(R.id.tooltip_message);
         Button nextButton = tooltipView.findViewById(R.id.tooltip_next_button);
-        CheckBox dontShowAgain = tooltipView.findViewById(R.id.checkbox_dont_show_again);
         LinearLayout dotContainer = tooltipView.findViewById(R.id.tooltip_dots);
         ImageView arrowUp = tooltipView.findViewById(R.id.tooltip_arrow_up);
         ImageView arrowDown = tooltipView.findViewById(R.id.tooltip_arrow_down);
@@ -121,7 +122,9 @@ public class TooltipManager {
 
         titleView.setText(step.title);
         messageView.setText(step.message);
-        dontShowAgain.setChecked(false);
+        if (index == steps.size() - 1) {
+            nextButton.setText(R.string.ok);
+        }
 
         dotContainer.removeAllViews();
         for (int i = 0; i < steps.size(); i++) {
@@ -179,7 +182,7 @@ public class TooltipManager {
         }, 150);
 
         nextButton.setOnClickListener(v -> {
-            if (dontShowAgain.isChecked()) {
+            if (currentStep == steps.size() - 1) {
                 appPreferenceViewModel.setSkipTooltips(true);
             }
             currentStep++;

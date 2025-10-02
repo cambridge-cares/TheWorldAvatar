@@ -57,15 +57,6 @@
             android:orientation="horizontal"
             android:paddingBottom="8dp" />
 
-        <CheckBox
-            android:id="@+id/checkbox_dont_show_again"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Don’t show again"
-            android:buttonTint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:paddingBottom="4dp" />
-
         <Button
             android:id="@+id/tooltip_next_button"
             android:layout_width="match_parent"
