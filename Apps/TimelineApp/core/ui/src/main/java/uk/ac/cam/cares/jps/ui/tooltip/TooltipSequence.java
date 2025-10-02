@@ -1,13 +1,14 @@
 package uk.ac.cam.cares.jps.ui.tooltip;
 
-import android.app.Activity;
 import android.util.Log;
 import android.view.View;
+
+import androidx.fragment.app.FragmentActivity;
 
 import uk.ac.cam.cares.jps.ui.R;
 
 public class TooltipSequence {
-    public static void launch(Activity activity, View firstTarget, View secondTarget, View thirdTarget, View fourthTarget) {
+    public static void launch(FragmentActivity activity, View firstTarget, View secondTarget, View thirdTarget, View fourthTarget) {
         TooltipManager tooltipManager = new TooltipManager(activity, () ->
                 Log.d("TooltipDebug", "Tooltips finished"));
 

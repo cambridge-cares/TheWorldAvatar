@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.user;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,18 +11,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.FragmentTimelineSettingBinding;
+import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
 
 @AndroidEntryPoint
 public class TimelineSettingFragment extends Fragment {
 
     private FragmentTimelineSettingBinding binding;
-    private SharedPreferences preferences;
-    private static final String PREF_NAME = "TimelinePrefs";
-    private static final String KEY_DURATION = "recording_duration";
-    private static final String KEY_AUTOSTART = "autostart_enabled";
+    private AppPreferenceViewModel appPreferenceViewModel;
 
     private final String[] durations = {
             "15 minutes", "30 minutes", "1 hour", "2 hours", "1 day", "No limit"
@@ -40,7 +37,7 @@ public class TimelineSettingFragment extends Fragment {
         binding = FragmentTimelineSettingBinding.inflate(inflater, container, false);
         binding.setLifecycleOwner(getViewLifecycleOwner());
 
-        preferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        appPreferenceViewModel = new ViewModelProvider(requireActivity()).get(AppPreferenceViewModel.class);
 
         setupSpinner();
         initListeners();
@@ -49,13 +46,17 @@ public class TimelineSettingFragment extends Fragment {
     }
 
     private void initListeners() {
-        boolean isAutostartEnabled = preferences.getBoolean(KEY_AUTOSTART, false);
-        binding.switchAutostart.setChecked(isAutostartEnabled);
-        updateAutostartLabel(isAutostartEnabled);
+        appPreferenceViewModel.autoStart.observe(getViewLifecycleOwner(), isAutostartEnabled -> {
+            if (isAutostartEnabled == null) {
+                return;
+            }
+
+            binding.switchAutostart.setChecked(isAutostartEnabled);
+            binding.labelAutostart.setText("Auto-Start Recording (" + (isAutostartEnabled ? "on" : "off") + ")");
+        });
 
         binding.switchAutostart.setOnCheckedChangeListener((btn, isChecked) -> {
-            preferences.edit().putBoolean(KEY_AUTOSTART, isChecked).apply();
-            updateAutostartLabel(isChecked);
+            appPreferenceViewModel.setAutoStart(isChecked);
             Toast.makeText(requireContext(),
                     "Auto-start " + (isChecked ? "enabled" : "disabled"),
                     Toast.LENGTH_SHORT).show();
@@ -75,12 +76,8 @@ public class TimelineSettingFragment extends Fragment {
                 requireActivity().getOnBackPressedDispatcher().onBackPressed());
     }
 
-    private void updateAutostartLabel(boolean enabled) {
-        binding.labelAutostart.setText("Auto-Start Recording (" + (enabled ? "on" : "off") + ")");
-    }
 
-
-    //just placeholder durations, not implemented yet
+    // TODO: just placeholder durations, not implemented yet
     private void setupSpinner() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
@@ -90,11 +87,12 @@ public class TimelineSettingFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerDuration.setAdapter(adapter);
 
-        String saved = preferences.getString(KEY_DURATION, "15 minutes");
-        int savedIndex = java.util.Arrays.asList(durations).indexOf(saved);
-        if (savedIndex >= 0) {
-            binding.spinnerDuration.setSelection(savedIndex);
-        }
+        appPreferenceViewModel.uploadDuration.observe(getViewLifecycleOwner(), duration -> {
+            int savedIndex = java.util.Arrays.asList(durations).indexOf(duration);
+            if (savedIndex >= 0) {
+                binding.spinnerDuration.setSelection(savedIndex);
+            }
+        });
 
         binding.spinnerDuration.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             boolean firstSelection = true;
@@ -107,7 +105,7 @@ public class TimelineSettingFragment extends Fragment {
                 }
 
                 String selected = durations[position];
-                preferences.edit().putString(KEY_DURATION, selected).apply();
+                appPreferenceViewModel.setUploadDuration(selected);
                 Toast.makeText(requireContext(),
                         "Duration set to " + selected,
                         Toast.LENGTH_SHORT).show();

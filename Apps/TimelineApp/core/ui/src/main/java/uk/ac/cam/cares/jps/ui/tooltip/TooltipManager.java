@@ -1,17 +1,13 @@
 package uk.ac.cam.cares.jps.ui.tooltip;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
@@ -19,14 +15,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.ui.R;
+import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
 
 public class TooltipManager {
-
-    private static final String TAG = "TooltipDebug";
 
     private final Activity activity;
     private final FrameLayout rootOverlay;
@@ -35,13 +35,15 @@ public class TooltipManager {
     private int currentStep = 0;
     private View tooltipView;
     private TooltipOverlayView overlayView;
-    private SharedPreferences prefs;
+    private AppPreferenceViewModel appPreferenceViewModel;
+    private final Logger LOGGER = Logger.getLogger(TooltipManager.class);
 
-    public TooltipManager(Activity activity, Runnable onComplete) {
+    public TooltipManager(FragmentActivity activity, Runnable onComplete) {
         this.activity = activity;
         this.rootOverlay = activity.findViewById(android.R.id.content);
-        this.prefs = activity.getSharedPreferences("tooltip_prefs", Context.MODE_PRIVATE);
         this.onComplete = onComplete;
+
+        appPreferenceViewModel = new ViewModelProvider(activity).get(AppPreferenceViewModel.class);
     }
 
     public void addStep(View anchor, String title, String message, TooltipStyle style) {
@@ -53,12 +55,8 @@ public class TooltipManager {
     }
 
     public void start() {
-        if (prefs.getBoolean("tooltip_skip", false)) {
-            Log.d(TAG, "Tooltip skipped by user preference.");
-            return;
-        }
         if (steps.isEmpty()) {
-            Log.d(TAG, "No tooltip steps to show.");
+            LOGGER.info("No tooltip steps to show.");
             return;
         }
         currentStep = 0;
@@ -67,6 +65,7 @@ public class TooltipManager {
 
     private void showStep(int index) {
         if (index >= steps.size()) {
+            appPreferenceViewModel.setSkipTooltips(true);
             dismiss();
             return;
         }
@@ -181,14 +180,14 @@ public class TooltipManager {
 
         nextButton.setOnClickListener(v -> {
             if (dontShowAgain.isChecked()) {
-                prefs.edit().putBoolean("tooltip_skip", true).apply();
+                appPreferenceViewModel.setSkipTooltips(true);
             }
             currentStep++;
             showStep(currentStep);
         });
 
         closeButton.setOnClickListener(v -> {
-            prefs.edit().putBoolean("tooltip_skip", true).apply();
+            appPreferenceViewModel.setSkipTooltips(true);
             dismiss();
         });
     }

@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.timeline;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -17,8 +15,6 @@ import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -52,6 +48,7 @@ import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipSequence;
 import uk.ac.cam.cares.jps.timeline.viewmodel.RecordingViewModel;
+import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
 import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
@@ -64,7 +61,6 @@ public class TimelineFragment extends Fragment {
 
     private FragmentTimelineBinding binding;
     private final Logger LOGGER = Logger.getLogger(TimelineFragment.class);
-    private final String TAG = "TooltipDebug";
 
     private MapView mapView;
     private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
@@ -96,13 +92,12 @@ public class TimelineFragment extends Fragment {
 
         sensorViewModel = new ViewModelProvider(this).get(RecordingViewModel.class);
         tooltipTriggerViewModel = new ViewModelProvider(requireActivity()).get(TooltipTriggerViewModel.class);
-        tooltipTriggerViewModel.requestTooltipTrigger();
 
         permissionHelper = new PermissionHelper(this);
 
-        handleTooltipTrigger();
+        setupAppPreference();
+        setupTooltipsViewModel();
         setupRecordingButton();
-        handleInitialLocationPrompt();
         updateUIForThemeMode(isDarkModeEnabled());
 
         new TrajectoryManager(this, mapView);
@@ -119,14 +114,6 @@ public class TimelineFragment extends Fragment {
 
         scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
 
-        SharedPreferences prefs = requireContext().getSharedPreferences("TimelinePrefs", Context.MODE_PRIVATE);
-        if (prefs.getBoolean("autostart_enabled", false)) {
-            autoStartRecordingIfPossible();
-        }
-
-        UserAccountViewModel userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        userAccountViewModel.fetchAndSetUserInfo();
-
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
             if (Boolean.TRUE.equals(hasError)) {
                 Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
@@ -134,11 +121,34 @@ public class TimelineFragment extends Fragment {
         });
     }
 
+    private void setupAppPreference() {
+        AppPreferenceViewModel appPreferenceViewModel = new ViewModelProvider(requireActivity()).get(AppPreferenceViewModel.class);
 
+        appPreferenceViewModel.skipTooltips.observe(getViewLifecycleOwner(), skipTooltips -> {
+            if (skipTooltips != null && !skipTooltips) {
+                tooltipTriggerViewModel.requestTooltipTrigger();
+            }
+        });
 
-    private void handleTooltipTrigger() {
+        appPreferenceViewModel.autoStart.observe(getViewLifecycleOwner(), shouldAutoStart -> {
+            if (shouldAutoStart != null && shouldAutoStart) {
+                autoStartRecordingIfPossible();
+            }
+        });
+
+        appPreferenceViewModel.locationPermissionPrompted.observe(getViewLifecycleOwner(), isLocationPermissionPrompted -> {
+            if (isLocationPermissionPrompted != null && isLocationPermissionPrompted) {
+                return;
+            }
+
+            appPreferenceViewModel.setLocationPermissionPrompted();
+            handleInitialLocationPrompt();
+        });
+    }
+
+    private void setupTooltipsViewModel() {
         tooltipTriggerViewModel.getShouldTriggerTooltips().observe(getViewLifecycleOwner(), shouldTrigger -> {
-            if (Boolean.TRUE.equals(shouldTrigger)) {
+            if (shouldTrigger) {
                 tooltipTriggerViewModel.clearTrigger();
                 showIntroTooltips();
             }
@@ -186,9 +196,12 @@ public class TimelineFragment extends Fragment {
                 }
 
                 List<String> permissions = new ArrayList<>();
-                if (sensors.contains(SensorType.LOCATION)) permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-                if (sensors.contains(SensorType.SOUND)) permissions.add(Manifest.permission.RECORD_AUDIO);
-                if (sensors.contains(SensorType.ACTIVITY)) permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
+                if (sensors.contains(SensorType.LOCATION))
+                    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                if (sensors.contains(SensorType.SOUND))
+                    permissions.add(Manifest.permission.RECORD_AUDIO);
+                if (sensors.contains(SensorType.ACTIVITY))
+                    permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
                 permissions.add(Manifest.permission.POST_NOTIFICATIONS);
 
                 permissionHelper.requestPermissionsInChain(permissions, sensorViewModel::startRecording);
@@ -198,13 +211,6 @@ public class TimelineFragment extends Fragment {
 
 
     private void handleInitialLocationPrompt() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
-        boolean wasPrompted = prefs.getBoolean("location_permission_prompted", false);
-
-        if (!wasPrompted) {
-            prefs.edit().putBoolean("location_permission_prompted", true).apply();
-        }
-
         permissionHelper.requestPermissionsInChain(
                 List.of(Manifest.permission.ACCESS_FINE_LOCATION),
                 () -> {
@@ -218,7 +224,6 @@ public class TimelineFragment extends Fragment {
                 }
         );
     }
-
 
 
     private void getAndCenterUserLocation() {

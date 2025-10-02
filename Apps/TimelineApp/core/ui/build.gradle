@@ -8,5 +8,6 @@ android {
 
 dependencies {
     implementation project(path: ':core:login')
+    implementation project(path: ':core:data')
     implementation project(path: ':core:utils')
 }

@@ -2,9 +2,7 @@ package uk.ac.cam.cares.jps.user;
 
 import static android.app.Activity.RESULT_CANCELED;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -37,6 +35,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentOnboardingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
@@ -96,6 +96,10 @@ public class OnboardingFragment extends Fragment {
             if (hasLogin) {
                 initLoginDependentViewModel();
                 sensorViewModel.registerPhoneToUser();
+
+                setupUserAccountViewModel();
+                setupAppPreferenceViewModel();
+
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                         .fromUri(Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.timeline_fragment_link)))
                         .build();
@@ -123,6 +127,17 @@ public class OnboardingFragment extends Fragment {
 
         loginViewModel.initAuth();
         return binding.getRoot();
+    }
+
+
+    private void setupUserAccountViewModel() {
+        UserAccountViewModel userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
+        userAccountViewModel.fetchAndSetUserInfo();
+    }
+
+    private void setupAppPreferenceViewModel() {
+        AppPreferenceViewModel appPreferenceViewModel = new ViewModelProvider(requireActivity()).get(AppPreferenceViewModel.class);
+        appPreferenceViewModel.loadAllPreferences();
     }
 
     private void setupOnboardingPager() {
