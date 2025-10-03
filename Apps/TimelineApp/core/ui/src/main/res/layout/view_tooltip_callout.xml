@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tooltip_card"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:elevation="16dp"
+    android:background="@drawable/bg_tooltip_card"
+    android:padding="0dp">
+
+    <LinearLayout
+        android:id="@+id/tooltip_content_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="240dp"
+        android:maxWidth="320dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+            <ImageView
+                android:id="@+id/tooltip_close"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_close"
+                android:contentDescription="Close tooltip" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tooltip_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tooltip Title"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tooltip_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tooltip description goes here."
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:paddingBottom="8dp" />
+
+        <LinearLayout
+            android:id="@+id/tooltip_dots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp" />
+
+        <Button
+            android:id="@+id/tooltip_next_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:textAllCaps="false"
+            android:backgroundTint="#FFFFFF"
+            android:textColor="#11616C"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/tooltip_arrow_up"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_up"
+        android:layout_gravity="top|center_horizontal"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/tooltip_arrow_down"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_down"
+        android:layout_gravity="bottom|center_horizontal"
+        android:visibility="gone" />
+</FrameLayout>

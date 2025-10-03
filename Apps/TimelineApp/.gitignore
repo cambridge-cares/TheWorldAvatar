@@ -30,3 +30,5 @@ local.properties
 /feature/user/build
 /feature/timeline/build
 /app/build
+
+*.png

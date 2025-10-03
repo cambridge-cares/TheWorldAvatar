@@ -1,13 +1,9 @@
 ext {
-    hilt_version = "2.44"
     work_version = "2.8.0"
     hilt_worker_version = "1.0.0"
 }
 
 dependencies {
-    // Hilt Dependencies
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // WorkManager Dependencies
     implementation "androidx.work:work-runtime-ktx:$work_version"

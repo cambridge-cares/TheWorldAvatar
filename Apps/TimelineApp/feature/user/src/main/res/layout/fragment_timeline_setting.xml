@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@android:color/white">
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/timeline_top_appbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:fitsSystemWindows="true"
+                app:navigationIcon="@drawable/back"
+                app:navigationIconTint="?attr/colorOnSurface"
+                app:title="Timeline Settings"
+                app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+                app:titleTextColor="?attr/colorOnSurface" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/component_margin_small"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/component_margin">
+                <TextView
+                    android:id="@+id/label_autostart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/auto_start_recording_off"
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    android:drawablePadding="8dp"
+                    app:drawableStartCompat="@drawable/ic_autostart"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Switch
+                    android:id="@+id/switch_autostart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/label_autostart"
+                    app:layout_constraintBottom_toBottomOf="@id/label_autostart"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:thumbTint="@color/switch_thumb_selector"
+                    app:trackTint="@color/switch_track_selector"/>
+
+                <TextView
+                    android:id="@+id/autostart_subtext"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/auto_start_description"
+                    style="@style/SubText"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/label_autostart"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#CCCCCC"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    app:layout_constraintTop_toBottomOf="@id/autostart_subtext"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/component_margin"
+                >
+                    <TextView
+                        android:id="@+id/label_autodelete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/auto_delete_on_off"
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:drawablePadding="8dp"
+                        app:drawableStartCompat="@drawable/ic_delete"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/btn_auto_delete"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="?android:selectableItemBackground"
+                        android:clickable="true"
+                        android:drawablePadding="8dp"
+                        android:focusable="true"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="12dp"
+                        android:text="@string/auto_delete_on_off_option"
+                        android:textColor="?android:textColorPrimary"
+                        app:drawableEndCompat="@drawable/ic_chevron_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/label_autodelete" />
+
+                    <TextView
+                        android:id="@+id/autodelete_subtext"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/auto_delete_on_off_description"
+                        style="@style/SubText"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@id/btn_auto_delete"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#CCCCCC"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    app:layout_constraintTop_toBottomOf="@id/autodelete_subtext"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/component_margin">
+                    <TextView
+                        android:id="@+id/label_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/upload_frequency"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <Spinner
+                        android:id="@+id/spinner_duration"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/label_duration" />
+
+                    <TextView
+                        android:id="@+id/duration_hint"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/upload_frequency_description"
+                        style="@style/SubText"
+                        android:layout_marginTop="12dp"
+                        app:layout_constraintTop_toBottomOf="@id/spinner_duration"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    app:layout_constraintTop_toBottomOf="@id/btn_delete_all"
+                    android:background="@android:color/transparent"/>
+
+                <TextView
+                    android:id="@+id/btn_delete_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delete All History Data"
+                    android:textColor="#FF0000"
+                    android:textStyle="bold"
+                    android:padding="16dp"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"/>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</layout>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceVariant"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:titleCentered="true" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/map_help_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="32dp">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_map"
+                android:contentDescription="@string/map_icon"
+                android:layout_marginTop="12dp"
+                app:tint="#3b4279" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_description"
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp" />
+
+            <LinearLayout
+                android:id="@+id/section_map_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/title_map_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/map_overview_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:paddingEnd="8dp"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <LinearLayout
+                    android:id="@+id/content_map_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_overview_description"
+                        android:textSize="15sp"
+                        android:textColor="#444444" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/section_map_usage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/title_map_usage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/map_usage_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:paddingEnd="8dp"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <LinearLayout
+                    android:id="@+id/content_map_usage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nmap_navigation_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#111111"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_navigation_description1"
+                        android:textSize="15sp"
+                        android:textColor="#444444"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_navigation_description2"
+                        android:textSize="15sp"
+                        android:textColor="#444444"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/starting_position_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#222222"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_starting_position_description"
+                        android:textSize="15sp"
+                        android:textColor="#444444" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/section_icon_legend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/title_icon_legend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/map_icon_legend_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:paddingEnd="8dp"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <LinearLayout
+                    android:id="@+id/content_icon_legend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_icon_legend_description"
+                        android:textSize="15sp"
+                        android:textColor="#444444"
+                        android:layout_marginBottom="12dp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="235dp"
+                        android:layout_marginBottom="4dp"
+                        android:clipToOutline="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="@string/timeline_trajectory_image"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/map" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_quick_summary_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#222222"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/map_quick_summary_description"
+                        android:textSize="15sp"
+                        android:textColor="#444444" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_tip"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:paddingHorizontal="24dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

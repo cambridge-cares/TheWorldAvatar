@@ -95,7 +95,7 @@ public class SensorCollectionStateManagerRepository {
      * Run provided functions (in Callback) with isRecording
      * @param callback
      */
-    public void getRecordingStatus(RepositoryCallback<Boolean> callback) {
+    public void getIsRecording(RepositoryCallback<Boolean> callback) {
         checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getRecordingState());
     }
 

@@ -1,0 +1,965 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/top_appbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:navigationIcon="@drawable/back"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:title="Sensors &amp; Permissions"
+            app:titleCentered="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/help_scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:padding="24dp"
+            android:background="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/top_appbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/sensor_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingBottom="32dp">
+
+                <TextView
+                    android:id="@+id/sensor_doc_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sensor_permission_title"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#222222"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/sensor_doc_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sensor_permission_description"
+                    android:textSize="15sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="20dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/motion_sensors"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_accelerometer"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_accelerometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_accelerometer"
+                                android:contentDescription="@string/accelerometer_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/accelerometer"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_accelerometer"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_accelerometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/acceleration_description"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/acceleration_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_activity"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_activity"
+                                android:contentDescription="@string/activity_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/activity_recognition"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_activity"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/activity_recognition_description"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/activity_recognition_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_activity_recognition"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_gravity"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_gravity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_gravity"
+                                android:contentDescription="@string/gravity_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/gravity"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_gravity"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_gravity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/gravity_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/gravity_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_gyroscope"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_gyroscope"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_gyro"
+                                android:contentDescription="@string/gyroscope_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/gyroscope"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_gyroscope"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_gyroscope"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/gyroscope_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/gyroscope_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/location"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_location"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_location"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_location"
+                                android:contentDescription="@string/location_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/location_gps"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_location"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_location"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/location_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/location_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_access_fine_location"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_magnetometer"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_magnetometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_magnet"
+                                android:contentDescription="@string/magnetometer_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/magnetometer"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_magnetometer"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_magnetometer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/magnetometer_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/magnetometer_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/audio"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_microphone"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_microphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_audio"
+                                android:contentDescription="@string/microphone_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/microphone_title"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_microphone"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_microphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/microphone_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/microphone_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_record_audio"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/environmental_sensors"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_light"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_light"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_light"
+                                android:contentDescription="@string/light_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/light"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_light"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_light"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/light_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/light_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_humidity"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_humidity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_humidity"
+                                android:contentDescription="@string/humidity_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/humidity"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_humidity"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_humidity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/humidity_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/data_relative_humidity2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_pressure"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:cardBackgroundColor="#FDFDFD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/header_pressure"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_sensor_pressure"
+                                android:contentDescription="@string/pressure_icon"
+                                android:layout_marginEnd="12dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/pressure"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#222222" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_pressure"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:contentDescription="Expand" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/content_pressure"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:paddingTop="12dp">
+
+                            <TextView
+                                android:text="@string/pressure_description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textColor="#444444"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:text="@string/pressure_description2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#333333" />
+
+                            <TextView
+                                android:text="@string/permission_not_required"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#888888"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+
+
+                <TextView
+                    android:id="@+id/sensor_footer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sensor_tips"
+                    android:textSize="13sp"
+                    android:textColor="#999999"
+                    android:gravity="center"
+                    android:paddingHorizontal="24dp"
+                    android:layout_marginTop="24dp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

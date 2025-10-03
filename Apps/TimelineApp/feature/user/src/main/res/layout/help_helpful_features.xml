@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceVariant"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:titleCentered="true" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/getting_started_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/helpful_features_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/features_overview_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:id="@+id/getting_started_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/features_overview_description"
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp"
+                android:paddingHorizontal="16dp" />
+
+            <LinearLayout
+                android:id="@+id/step1_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/step1_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_senssion_history_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step1_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_session_history_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step2_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/step2_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_sensor_preference_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step2_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_sensor_preference_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/recording" />
+                </FrameLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/step3_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/step3_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_data_privacy_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step3_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_data_privacy_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step5_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/step5_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_auto_start_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step5_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_auto_start_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/start" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step7_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/step7_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_tooltips_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step7_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_tooltips_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/tooltip" />
+                </FrameLayout>
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:id="@+id/step4_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/step4_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_summary_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/step4_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/features_summary_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/features_tips"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:layout_marginTop="24dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
