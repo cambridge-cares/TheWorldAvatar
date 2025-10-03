@@ -89,7 +89,7 @@ public class SensorSettingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        sensorViewModel.checkRecordingStatusAndUpdateUI(requireContext());
+        sensorViewModel.checkRecordingStatusAndUpdateUI();
 
         setupRecyclerView(view);
 

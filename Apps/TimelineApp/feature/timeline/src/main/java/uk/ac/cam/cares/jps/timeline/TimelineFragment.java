@@ -47,14 +47,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.ui.tooltip.TooltipSequence;
-import uk.ac.cam.cares.jps.timeline.viewmodel.RecordingViewModel;
+import uk.ac.cam.cares.jps.sensor.ui.RecordingViewModel;
 import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
 import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {

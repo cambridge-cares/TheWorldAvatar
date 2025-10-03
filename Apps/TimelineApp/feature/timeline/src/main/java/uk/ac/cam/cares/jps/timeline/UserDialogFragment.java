@@ -20,10 +20,9 @@ import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentUserDialogBinding;
 import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
-import uk.ac.cam.cares.jps.timeline.viewmodel.RecordingViewModel;
+import uk.ac.cam.cares.jps.sensor.ui.RecordingViewModel;
 import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint
