@@ -58,17 +58,7 @@ public class SensorViewModel extends RecordingViewModel {
         this.userPhoneRepository = userPhoneRepository;
         this.sensorItems = new ArrayList<>();
 
-        sensorCollectionStateManagerRepository.getIsRecording(new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                recordingState.setIsRecording(result);
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                recordingState.setHasAccountError(true);
-            }
-        });
+        checkRecordingStatusAndUpdateUI();
         loadSensorItems();
         loadSelectedSensors();
     }
@@ -119,24 +109,6 @@ public class SensorViewModel extends RecordingViewModel {
         } else {
             startRecording();
         }
-    }
-
-
-    /**
-     * Checks the current recording status by verifying if a task with a given ID is running and updates the UI accordingly.
-     */
-    public void checkRecordingStatusAndUpdateUI() {
-        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(String taskId) {
-                recordingState.setIsRecording(sensorRepository.isTaskRunning(taskId));
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                recordingState.setIsRecording(false);
-            }
-        });
     }
 
     /**

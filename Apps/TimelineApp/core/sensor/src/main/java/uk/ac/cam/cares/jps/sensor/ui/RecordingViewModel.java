@@ -37,18 +37,7 @@ public class RecordingViewModel extends ViewModel {
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
         this.recordingState = recordingState;
 
-        sensorCollectionStateManagerRepository.getIsRecording(new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                recordingState.setIsRecording(result);
-                recordingState.setHasAccountError(false);
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                recordingState.setHasAccountError(true);
-            }
-        });
+        checkRecordingStatusAndUpdateUI();
         loadSelectedSensors();
     }
 
@@ -135,6 +124,22 @@ public class RecordingViewModel extends ViewModel {
             public void onFailure(Throwable error) {
                 recordingState.setSelectedSensors(new ArrayList<>());
                 recordingState.setAllToggledOn(false);
+            }
+        });
+    }
+
+    public void checkRecordingStatusAndUpdateUI() {
+        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(String taskId) {
+                boolean isRecording = sensorRepository.isTaskRunning(taskId);
+                recordingState.setIsRecording(isRecording);
+                sensorCollectionStateManagerRepository.setRecordingState(isRecording);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                recordingState.setIsRecording(false);
             }
         });
     }
