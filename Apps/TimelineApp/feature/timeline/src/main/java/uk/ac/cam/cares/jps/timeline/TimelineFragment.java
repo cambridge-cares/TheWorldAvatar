@@ -54,6 +54,7 @@ import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {
@@ -69,8 +70,9 @@ public class TimelineFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
 
-    private RecordingViewModel sensorViewModel;
+    private RecordingViewModel recordingStateViewModel;
     private TooltipTriggerViewModel tooltipTriggerViewModel;
+    private UserAccountViewModel accountViewModel;
     private PermissionHelper permissionHelper;
 
     @Nullable
@@ -89,8 +91,9 @@ public class TimelineFragment extends Fragment {
         mapView = binding.mapView;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        sensorViewModel = new ViewModelProvider(this).get(RecordingViewModel.class);
+        recordingStateViewModel = new ViewModelProvider(this).get(RecordingViewModel.class);
         tooltipTriggerViewModel = new ViewModelProvider(requireActivity()).get(TooltipTriggerViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
 
         permissionHelper = new PermissionHelper(this);
 
@@ -113,9 +116,12 @@ public class TimelineFragment extends Fragment {
 
         scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
 
-        sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
-            if (Boolean.TRUE.equals(hasError)) {
-                Toast.makeText(requireContext(), "Please select at least one sensor before recording.", Toast.LENGTH_SHORT).show();
+        recordingStateViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasError -> {
+            if (Boolean.FALSE.equals(hasError)) {
+                return;
+            }
+            if (isVisible()) {
+                accountViewModel.getSessionExpiredDialog(this).show();
             }
         });
     }
@@ -174,7 +180,7 @@ public class TimelineFragment extends Fragment {
 
     private void setupRecordingButton() {
         FloatingActionButton fab = binding.recordingFab;
-        sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
+        recordingStateViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
             if (isRecording != null) {
                 fab.setImageResource(isRecording ? R.drawable.ic_stop : R.drawable.ic_start);
                 int bgColor = ContextCompat.getColor(requireContext(), isRecording ? R.color.fab_recording : R.color.fab_idle);
@@ -183,12 +189,12 @@ public class TimelineFragment extends Fragment {
         });
 
         fab.setOnClickListener(v -> {
-            Boolean isRecording = sensorViewModel.getIsRecording().getValue();
+            Boolean isRecording = recordingStateViewModel.getIsRecording().getValue();
             if (Boolean.TRUE.equals(isRecording)) {
-                sensorViewModel.stopRecording();
+                recordingStateViewModel.stopRecording();
             } else {
-                sensorViewModel.toggleAllSensors(true);
-                List<SensorType> sensors = sensorViewModel.getSelectedSensors().getValue();
+                recordingStateViewModel.toggleAllSensors(true);
+                List<SensorType> sensors = recordingStateViewModel.getSelectedSensors().getValue();
                 if (sensors == null || sensors.isEmpty()) {
                     Toast.makeText(requireContext(), "No sensors enabled. Cannot start recording.", Toast.LENGTH_SHORT).show();
                     return;
@@ -203,7 +209,7 @@ public class TimelineFragment extends Fragment {
                     permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
                 permissions.add(Manifest.permission.POST_NOTIFICATIONS);
 
-                permissionHelper.requestPermissionsInChain(permissions, sensorViewModel::startRecording);
+                permissionHelper.requestPermissionsInChain(permissions, recordingStateViewModel::startRecording);
             }
         });
     }
@@ -290,8 +296,8 @@ public class TimelineFragment extends Fragment {
     }
 
     private void autoStartRecordingIfPossible() {
-        sensorViewModel.toggleAllSensors(true);
-        sensorViewModel.startRecording();
+        recordingStateViewModel.toggleAllSensors(true);
+        recordingStateViewModel.startRecording();
         Toast.makeText(requireContext(), "Auto-start on", Toast.LENGTH_SHORT).show();
     }
 }
