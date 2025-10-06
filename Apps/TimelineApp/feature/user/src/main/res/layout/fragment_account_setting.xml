@@ -4,7 +4,7 @@
     <data>
         <variable
             name="accountViewModel"
-            type="uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel" />
+            type="uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView

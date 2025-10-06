@@ -38,7 +38,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
 import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentOnboardingBinding;
-import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
@@ -49,7 +48,7 @@ public class OnboardingFragment extends Fragment {
     private FragmentOnboardingBinding binding;
     private LoginViewModel loginViewModel;
     private SensorViewModel sensorViewModel;
-    private AccountViewModel accountViewModel;
+    private UserAccountViewModel accountViewModel;
 
     private ActivityResultLauncher<Intent> authorizationLauncher;
 
@@ -132,7 +131,7 @@ public class OnboardingFragment extends Fragment {
 
     private void setupUserAccountViewModel() {
         UserAccountViewModel userAccountViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        userAccountViewModel.fetchAndSetUserInfo();
+        userAccountViewModel.getUserInfo();
     }
 
     private void setupAppPreferenceViewModel() {
@@ -237,7 +236,7 @@ public class OnboardingFragment extends Fragment {
 
     private void initLoginDependentViewModel() {
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
-        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
             if (hasAccountError) {
                 accountViewModel.getSessionExpiredDialog(this).show();

@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.ui.UiUtils;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentUserPageBinding;
-import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 
 /**
  * User page
@@ -26,12 +26,12 @@ public class UserFragment extends Fragment {
     FragmentUserPageBinding binding;
     Logger LOGGER = Logger.getLogger(UserFragment.class);
 
-    private AccountViewModel accountViewModel;
+    private UserAccountViewModel accountViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
         accountViewModel.shouldShowSessionExpired.observe(getViewLifecycleOwner(), hasExpired -> {
             if (hasExpired) {
                 accountViewModel.getSessionExpiredDialog(this).show();

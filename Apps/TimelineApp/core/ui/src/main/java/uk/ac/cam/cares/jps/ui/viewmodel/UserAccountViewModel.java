@@ -1,14 +1,14 @@
 package uk.ac.cam.cares.jps.ui.viewmodel;
 
-import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import javax.inject.Inject;
 
@@ -44,7 +44,7 @@ public class UserAccountViewModel extends ViewModel {
         this.loginRepository = loginRepository;
     }
 
-    public void fetchAndSetUserInfo() {
+    public void getUserInfo() {
         loginRepository.getUserInfo(new RepositoryCallback<User>() {
             @Override
             public void onSuccess(User user) {
@@ -60,7 +60,7 @@ public class UserAccountViewModel extends ViewModel {
     }
 
     public void registerForLogoutResult(Fragment fragment) {
-        logoutLauncher = loginRepository.getLogoutLauncher(fragment, new RepositoryCallback<Pair<Boolean, String>>() {
+        logoutLauncher = loginRepository.getLogoutLauncher(fragment, new RepositoryCallback<>() {
             @Override
             public void onSuccess(Pair<Boolean, String> result) {
                 _logoutStatus.postValue(result);
@@ -90,4 +90,7 @@ public class UserAccountViewModel extends ViewModel {
         _logoutStatus.setValue(null);
     }
 
+    public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
+        return loginRepository.getSessionExpiredDialog(fragment);
+    }
 }

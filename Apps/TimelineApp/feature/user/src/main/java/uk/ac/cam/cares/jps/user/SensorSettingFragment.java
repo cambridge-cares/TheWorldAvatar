@@ -5,7 +5,6 @@ import static android.Manifest.permission.ACTIVITY_RECOGNITION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.RECORD_AUDIO;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -34,8 +33,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
-import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorAdapter;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
@@ -48,7 +47,7 @@ public class SensorSettingFragment extends Fragment {
 
     private FragmentSensorSettingBinding binding;
     private SensorViewModel sensorViewModel;
-    private AccountViewModel accountViewModel;
+    private UserAccountViewModel accountViewModel;
     private SensorAdapter adapter;
 
     private final PermissionHelper permissionHelper = new PermissionHelper(this);
@@ -66,7 +65,7 @@ public class SensorSettingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSensorSettingBinding.inflate(inflater);
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
-        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
             if (!hasAccountError) {
                 return;

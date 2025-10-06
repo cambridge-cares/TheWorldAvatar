@@ -16,8 +16,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.ui.UiUtils;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentAccountSettingBinding;
-import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
 /**
@@ -27,7 +27,7 @@ import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 public class AccountSettingFragment extends Fragment {
 
     private FragmentAccountSettingBinding binding;
-    private AccountViewModel accountViewModel;
+    private UserAccountViewModel accountViewModel;
     private SensorViewModel sensorViewModel;
 
     @Nullable
@@ -35,11 +35,12 @@ public class AccountSettingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
 
-        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
         accountViewModel.registerForLogoutResult(this);
         accountViewModel.logoutStatus.observe(getViewLifecycleOwner(), logoutStatus -> {
             if (logoutStatus.getFirst()) {
                 sensorViewModel.clearManagers(logoutStatus.getSecond());
+                accountViewModel.clearLogoutStatus();
 
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                         .fromUri(Uri.parse(requireContext().getString(uk.ac.cam.cares.jps.utils.R.string.onboarding_fragment_link)))

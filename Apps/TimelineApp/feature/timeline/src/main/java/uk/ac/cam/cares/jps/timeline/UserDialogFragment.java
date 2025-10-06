@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +63,8 @@ public class UserDialogFragment extends DialogFragment {
                 dismiss();
                 userAccountViewModel.clearLogoutStatus();
                 navigate(uk.ac.cam.cares.jps.utils.R.string.onboarding_fragment_link);
+            } else {
+                Toast.makeText(requireContext(), uk.ac.cam.cares.jps.loginmodule.R.string.cancel_logout, Toast.LENGTH_SHORT).show();
             }
         });
 
