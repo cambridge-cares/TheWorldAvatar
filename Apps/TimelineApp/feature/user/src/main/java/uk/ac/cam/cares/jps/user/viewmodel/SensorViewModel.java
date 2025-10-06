@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.user.viewmodel;
 
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
@@ -30,7 +29,6 @@ import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 @HiltViewModel
 public class SensorViewModel extends RecordingViewModel {
     private final UserPhoneRepository userPhoneRepository;
-    private final MutableLiveData<Boolean> allToggledOn = new MutableLiveData<>(false);
     private final List<SensorItem> sensorItems;
 
     /**
@@ -103,6 +101,12 @@ public class SensorViewModel extends RecordingViewModel {
         recordingState.setSelectedSensors(currentSelectedSensors);
     }
 
+    @Override
+    public void toggleAllSensors(boolean toggle) {
+        super.toggleAllSensors(toggle);
+        sensorItems.forEach(i -> i.setToggled(toggle));
+    }
+
     public void toggleRecording() {
         if (recordingState.getIsRecording().getValue() != null && recordingState.getIsRecording().getValue()) {
             stopRecording();
@@ -123,13 +127,13 @@ public class SensorViewModel extends RecordingViewModel {
 
             @Override
             public void onFailure(Throwable error) {
-                recordingState.setHasAccountError(true);
+                recordingState.postHasAccountError(true);
             }
         });
     }
 
     public LiveData<Boolean> getAllToggledOn() {
-        return allToggledOn;
+        return recordingState.getAllToggledOn();
     }
 
     public List<SensorItem> getSensorItems() {
@@ -141,7 +145,7 @@ public class SensorViewModel extends RecordingViewModel {
         sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<>() {
             @Override
             public void onSuccess(List<SensorType> loadedSelectedSensors) {
-                recordingState.setSelectedSensors(loadedSelectedSensors);
+                recordingState.postSelectedSensors(loadedSelectedSensors);
 
                 for (SensorType sensorType : loadedSelectedSensors) {
                     for (SensorItem item : sensorItems) {
@@ -152,13 +156,13 @@ public class SensorViewModel extends RecordingViewModel {
                     }
                 }
 
-                allToggledOn.setValue(loadedSelectedSensors.size() == sensorItems.size());
+                recordingState.setAllToggledOn(loadedSelectedSensors.size() == sensorItems.size());
             }
 
             @Override
             public void onFailure(Throwable error) {
-                recordingState.setSelectedSensors(new ArrayList<>());
-                allToggledOn.setValue(false);
+                recordingState.postSelectedSensors(new ArrayList<>());
+                recordingState.setAllToggledOn(false);
                 LOGGER.error("Failed to load selected sensors: " + error.getMessage());
             }
         });

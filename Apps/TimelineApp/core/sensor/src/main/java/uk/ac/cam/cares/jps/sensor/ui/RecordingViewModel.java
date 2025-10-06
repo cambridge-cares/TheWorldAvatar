@@ -61,21 +61,20 @@ public class RecordingViewModel extends ViewModel {
             sensorRepository.startRecording(sensorsToRecord, new RepositoryCallback<>() {
                 @Override
                 public void onSuccess(Boolean result) {
-                    recordingState.setIsRecording(result);
-                    recordingState.setHasAccountError(false);
+                    recordingState.postIsRecording(result);
+                    recordingState.postHasAccountError(false);
                     LOGGER.info("Recording successfully started.");
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
-                    recordingState.setHasAccountError(true);
-                    recordingState.setIsRecording(false);
+                    recordingState.postHasAccountError(true);
+                    recordingState.postIsRecording(false);
                     LOGGER.error("Recording failed to start: " + error.getMessage());
                 }
             });
         } else {
             LOGGER.warn("startRecording() called but no sensors are selected. Aborting.");
-            recordingState.setHasAccountError(true);
             recordingState.setIsRecording(false);
         }
     }
@@ -84,7 +83,6 @@ public class RecordingViewModel extends ViewModel {
         sensorRepository.stopRecording();
         recordingState.setIsRecording(false);
         sensorCollectionStateManagerRepository.setTaskId("");
-        toggleAllSensors(false);
     }
 
     public void toggleAllSensors(boolean toggle) {
@@ -108,7 +106,7 @@ public class RecordingViewModel extends ViewModel {
         sensorCollectionStateManagerRepository.clearManager(userId);
     }
 
-    private void saveSelectedSensors(List<SensorType> sensors) {
+    protected void saveSelectedSensors(List<SensorType> sensors) {
         sensorCollectionStateManagerRepository.setSelectedSensors(sensors);
     }
 
@@ -116,13 +114,13 @@ public class RecordingViewModel extends ViewModel {
         sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<>() {
             @Override
             public void onSuccess(List<SensorType> loadedSelectedSensors) {
-                recordingState.setSelectedSensors(loadedSelectedSensors);
+                recordingState.postSelectedSensors(loadedSelectedSensors);
                 recordingState.setAllToggledOn(loadedSelectedSensors.size() == SensorType.values().length);
             }
 
             @Override
             public void onFailure(Throwable error) {
-                recordingState.setSelectedSensors(new ArrayList<>());
+                recordingState.postSelectedSensors(new ArrayList<>());
                 recordingState.setAllToggledOn(false);
             }
         });
@@ -133,13 +131,13 @@ public class RecordingViewModel extends ViewModel {
             @Override
             public void onSuccess(String taskId) {
                 boolean isRecording = sensorRepository.isTaskRunning(taskId);
-                recordingState.setIsRecording(isRecording);
+                recordingState.postIsRecording(isRecording);
                 sensorCollectionStateManagerRepository.setRecordingState(isRecording);
             }
 
             @Override
             public void onFailure(Throwable error) {
-                recordingState.setIsRecording(false);
+                recordingState.postIsRecording(false);
             }
         });
     }

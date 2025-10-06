@@ -32,16 +32,24 @@ public class RecordingState {
         return _allToggledOn;
     }
 
-    public void setIsRecording(Boolean isRecording) {
+    public void postIsRecording(Boolean isRecording) {
         _isRecording.postValue(isRecording);
     }
 
-    public void setHasAccountError(Boolean hasAccountError) {
+    public void setIsRecording(Boolean isRecording) {
+        _isRecording.setValue(isRecording);
+    }
+
+    public void postHasAccountError(Boolean hasAccountError) {
         _hasAccountError.postValue(hasAccountError);
     }
 
-    public void setSelectedSensors(List<SensorType> selectedSensors) {
+    public void postSelectedSensors(List<SensorType> selectedSensors) {
         _selectedSensors.postValue(selectedSensors);
+    }
+
+    public void setSelectedSensors(List<SensorType> selectedSensors) {
+        _selectedSensors.setValue(selectedSensors);
     }
 
     public void setAllToggledOn(Boolean allToggledOn) {

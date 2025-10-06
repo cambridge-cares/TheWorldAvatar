@@ -144,8 +144,9 @@ public class SensorSettingFragment extends Fragment {
      * @param isAllToggledOn A Boolean indicating if all sensors are toggled on.
      */
     private void updateToggleAllState(Boolean isAllToggledOn) {
-        boolean isRecording = Boolean.TRUE.equals(sensorViewModel.getIsRecording().getValue());
         binding.toggleAllBtn.setText(isAllToggledOn ? R.string.toggle_off : R.string.toggle_all);
+
+        boolean isRecording = Boolean.TRUE.equals(sensorViewModel.getIsRecording().getValue());
         adapter.setTogglesEnabled(!isRecording);
     }
 
