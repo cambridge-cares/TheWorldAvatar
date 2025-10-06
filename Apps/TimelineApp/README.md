@@ -14,7 +14,7 @@ The stack should include the following services:
 - TrajectoryQueryAgent
 - Keycloak
 
-Please launch the corresponding services in the stack.
+Please refer to [timeline-stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/timeline) for more information about development and production setup.
 
 ### App
 #### Login
@@ -118,3 +118,38 @@ Relevant agents
 - [TrajectoryQueryAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TrajectoryQueryAgent)
   - Create virtual table in Geoserver for trajectory visualisation
   - Add ontop mapping for device and sensors following [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice)
+
+### Trajectory visualisation sequence diagram
+```mermaid
+sequenceDiagram
+    participant App
+    participant TrajectoryQueryAgent
+    participant Ontop
+    participant Blazegraph
+    participant TimelineDB as "Timeline Database"
+    participant Geoserver
+    participant Postgres
+    participant GeoServerJwtProxy
+
+    %% --- Create geoserver layers with TrajecotryQueryAgent ---
+    
+    rect rgba(161, 255, 206,0.2)
+    App->>TrajectoryQueryAgent: /createLayer
+    TrajectoryQueryAgent->>Geoserver: create layer using SQL view
+    TrajectoryQueryAgent->>Ontop: add ontop mapping for devices
+    TrajectoryQueryAgent->>App: return to App
+    end
+
+    rect rgba(255,182,193,0.2)
+    App->>GeoServerJwtProxy: geoserver visualisation request with Bearer token
+    GeoServerJwtProxy->>GeoServerJwtProxy: verify the validity of the Bearer token
+    GeoServerJwtProxy->>GeoServerJwtProxy: extract the user id info from the Bearer token<br/> and form the user IRI with the id
+    GeoServerJwtProxy->>Geoserver: forward the visualisation request with user IRI
+    Geoserver->>Postgres: featch data to form geojson data using SQL view <br/>(Geoserver internally handles this)
+    Geoserver->>GeoServerJwtProxy: geojson data for the requested trajectory
+    GeoServerJwtProxy->>App: forward the Geoserver response back
+    end
+```
+The above diagram illustrates the interactions between the app and remote services when the app visualises trajetory. 
+- Blue box: call TrajectoryQueryAgent to create SQL view layers in Geoserver and add ontop mapping to Ontop. *Notice*: This block is called each time the app visualises trajectory. Repeatedlly calling the `/createLayer` endpoint won't cause multiple layers generation. 
+- Pink box: the acutal visualisation call is sent to GeoserverJwtProxy and Geoserver.
