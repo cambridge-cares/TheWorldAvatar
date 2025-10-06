@@ -116,7 +116,7 @@ public class LoginRepository {
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     loginSource.authStateManager.clearLoginState();
                     NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                            .fromUri(Uri.parse(fragment.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
+                            .fromUri(Uri.parse(fragment.getString(uk.ac.cam.cares.jps.utils.R.string.onboarding_fragment_link)))
                             .build();
                     NavHostFragment.findNavController(fragment).navigate(request);
                 });

@@ -1,186 +1,207 @@
-<?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
             name="accountViewModel"
-            type="uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel" />
+            type="uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel" />
     </data>
-
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#E0E0E0"
+        android:paddingHorizontal="24dp"
         android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:theme="@style/Theme.TWA.UserItem.Text">
-
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar_layout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:orientation="vertical"
+            android:paddingTop="24dp"
+            android:paddingBottom="48dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/map_top_appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorSurfaceVariant"
-                android:fitsSystemWindows="true"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
                 app:navigationIcon="@drawable/back"
                 app:navigationIconTint="?attr/colorOnSurface"
-                app:title="Account Setting"
+                app:title="Account Settings"
+                app:titleCentered="true"
                 app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
                 app:titleTextColor="?attr/colorOnSurface" />
 
-        </com.google.android.material.appbar.AppBarLayout>
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/profile_pic"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_pic"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="48dp"
+                android:scaleType="centerCrop"
+                android:elevation="4dp"
+                app:shapeAppearanceOverlay="@style/RoundedImageView"
+                app:srcCompat="@drawable/timeline_icon" />
 
-            android:layout_marginTop="40dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-            app:shapeAppearanceOverlay="@style/RoundedImageView"
-            app:srcCompat="@drawable/timeline_icon" />
+            <TextView
+                android:id="@+id/user_name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="@{accountViewModel.name}"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000"/>
 
-        <TextView
-            android:id="@+id/placeholder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/component_margin_small"
-            android:text=""
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/profile_pic" />
+            <TextView
+                android:id="@+id/email_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:text="@{accountViewModel.email}"
+                android:textSize="14sp"
+                android:textColor="#999999"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/component_margin"
-            android:orientation="vertical"
-            android:theme="@style/Theme.TWA.UserPage"
-            app:layout_constraintTop_toBottomOf="@id/placeholder"
-            app:layout_constraintBottom_toBottomOf="parent">
+            <View android:layout_width="match_parent"
+                android:layout_height="32dp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACCOUNT"
+                android:textAllCaps="true"
+                android:textColor="#666666"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"/>
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    style="@style/Theme.TWA.UserItem"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="start"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="@dimen/component_margin_small"
-                        android:background="@drawable/outline_account_circle_24"
-                        android:backgroundTint="?attr/colorOutline" />
-
-                    <TextView
-                        android:id="@+id/user_name_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{accountViewModel.name}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <LinearLayout
-                    android:id="@+id/health_report"
-                    style="@style/Theme.TWA.UserItem"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="start"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="@dimen/component_margin_small"
-                        android:background="@drawable/outline_email_24"
-                        android:backgroundTint="?attr/colorOutline" />
-
-                    <TextView
-                        android:id="@+id/email_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{accountViewModel.email}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </LinearLayout>
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="32dp">
 
                 <TextView
                     android:id="@+id/edit_profile"
-                    style="@style/Theme.TWA.UserItem.Center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/component_margin"
-                    android:clickable="true"
-                    android:text="@string/edit_profile" />
+                    android:paddingVertical="16dp"
+                    android:text="@string/edit_profile"
+                    android:background="?attr/selectableItemBackground"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+                <View android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"/>
 
                 <TextView
                     android:id="@+id/update_password"
-                    style="@style/Theme.TWA.UserItem.Center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/component_margin"
-                    android:clickable="true"
-                    android:text="@string/update_password" />
+                    android:paddingVertical="16dp"
+                    android:text="@string/update_password"
+                    android:background="?attr/selectableItemBackground"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="YOUR ACTIVITY"
+                android:textAllCaps="true"
+                android:textColor="#666666"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:id="@+id/last_active"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="16dp"
+                    android:text="Last Active: 16 July 2025"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+
+                <View android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"/>
+
+                <TextView
+                    android:id="@+id/total_sessions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="16dp"
+                    android:text="Total Sessions Recorded: 24"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SECURITY"
+                android:textAllCaps="true"
+                android:textColor="#666666"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
 
                 <TextView
                     android:id="@+id/sign_out"
-                    style="@style/Theme.TWA.UserItem.Center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/component_margin"
-                    android:clickable="true"
-                    android:text="@string/sign_out" />
+                    android:paddingVertical="16dp"
+                    android:text="@string/sign_out"
+                    android:background="?attr/selectableItemBackground"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+                <View android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"/>
 
                 <TextView
                     android:id="@+id/delete_account"
-                    style="@style/Theme.TWA.UserItem.Center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/component_margin"
-                    android:clickable="true"
+                    android:paddingVertical="16dp"
                     android:text="@string/delete_account"
-                    android:textColor="?attr/colorError" />
+                    android:textColor="#D32F2F"
+                    android:background="?attr/selectableItemBackground"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/component_margin_xl"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
         </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

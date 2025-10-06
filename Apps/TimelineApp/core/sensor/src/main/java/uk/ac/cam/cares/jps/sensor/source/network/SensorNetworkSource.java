@@ -18,10 +18,8 @@ import java.nio.charset.StandardCharsets;
 import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
-import static uk.ac.cam.cares.jps.utils.di.UtilsModule.computeHash;
 
-import javax.inject.Inject;
-
+import static uk.ac.cam.cares.jps.utils.Utils.computeHash;
 /**
  * A class that commits data to the network database.
  */

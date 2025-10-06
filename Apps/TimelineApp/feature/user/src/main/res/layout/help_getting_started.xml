@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:navigationIcon="@drawable/back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:title="Getting Started"
+        app:titleCentered="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/getting_started_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FAFAFA"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/top_appbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/getting_started_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_start_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:id="@+id/getting_started_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_start_description"
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp" />
+
+
+            <LinearLayout
+                android:id="@+id/step1_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step1_title"
+                    style="@style/HelpCardTitle"
+                    android:text="@string/set_up_your_account" />
+
+                <TextView
+                    android:id="@+id/step1_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="@string/set_up_account_description" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/step2_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step2_title"
+                    style="@style/HelpCardTitle"
+                    android:text="@string/allow_location_access" />
+
+                <TextView
+                    android:id="@+id/step2_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="@string/allow_location_access_description" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/step3_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step3_title"
+                    style="@style/HelpCardTitle"
+                    android:text="@string/choose_what_to_track" />
+
+                <TextView
+                    android:id="@+id/step3_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="@string/choose_what_to_track_description" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/step4_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step4_title"
+                    style="@style/HelpCardTitle"
+                    android:text="@string/get_start_start_recording" />
+
+                <TextView
+                    android:id="@+id/step4_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="@string/get_start_start_recording_description" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/step5_card"
+                style="@style/HelpCardStyle">
+
+                <TextView
+                    android:id="@+id/step5_title"
+                    style="@style/HelpCardTitle"
+                    android:text="@string/view_your_history" />
+
+                <TextView
+                    android:id="@+id/step5_subtitle"
+                    style="@style/HelpCardSubtitle"
+                    android:text="@string/view_your_history_description" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_start_tips"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:paddingHorizontal="24dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

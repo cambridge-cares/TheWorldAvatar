@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.sensor.data.SensorRepository;
 import uk.ac.cam.cares.jps.sensor.source.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
+import uk.ac.cam.cares.jps.sensor.ui.RecordingState;
 
 /**
  * Dependency injection specification for Sensor module
@@ -91,5 +92,11 @@ public class SensorModule {
             SensorLocalSource localSource,
             SensorNetworkSource networkSource) {
         return new NetworkChangeReceiver(localSource, networkSource);
+    }
+
+    @Provides
+    @Singleton
+    public RecordingState provideRecordingState() {
+        return new RecordingState();
     }
 }

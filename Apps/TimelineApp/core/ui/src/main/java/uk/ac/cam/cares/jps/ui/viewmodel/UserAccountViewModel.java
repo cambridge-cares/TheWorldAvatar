@@ -1,7 +1,4 @@
-package uk.ac.cam.cares.jps.user.viewmodel;
-
-import static uk.ac.cam.cares.jps.login.AccountException.NO_UER_INFO_RETRIEVED;
-import static uk.ac.cam.cares.jps.login.AccountException.SESSION_EXPIRED;
+package uk.ac.cam.cares.jps.ui.viewmodel;
 
 import android.content.Intent;
 
@@ -13,8 +10,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.apache.log4j.Logger;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
@@ -24,12 +19,15 @@ import uk.ac.cam.cares.jps.login.User;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
- * ViewModel that manages user account information for UI
+ * ViewModel to expose user account information (name and email) for UI,
+ * and handle logout status and session expired flag.
+ * Minimal, suitable for reuse across modules.
  */
 @HiltViewModel
-public class AccountViewModel extends ViewModel {
+public class UserAccountViewModel extends ViewModel {
+
     private final LoginRepository loginRepository;
-    private final Logger LOGGER = Logger.getLogger(AccountViewModel.class);
+    private ActivityResultLauncher<Intent> logoutLauncher;
 
     private final MutableLiveData<String> _name = new MutableLiveData<>("");
     private final MutableLiveData<String> _email = new MutableLiveData<>("");
@@ -41,37 +39,26 @@ public class AccountViewModel extends ViewModel {
     public LiveData<Boolean> shouldShowSessionExpired = _shouldShowSessionExpired;
     public LiveData<Pair<Boolean, String>> logoutStatus = _logoutStatus;
 
-    private ActivityResultLauncher<Intent> logoutLauncher;
-
     @Inject
-    public AccountViewModel(LoginRepository loginRepository) {
+    public UserAccountViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 
-    /**
-     * Get user info from server by calling repository
-     */
     public void getUserInfo() {
-        loginRepository.getUserInfo(new RepositoryCallback<>() {
+        loginRepository.getUserInfo(new RepositoryCallback<User>() {
             @Override
             public void onSuccess(User user) {
-                _email.postValue(user.getEmail());
                 _name.postValue(user.getName());
+                _email.postValue(user.getEmail());
             }
 
             @Override
             public void onFailure(Throwable error) {
-                if (error.getMessage().equals(NO_UER_INFO_RETRIEVED) || error.getMessage().equals(SESSION_EXPIRED)) {
-                    _shouldShowSessionExpired.postValue(true);
-                }
+                _shouldShowSessionExpired.postValue(true);
             }
         });
     }
 
-    /**
-     * Register the fragment for logout result and set up the logout launcher object
-     * @param fragment Host fragment
-     */
     public void registerForLogoutResult(Fragment fragment) {
         logoutLauncher = loginRepository.getLogoutLauncher(fragment, new RepositoryCallback<>() {
             @Override
@@ -86,20 +73,24 @@ public class AccountViewModel extends ViewModel {
         });
     }
 
-    /**
-     * Logout the current user
-     */
     public void logout() {
-        logoutLauncher.launch(loginRepository.getLogOutIntent());
+        if (logoutLauncher != null) {
+            Intent intent = loginRepository.getLogOutIntent();
+            if (intent != null) {
+                logoutLauncher.launch(intent);
+            } else {
+                _logoutStatus.postValue(new Pair<>(false, ""));
+            }
+        } else {
+            _logoutStatus.postValue(new Pair<>(false, ""));
+        }
     }
 
-    /**
-     * get session expired dialog
-     * @param fragment Host fragment
-     * @return session expired dialog
-     */
+    public void clearLogoutStatus() {
+        _logoutStatus.setValue(null);
+    }
+
     public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
         return loginRepository.getSessionExpiredDialog(fragment);
     }
-
 }

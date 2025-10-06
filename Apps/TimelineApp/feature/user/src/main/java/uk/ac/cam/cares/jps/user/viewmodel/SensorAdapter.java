@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
@@ -9,11 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
-import uk.ac.cam.cares.jps.user.OnSensorToggleListener;
 import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.SensorItem;
 
@@ -34,7 +33,6 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         this.sensorItems = sensorItems;
         this.sensorViewModel = sensorViewModel;
     }
-
 
     /**
      * Creates a new ViewHolder object for a sensor item.
@@ -62,15 +60,24 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         holder.sensorText.setText(sensorItem.getSensorName());
         holder.sensorDescription.setText(sensorItem.getSensorDescription());
 
-        // Temporarily remove the listener to prevent it from being triggered while setting the toggle state
+        // Always keep switches visually active so the user can see toggle state clearly
+        holder.sensorToggleSwitch.setEnabled(true);  // avoid grey-out effect
+
+        // Temporarily remove the listener to prevent misfire
         holder.sensorToggleSwitch.setOnCheckedChangeListener(null);
         holder.sensorToggleSwitch.setChecked(sensorItem.isToggled());
 
-        // Reattach the listener
-        holder.sensorToggleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sensorItem.setToggled(isChecked);  // Update the sensor item toggle state
-            sensorViewModel.toggleSensor(sensorItem.getSensorType());  // Update ViewModel with the toggle state
-        });
+        // Reattach the listener only if toggle is enabled
+        if (sensorItem.isToggleEnabled()) {
+            holder.sensorToggleSwitch.setOnTouchListener(null);  // allow interaction
+            holder.sensorToggleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                sensorItem.setToggled(isChecked);  // Update the sensor item toggle state
+                sensorViewModel.toggleSensor(sensorItem.getSensorType());  // Update ViewModel with the toggle state
+            });
+        } else {
+            // Block interaction without greying out the switch by intercepting all touch events
+            holder.sensorToggleSwitch.setOnTouchListener((v, event) -> true);  // consume touch, prevent toggle
+        }
     }
 
     /**
@@ -91,7 +98,6 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
     public List<SensorItem> getSensorItems() {
         return sensorItems;
     }
-
 
     /**
      * ViewHolder class that represents each sensor item in the RecyclerView.
@@ -125,6 +131,4 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         this.sensorItems.clear();
         this.sensorItems.addAll(newSensorItems);  // Replace the old items with the new ones
     }
-
-
 }

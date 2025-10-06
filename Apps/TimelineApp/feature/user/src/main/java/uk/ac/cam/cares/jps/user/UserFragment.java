@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.ui.UiUtils;
+import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentUserPageBinding;
-import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 
 /**
  * User page
@@ -26,12 +26,12 @@ public class UserFragment extends Fragment {
     FragmentUserPageBinding binding;
     Logger LOGGER = Logger.getLogger(UserFragment.class);
 
-    private AccountViewModel accountViewModel;
+    private UserAccountViewModel accountViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
         accountViewModel.shouldShowSessionExpired.observe(getViewLifecycleOwner(), hasExpired -> {
             if (hasExpired) {
                 accountViewModel.getSessionExpiredDialog(this).show();
@@ -49,8 +49,10 @@ public class UserFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.mapTopAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
-        binding.accountSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_user_fragment_to_account_setting));
-        binding.sensorSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_user_fragment_to_sensor_setting));
+        binding.accountSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_global_account_setting));
+        binding.sensorSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_global_sensor_setting));
+        binding.helpPage.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_global_help_page));
+        binding.timelineSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_global_timeline_setting));
 
         // todo: unimplemented button
         binding.healthReport.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
@@ -61,3 +63,4 @@ public class UserFragment extends Fragment {
     }
 
 }
+
