@@ -1,0 +1,220 @@
+package uk.ac.cam.cares.jps.ui.impl.tooltip;
+
+import android.app.Activity;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.cam.cares.jps.ui.base.R;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.AppPreferenceViewModel;
+
+public class TooltipManager {
+
+    private final Activity activity;
+    private final FrameLayout rootOverlay;
+    private final List<TooltipStep> steps = new ArrayList<>();
+    private final Runnable onComplete;
+    private int currentStep = 0;
+    private View tooltipView;
+    private TooltipOverlayView overlayView;
+    private AppPreferenceViewModel appPreferenceViewModel;
+    private final Logger LOGGER = Logger.getLogger(TooltipManager.class);
+
+    public TooltipManager(FragmentActivity activity, Runnable onComplete) {
+        this.activity = activity;
+        this.rootOverlay = activity.findViewById(android.R.id.content);
+        this.onComplete = onComplete;
+
+        appPreferenceViewModel = new ViewModelProvider(activity).get(AppPreferenceViewModel.class);
+    }
+
+    public void addStep(View anchor, String title, String message, TooltipStyle style) {
+        steps.add(new TooltipStep(anchor, null, title, message, style));
+    }
+
+    public void addStep(RectF rect, String title, String message, TooltipStyle style) {
+        steps.add(new TooltipStep(null, rect, title, message, style));
+    }
+
+    public void start() {
+        if (steps.isEmpty()) {
+            LOGGER.info("No tooltip steps to show.");
+            return;
+        }
+        currentStep = 0;
+        showStep(currentStep);
+    }
+
+    private void showStep(int index) {
+        if (index >= steps.size()) {
+            appPreferenceViewModel.setSkipTooltips(true);
+            dismiss();
+            return;
+        }
+
+        TooltipStep step = steps.get(index);
+
+        if (tooltipView != null) rootOverlay.removeView(tooltipView);
+        if (overlayView != null) rootOverlay.removeView(overlayView);
+
+        RectF anchorRect;
+        if (step.manualRect != null) {
+            anchorRect = step.manualRect;
+        } else if (step.anchorView != null) {
+            Rect rect = new Rect();
+            boolean visible = step.anchorView.getGlobalVisibleRect(rect);
+            anchorRect = new RectF(rect);
+            if (!visible) {
+                dismiss();
+                return;
+            }
+        } else {
+            dismiss();
+            return;
+        }
+
+        overlayView = new TooltipOverlayView(activity);
+        overlayView.setHole(anchorRect);
+        overlayView.setClickable(false);
+        overlayView.setFocusable(false);
+        overlayView.setOnTouchListener((v, e) -> false);
+
+        rootOverlay.addView(overlayView, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        tooltipView = inflater.inflate(R.layout.view_tooltip_callout, rootOverlay, false);
+
+        tooltipView.setClickable(false);
+        tooltipView.setFocusable(false);
+        tooltipView.setFocusableInTouchMode(false);
+        tooltipView.setOnTouchListener((v, event) -> false);
+
+        TextView titleView = tooltipView.findViewById(R.id.tooltip_title);
+        TextView messageView = tooltipView.findViewById(R.id.tooltip_message);
+        Button nextButton = tooltipView.findViewById(R.id.tooltip_next_button);
+        LinearLayout dotContainer = tooltipView.findViewById(R.id.tooltip_dots);
+        ImageView arrowUp = tooltipView.findViewById(R.id.tooltip_arrow_up);
+        ImageView arrowDown = tooltipView.findViewById(R.id.tooltip_arrow_down);
+        ImageView closeButton = tooltipView.findViewById(R.id.tooltip_close);
+
+        titleView.setText(step.title);
+        messageView.setText(step.message);
+        if (index == steps.size() - 1) {
+            nextButton.setText(R.string.ok);
+        }
+
+        dotContainer.removeAllViews();
+        for (int i = 0; i < steps.size(); i++) {
+            View dot = new View(activity);
+            dot.setBackgroundResource(i == index ? R.drawable.dot_active : R.drawable.dot_inactive);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(20, 20);
+            lp.setMargins(6, 0, 6, 0);
+            dot.setLayoutParams(lp);
+            dotContainer.addView(dot);
+        }
+
+        arrowUp.setVisibility(step.style == TooltipStyle.UP ? View.VISIBLE : View.GONE);
+        arrowDown.setVisibility(step.style == TooltipStyle.DOWN ? View.VISIBLE : View.GONE);
+
+        tooltipView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            int screenWidthPx = activity.getResources().getDisplayMetrics().widthPixels;
+            float density = activity.getResources().getDisplayMetrics().density;
+            int maxWidthPx = (int) (320 * density);
+            int targetWidth = Math.min((int) (screenWidthPx * 0.8), maxWidthPx);
+
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    targetWidth,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+
+            float proposedLeft = anchorRect.centerX() - (targetWidth / 2f);
+
+            int horizontalMarginPx = (int) (16 * density);
+
+            if (proposedLeft < horizontalMarginPx) {
+                proposedLeft = horizontalMarginPx;
+            } else if (proposedLeft + targetWidth > screenWidthPx - horizontalMarginPx) {
+                proposedLeft = screenWidthPx - targetWidth - horizontalMarginPx;
+            }
+
+            float y = (step.style == TooltipStyle.UP)
+                    ? anchorRect.bottom + 20
+                    : anchorRect.top - tooltipView.getHeight() - 20;
+
+            params.leftMargin = (int) proposedLeft;
+            params.topMargin = Math.max((int) y, horizontalMarginPx);
+
+            tooltipView.setLayoutParams(params);
+            tooltipView.bringToFront();
+            overlayView.bringToFront();
+        });
+
+        //Add tooltip
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            rootOverlay.addView(tooltipView);
+            tooltipView.bringToFront();
+            overlayView.bringToFront();
+            tooltipView.requestLayout();
+            overlayView.requestLayout();
+        }, 150);
+
+        nextButton.setOnClickListener(v -> {
+            if (currentStep == steps.size() - 1) {
+                appPreferenceViewModel.setSkipTooltips(true);
+            }
+            currentStep++;
+            showStep(currentStep);
+        });
+
+        closeButton.setOnClickListener(v -> {
+            appPreferenceViewModel.setSkipTooltips(true);
+            dismiss();
+        });
+    }
+
+    private void dismiss() {
+        if (tooltipView != null) rootOverlay.removeView(tooltipView);
+        if (overlayView != null) rootOverlay.removeView(overlayView);
+        if (onComplete != null) onComplete.run();
+    }
+
+    private static class TooltipStep {
+        View anchorView;
+        RectF manualRect;
+        String title;
+        String message;
+        TooltipStyle style;
+
+        TooltipStep(View anchorView, RectF manualRect, String title, String message, TooltipStyle style) {
+            this.anchorView = anchorView;
+            this.manualRect = manualRect;
+            this.title = title;
+            this.message = message;
+            this.style = style;
+        }
+    }
+
+    public enum TooltipStyle {
+        NONE, UP, DOWN
+    }
+}

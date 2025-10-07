@@ -14,8 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.AppPreferenceViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentTimelineSettingBinding;
-import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
 
 @AndroidEntryPoint
 public class TimelineSettingFragment extends Fragment {
@@ -46,7 +46,7 @@ public class TimelineSettingFragment extends Fragment {
     }
 
     private void initListeners() {
-        appPreferenceViewModel.autoStart.observe(getViewLifecycleOwner(), isAutostartEnabled -> {
+        appPreferenceViewModel.getAutoStart().observe(getViewLifecycleOwner(), isAutostartEnabled -> {
             if (isAutostartEnabled == null) {
                 return;
             }
@@ -87,7 +87,7 @@ public class TimelineSettingFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerDuration.setAdapter(adapter);
 
-        appPreferenceViewModel.uploadDuration.observe(getViewLifecycleOwner(), duration -> {
+        appPreferenceViewModel.getUploadDuration().observe(getViewLifecycleOwner(), duration -> {
             int savedIndex = java.util.Arrays.asList(durations).indexOf(duration);
             if (savedIndex >= 0) {
                 binding.spinnerDuration.setSelection(savedIndex);

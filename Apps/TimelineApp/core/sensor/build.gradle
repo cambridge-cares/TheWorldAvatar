@@ -18,7 +18,7 @@ dependencies {
 
     implementation project(path: ':core:utils')
     implementation project(path: ':core:login')
-    implementation project(path: ':core:ui')
+    implementation project(path: ':core:ui-base')
     implementation project(path: ':core:data')
 
     def room_version = "2.6.1"

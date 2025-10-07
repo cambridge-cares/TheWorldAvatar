@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorAdapter;

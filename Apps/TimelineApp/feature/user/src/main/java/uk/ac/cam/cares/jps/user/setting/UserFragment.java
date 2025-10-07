@@ -14,8 +14,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.ui.UiUtils;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+import uk.ac.cam.cares.jps.ui.base.UiUtils;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.databinding.FragmentUserPageBinding;
 
@@ -33,7 +33,7 @@ public class UserFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
-        accountViewModel.shouldShowSessionExpired.observe(getViewLifecycleOwner(), hasExpired -> {
+        accountViewModel.getShouldShowSessionExpired().observe(getViewLifecycleOwner(), hasExpired -> {
             if (hasExpired) {
                 accountViewModel.getSessionExpiredDialog(this).show();
             }

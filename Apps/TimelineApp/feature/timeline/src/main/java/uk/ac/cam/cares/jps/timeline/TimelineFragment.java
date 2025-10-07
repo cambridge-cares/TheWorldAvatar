@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.timeline;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -46,15 +47,16 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
-import uk.ac.cam.cares.jps.ui.tooltip.TooltipSequence;
+
 import uk.ac.cam.cares.jps.sensor.ui.RecordingViewModel;
-import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
-import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+import uk.ac.cam.cares.jps.ui.impl.tooltip.TooltipSequence;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.AppPreferenceViewModel;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.TooltipTriggerViewModel;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel;
 
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {
@@ -129,19 +131,19 @@ public class TimelineFragment extends Fragment {
     private void setupAppPreference() {
         AppPreferenceViewModel appPreferenceViewModel = new ViewModelProvider(requireActivity()).get(AppPreferenceViewModel.class);
 
-        appPreferenceViewModel.skipTooltips.observe(getViewLifecycleOwner(), skipTooltips -> {
+        appPreferenceViewModel.getSkipTooltips().observe(getViewLifecycleOwner(), skipTooltips -> {
             if (skipTooltips != null && !skipTooltips) {
                 tooltipTriggerViewModel.requestTooltipTrigger();
             }
         });
 
-        appPreferenceViewModel.autoStart.observe(getViewLifecycleOwner(), shouldAutoStart -> {
+        appPreferenceViewModel.getAutoStart().observe(getViewLifecycleOwner(), shouldAutoStart -> {
             if (shouldAutoStart != null && shouldAutoStart) {
                 autoStartRecordingIfPossible();
             }
         });
 
-        appPreferenceViewModel.locationPermissionPrompted.observe(getViewLifecycleOwner(), isLocationPermissionPrompted -> {
+        appPreferenceViewModel.getLocationPermissionPrompted().observe(getViewLifecycleOwner(), isLocationPermissionPrompted -> {
             if (isLocationPermissionPrompted != null && isLocationPermissionPrompted) {
                 return;
             }
@@ -231,6 +233,7 @@ public class TimelineFragment extends Fragment {
     }
 
 
+    @SuppressLint("MissingPermission")
     private void getAndCenterUserLocation() {
         LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(1000).setNumUpdates(1);
         locationCallback = new LocationCallback() {

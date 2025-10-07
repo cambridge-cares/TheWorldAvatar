@@ -35,8 +35,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.ui.viewmodel.AppPreferenceViewModel;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.AppPreferenceViewModel;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.databinding.FragmentOnboardingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;

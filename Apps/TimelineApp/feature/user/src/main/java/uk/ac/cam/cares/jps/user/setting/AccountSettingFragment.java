@@ -15,8 +15,8 @@ import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.ui.UiUtils;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+import uk.ac.cam.cares.jps.ui.base.UiUtils;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.user.databinding.FragmentAccountSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
@@ -37,7 +37,7 @@ public class AccountSettingFragment extends Fragment {
 
         accountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
         accountViewModel.registerForLogoutResult(this);
-        accountViewModel.logoutStatus.observe(getViewLifecycleOwner(), logoutStatus -> {
+        accountViewModel.getLogoutStatus().observe(getViewLifecycleOwner(), logoutStatus -> {
             if (logoutStatus.getFirst()) {
                 sensorViewModel.clearManagers(logoutStatus.getSecond());
                 accountViewModel.clearLogoutStatus();
@@ -50,7 +50,7 @@ public class AccountSettingFragment extends Fragment {
                 Toast.makeText(requireContext(), uk.ac.cam.cares.jps.loginmodule.R.string.cancel_logout, Toast.LENGTH_SHORT).show();
             }
         });
-        accountViewModel.shouldShowSessionExpired.observe(getViewLifecycleOwner(), hasExpired -> {
+        accountViewModel.getShouldShowSessionExpired().observe(getViewLifecycleOwner(), hasExpired -> {
             if (hasExpired) {
                 accountViewModel.getSessionExpiredDialog(this).show();
             }
