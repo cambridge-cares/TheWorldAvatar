@@ -1,4 +1,23 @@
 # Timeline App
+- [Timeline App](#timeline-app)
+  - [Development Setup](#development-setup)
+    - [Stack](#stack)
+    - [App](#app)
+      - [Login](#login)
+      - [Network Endpoint](#network-endpoint)
+      - [Mapbox](#mapbox)
+      - [Resource files](#resource-files)
+  - [Design document](#design-document)
+    - [App and backend services interactions](#app-and-backend-services-interactions)
+    - [App Architecture](#app-architecture)
+      - [app](#app-1)
+      - [feature](#feature)
+      - [core](#core)
+      - [core-ui](#core-ui)
+    - [Trajectory visualisation sequence diagram](#trajectory-visualisation-sequence-diagram)
+    - [Sensor data upload sequence diagram](#sensor-data-upload-sequence-diagram)
+
+
 This is an app for recoding sensor data and visualise user trajectories.
 - User login
 - Visualise trajectories
@@ -119,6 +138,113 @@ Relevant agents
   - Create virtual table in Geoserver for trajectory visualisation
   - Add ontop mapping for device and sensors following [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice)
 
+### App Architecture
+```mermaid
+flowchart TD
+    app
+
+    subgraph core
+    coreData[core-data]
+    coreLogin[core-login]
+    coreModel[core-model]
+    coreNetwork[core-network]
+    coreSensor[core-sensor]
+
+    subgraph core-ui
+    coreUiBase[core-ui-base]
+    coreUiImpl[core-ui-impl]
+    end
+
+    coreUtils[core-utils]
+    end
+    style core fill:#D5F5E3,stroke:#27AE60,stroke-width:2px,color:#333
+
+    subgraph feature
+    featureTimeline[feature-timeline]
+    featureUser[feature-user]
+    end
+    style feature fill:#FFE4B5,stroke:#FFB347,stroke-width:2px,color:#333
+
+    app --> featureTimeline
+    app --> featureUser
+    app --> coreUiBase
+    app --> coreUtils
+
+    featureTimeline --> coreUiBase
+    featureTimeline --> coreUiImpl
+    featureTimeline --> coreUtils
+    featureTimeline --> coreData
+    featureTimeline --> coreModel
+    featureTimeline --> coreSensor
+    featureTimeline --> coreLogin
+
+    featureUser --> coreUiBase
+    featureUser --> coreUiImpl
+    featureUser --> coreUtils
+    featureUser --> coreData
+    featureUser --> coreModel
+    featureUser --> coreSensor
+    featureUser --> coreLogin
+
+    coreUiImpl --> coreLogin
+    coreUiImpl --> coreData
+    coreUiImpl --> coreUtils
+    coreUiImpl --> coreUiBase
+
+    coreSensor --> coreUtils
+    coreSensor --> coreLogin
+    coreSensor --> coreUiBase
+    coreSensor --> coreData
+
+    coreNetwork --> coreUtils
+    coreNetwork --> coreModel
+
+    coreLogin --> coreUtils
+
+    coreData --> coreNetwork
+    coreData --> coreLogin
+    coreData --> coreModel
+    coreData --> coreUtils
+```
+
+The diagram shows the dependencies between modules.
+#### app
+All other module should **never** depend on the app module to avoid cyclic dependnecy.
+- app: highest level container of the app. It contains Application and Activity level settings and hosts navigation graph of the app.
+  
+#### feature
+Modules under feature are in UI layer. They **should not** have dependency on each other and can only depends on core modeules.
+- feature-user: contains all fragments, viewmodels and resources files for all user related functions, such as 
+  - landing page
+  - user setting page
+  - sensor setting page and 
+  - help documents
+- feature-timeline: contains all fragments, viewmodels and resources for map and trajectory visualisation functions.
+
+#### core
+Modules in core are mainly in data layer or designed to be shared by other modules. They can depends on other core modules but **should not** depend on feature or app modules. To make modules easy to be reused, some modules may contain ui components (ViewModel), network source and repository.
+- core-sensor: sensor recording related code. It consists of 
+  - source:
+    - network: responsible for sending data to remote service
+    - database: manage app local storage for files backup
+    - handler: manage all physical sensor and the data collection
+    - activity: manage the call to activity recognition API
+    - state: corresponding to sensor collection state at runtime (/in memory) and storage in local SharedPreference file
+    - worker: launch tasks on worker thread
+  - ui: viewmodel for recording state
+  - data: repository files  
+- core-login: contains login related code, such as authentication state management and sending request to auth server for login and logout.
+  - Contain its own network source and reporsitory
+  - Take reference from [AppAuth](https://github.com/openid/AppAuth-Android)
+- core-network: Timeline app specific network sources
+- core-data: Timeline app specific repositories
+- core-model: consist of shared data models
+- core-utils: contains shared settings and util functions, such as network setting and mapbox setting.
+
+#### core-ui
+- core-ui-base: contains all static UI files, such as themes, colors, values, drawables and static UI component.
+- core-ui-impl: contains shared ViewModel and UI components that use the shared ViewModel. ViewModel placed in this folder can be referenced by fragments in different `feature` modules and usually have Activity lifecycle (eg. App preference setting, user account state).
+
 ### Trajectory visualisation sequence diagram
 ```mermaid
 sequenceDiagram
@@ -126,7 +252,6 @@ sequenceDiagram
     participant TrajectoryQueryAgent
     participant Ontop
     participant Blazegraph
-    participant TimelineDB as "Timeline Database"
     participant Geoserver
     participant Postgres
     participant GeoServerJwtProxy
@@ -140,6 +265,7 @@ sequenceDiagram
     TrajectoryQueryAgent->>App: return to App
     end
 
+    %% --- Retrieving trajectory from geoserver ---
     rect rgba(255,182,193,0.2)
     App->>GeoServerJwtProxy: geoserver visualisation request with Bearer token
     GeoServerJwtProxy->>GeoServerJwtProxy: verify the validity of the Bearer token
@@ -153,3 +279,5 @@ sequenceDiagram
 The above diagram illustrates the interactions between the app and remote services when the app visualises trajetory. 
 - Blue box: call TrajectoryQueryAgent to create SQL view layers in Geoserver and add ontop mapping to Ontop. *Notice*: This block is called each time the app visualises trajectory. Repeatedlly calling the `/createLayer` endpoint won't cause multiple layers generation. 
 - Pink box: the acutal visualisation call is sent to GeoserverJwtProxy and Geoserver.
+
+### Sensor data upload sequence diagram
