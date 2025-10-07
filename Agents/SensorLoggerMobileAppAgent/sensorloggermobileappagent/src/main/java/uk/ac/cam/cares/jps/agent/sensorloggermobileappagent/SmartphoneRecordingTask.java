@@ -212,7 +212,11 @@ public class SmartphoneRecordingTask {
 
         logger.info("bulk init iris in rdb");
         List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
-        tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
+        try {
+            tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
+        } catch (Exception e) {
+            logger.error("Failed to initialize time series: {}", e);
+        }
 
         sensorDataProcessors.stream()
                 .filter(SensorDataProcessor::isNeedToInitTimeSeries).forEach(SensorDataProcessor::getTimeSeriesIrisFromBlazegraph);
