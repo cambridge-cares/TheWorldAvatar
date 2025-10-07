@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.setting;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.ui.UiUtils;
 import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.databinding.FragmentUserPageBinding;
 
 /**

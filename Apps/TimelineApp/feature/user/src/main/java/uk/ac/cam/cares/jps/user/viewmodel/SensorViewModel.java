@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.ui.RecordingState;
 import uk.ac.cam.cares.jps.sensor.ui.RecordingViewModel;
 import uk.ac.cam.cares.jps.user.R;
-import uk.ac.cam.cares.jps.user.SensorItem;
+import uk.ac.cam.cares.jps.user.setting.sensor.SensorItem;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.data.SensorRepository;

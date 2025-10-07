@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.setting.sensor;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACTIVITY_RECOGNITION;
@@ -34,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.permission.PermissionHelper;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
+import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorAdapter;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;

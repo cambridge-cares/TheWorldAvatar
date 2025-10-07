@@ -1,10 +1,9 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.help;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +12,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.databinding.FragmentHelpBinding;
 
 @AndroidEntryPoint

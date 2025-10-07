@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
@@ -12,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.user.R;
-import uk.ac.cam.cares.jps.user.SensorItem;
+import uk.ac.cam.cares.jps.user.setting.sensor.SensorItem;
 
 /**
  * Adapter class for managing and displaying a list of sensor items in a RecyclerView.

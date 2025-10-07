@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.help;
 
 import android.content.SharedPreferences;
 import android.content.Context;
@@ -14,13 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.HelpAboutBinding;
 import uk.ac.cam.cares.jps.ui.viewmodel.TooltipTriggerViewModel;
-import uk.ac.cam.cares.jps.user.R;
 
 @AndroidEntryPoint
 public class HelpAboutFragment extends Fragment {

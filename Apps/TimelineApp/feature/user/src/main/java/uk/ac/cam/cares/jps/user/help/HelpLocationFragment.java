@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.help;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,9 +14,9 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 import uk.ac.cam.cares.jps.user.R;
 
-public class HelpGettingStartedFragment extends Fragment {
+public class HelpLocationFragment extends Fragment {
 
-    public HelpGettingStartedFragment() {
+    public HelpLocationFragment() {
     }
 
     @Nullable
@@ -25,7 +25,7 @@ public class HelpGettingStartedFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.help_getting_started, container, false);
+        View view = inflater.inflate(R.layout.help_location_history, container, false);
 
         MaterialToolbar toolbar = view.findViewById(R.id.top_appbar);
         toolbar.setNavigationOnClickListener(v ->

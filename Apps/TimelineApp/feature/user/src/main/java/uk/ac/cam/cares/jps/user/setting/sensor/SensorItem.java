@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.setting.sensor;
 
 
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;

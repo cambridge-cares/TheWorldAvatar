@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.help;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
