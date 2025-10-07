@@ -1,10 +1,15 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.postgis.Point;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -111,9 +116,138 @@ public class SmartphoneRecordingTaskTest {
         return dataHashmap;
     }
 
+    private Payload buildPayloadFromDataMap(String sessionId) throws JsonProcessingException {
+        HashMap<String, List<?>> dataMap = getDataHashMap();
+        JSONArray payloadArray = new JSONArray();
+
+        // Accelerometer
+        List<OffsetDateTime> accelTs = (List<OffsetDateTime>) dataMap.get("accel_tsList");
+        List<Double> accelX = (List<Double>) dataMap.get("accelList_x");
+        List<Double> accelY = (List<Double>) dataMap.get("accelList_y");
+        List<Double> accelZ = (List<Double>) dataMap.get("accelList_z");
+        for (int i = 0; i < accelTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time", accelTs.get(i).toInstant().getNano()
+                    + accelTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "accelerometer");
+            JSONObject values = new JSONObject();
+            values.put("x", accelX.get(i));
+            values.put("y", accelY.get(i));
+            values.put("z", accelZ.get(i));
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        // Magnetometer
+        List<OffsetDateTime> magnetTs = (List<OffsetDateTime>) dataMap.get("magnetometer_tsList");
+        List<Double> magnetX = (List<Double>) dataMap.get("magnetometerList_x");
+        List<Double> magnetY = (List<Double>) dataMap.get("magnetometerList_y");
+        List<Double> magnetZ = (List<Double>) dataMap.get("magnetometerList_z");
+        for (int i = 0; i < magnetTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time", magnetTs.get(i).toInstant().getNano()
+                    + magnetTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "magnetometer");
+            JSONObject values = new JSONObject();
+            values.put("x", magnetX.get(i));
+            values.put("y", magnetY.get(i));
+            values.put("z", magnetZ.get(i));
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        // Gravity
+        List<OffsetDateTime> gravityTs = (List<OffsetDateTime>) dataMap.get("gravity_tsList");
+        List<Double> gravityX = (List<Double>) dataMap.get("gravityList_x");
+        List<Double> gravityY = (List<Double>) dataMap.get("gravityList_y");
+        List<Double> gravityZ = (List<Double>) dataMap.get("gravityList_z");
+        for (int i = 0; i < gravityTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time", gravityTs.get(i).toInstant().getNano()
+                    + gravityTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "gravity");
+            JSONObject values = new JSONObject();
+            values.put("x", gravityX.get(i));
+            values.put("y", gravityY.get(i));
+            values.put("z", gravityZ.get(i));
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        // Location
+        List<OffsetDateTime> locationTs = (List<OffsetDateTime>) dataMap.get("location_tsList");
+        List<Double> bearings = (List<Double>) dataMap.get("bearingList");
+        List<Double> speeds = (List<Double>) dataMap.get("speedList");
+        List<Double> altitudes = (List<Double>) dataMap.get("altitudeList");
+        List<Point> locations = (List<Point>) dataMap.get("geomLocationList");
+        for (int i = 0; i < locationTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time", locationTs.get(i).toInstant().getNano()
+                    + locationTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "location");
+            JSONObject values = new JSONObject();
+            values.put("bearing", bearings.get(i));
+            values.put("speed", speeds.get(i));
+            values.put("altitude", altitudes.get(i));
+            values.put("latitude", locations.get(i).getY());
+            values.put("longitude", locations.get(i).getX());
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        // Microphone
+        List<OffsetDateTime> micTs = (List<OffsetDateTime>) dataMap.get("dBFS_tsList");
+        List<Double> dBFS = (List<Double>) dataMap.get("dBFSList");
+        for (int i = 0; i < micTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time",
+                    micTs.get(i).toInstant().getNano() + micTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "microphone");
+            JSONObject values = new JSONObject();
+            values.put("dBFS", dBFS.get(i));
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        // Light
+        List<OffsetDateTime> lightTs = (List<OffsetDateTime>) dataMap.get("lightValue_tsList");
+        List<Double> luxValues = (List<Double>) dataMap.get("lightValueList");
+        for (int i = 0; i < lightTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time", lightTs.get(i).toInstant().getNano()
+                    + lightTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "light");
+            JSONObject values = new JSONObject();
+            values.put("lux", luxValues.get(i));
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        // Brightness
+        List<OffsetDateTime> brightnessTs = (List<OffsetDateTime>) dataMap.get("brightness_tsList");
+        List<Double> brightnessValues = (List<Double>) dataMap.get("brightnessList");
+        for (int i = 0; i < brightnessTs.size(); i++) {
+            JSONObject entry = new JSONObject();
+            entry.put("time", brightnessTs.get(i).toInstant().getNano()
+                    + brightnessTs.get(i).toInstant().getEpochSecond() * 1_000_000_000L);
+            entry.put("name", "brightness");
+            JSONObject values = new JSONObject();
+            values.put("brightness", brightnessValues.get(i));
+            entry.put("values", values);
+            payloadArray.put(entry);
+        }
+
+        return new Payload(payloadArray, sessionId);
+    }
+
     @Test
     public void testAddData() {
-        task.addData(getDataHashMap());
+        try {
+            Payload payload = buildPayloadFromDataMap("123456");
+            task.addData(payload);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
         assertEquals(3, task.accelerometerProcessor.getTimeSeriesLength());
         assertEquals(1, task.magnetometerDataProcessor.getTimeSeriesLength());
