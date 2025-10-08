@@ -15,7 +15,7 @@
       - [core](#core)
       - [core-ui](#core-ui)
     - [Trajectory visualisation sequence diagram](#trajectory-visualisation-sequence-diagram)
-    - [Sensor data upload sequence diagram](#sensor-data-upload-sequence-diagram)
+    - [Sensor data collection related design document](#sensor-data-collection-related-design-document)
 
 
 This is an app for recoding sensor data and visualise user trajectories.
@@ -280,4 +280,5 @@ The above diagram illustrates the interactions between the app and remote servic
 - Blue box: call TrajectoryQueryAgent to create SQL view layers in Geoserver and add ontop mapping to Ontop. *Notice*: This block is called each time the app visualises trajectory. Repeatedlly calling the `/createLayer` endpoint won't cause multiple layers generation. 
 - Pink box: the acutal visualisation call is sent to GeoserverJwtProxy and Geoserver.
 
-### Sensor data upload sequence diagram
+### Sensor data collection related design document
+Please refer to the [sensor module](/core/sensor/README.md) for more details. 

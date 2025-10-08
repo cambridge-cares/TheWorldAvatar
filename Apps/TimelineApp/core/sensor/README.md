@@ -1,4 +1,15 @@
 # Sensor Module
+- [Sensor Module](#sensor-module)
+  - [Architecture Design](#architecture-design)
+    - [UI level](#ui-level)
+    - [Recording process (Teal)](#recording-process-teal)
+    - [Network functions (Green)](#network-functions-green)
+    - [Local storage (Purple)](#local-storage-purple)
+    - [Sensor data collection (Orange)](#sensor-data-collection-orange)
+    - [Recording state management (Red)](#recording-state-management-red)
+    - [Phone ID and user ID registration (Blue)](#phone-id-and-user-id-registration-blue)
+  - [Unsent Data Functionality](#unsent-data-functionality)
+
 The module responsible for all sensor recording logics, including:
 - Start/stop sensors
 - Get data from sensors
@@ -7,92 +18,164 @@ The module responsible for all sensor recording logics, including:
 - Record the current state of sensor recording
 - Run the sensor recording, sending and storing logic as foreground service
 
+
+## Architecture Design
 Refer to the following diagram for the dependencies between classes
+
 ```mermaid
-    stateDiagram-v2
+flowchart TD
+    subgraph feature_user["feature:user"]
+        ssf[SensorSettingFragment]
+    end
 
-      ssf: SensorSettingFragment
-      svm: SensorViewModel
-      upr: UserPhoneRepository
-      scsmr: SensorCollectionStateManagerRepository
-      lr: LoginRepository
-      sr: SensorRepository
-      upns: UserPhoneNetworkSource
-      scsm: SensorCollectionStateManager
-      sls: SensorLocalSource
-      sns: SensorNetworkSource
-      ss: SensorService
-      sm: SensorManager
-      bfw: BufferFlushWorker
-      suw: SensorUploadWorker
-      ncr: NetworkChangeReceiver 
+    subgraph feature_user_vm["feature:user:viewmodel"]
+        svm[SensorViewModel]
+    end
 
-      ssf --> svm
-      svm --> upr
-      svm --> scsmr
-      svm --> sr
+    subgraph core_sensor_data["core:sensor:data"]
+        upr[UserPhoneRepository]
+        scsmr[SensorCollectionStateManagerRepository]
+        sr[SensorRepository]
+    end
 
-      upr --> upns
-      scsmr --> scsm
-      sr --> ss
+    subgraph core_sensor_source["core:sensor:source"]
+        
+        subgraph core_sensor_source_state[core:sensor:source:state]
+            scsm[SensorCollectionStateManager]
+        end
 
-      ss --> sns
-      ss --> sls
-      ss --> sm
-      sm --> suw
-      sm --> bfw
-      
-      sns --> sls : network down 
-      sls --> ncr : network up - local data is retrieved via onReceive 
-      ncr --> sns : onReceive sends data back to network 
+        subgraph core_sensor_source_database[core:sensor:source:database]
+            sls[SensorLocalSource]
+            dao[DAOs and Entities...]
+        end
+        
+        subgraph core_sensor_source_handler[core:sensor:source:handler]
+            sm[SensorHandlerManager]
+            handler[Sensor Handlers...]
+        end
+
+        subgraph core_sensor_source_activity[core:sensor:source:activity]
+            arr[ActivityRecognitionReceiver]
+        end
+        
+
+        subgraph core_sensor_source_network[core:sensor:source:network]
+            upns[UserPhoneNetworkSource]
+            sns[SensorNetworkSource]
+            ncr[NetworkChangeReceiver]
+        end
+
+        subgraph core_sensor_source_worker[core:sensor:source:worker]
+            bfw[BufferFlushWorker]
+            suw[SensorUploadWorker]
+        end
+    end
+
+    lr[LoginRepository]
 
 
-      state :feature:user {
-        ssf
-      }
 
-      state :feature:user:viewmodel {
-        svm
-      }
+    subgraph core_sensor["core:sensor"]
+        ss[SensorService]
+    end
 
-      state :core:sensor:data {
-        upr
-        scsmr
-        sr
-      }
+    %% --- Dependencies ---
+    ssf --> svm
 
-      state :core:sensor:source {
-        upns
-        scsm --> lr
-        sls
-        sns 
-        ncr
+    svm --> upr
+    svm --> scsmr
+    svm --> sr
 
-        note right of lr : in 'core login'
-      }
+    upr --> lr
+    upr --> upns
+    upr --> scsmr
+    
+    scsmr --> scsm
+    scsmr --> lr
 
-      state :core:sensor {
-        ss
-        sm
-        bfw
-        suw
-      }
+    sr --> scsmr
+    sr --> sls
+    
+    ss --> scsmr
+    ss --> sns
+    ss --> ncr
+    ss --> sm
+    
+    sm --> handler
+
+    sns --> sls
+
+    arr --> sls
+
+    ncr --> sns
+    ncr --> sls
+
+    bfw --> sm
+    bfw --> sls
+
+    suw --> sns
+    suw --> sls
+
+    sls --> dao
+
+
+    classDef UserPhone fill:#BBDEFB,stroke:#1E88E5;
+    class upns,upr UserPhone
+
+    classDef Network fill:#C8E6C9,stroke:#388E3C;
+    class ncr,sns,suw Network
+
+    classDef Local fill:#E1BEE7,stroke:#8E24AA;
+    class bfw,sls,dao Local
+
+    classDef DataCollection fill:#FFCC80,stroke:#F57C00;
+    class arr,sm,handler DataCollection
+
+    classDef StateManagement fill:#FFCDD2,stroke:#C62828;
+    class scsm,scsmr StateManagement
+
+    classDef TriggerRecording fill:#B2DFDB,stroke:#00897B;
+    class sr,ss TriggerRecording
 ```
+- Teal boxes: related to recording process (foreground service declaration, start/stop the service)
+- Green boxes: related to network functions for sensor data. Includes uploading data to remote server and detecting device network changes
+- Purple boxes: related to app local storage
+- Orange boxes: related to sensor data collection. Deal with the actual sensors and APIs that provide data
+- Red boxes: recording state management, mainly used by UI. Includes state such as currently selected sensors, whether the app is recording data, 'device' ID and foreground service task ID.
+- Blue boxes: register 'device' ID to user ID
 
+### UI level
 - SensorSettingFragment: A fragment class in `:feature:user` which provides the user interface for user to control the sensor recording
 - SensorViewModel: A viewmodel class in `:feature:user:viewmodel` which handles the communication between UI and repository
-- UserPhoneRepository: A repository level component that provide UserPhoneNetworkSource access to UI level. It register device id to user id.
-- SensorCollectionStateManagerRepository: A repository level component which provide SensorCollectionStateManager functions to higher level components or other repositories. It runs provided functions with requested SensorCollectionState and clears SensorCollectionState.
+
+
+### Recording process (Teal)
 - SensorRepository: A repository level component that provides control of sensor collection to UI level component.
-- UserPhoneNetworkSource: A network source that registers the current phone to the logged in user.
-- SensorCollectionStateManager: A source class that read and write encrypted sensor collection state with user information to local storage. 
-- SensorLocalSource: A local source that stores collected data to local database
+- SensorService: A foreground service that keeps the data collection, sending and storing running. It triggers the sending and storing of data. [Foreground service](https://developer.android.com/develop/background-work/services/fgs) makes it less likely to be terminated by the Android OS. 
+
+### Network functions (Green)
 - SensorNetworkSource: A network source that is responsible for sending the collected data to the remote server
-- SensorService: A foreground service that keeps the data collection, sending and storing running. It triggers the sending and storing of data.
-- SensorManager: A class that manages all the sensor handlers
-- BufferFlushWorker: Handles periodic flushing of data from memory to local storage.
 - SensorUploadWorker: Handles periodic data uploads to the server.
 - NetworkChangeReceiver: Monitors network connectivity and handles unsent data when the network is restored.
+
+### Local storage (Purple)
+- SensorLocalSource: A local source that stores collected data to local database
+- BufferFlushWorker: Handles periodic flushing of data from memory to local storage.
+
+### Sensor data collection (Orange)
+- SensorManager: A class that manages all the sensor handlers
+- Sensor handlers: Classes manage physical sensors and collect data from the corresponding sensors
+- ActiviyRecognitionReceiver: A class that manages and collect activity data from [Google Activity Recognition API](https://developers.google.com/location-context/activity-recognition)
+
+### Recording state management (Red)
+The recording states are logged to SharedPreference files. The file uses hashed user ID as file name to differentiate state files generated by different accounts logged in on the same device. The same file is used to store other app preference and state as well. 
+- SensorCollectionStateManagerRepository: A repository level component which provide SensorCollectionStateManager functions to higher level components or other repositories. It runs provided functions with requested SensorCollectionState and clears SensorCollectionState.
+- SensorCollectionStateManager: A source class that read and write encrypted sensor collection state with user information to local storage. 
+
+### Phone ID and user ID registration (Blue)
+- UserPhoneRepository: A repository level component that provide UserPhoneNetworkSource access to UI level. It register device id to user id.
+- UserPhoneNetworkSource: A network source that registers the current phone to the logged in user.
+
 
 
 ## Unsent Data Functionality
