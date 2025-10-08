@@ -8,6 +8,7 @@
     - [Sensor data collection (Orange)](#sensor-data-collection-orange)
     - [Recording state management (Red)](#recording-state-management-red)
     - [Phone ID and user ID registration (Blue)](#phone-id-and-user-id-registration-blue)
+  - [SensorService sequence diagram](#sensorservice-sequence-diagram)
   - [Unsent Data Functionality](#unsent-data-functionality)
 
 The module responsible for all sensor recording logics, including:
@@ -137,12 +138,12 @@ flowchart TD
     classDef TriggerRecording fill:#B2DFDB,stroke:#00897B;
     class sr,ss TriggerRecording
 ```
-- Teal boxes: related to recording process (foreground service declaration, start/stop the service)
-- Green boxes: related to network functions for sensor data. Includes uploading data to remote server and detecting device network changes
-- Purple boxes: related to app local storage
-- Orange boxes: related to sensor data collection. Deal with the actual sensors and APIs that provide data
-- Red boxes: recording state management, mainly used by UI. Includes state such as currently selected sensors, whether the app is recording data, 'device' ID and foreground service task ID.
-- Blue boxes: register 'device' ID to user ID
+- [Teal boxes](#recording-process-teal): related to recording process (foreground service declaration, start/stop the service)
+- [Green boxes](#network-functions-green): related to network functions for sensor data. Includes uploading data to remote server and detecting device network changes
+- [Purple boxes](#local-storage-purple): related to app local storage
+- [Orange boxes](#sensor-data-collection-orange): related to sensor data collection. Deal with the actual sensors and APIs that provide data
+- [Red boxes](#recording-state-management-red): recording state management, mainly used by UI. Includes state such as currently selected sensors, whether the app is recording data, 'device' ID and foreground service task ID.
+- [Blue boxes](#phone-id-and-user-id-registration-blue): register 'device' ID to user ID
 
 ### UI level
 - SensorSettingFragment: A fragment class in `:feature:user` which provides the user interface for user to control the sensor recording
@@ -176,6 +177,92 @@ The recording states are logged to SharedPreference files. The file uses hashed 
 - UserPhoneRepository: A repository level component that provide UserPhoneNetworkSource access to UI level. It register device id to user id.
 - UserPhoneNetworkSource: A network source that registers the current phone to the logged in user.
 
+## SensorService sequence diagram
+The diagram below shows SensorViewModel trigger start recording. 
+```mermaid
+sequenceDiagram
+    participant SensorViewModel
+    participant SensorRepository
+    participant SensorCollectionStateManagerRepository
+    participant SensorLocalSource
+
+    SensorViewModel ->> SensorRepository : start recording
+     note over SensorRepository: perform async call on SensorCollectionStateManagerRepository
+    SensorRepository ->> SensorViewModel: UI thread return
+
+    rect rgba(187,222,251,0.2)
+    note over SensorRepository: run in call backs, so the UI thread is not blocked
+    SensorRepository ->> SensorCollectionStateManagerRepository: set selected sensor in memory <br/> and save to SharedPreference
+    SensorRepository ->> SensorLocalSource : init local database
+        SensorRepository ->> SensorCollectionStateManagerRepository: set recording state in memory <br/>and save to SharedPreference
+    SensorRepository ->> SensorRepository : create and start SensorService
+    end
+    
+```
+When start recording is triggered, SensorRepository performs async call to SensorCollectionStateManagerRepository to prepare to start the SensorService. UI thread is returned after the aysnc call to prevent non-responding UI, and the main logic of starting service is done in the callback of the async call. 
+
+After the SensorService is started, it is run on separate thread and its life cycle is managed by the app and OS (not by the SensorRepository). 
+
+The following diagram shows the work done by SensorService on `onStartCommand()` after it is started.
+```mermaid
+sequenceDiagram
+    participant SensorService
+    participant NetworkChangeReceiver
+    participant SensorHandlerManager
+    participant ActivityRecognitionReceiver
+    participant BufferFlushWorker
+    participant SensorUploadWorker
+    participant SensorCollectionStateManagerRepository
+    participant SensorLocalSource
+    participant SensorNetworkSource
+
+    note over SensorCollectionStateManagerRepository: SensorCollectionStateManagerRepository is mainly used by SensorService to get the taskID<br/> when performing upload and network status monitoring. It is omitted from the diagram for simplicity.
+
+    note over NetworkChangeReceiver: The following code happens in onStartCommand() lifecylce function,<br/> when SensorService is started.
+    SensorService ->> NetworkChangeReceiver: register network change receiver
+    
+    activate NetworkChangeReceiver
+    NetworkChangeReceiver ->> NetworkChangeReceiver: listen to change in device network state
+
+    SensorService ->> SensorHandlerManager : start selected sensors
+    note over SensorHandlerManager: Selected sensor handlers are activated
+
+    alt record activity recognition
+    SensorService ->> ActivityRecognitionReceiver: register ActivityRecognitionReceiver
+    activate ActivityRecognitionReceiver
+    end
+
+    SensorService ->> BufferFlushWorker: schedule buffer flush task
+    activate BufferFlushWorker
+    rect rgba(135,206,250,0.2) 
+        note over BufferFlushWorker: Sample workflow of BufferFlushWorker
+        loop Every buffer_delay ms
+            BufferFlushWorker ->> SensorHandlerManager : collect sensor data
+            BufferFlushWorker ->> SensorLocalSource: write to local data source 
+            BufferFlushWorker ->> SensorLocalSource: delete local data older than 30 days
+        end
+    end
+
+    SensorService ->> SensorUploadWorker: schedule sensor upload task
+    activate SensorUploadWorker
+    rect rgba(255,182,193,0.2)
+        note over SensorUploadWorker: Sample workflow of SensorUploadWorker
+        loop Every upload_delay ms
+            loop when all pages has been uploaded
+                SensorUploadWorker ->> SensorLocalSource : retrieve unuploaded sensor data with pagination
+                SensorUploadWorker ->> SensorUploadWorker: compress data 
+                SensorUploadWorker ->> SensorNetworkSource: send compressed data
+            end
+        end
+    end
+    
+    note over NetworkChangeReceiver: All processes are kept active and running at their own frewuencies.<br/> They are terminated when the SensorService is been stopped<br/> and the termination happens in onDestroy() lifecycle function
+    deactivate NetworkChangeReceiver
+    deactivate ActivityRecognitionReceiver
+    deactivate BufferFlushWorker
+    deactivate SensorUploadWorker
+
+```
 
 
 ## Unsent Data Functionality
