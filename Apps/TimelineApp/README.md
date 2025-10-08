@@ -281,4 +281,4 @@ The above diagram illustrates the interactions between the app and remote servic
 - Pink box: the acutal visualisation call is sent to GeoserverJwtProxy and Geoserver.
 
 ### Sensor data collection related design document
-Please refer to the [sensor module](/core/sensor/README.md) for more details. 
+Please refer to the [sensor module](core/sensor/README.md) for more details. 
