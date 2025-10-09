@@ -249,7 +249,7 @@ sequenceDiagram
         note over SensorUploadWorker: Sample workflow of SensorUploadWorker
         loop Every upload_delay ms
             loop when all pages has been uploaded
-                SensorUploadWorker ->> SensorLocalSource : retrieve unuploaded sensor data with pagination
+                SensorUploadWorker ->> SensorLocalSource : retrieve unuploaded sensor data from individual sensor tables with pagination
                 SensorUploadWorker ->> SensorUploadWorker: compress data 
                 SensorUploadWorker ->> SensorNetworkSource: send compressed data
             end
@@ -266,6 +266,40 @@ sequenceDiagram
 
 
 ## Unsent Data Functionality
+The sequence diagram below illustrates the process that occurs when sensor data fails to upload to the remote server (e.g., due to a network issue or service downtime).
+```mermaid
+sequenceDiagram 
+    participant SensorUploadWorker
+    participant SensorNetworkSource
+    participant SensorLocalSource
+
+    SensorUploadWorker ->> SensorLocalSource : retrieve data from individual sensor tables
+    SensorUploadWorker ->> SensorNetworkSource : send post request with compressed data
+    SensorNetworkSource ->> SensorNetworkSource : fail to send data to remote server
+    SensorNetworkSource ->> SensorLocalSource : add the data to `unsent table`
+```
+Fresh data collected by sensors or APIs are stored in seperate sensor tables (eg. acceleration table, location table etc.) and retrieved by `SensorUploadWorker` under normal conditions. Data that fail to upload are moved to the `unsent table` in the call back of post request in `SensorNetworkSource`.
+
+```mermaid
+sequenceDiagram 
+    participant NetworkChangeReceiver
+    participant UnsentDataWorker
+    participant SensorUploadWorker
+    participant SensorNetworkSource
+    participant SensorLocalSource
+
+    note over NetworkChangeReceiver: NetworkChangeReceiver is invoked by the app when there is change in the device network state
+    NetworkChangeReceiver ->> NetworkChangeReceiver : check and find network is available
+    NetworkChangeReceiver ->> UnsentDataWorker : create UnsentDataWorker as one time work request and add to WorkManager queue
+
+    UnsentDataWorker ->> SensorLocalSource : retrieve unsent data from `unsent table` with pagination
+    UnsentDataWorker ->> NetworkChangeReceiver: compress unsent data
+    UnsentDataWorker ->> SensorNetworkSource : send post request
+    UnsentDataWorker ->> SensorLocalSource : delete unsent data  
+```
+NOTICE: 
+- The current way of deleting unsent data isn't done in the call back of SensorNetworkSource. For the current employment, the unuploaded data will be added by SensorNetworkSource if it fails to upload so there won't be data lost. The code could be optimized further so the deletion of sent data and storing of unsent data can be in the same place.
+
 Overview:
 The Unsent Data functionality is designed to manage sensor data that could not be uploaded to the
 network due to connectivity issues. This functionality ensures that no data is lost if a user loses
