@@ -28,7 +28,7 @@
       "What species have the most pKa and/or pKaH values?",
       "Provide the measurement methods used, along with the number of data entries per method.",
       "List all compounds that appear across multiple data sources.",
-      "Provide the entries with the lowest pKa1 and highest pKaH1 values, respectively.",
+      "What are the lowest and highest reported pKaH1 values, respectively, for each species?",
       "Report the entries at the highest and lowest temperatures, respectively.",
       "Identify the reliability labels used, as well as the counts of each.",
       "Which methods are associated with “Uncertain” assessments most often?",
@@ -48,8 +48,7 @@
       "Retrieve all measurements lacking a parsed numeric temperature (to clean).",
       "For amidine (InChI=1S/C2H6N2/c1-2(3)4/h1H3,(H3,3,4)), list pKaH1 at all temperatures with assessment.",
       "Identify pressure-dependent pKb series for the same compound and temperature T.",
-      "Count measurements per pK type.",
-      "For each compound, report min, median and max pKaH1 (use AVG as proxy for median in SPARQL 1.1)."
+      "Count measurements per pK type."
     ]
   },
   {
