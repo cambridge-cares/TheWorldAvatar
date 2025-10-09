@@ -69,6 +69,7 @@ flowchart TD
         subgraph core_sensor_source_worker[core:sensor:source:worker]
             bfw[BufferFlushWorker]
             suw[SensorUploadWorker]
+            uduw[UnsentDataUploadWorker] 
         end
     end
 
@@ -117,6 +118,9 @@ flowchart TD
     suw --> sns
     suw --> sls
 
+    uduw --> sns
+    uduw --> sls
+
     sls --> dao
 
 
@@ -124,7 +128,7 @@ flowchart TD
     class upns,upr UserPhone
 
     classDef Network fill:#C8E6C9,stroke:#388E3C;
-    class ncr,sns,suw Network
+    class ncr,sns,suw,uduw Network
 
     classDef Local fill:#E1BEE7,stroke:#8E24AA;
     class bfw,sls,dao Local
@@ -158,6 +162,7 @@ flowchart TD
 - SensorNetworkSource: A network source that is responsible for sending the collected data to the remote server
 - SensorUploadWorker: Handles periodic data uploads to the server.
 - NetworkChangeReceiver: Monitors network connectivity and handles unsent data when the network is restored.
+- UnsentDataUploadWorker: Handles reupload of unsent data when device is back online.
 
 ### Local storage (Purple)
 - SensorLocalSource: A local source that stores collected data to local database
