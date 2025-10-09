@@ -72,12 +72,13 @@ PREFIX os: <{os}>
 
 SELECT ?Species WHERE {{
     ?Species a os:Species .
-    VALUES ?Text {{ {values} }}
+    VALUES ?LCText {{ {values} }}
     ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES|os:hasIdentifier)/os:value)|rdfs:label|skos:altLabel) ?Text .
+    BIND(LCASE(?Text) AS ?LCText)
 }}""".format(
             skos=SKOS,
             os=ONTOSPECIES,
-            values=" ".join('"{val}"'.format(val=text) for text in texts),
+            values=" ".join('"{val}"'.format(val=text.lower()) for text in texts),
         )
 
         # TODO: ONTOSPECIES_V3 should be remove after merging
