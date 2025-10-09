@@ -72,7 +72,7 @@ public class SensorUploadWorker extends Worker {
         }
     }
 
-    private void uploadSensorData() throws JSONException, IOException {
+    private void uploadSensorData() throws IOException {
         int PAGE_SIZE = 800;
         int offset = 0;
         boolean hasMoreData = true;
