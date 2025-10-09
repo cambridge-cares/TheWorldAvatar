@@ -125,6 +125,11 @@ Binder suggests [not to build with customized Dockerfile](https://mybinder.readt
 
 The notebook uses [`twa` python package](https://pypi.org/project/twa/), which requires `openjdk-17-jdk-headless` to be installed. This has been included in the pre-configured `apt.txt`. And the required python packages has been added to `requirements.txt` as well. 
 
+The notebook is currently **not deployed** on Binder because
+1. Binder reduced their computation capacity due to funding issue. Services deployed with Binder is not stable.
+2. Binder restricts access to all ports except 80 (HTTP) and 443 (HTTPS). The notebook fails to access the TWA stack because it is deployed on other ports and doesn't have HTTPS setup.
+
+
 > [!IMPORTANT]  
 > Binder restricts access to all ports except 80 (HTTP) and 443 (HTTPS). The TWA stack used by the notebook should have Nginx deployed on these ports.
 
