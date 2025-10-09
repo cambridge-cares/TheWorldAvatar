@@ -112,13 +112,25 @@ A Jupyter notebook is provided in [/notebook](./notebook/) to demonstrate the fo
 ## Configuration
 User is required to provide the configuration of knowledge graph and database in [config.env](./notebook/config.env). The complete setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
 
-## Docker Deploy
+## Docker Deployment
 User is encouraged to use docker to launch the notebook, where the requirements are pre-installed in the container. However, the `config.env` file and `templates/` folder are bind-mount, allowing any changes made to be reflected immediately inside the container.
 
 Execute the following command in [/notebook](./notebook/) to launch the jupyter notebook.
 ```
 docker compose up --build
 ```
+
+## Binder Deployment
+Binder suggests [not to build with customized Dockerfile](https://mybinder.readthedocs.io/en/latest/tutorials/dockerfile.html#use-a-dockerfile-for-your-binder-repository) but use `requirements.txt` for [python package installation](https://mybinder.readthedocs.io/en/latest/examples/sample_repos.html#python-environment-with-a-requirements-txt) and `apt.txt` for [apt packages](https://mybinder.readthedocs.io/en/latest/examples/sample_repos.html#installing-packages-from-apt-repositories). 
+
+The notebook uses [`twa` python package](https://pypi.org/project/twa/), which requires `openjdk-17-jdk-headless` to be installed. This has been included in the pre-configured `apt.txt`. And the required python packages has been added to `requirements.txt` as well. 
+
+> [!IMPORTANT]  
+> Binder restricts access to all ports except 80 (HTTP) and 443 (HTTPS). The TWA stack used by the notebook should have Nginx deployed on these ports.
+
+> [!IMPORTANT]  
+> Binder requires a repository link to build the notebook image, and both requirements.txt and apt.txt must be located in the root directory of the repository. To deploy the notebook using Binder, create a separate repository and copy the contents of the [notebook](./notebook/) folder into it.
+
 
 &nbsp;
 # Authors
