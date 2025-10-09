@@ -60,7 +60,8 @@ WHERE {{
             pass
 
         texts = list(kwargs.values())
-        texts.append(text)
+        if (text is not None) and (text != ""):
+            texts.append(text)
         if not texts:
             lst: list[str] = []
             return lst
