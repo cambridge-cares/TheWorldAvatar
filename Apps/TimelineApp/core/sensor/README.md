@@ -1,13 +1,6 @@
 # Sensor Module
 - [Sensor Module](#sensor-module)
   - [Architecture Design](#architecture-design)
-    - [UI level](#ui-level)
-    - [Recording process](#recording-process)
-    - [Network functions](#network-functions)
-    - [Local storage](#local-storage)
-    - [Sensor data collection](#sensor-data-collection)
-    - [Recording state management](#recording-state-management)
-    - [Phone ID and user ID registration](#phone-id-and-user-id-registration)
   - [Sensor recording: normal flow](#sensor-recording-normal-flow)
   - [Sensor recording: handling unsent data](#sensor-recording-handling-unsent-data)
     - [UnsentData table design](#unsentdata-table-design)
@@ -143,45 +136,44 @@ flowchart TD
     classDef TriggerRecording fill:#B2DFDB,stroke:#00897B;
     class sr,ss TriggerRecording
 ```
-
-- <a style="color: #00897B" href="#recording-process">Recording process</a>: related to recording process (foreground service declaration, start/stop the service)
-- <a style="color: #388E3C" href="#network-functions">Network functions</a>: related to network functions for sensor data. Includes uploading data to remote server and detecting device network changes
-- <a style="color: #8E24AA" href="#local-storage">Local storage</a>: related to app local storage
-- <a style="color: #F57C00" href="#sensor-data-collection">Sensor data collection</a>: related to sensor data collection. Deal with the actual sensors and APIs that provide data
-- <a style="color: #C62828" href="#recording-state-management">Recording state management</a>: mainly used by UI. Includes state such as currently selected sensors, whether the app is recording data, 'device' ID and foreground service task ID.
-- <a style="color: #1E88E5" href="#phone-id-and-user-id-registration">Phone ID and User ID registration</a>: register 'device' ID to user ID
+- $\textcolor{#00897B}{\text{Recording process}}$: related to recording process (foreground service declaration, start/stop the service)
+- $\textcolor{#388E3C}{\text{Network functions}}$: related to network functions for sensor data. Includes uploading data to remote server and detecting device network changes
+- $\textcolor{#8E24AA}{\text{Local storage}}$: related to app local storage
+- $\textcolor{#F57C00}{\text{Sensor data collection}}$: related to sensor data collection. Deals with the actual sensors and APIs that provide data
+- $\textcolor{#C62828}{\text{Recording state management}}$: mainly used by UI. Includes state such as currently selected sensors, whether the app is recording data, 'device' ID, and foreground service task ID
+- $\textcolor{#1E88E5}{\text{Phone ID and User ID registration}}$: registers 'device' ID to user ID
 
 ### UI level
 - SensorSettingFragment: A fragment class in `:feature:user` which provides the user interface for user to control the sensor recording
 - SensorViewModel: A viewmodel class in `:feature:user:viewmodel` which handles the communication between UI and repository
 
-### <p style="color: #00897B; font-weight: bold;">Recording process</p>
-- SensorRepository: A repository level component that provides control of sensor collection to UI level component.
-- SensorService: A foreground service that keeps the data collection, sending and storing running. It triggers the sending and storing of data. [Foreground service](https://developer.android.com/develop/background-work/services/fgs) makes it less likely to be terminated by the Android OS. 
+### $\textcolor{#00897B}{\textbf{Recording process}}$
+- SensorRepository: A repository-level component that provides control of sensor collection to UI-level components.  
+- SensorService: A foreground service that keeps data collection, sending, and storage running. It triggers the sending and storing of data. [Foreground services](https://developer.android.com/develop/background-work/services/fgs) make it less likely to be terminated by the Android OS.  
 
-### <p style="color: #388E3C; font-weight: bold;">Network functions</p>
-- SensorNetworkSource: A network source that is responsible for sending the collected data to the remote server
-- SensorUploadWorker: Handles periodic data uploads to the server.
-- NetworkChangeReceiver: Monitors network connectivity and handles unsent data when the network is restored.
-- UnsentDataUploadWorker: Handles reupload of unsent data when device is back online.
+### $\textcolor{#388E3C}{\textbf{Network functions}}$
+- SensorNetworkSource: A network source responsible for sending collected data to the remote server.  
+- SensorUploadWorker: Handles periodic data uploads to the server.  
+- NetworkChangeReceiver: Monitors network connectivity and handles unsent data when the network is restored.  
+- UnsentDataUploadWorker: Handles reuploading of unsent data when the device is back online.  
 
-### <p style="color: #8E24AA; font-weight: bold;">Local storage</p>
-- SensorLocalSource: A local source that stores collected data to local database
-- BufferFlushWorker: Handles periodic flushing of data from memory to local storage.
+### $\textcolor{#8E24AA}{\textbf{Local storage}}$
+- SensorLocalSource: A local source that stores collected data in the local database.  
+- BufferFlushWorker: Handles periodic flushing of data from memory to local storage.  
 
-### <p style="color: #F57C00; font-weight: bold;">Sensor data collection</p>
-- SensorManager: A class that manages all the sensor handlers
-- Sensor handlers: Classes manage physical sensors and collect data from the corresponding sensors
-- ActiviyRecognitionReceiver: A class that manages and collect activity data from [Google Activity Recognition API](https://developers.google.com/location-context/activity-recognition)
+### $\textcolor{#F57C00}{\textbf{Sensor data collection}}$
+- SensorManager: A class that manages all sensor handlers.  
+- Sensor handlers: Classes that manage physical sensors and collect data from them.  
+- ActivityRecognitionReceiver: A class that manages and collects activity data from the [Google Activity Recognition API](https://developers.google.com/location-context/activity-recognition).  
 
-### <p style="color: #C62828; font-weight: bold;">Recording state management</p>
-The recording states are logged to SharedPreference files. The file uses hashed user ID as file name to differentiate state files generated by different accounts logged in on the same device. The same file is used to store other app preference and state as well. 
-- SensorCollectionStateManagerRepository: A repository level component which provide SensorCollectionStateManager functions to higher level components or other repositories. It runs provided functions with requested SensorCollectionState and clears SensorCollectionState.
-- SensorCollectionStateManager: A source class that read and write encrypted sensor collection state with user information to local storage. 
+### $\textcolor{#C62828}{\textbf{Recording state management}}$
+The recording states are logged to SharedPreference files. Each file uses a hashed user ID as its filename to differentiate state files generated by different accounts on the same device. The same file also stores other app preferences and states.  
+- SensorCollectionStateManagerRepository: A repository-level component that provides `SensorCollectionStateManager` functions to higher-level components or other repositories. It executes provided functions with the requested `SensorCollectionState` and clears it afterward.  
+- SensorCollectionStateManager: A source class that reads and writes encrypted sensor collection state with user information to local storage.  
 
-### <p style="color: #1E88E5; font-weight: bold;">Phone ID and user ID registration</p>
-- UserPhoneRepository: A repository level component that provide UserPhoneNetworkSource access to UI level. It register device id to user id.
-- UserPhoneNetworkSource: A network source that registers the current phone to the logged in user.
+### $\textcolor{#1E88E5}{\textbf{Phone ID and user ID registration}}$
+- UserPhoneRepository: A repository-level component that provides access to `UserPhoneNetworkSource` for the UI layer. It registers the device ID to the user ID.  
+- UserPhoneNetworkSource: A network source that registers the current phone to the logged-in user.  
 
 
 ## Sensor recording: normal flow
