@@ -64,6 +64,8 @@ Please configure your development machine as described in [here](https://docs.ma
 
 Add the Mapbox public key to [developer_config.xml](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Apps/TimelineApp/core/utils/src/main/res/values/developer_config.xml).
 
+> From the latest Mapbox SDK doc, private key is no longer needed.
+
 #### Sensor logging config
 The physical sensor pulling frequency is configured in [sensor_config.json](./core/sensor/src/main/assets/sensor_config.json). The available values can be found from [Android sensor overview](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview#sensors-monitor).
 
