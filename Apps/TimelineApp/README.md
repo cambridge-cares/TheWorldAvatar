@@ -6,6 +6,7 @@
       - [Login](#login)
       - [Network Endpoint](#network-endpoint)
       - [Mapbox](#mapbox)
+      - [Sensor logging config](#sensor-logging-config)
       - [Resource files](#resource-files)
   - [Design document](#design-document)
     - [App and backend services interactions](#app-and-backend-services-interactions)
@@ -49,6 +50,11 @@ Please add the stack address to `host_with_port` in [network_config.xml](https:/
 Please configure your development machine as described in [here](https://docs.mapbox.com/android/maps/guides/install/#configure-credentials).
 
 Add the Mapbox public key to [developer_config.xml](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Apps/TimelineApp/core/utils/src/main/res/values/developer_config.xml).
+
+#### Sensor logging config
+The physical sensor pulling frequency is configured in [sensor_config.json](./core/sensor/src/main/assets/sensor_config.json). The available values can be found from [Android sensor overview](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview#sensors-monitor).
+
+The frequency of flushing data to local source and uploading data to remote server are configured in [sensor_settings_config.json](./core/sensor/src/main/assets/sensor_settings_config.json).
 
 #### Resource files
 Due to Github repo size limitation and version control principle, some of the binary resource files are not uploaded to Github. Please find them from [dropbox](https://www.dropbox.com/scl/fo/930lk4k3lvkav6hqts4y8/ADA97XfhCI-xaa7NUQOk4s4?rlkey=lsqhp3bbzl98r3pee8f0fd1ry&st=7cxbcfin&dl=0) and place the files to your project.
