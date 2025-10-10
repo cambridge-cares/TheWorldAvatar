@@ -42,6 +42,19 @@ Please add in the client configuration and auth service information in [auth_con
 
 `authorization_endpoint_uri`, `token_endpoint_uri`, `registration_endpoint_uri` and `user_info_endpoint_uri` can be left blank and the app will retrieve these uri with the `discovery_uri` provided.
 
+It is recommended to use Keycloak version 25.0.6 and include the user ID in the Keycloak JWT token by: 
+- Opening the Keycloak Admin Console in your browser and logging in
+- Select the realm 'timeline' from the dropdown menu
+- Go to clients tab on the left hand side. 
+- Select twa-timeline-app, then client scopes. 
+- Under client scopes select twa-timeline-app-dedicated and select add mapper. 
+  - Select by configuration
+  - Scroll to select Subject (sub)
+  - Ensure add to access token and add to introspection are toggled 
+  - Name the mapper
+  - Click save to apply the changes. 
+- To debug the access token you can print it to console and use jwt.io to check if the gisub claim contains the user ID instead of the default user identifier. 
+
 #### Network Endpoint
 Please add the stack address to `host_with_port` in [network_config.xml](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Apps/TimelineApp/core/utils/src/main/res/values/network_config.xml) in core/utils nodule.
 > Example of `host_with_port` http://localhost:3838
