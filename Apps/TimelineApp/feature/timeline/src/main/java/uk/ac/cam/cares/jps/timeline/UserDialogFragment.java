@@ -22,9 +22,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentUserDialogBinding;
-import uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel;
 import uk.ac.cam.cares.jps.sensor.ui.RecordingViewModel;
-import uk.ac.cam.cares.jps.ui.UiUtils;
+import uk.ac.cam.cares.jps.ui.base.UiUtils;
+import uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel;
 
 @AndroidEntryPoint
 public class UserDialogFragment extends DialogFragment {
@@ -57,7 +57,7 @@ public class UserDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        userAccountViewModel.logoutStatus.observe(getViewLifecycleOwner(), status -> {
+        userAccountViewModel.getLogoutStatus().observe(getViewLifecycleOwner(), status -> {
             if (status != null && Boolean.TRUE.equals(status.getFirst())) {
                 recordingViewModel.clearManagers(status.getSecond());
                 dismiss();

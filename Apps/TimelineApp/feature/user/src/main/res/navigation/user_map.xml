@@ -7,77 +7,77 @@
 
     <fragment
         android:id="@+id/onboarding_fragment"
-        android:name="uk.ac.cam.cares.jps.user.OnboardingFragment"
+        android:name="uk.ac.cam.cares.jps.user.landing.OnboardingFragment"
         tools:layout="@layout/fragment_onboarding">
         <deepLink app:uri="@string/onboarding_fragment_link" />
     </fragment>
 
     <fragment
         android:id="@+id/account_setting"
-        android:name="uk.ac.cam.cares.jps.user.AccountSettingFragment"
+        android:name="uk.ac.cam.cares.jps.user.setting.AccountSettingFragment"
         tools:layout="@layout/fragment_account_setting">
         <deepLink app:uri="@string/account_setting_link"/>
     </fragment>
 
     <fragment
         android:id="@+id/sensor_setting"
-        android:name="uk.ac.cam.cares.jps.user.SensorSettingFragment"
+        android:name="uk.ac.cam.cares.jps.user.setting.sensor.SensorSettingFragment"
         tools:layout="@layout/fragment_sensor_setting">
         <deepLink app:uri="@string/sensor_fragment_link" />
     </fragment>
 
     <fragment
         android:id="@+id/help_page"
-        android:name="uk.ac.cam.cares.jps.user.HelpPageFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpPageFragment"
         tools:layout="@layout/fragment_help">
         <deepLink app:uri="@string/help_fragment_link" />
     </fragment>
 
     <fragment
         android:id="@+id/help_about_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpAboutFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpAboutFragment"
         tools:layout="@layout/help_about" />
 
     <fragment
         android:id="@+id/timeline_setting"
-        android:name="uk.ac.cam.cares.jps.user.TimelineSettingFragment"
+        android:name="uk.ac.cam.cares.jps.user.setting.TimelineSettingFragment"
         tools:layout="@layout/fragment_timeline_setting">
         <deepLink app:uri="@string/timeline_setting_link" />
     </fragment>
 
     <fragment
         android:id="@+id/help_recording_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpRecordingFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpRecordingFragment"
         tools:layout="@layout/help_recording" />
 
     <fragment
         android:id="@+id/help_sensor_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpSensorFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpSensorFragment"
         tools:layout="@layout/help_sensor_documentation" />
 
     <fragment
         android:id="@+id/help_faq_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpFaqFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpFaqFragment"
         tools:layout="@layout/help_faq" />
 
     <fragment
         android:id="@+id/help_map_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpMapFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpMapFragment"
         tools:layout="@layout/help_map_interactions" />
 
     <fragment
         android:id="@+id/help_features_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpFeaturesFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpFeaturesFragment"
         tools:layout="@layout/help_helpful_features" />
 
     <fragment
         android:id="@+id/help_getting_started_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpGettingStartedFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpGettingStartedFragment"
         tools:layout="@layout/help_getting_started" />
 
     <fragment
         android:id="@+id/help_location_fragment"
-        android:name="uk.ac.cam.cares.jps.user.HelpLocationFragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpLocationFragment"
         tools:layout="@layout/help_location_history" />
 
     <action android:id="@+id/action_helpPageFragment_to_helpLocationFragment"

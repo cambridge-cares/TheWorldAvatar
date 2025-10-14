@@ -328,7 +328,7 @@ public class SensorService extends Service {
                         .setContentText(getString(R.string.sensors_are_running_for_data_collection))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                        .setSmallIcon(uk.ac.cam.cares.jps.ui.R.drawable.twa_notification_icon)
+                        .setSmallIcon(uk.ac.cam.cares.jps.ui.base.R.drawable.twa_notification_icon)
                         .setOngoing(true)
                         .setContentIntent(pendingIntent)
                         .build();

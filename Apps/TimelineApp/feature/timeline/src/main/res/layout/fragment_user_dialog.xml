@@ -5,7 +5,7 @@
     <data>
         <variable
             name="userAccountViewModel"
-            type="uk.ac.cam.cares.jps.ui.viewmodel.UserAccountViewModel" />
+            type="uk.ac.cam.cares.jps.ui.impl.viewmodel.UserAccountViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView
