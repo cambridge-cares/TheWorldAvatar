@@ -82,7 +82,7 @@ class SpeciesPropertyKey(str, Enum):
     COMPOUND_COMPLEXITY = "CompoundComplexity"
     COVALENT_UNIT_COUNT = "CovalentUnitCount"
     DENSITY = "Density"
-    DISSOCIATION_CONSTANTS = "DissociationConstants"  # this is for web species search and explorer, not for OGM
+    DISSOCIATION_CONSTANT = "DissociationConstant"
     ENTHALPY_OF_SUBLIMATION = "EnthalpyofSublimation"
     EXACT_MASS = "ExactMass"
     FLASH_POINT = "FlashPoint"
