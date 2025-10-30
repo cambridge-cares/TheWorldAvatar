@@ -8,7 +8,7 @@ import rdflib
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("filenames", nargs="+", help="Paths to owl files")
-    parser.add_argument("--out", help="Path to output directory", required=True)
+    parser.add_argument("--out", help="Path to output file", required=True)
     args = parser.parse_args()
 
     g = rdflib.Graph()
@@ -32,7 +32,8 @@ WHERE {{
     ]
 
     dirpath = os.path.dirname(args.out)
-    os.makedirs(dirpath, exist_ok=True)
+    if dirpath != "":
+        os.makedirs(dirpath, exist_ok=True)
 
     with open(os.path.join(args.out), "w") as f:
         json.dump(data, f, indent=4)
