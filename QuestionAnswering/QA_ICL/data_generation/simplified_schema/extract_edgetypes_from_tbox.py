@@ -35,5 +35,5 @@ WHERE {{
     if dirpath != "":
         os.makedirs(dirpath, exist_ok=True)
 
-    with open(os.path.join(args.out), "w") as f:
-        json.dump(data, f, indent=4)
+    with open(os.path.join(args.out), "w", encoding="UTF-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)

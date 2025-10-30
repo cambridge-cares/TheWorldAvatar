@@ -89,8 +89,9 @@ WHERE {{
     os.makedirs(args.out, exist_ok=True)
 
     annotations = node_types + edge_types
-    with open(os.path.join(args.out, "annotations.json"), "w") as f:
-        json.dump(annotations, f, indent=4)
+    with open(os.path.join(args.out, "annotations.json"), "w", encoding="UTF-8") as f:
+        json.dump(annotations, f, indent=4, ensure_ascii=False)
 
-    with open(os.path.join(args.out, "relations.json"), "w") as f:
-        json.dump([{"s": s, "p": p, "o": o} for s, p, o in relations], f, indent=4)
+    with open(os.path.join(args.out, "relations.json"), "w", encoding="UTF-8") as f:
+        json.dump([{"s": s, "p": p, "o": o} for s, p, o in relations],
+            f, indent=4, ensure_ascii=False)
