@@ -8,7 +8,7 @@ OntoCompChem is an ontology designed to represent the input and output processes
 
 ### Download
 
-- [OntoCompChem.owl](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompchem/OntoCompChem.owl)
+- [OntoCompChem.owl](https://github.com/TheWorldAvatar/ontology/blob/main/ontology/ontocompchem/ontocompchem.owl)
   
 ### Access
 

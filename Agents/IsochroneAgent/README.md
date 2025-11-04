@@ -12,7 +12,7 @@ The agent has been implemented to work in the stack. Follow the instructions in 
  
 ### 2.2. Uploading OSM Data via stack-data-uploader
 1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
-2) `.pbf` uploaded via [stack-data-uploader] in [osm2pgrouting](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#osm-data) data type.
+2) `.pbf` uploaded via [stack-data-uploader] in [osm2pgrouting](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader#osm-data) data type.
 
 ### 2.3. Uploading population data via stack-data-uploader
 1) Download High Resolution Population Density Maps from [HDX - Meta Data For Good](https://data.humdata.org/dataset/germany-high-resolution-population-density-maps-demographic-estimates?).
@@ -45,7 +45,7 @@ To use the example created in [15MSC in Pirmasens](inputs/15MSC/POIqueries/), re
 [EdgeTable](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It is used to define the transport mode and road conditions during the calculation of isochrone. 
 
 EdgeTableSQL follows the following format `TransportMode_RoadConditions.sql`.
-1) `TransportMode` and `RoadConditions` refers to the ontology classes developed in [OntoIsochrone](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoisochrone/OntoIsochrone.owl).
+1) `TransportMode` and `RoadConditions` refers to the ontology classes developed in [OntoIsochrone](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoisochrone/OntoIsochrone.owl).
 2) The SQL statement content refers to the cost table used for routing calculations. 
 
 EdgeTableSQL are created for [15MSC in Pirmasens](inputs/15MSC/edgesSQLTable/) and [UR in King's Lynn](inputs/UR/edgesSQLTable/) use cases. 
@@ -111,13 +111,13 @@ The debugger port will be available at 5005.
 ### 7.1 Feature Info Agent
 The isochrones is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent.
 
-1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
-2) In the directory [stack-manager-config/data/fia-queries/](stack-manager-config/data/fia-queries/), contains `SPARQL queries` and `fia-config.json` to be used with the agent [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).  Place the `fia-config.json` and `isochrone.sparql` inside `stack-manager/inputs/data/queries` as according the bind mount path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
+1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/data), following instruction [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#example---including-a-visualisation).
+2) In the directory [stack-manager-config/data/fia-queries/](stack-manager-config/data/fia-queries/), contains `SPARQL queries` and `fia-config.json` to be used with the agent [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).  Place the `fia-config.json` and `isochrone.sparql` inside `stack-manager/inputs/data/queries` as according the bind mount path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/TheWorldAvatar/Feature-Info-Agent/blob/main/sample/feature-info-agent.json).
 
 
 
 
-[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-data-uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services
 [inputs]: stack-data-uploader-inputs/

@@ -13,7 +13,7 @@ OSM Buildings is a JavaScript library for visualizing OpenStreetMap building geo
 The library version in this repository is a WebGL only variant of OSM Buildings.
 At some point it will fully integrate the Classic 2.5D version.
 
-For the latest information about the project [follow us on Twitter](https://twitter.com/osmbuildings), read [our blog](http://blog.osmbuildings.org), or just mail us at mail@osmbuildings.org.
+For the latest information about the project [follow us on Twitter](https://twitter.com/osmbuildings), read [our blog](https://medium.com/@osmbuildings), or just mail us at mail@osmbuildings.org.
 
 ### Not sure which version to use?
 

@@ -9,9 +9,9 @@ Because DTVF can only send request instead of taking in any, logging the status 
 <img src="./resources/usecase_assist_visualisation.png"  width="60%" HEIGHT="60%" alt="AndroidStatusAgent in visualisation use case">
 
 # 1. Setup
-This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager).
 A successful setup will result in 9 containers:
-- 8 [default containers](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack)
+- 8 [default containers](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack)
 - AndroidStatusAgent
 
 ## 1.1 Config BMSQueryAgent in Stack
@@ -58,10 +58,10 @@ config/
 |_ <STACK NAME>.json
 ```
 
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+More information about adding custom containers to the stack can be found [here](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#adding-custom-containers).
 
 ## 1.2 Spin Up Stack
-Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
+Follow these [steps](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager#spinning-up-a-stack) to spin up the stack.
 
 # 2. Usage
 This agent support both POST and GET requests.

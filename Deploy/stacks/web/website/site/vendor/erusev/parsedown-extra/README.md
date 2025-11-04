@@ -1,7 +1,7 @@
-> You might also like [Caret](http://caret.io?ref=parsedown) - our Markdown editor for the Desktop.
+> You might also like [Caret](http://caret.io?ref=parsedown) - our Markdown editor for the Desktop.<!-- markdown-link-check-disable-line -->
 
 ## Parsedown Extra
-
+<!-- markdown-link-check-disable-next-line -->
 [![Build Status](https://img.shields.io/travis/erusev/parsedown-extra/master.svg?style=flat-square)](https://travis-ci.org/erusev/parsedown-extra)
 
 An extension of [Parsedown](http://parsedown.org) that adds support for [Markdown Extra](https://michelf.ca/projects/php-markdown/extra/).
@@ -24,7 +24,7 @@ echo $Extra->text('# Header {.sth}'); # prints: <h1 class="sth">Header</h1>
 
 **Who uses Parsedown Extra?**
 
-[October CMS](http://octobercms.com/), [Bolt CMS](http://bolt.cm/), [Kirby CMS](http://getkirby.com/), [Grav CMS](http://getgrav.org/), [Statamic CMS](http://www.statamic.com/) and [more](https://www.versioneye.com/php/erusev:parsedown-extra/references).
+[October CMS](http://octobercms.com/), [Bolt CMS](http://bolt.cm/), [Kirby CMS](http://getkirby.com/), [Grav CMS](http://getgrav.org/), [Statamic CMS](http://www.statamic.com/) and more.
 
 **How can I help?**
 

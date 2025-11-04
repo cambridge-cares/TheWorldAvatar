@@ -1,6 +1,6 @@
 # Stack Data Uploader contents
 
-This directory contains the different data contents for the [`stack-data-uploader`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader).
+This directory contains the different data contents for the [`stack-data-uploader`](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader).
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@ Additional datasets required for routing purposes:
 
 ## 2. Configuration File
 
-As per the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader), the relevant configuration file is as follows. Users are also able to upload icons using the `staticGeoServerData` key.
+As per the [documentation](https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader), the relevant configuration file is as follows. Users are also able to upload icons using the `staticGeoServerData` key.
 
 ```json
 {

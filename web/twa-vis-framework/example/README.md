@@ -2,7 +2,7 @@
 
 This directory contains the sample data, configuration, and miscellaneous resources needed to spin up a TWA Stack with some example visualisations.
 
-Please note that this example is aimed as showing new users what the visualisation framework is capable of, and to create an experimentation space in which data formats, styling, and other visualisation functionality can be played with. The generation of the sample data, and its stack configuration files are not explained here; for more details on this, see the [TWA Stack](../../../Deploy/stacks/dynamic/stack-manager) documentation. 
+Please note that this example is aimed as showing new users what the visualisation framework is capable of, and to create an experimentation space in which data formats, styling, and other visualisation functionality can be played with. The generation of the sample data, and its stack configuration files are not explained here; for more details on this, see the [TWA Stack](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) documentation. 
 
 ## Mapbox
 

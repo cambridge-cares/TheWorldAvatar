@@ -8,6 +8,7 @@ Note that these documentation pages are a constant work in progress, and will be
 
 The TWA project has a publicly facing website located at [https://theworldavatar.io](https://theworldavatar.io). This is site was created by, and it hosted at, CMCL in Cambridge. It runs from Docker containers using standard [Wordpress](https://wordpress.com/) installations, behind a single reverse proxy created using [NGINX](https://www.nginx.com/). Two versions of the site are hosted at once; production (available by the aforementioned URL), and development (accessed using the `dev.` subdomain).
 
+<!-- markdown-link-check-disable-next-line -->
 For more details on how the TWA website was created and hosted, see the [repository here](https://github.com/cmcl-io/theworldavatar.io). Note that this is a private repository created by CMCL, you'll need their permission to access it.
 
 ### Making changes

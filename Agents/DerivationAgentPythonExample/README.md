@@ -3,7 +3,7 @@
 ## Purpose
 This agent folder is intended as a template that one can copy and adapt to turn their own Python code into a derivation agent. The example requires [`pyderivationagent`](https://pypi.org/project/pyderivationagent/)>=1.4.1.
 
-This document covers four stages: development, test, package & publish, and deployment. For each stage, a step-by-step instruction is provided. Before continuing with this tutorial, it is recommended to read the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent) of `pyderivationagent` and all the relevant links.
+This document covers four stages: development, test, package & publish, and deployment. For each stage, a step-by-step instruction is provided. Before continuing with this tutorial, it is recommended to read the [documentation](https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent) of `pyderivationagent` and all the relevant links.
 
 If you identified anything that can be improved to make it easier for newcomers, please feel free to open a [pull request](https://github.com/cambridge-cares/TheWorldAvatar/pulls) or get in touch with the maintainer of the package.
 
@@ -54,7 +54,7 @@ The following command can be used to install all required packages.
 (<venv_name>) $ python -m pip install -e .[dev]
 ```
 
-As `pyderivationagent` library relies on the `py4jps` package, Java 11 is required. For Windows, it is recommended to obtain OpenJDK 11 from [here](https://developers.redhat.com/products/openjdk/download) and follow the [instructions](https://access.redhat.com/documentation/en-us/openjdk/11/html-single/installing_and_using_openjdk_11_for_windows/index). For linux environment, one can install via:
+As `pyderivationagent` library relies on the `py4jps` package, Java 11 is required. For Windows, it is recommended to obtain OpenJDK 11 from [here](https://developers.redhat.com/products/openjdk/download) and follow the [instructions](https://docs.redhat.com/en/documentation/red_hat_build_of_openjdk/11/html/installing_and_using_red_hat_build_of_openjdk_11_for_windows/index). For linux environment, one can install via:
 
 `(Linux)`
 ```sh
@@ -102,7 +102,7 @@ The derivation agent modifies the knowledge graph automatically, it is therefore
 ### Local agent integration test
 This example is provided in `docker-compose-testcontainers.yml` file. Other relevant files are provided in the `tests` folder.
 
-1. `dummy_services_secrets` folder: credential for blazegraph container used in test, and potentially auth json file for email services (for more information on this, please refer to the official documentation of [`pyderivationagent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent))
+1. `dummy_services_secrets` folder: credential for blazegraph container used in test, and potentially auth json file for email services (for more information on this, please refer to the official documentation of [`pyderivationagent`](https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent))
 2. `test_triples` folder: test triples for derivation inputs (example ABox), and example TBox where relevant concepts and relationships are defined
 3. `agent.env.test` file: agent configuration parameters
 4. `conftest.py` for pytest: all pytest fixtures and other utility functions
@@ -140,7 +140,7 @@ For developers new to `Run and Debug` configurations, please refer to these offi
 - [Use Docker Compose: Debug](https://code.visualstudio.com/docs/containers/docker-compose#_debug)
 - [Debugpy](https://github.com/microsoft/debugpy)
 
-For developers interested to see more example of possible configurations, including those relevant to the usage of [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
+For developers interested to see more example of possible configurations, including those relevant to the usage of [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager), please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 ### Develop tests for new agents
 
@@ -224,7 +224,7 @@ To release your agent, you may want to update information in `Dockerfile` and `d
 &nbsp;
 ## Deployment
 
-Example of configurations for the agent are provided in `agent.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT`, with the credentials specified using `KG_USERNAME` and `KG_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The `OntoAgent:Service` IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations. To help monitoring the agent running status, an email notification feature is also provided and can be set up via `EMAIL_RECIPIENT`, `EMAIL_SUBJECT_PREFIX`, `EMAIL_USERNAME`, `EMAIL_AUTH_JSON_PATH` and `EMAIL_START_END_ASYNC_DERIVATIONS`. More details are provided in the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent) of the `pyderivationagent` package. Developers needs to ensure that this file is correctly updated before deploying the Docker Image.
+Example of configurations for the agent are provided in `agent.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT`, with the credentials specified using `KG_USERNAME` and `KG_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The `OntoAgent:Service` IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations. To help monitoring the agent running status, an email notification feature is also provided and can be set up via `EMAIL_RECIPIENT`, `EMAIL_SUBJECT_PREFIX`, `EMAIL_USERNAME`, `EMAIL_AUTH_JSON_PATH` and `EMAIL_START_END_ASYNC_DERIVATIONS`. More details are provided in the [documentation](https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent) of the `pyderivationagent` package. Developers needs to ensure that this file is correctly updated before deploying the Docker Image.
 
 Once the env file is prepared, the docker image can be deployed via:
 
@@ -238,7 +238,7 @@ docker run --env-file <env_file_path> --name derivation_agent_python_example ghc
 ## Adapt agent to work with stack
 > **NOTE** This agent example will be updated to incorporate Stack in the next iteration.
 
-This agent example has been adapted to work with a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
+This agent example has been adapted to work with a Docker stack spun up by the [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 
 &nbsp;

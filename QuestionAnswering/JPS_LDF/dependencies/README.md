@@ -4,7 +4,7 @@ Each of the three dependencies in this directory are managed using separate Mave
 The descriptor.xml specifies the content and format (zip) of each dependency, while the pom.xml contains the artifact's metadata and describes how to package and deploy it.
 
 To upload a new version of one of the artifacts:
-1. Ensure you have [Maven](https://maven.apache.org) installed and configured with appropriate settings to allow upload to the World Avatar Maven repo. See [this readme](../../Deploy/examples/maven_dependency/deploy/README.md) for instructions.
+1. Ensure you have [Maven](https://maven.apache.org) installed and configured with appropriate settings to allow upload to the World Avatar Maven repo. See [this readme](../../../Deploy/examples/maven_dependency/deploy/README.md) for instructions.
 2. Place the new files/directories in the dependency sub-directory.  The required content is:
 ```
   ./custom_node_modules

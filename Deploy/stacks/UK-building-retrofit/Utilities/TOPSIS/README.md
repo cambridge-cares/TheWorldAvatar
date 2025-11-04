@@ -70,4 +70,5 @@ result/TOPSIS_result.csv
 - The default weighting method is `"equal_weight"`, but it can be changed to `"entropy_weight_method"` in `criteria_weight.json`.
 
 <!-- Links -->
+<!-- markdown-link-check-disable-next-line -->
 [entropy-based approach]: https://www.sciencedirect.com/topics/engineering/entropy-method#:~:text=The%20entropy%20method%20is%20an,indicators%20through%20the%20information%20entropy.

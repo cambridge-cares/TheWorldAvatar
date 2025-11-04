@@ -6,7 +6,7 @@ The agent also allows for the option of including a client certificate (P12 form
 # Prerequisite
 1. It is necessary to have Keycloak set up properly. Refer to the official [Keycloak guides](https://www.keycloak.org/guides#getting-started) for how to get started. 
 
-2. The TWA (TheWorldAvatar) stack can also be used to set up the Keycloak service along with a variety of other services. Refer to [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for more information.
+2. The TWA (TheWorldAvatar) stack can also be used to set up the Keycloak service along with a variety of other services. Refer to [Stack Manager](https://github.com/TheWorldAvatar/stack/tree/main/stack-manager) for more information.
 
 3) It is necessary to have the PIPSTimeSeriesAgent set up properly. Refer to [PIPSTimeSeriesAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PIPSTimeSeriesAgent).
 

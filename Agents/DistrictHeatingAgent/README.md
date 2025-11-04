@@ -1,6 +1,6 @@
 # District Heating Agent
 
-This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the district heating network located in a midsize town in Germany. Its purpose is to instantiate instances of the district heating network. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
+This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the district heating network located in a midsize town in Germany. Its purpose is to instantiate instances of the district heating network. The agent uses the [time-series client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS_BASE_LIB to interact with both the KG and database.
 
 ## Usage 

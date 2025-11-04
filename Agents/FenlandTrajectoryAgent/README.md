@@ -146,16 +146,16 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 <!-- websites -->
 [OntoDevice]: https://www.theworldavatar.com/kg/ontodevice
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[Stack Manager README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[JPS_Document]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-pydantic-rdflib/JPS_BASE_LIB/python_wrapper/docs/examples/additional_java_lib.md
+[TimeSeriesClient]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[Stack Manager README]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
+[JPS_Document]: https://github.com/TheWorldAvatar/baselib/tree/main/python_wrapper/docs/examples/additional_java_lib.md
 [twa]: https://pypi.org/project/twa/
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
-[Python wrapper]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper#installing-additional-java-resources
+[Python wrapper]: https://github.com/TheWorldAvatar/baselib/tree/main/python_wrapper#installing-additional-java-resources
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [DataPoint]: https://www.metoffice.gov.uk/services/data/datapoint/about
 [Github container registry]: https://ghcr.io
@@ -163,12 +163,12 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [http://localhost:5000/]: http://localhost:5000/
 [Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
@@ -184,8 +184,8 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [resources]: ./resources
 [README]: ./README.md
 [FenlandTrajectoryAgent.json]: ./stack-manager-input-config-service/
-[stack manager configuration service directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
-[stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
+[stack manager configuration service directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services
+[stack manager configuration directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/
 [CURL commands folder]: ./example-requests/curl
 [SendHTTP]: ./example-requests/SendHTTP
 [preprocess]: ./example-requests/SendHTTP/gps_preprocess.http

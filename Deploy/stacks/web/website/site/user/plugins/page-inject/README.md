@@ -8,7 +8,7 @@ Installing the Page Inject plugin can be done in one of two ways. Our GPM (Grav 
 
 ## GPM Installation (Preferred)
 
-The simplest way to install this plugin is via the [Grav Package Manager (GPM)](http://learn.getgrav.org/advanced/grav-gpm) through your system's Terminal (also called the command line).  From the root of your Grav install type:
+The simplest way to install this plugin is via the [Grav Package Manager (GPM)](https://learn.getgrav.org/16/cli-console/grav-cli-gpm) through your system's Terminal (also called the command line).  From the root of your Grav install type:
 
     bin/gpm install page-inject
 

@@ -34,7 +34,7 @@ The agent also handles the instantiation of purchase documents such as purchase 
 Currently the agent is designed specifically to handle assets of CARES. The agent is designed to handle assets on 2 different locations, CARES office and the Research Wing.
 Hence the agent relies on inputting the information regarding locations into 2 namespaces: the `lab` and `office` namespace in the knowledge graph. Assets on other locations are put into the `office` namespace as default, where their location will only be recorded as a literal. 
 
-As this agent is designed to work together with the asset management app, the app requires a check whether the asset has some sort of timeseries attached to its concept when retrieved (for example, a fumehood’s air consumption). This timeseries is commonly contained in the `bms` namespace and will be used as default for this search, since currently the agent is designed specifically to handle assets of CARES. The details of this timeseries search on retrieve can be read further at [/retrieve](#--retrieve).
+As this agent is designed to work together with the asset management app, the app requires a check whether the asset has some sort of timeseries attached to its concept when retrieved (for example, a fumehood’s air consumption). This timeseries is commonly contained in the `bms` namespace and will be used as default for this search, since currently the agent is designed specifically to handle assets of CARES. The details of this timeseries search on retrieve can be read further at [/retrieve](#retrieval).
 
 
 
@@ -67,7 +67,7 @@ Update the following environment variables in `./stack-manger-input-config-servi
 Update the following files in the `./config` folder:
 - `/ontologyMap.properties`: A map of the asset type and their IRIs. Refer to the available values in [AssetClass](#instantiation)
 
-- `/tsSearch.properties`: Parameters of asset timeseries data search on retrieve. The details of this timeseries search on retrieve can be read further at [/retrieve](#--retrieve).
+- `/tsSearch.properties`: Parameters of asset timeseries data search on retrieve. The details of this timeseries search on retrieve can be read further at [/retrieve](#retrieval).
     - `depth`: Search depth for looking for asset timeseries existence
     - `predicate`: Triple's predicate used to detect if an asset have a timeseries or not. An array of IRI (please use the full IRI, don't use prefixes) separated by a comma (`,`).
 

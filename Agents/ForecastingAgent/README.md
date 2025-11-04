@@ -300,18 +300,18 @@ Magnus Mueller (mm2692@cam.ac.uk), November 2022
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [py4jps]: https://pypi.org/project/py4jps/#description
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[TimeSeriesClient]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [Darts]: https://unit8co.github.io/darts/index.html
 [Prophet]: https://unit8co.github.io/darts/generated_api/darts.models.forecasting.prophet_model.html
 [Facebook Prophet]: https://github.com/facebook/prophet
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
+[Derived Information Framework]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation
+[Stack manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[derivation agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
 
-[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
-[OntoDerivation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoderivation
+[OntoTimeSeries]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries
+[OntoDerivation]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoderivation
 
 <!-- files -->
 [HTTP forecast error request]: ./resources/HTTP_evaluate_errors.http

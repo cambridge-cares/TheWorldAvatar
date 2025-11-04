@@ -1,4 +1,4 @@
-# Monolog - Logging for PHP [![Build Status](https://img.shields.io/travis/Seldaek/monolog.svg)](https://travis-ci.org/Seldaek/monolog)
+# Monolog - Logging for PHP <!-- markdown-link-check-disable-line -->[![Build Status](https://img.shields.io/travis/Seldaek/monolog.svg)](https://travis-ci.org/Seldaek/monolog)
 
 [![Total Downloads](https://img.shields.io/packagist/dt/monolog/monolog.svg)](https://packagist.org/packages/monolog/monolog)
 [![Latest Stable Version](https://img.shields.io/packagist/v/monolog/monolog.svg)](https://packagist.org/packages/monolog/monolog)
@@ -40,13 +40,6 @@ $log->addWarning('Foo');
 $log->addError('Bar');
 ```
 
-## Documentation
-
-- [Usage Instructions](doc/01-usage.md)
-- [Handlers, Formatters and Processors](doc/02-handlers-formatters-processors.md)
-- [Utility classes](doc/03-utilities.md)
-- [Extending Monolog](doc/04-extending.md)
-
 ## Third Party Packages
 
 Third party handlers, formatters and processors are
@@ -77,7 +70,7 @@ Bugs and feature request are tracked on [GitHub](https://github.com/Seldaek/mono
 - [XOOPS 2.6](http://xoops.org/) comes out of the box with Monolog.
 - [Aura.Web_Project](https://github.com/auraphp/Aura.Web_Project) comes out of the box with Monolog.
 - [Nette Framework](http://nette.org/en/) can be used with Monolog via [Kdyby/Monolog](https://github.com/Kdyby/Monolog) extension.
-- [Proton Micro Framework](https://github.com/alexbilbie/Proton) comes out of the box with Monolog.
+<!-- markdown-link-check-disable-line -->- [Proton Micro Framework](https://github.com/alexbilbie/Proton) comes out of the box with Monolog.
 
 ### Author
 

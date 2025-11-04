@@ -1,8 +1,8 @@
 # BMS Instantiation Agent
 
-This agent is designed to instantiate devices found in Building Management System (BMS) based on [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice), [OntoBMS](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobms) and [OntoCAPE](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocape). 
+This agent is designed to instantiate devices found in Building Management System (BMS) based on [OntoDevice](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodevice), [OntoBMS](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontobms) and [OntoCAPE](https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontocape). 
 
-The agent mainly uses the [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with the knowledge graph.
+The agent mainly uses the [remote store client](https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with the knowledge graph.
 
 ## Usage 
 This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the remote store client to interact with the knowledge graph , the knowledge graph will be required to be set-up beforehand.  

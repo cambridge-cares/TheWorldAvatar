@@ -275,16 +275,16 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 
 <!-- TWA github -->
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Derivation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
-[Derivation Agent configuration]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
+[Common stack scripts]: https://github.com/TheWorldAvatar/stack/tree/main/common-scripts
+[Derivation Agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
+[Derivation Agent configuration]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent/pyderivationagent/conf/agent_conf.py
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EnergyPerformanceCertificateAgent
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[JPS_BASE_LIB]: https://github.com/TheWorldAvatar/baselib/tree/main
 [OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
 [HM Land Registry Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
-[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[spin up the stack]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/README.md#spinning-up-a-stack
+[Stack Manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[Stack-Clients]: https://github.com/TheWorldAvatar/stack/tree/main/stack-clients
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent
 

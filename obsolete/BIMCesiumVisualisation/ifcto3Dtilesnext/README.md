@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # IFC2Tileset Agent
 
 ## Description
@@ -129,3 +130,4 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
 - Ensure that the assets are classified as Furniture or Generic Models for the converter to recognise them
     - `Furniture` are exported as IfcFurnishingElement while `Generic Models` are exported as IfcBuildingElementProxy 
     - For new asset types, please include their name (or part of) into line 60 of `agent/ifc2gltf.py`
+<!-- markdown-link-check-enable -->

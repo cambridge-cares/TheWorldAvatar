@@ -230,7 +230,7 @@ Jiaru Bai (jb2197@cam.ac.uk), December 2022
 [Docker environment]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment
 [CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations
-[example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
+[example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework/example
 [wait-for-it]: https://github.com/vishnubob/wait-for-it
 
 <!-- Data -->

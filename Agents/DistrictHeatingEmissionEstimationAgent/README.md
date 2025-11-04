@@ -165,14 +165,14 @@ Markus Hofmeister (mh807@cam.ac.uk), August 2023
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
+[Derived Information Framework]: https://github.com/TheWorldAvatar/baselib/tree/main/src/main/java/uk/ac/cam/cares/jps/base/derivation
+[Stack manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[derivation agent]: https://github.com/TheWorldAvatar/baselib/tree/main/python_derivation_agent
 
-[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
-[OntoHeatNetwork]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoheatnetwork
-[OntoDispersion]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion
-[OntoDerivation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoderivation
+[OntoTimeSeries]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontotimeseries
+[OntoHeatNetwork]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoheatnetwork
+[OntoDispersion]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontodispersion
+[OntoDerivation]: https://github.com/TheWorldAvatar/ontology/tree/main/ontology/ontoderivation
 
 <!-- files -->
 [example triples]: ./tests/test_triples/example_abox.ttl

@@ -122,7 +122,7 @@ under the ontology folders or sub-ontology folders.
 ### File requirement
 
 1. All the files required for embedding and the trained embedding files. 
-2. `score_model_training.tsv`, see  [readme.md for dataset creation](./KGToolbox/readme.md) to create the file
+2. `score_model_training.tsv`, see  [readme.md for dataset creation](../KGToolbox/readme.md) to create the file
    The files need to be placed in `MARIE_AND_BERT/DATA/CrossGraph/[ontology_name]/[sub-ontology_name]` if there is a 
 sub ontology folder, otherwise, the files need to be placed in `CrossGraph/[ontology_name]`
  

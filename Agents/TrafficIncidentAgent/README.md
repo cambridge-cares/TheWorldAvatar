@@ -32,7 +32,7 @@ The TrafficIncidentAgent should be pulled automatically with the stack-manager, 
 
 ### 5.2 Starting with the stack-manager
 
-The agent has been implemented to work in the stack, which requires the TrafficIncidentAgent Docker container to be deployed in the stack. To do so, place [TrafficIncidentAgent.json](stack-manager-config/inputs/config/services/TrafficIncidentAgent.json) in the [stack-manager config directory].
+The agent has been implemented to work in the stack, which requires the TrafficIncidentAgent Docker container to be deployed in the stack. To do so, place [TrafficIncidentAgent.json](./stack-manager-config/inputs/config/services/trafficincidentagent.json) in the [stack-manager config directory].
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
@@ -52,6 +52,6 @@ Sun Xin Yu (https://github.com/Echomo-Xinyu) <br>
 October 2024 
 
 
-[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack-data-uploader]: https://github.com/TheWorldAvatar/stack/tree/main/stack-data-uploader
+[stack-manager]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager
+[stack-manager config directory]: https://github.com/TheWorldAvatar/stack/tree/main/stack-manager/inputs/config/services

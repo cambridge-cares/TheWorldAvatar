@@ -1,7 +1,7 @@
 # Developing a SPARQL Inferencing Notation (SPIN) Project
 ### Authors
-* [Nenad Krdzavac](caresssd@hermes.cam.ac.uk)
-* [Feroz Farazi](msff2@cam.ac.uk)
+* [Nenad Krdzavac](mailto:caresssd@hermes.cam.ac.uk)
+* [Feroz Farazi](mailto:msff2@cam.ac.uk)
 
 SPIN is an industry-standard to represent SPARQL rules and constraints on Semantic Web models [[1](https://spinrdf.org)]. This short document aims to describe the steps required to develop a SPIN project using Java.
 
