@@ -1,0 +1,3 @@
+Copy the file titled poi-extract-2023_12 from https://www.dropbox.com/scl/fi/ai5zfwuehy017mibsf3av/poi-extract-2023_12.csv?rlkey=1dh3i8rbniu1l5l0e9xj7mvpz&st=l4iw6mrw&dl=0
+Place it to here.
+Please note that the purpose of the using poi_education_and_health.json files to extract a specific categorie (education_and_health) from the raw POI table and generate a map layer on GeoServer, which are then visualised by TWA-VF.

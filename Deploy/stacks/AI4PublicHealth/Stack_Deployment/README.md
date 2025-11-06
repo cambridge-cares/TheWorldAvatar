@@ -123,6 +123,11 @@ The default port for the TWA-VP is 3000. Please ensure this port is open before 
 # Potential refinements/next steps
 To further advance this project, the next steps involve developing a high-level exposure ontology to semantically represent environmental data and exposure quantifications, enabling the integration of additional datasets and the automated assessment of exposure. In parallel, SPARQL queries will be developed to quantify environmental exposure metrics, supporting spatial and temporal analyses that establish links between environmental factors and public health outcomes.
 
+# TODO
+
+- Ensure consistency of `datasetDirectory` of all the point of interest stack data uploader `json` config files. Some of them currently point at the wrong place.
+- Merge this stack into the `hd4-stack`.
+
 ## Authors ##
 Jiying Chen (jc2341@cam.ac.uk), Nov 2024
 
