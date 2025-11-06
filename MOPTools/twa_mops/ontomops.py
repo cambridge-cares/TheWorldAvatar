@@ -1,11 +1,13 @@
 from __future__ import annotations
 from typing import Optional, Dict, List
 from scipy.optimize import fsolve
+from datetime import datetime
 import plotly.express as px
 import pandas as pd
 import numpy as np
 import math
 import json
+import os
 
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, KnowledgeGraph
 import ontospecies
@@ -825,6 +827,11 @@ class MetalOrganicPolyhedron(CoordinationCage):
         ccdc: str = set(),
         sparql_client = None,
         upload_geometry: bool = False,
+        data_dir: str = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'data',
+            f'xyz_mops_{datetime.now().year}_{datetime.now().month}_{datetime.now().day}'
+        ),
     ):
         # prepare the variables
         mop_charge = 0
@@ -1013,7 +1020,7 @@ class MetalOrganicPolyhedron(CoordinationCage):
 
         # prepare the geometry file and upload
         mop_iri = cls.init_instance_iri()
-        local_file_path = f"./data/xyz_mops_new/{am.rdfs_label}_{list(am.hasSymmetryPointGroup)[0]}___{mop_formula}___{mop_iri.split('/')[-1] if not bool(ccdc) else ccdc}.xyz"
+        local_file_path = os.path.join(data_dir, f"{list(am.rdfs_label)[0]}_{list(am.hasSymmetryPointGroup)[0]}___{mop_formula}___{mop_iri.split('/')[-1] if not bool(ccdc) else ccdc}.xyz")
         mop_geo = ontospecies.Geometry.from_points(adjusted_atoms, local_file_path)
         if upload_geometry:
             # upload the geometry to the KG
