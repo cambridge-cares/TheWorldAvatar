@@ -122,7 +122,16 @@ def add_iza_frameworks(cif_list, cif_dir):
             shutil.copyfile(cif_in, cif_out)
 
     return cif_list
-    pass # add_iza_frameworks(cif_list, cif_dir):
+    # === end of add_iza_frameworks(cif_list, cif_dir):
+
+
+def strip_cif_file(cif_list):
+    output = []
+    for line in cif_list:
+        output.append([line[5]])
+    return output
+    # === end of strip_cif_file()
+
 
 if __name__ == "__main__":
     if not os.path.isfile(FILE_IN):
@@ -135,6 +144,7 @@ if __name__ == "__main__":
 
     data, cif_list = check_cif_file(data)
     #print(cif_list)
+    cif_list = strip_cif_file(cif_list)
 
     # Used befor merging directories. Now ignore it.
     #cif_list = add_iza_frameworks(cif_list, os.path.join(CIF_FOLDER_IN, "CIF") )

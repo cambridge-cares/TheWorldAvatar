@@ -68,13 +68,10 @@ TODO:
 #Use instead '_space_group_crystal_system'
 
 
-
 import os
 import sys
-#import csv
 import math
 
-#import numpy
 import argparse
 import datetime
 
@@ -83,13 +80,11 @@ import logging
 import tools
 import zeolist
 import tilesignature
-#import crystaldata
 import crystalinfo
 
 import ontozeolite
 import zeolite_db
 
-#from ontocrystal_datatypes import *
 import ontocrystal_datatypes as ocdt
 
 import ontocrystal_species as ocos
@@ -107,7 +102,7 @@ if True:
     print("Missing command line argument in csv_maker.py, using", DATA_DIR)
 
 # Ontology for Crystal,
-#crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+#crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 def is_http(value):
     if not isinstance(value, str):
@@ -118,8 +113,6 @@ def is_http(value):
         return True
     return False
 
-# FIXME
-#http://www.w3.org/2000/01/rdf-schema#Literal
 class CommandLine:
     __slots__ = ["out_dir", "zeo_fr", "zeo_to", "cif_file"
                  # , "", "", "", ""
@@ -140,12 +133,7 @@ class CommandLine:
                             help='the output directory to store the results.')
 
         args = parser.parse_args()
-        #print(args.accumulate, args.cif)
 
-        #self.cif_file = ""
-        #self.zeo_fr = None
-        #self.zeo_to = None
-        #self.out_dir = ""
         self.cif_file = args.cif
         self.zeo_fr = args.fr
         self.zeo_to = args.to
@@ -154,18 +142,13 @@ class CommandLine:
         if args.cif != "":
             print("Input zeolite frameworks (i.e. CIF files) = '", args.cif,
                   "'. Accepted: 'all' or none.", sep="")
-            #self.cif_file = args.cif
         if args.part is not None:
             print("Input part of list = '", args.part, "'.", sep="")
             print("Not implemented yet")
         if args.fr is not None or args.to is not None:
             print("Range of zeo_list: = [", args.fr, " -> ", args.to, ").", sep="")
-            #self.zeo_fr = args.fr
-            #self.zeo_to = args.to
         if args.output != "":
             print("The output directory is : = '", args.output, "'.", sep="")
-            #self.out_dir = args.output
-        #self.file =
 
         # === end of CommandLine.__init__()
 
@@ -193,6 +176,7 @@ def get_csv_init(base_name, tbox_prefix, abox_prefix):
 
     return output
     # === end of get_csv_init()
+
 
 class CsvMaker:
     """
@@ -246,8 +230,8 @@ class CsvMaker:
         self.zeoList = []
 
         self.ontoBase        = "OntoZeolite"
-        self.zeoOntoPrefix   = "http://www.theworldavatar.com/kg/ontozeolite/"
-        self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+        self.zeoOntoPrefix   = "https://www.theworldavatar.com/kg/ontozeolite/"
+        self.crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
         self.cifStandard = []
         #self.cifStandard = CrystalInformation("PyMatGen", None).readStandardFile("CIF_standard_2.4.5.txt")
@@ -317,10 +301,8 @@ class CsvMaker:
 
         elif self.settings.cif_file == "":
             self.zeoList = zeolist.getZeoList(self.zeoOption)
-            #self.zeoList = self.zeoList[210:240]
-            #self.zeoList = self.zeoList[240:]
+            # One can choose a custom zeolite (for debugging):
             #self.zeoList = [os.path.join("test", "913885.cif")]
-            #self.zeoList = self.zeoList[0:10]
 
         else:
             logging.error(" Invalid command line argument '%s', expect" +
@@ -341,151 +323,18 @@ class CsvMaker:
         if self.settings.zeo_fr is not None and self.settings.zeo_to is not None:
             self.zeoList = self.zeoList[self.settings.zeo_fr:self.settings.zeo_to]
 
-        #1/0
-        # May be also command line arguments here:
         # === end of CsvMaker.prepare()
 
-    def __del__(self):
-        #self.finalize()
-        # === end of CsvMaker.__del__()
-        pass
-
     def finalize(self):
-
         self.uuidDB.saveDB()
         # === end of CsvMaker.finalize()
 
-    '''
-  def getArrVector(self, subject, predicate, vector):
-    """
-    Create a vector with specified values.
-    'subject' - is the full proper name of the parent class pointing to the new vector,
-    'preidcate' - is the full object property to link the parent and the new vector,
-    The input 'value' is a dictionary with values:
-    ["class"] : The class of the newly created vector. Depending on the class name
-                some properties may not be available.
-    ["name"] : The instance name (without UUID, UUID will be generated automatically)
-               Internally, all components and other classes (if any)
-               will be using the same UUID.
-               The 'name' should be saved somewhere internally to prevent
-               creation of vectors with repeating names.
-    ["comp"]["x"]     : value
-    ["comp"]["alpha"] : value
-    ["comp"][0]       : value
-    ["unit"]          : (optional) unit for the entire vector
-    ["comp"]["x"]["value"]  : value of the individual component
-    ["comp"]["x"]["unit"]  : (optional) for individual component
-    ["comp"]["list"]  : the value is a list(), defines the vector using integer index
-    ["comp"]["start"] : if ["comp"] is a "list" this is the index of the first component. Default is 1.
-    ["+/-"]           : appends another vector 'uncertainty' to this file.
-    ["label"]         : A label assigned to the entire vector (valid only for UnitCellLatticeVector class)
-
-    Other keys are also possible. There will be warnings for unknown/unsupported keys.
-    """
-    output = []
-    #logging.error(" getArrVector() is not implemented yet")
-    # FIXME TODO
-
-    keys = vector.keys()
-    if "name" not in keys:
-      logging.error(" Creating a vector without the vector['name'] specified. I skip it.")
-      return []
-
-    if "class" in keys:
-      myClass = vector["class"]
-    else:
-      logging.error(" Missing vector['class'] for vector '" + vector["name"] +
-                     "', will use default 'Vector'.")
-      myClass = "Vector"
-
-    if "comp" not in keys:
-      logging.error(" Missing vector['comp'] for vector '" + vector["name"] + "'")
-
-    if myClass in ["Vector", "UnitCellLengths", "UnitCellAngles"]:
-        # Do nothing
-        pass
-    elif "VectorWithUncertainty" == myClass:
-        # Do nothing
-        pass
-    elif "UnitCellLatticeVector" == myClass:
-        # Do nothing
-        pass
-    else:
-        logging.error(" Unknown vector class '" + myClass + "' "
-                       "for vector '" + vector["name"] + "'.")
-
-    # Vector for Unit Cell length parameters (a,b,c):
-    uuid_vector = tools.getUUID(self.uuidDB, myClass, vector["name"])
-    output.append([uuid_vector, "Instance", myClass, "", "", ""])
-
-    if "UnitCellLatticeVector" == myClass:
-      if "label" in keys:
-        output.append([self.ontoPrefix + "hasLabel", "Data Property",
-                         uuid_vector, "", vector["label"], "string"])
-
-      else:
-        logging.warning(" Label is not defined for '" + vector["name"] +
-                         "' of class '" + myClass + "'.")
-
-
-    if   isinstance(vector["comp"], dict):
-      comp_keys = vector["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
-      for ck in comp_keys:
-        uuid_comp = tools.getUUID(self.uuidDB, "VectorComponent", vector["name"] + "_comp_" + ck)
-        output.append([uuid_comp, "Instance", "VectorComponent", "", "", ""])
-
-        output.append([uuid_vector, "Instance", uuid_comp,
-                         self.ontoPrefix + "hasComponent", "", ""])
-
-        output.append([self.ontoPrefix + "hasLabel", "Data Property",
-                         uuid_comp, "", ck, "string"])
-
-        output.append([self.ontoPrefix + "hasValue", "Data Property",
-                         uuid_comp, "", vector["comp"][ck]["value"], "rdfs:Literal"])
-
-        if "unit" in list(vector["comp"][ck].keys()):
-          unit = vector["comp"][ck]["unit"]
-          if not unit.startswith("http://www.ontology-of-units-of-measure.org/resource/om-2/"):
-            logging.warning(" Possibly wrong unit '" + unit + "' in vector '" +
-                             vector["name"] + "'. " +
-                             "Expecting an instance of OM-2 ontology class Unit.")
-
-          output.append([uuid_comp, "Instance", unit,
-                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                          "", ""])
-
-
-    if "unit" in keys:
-#"http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom"
-      unit = vector["unit"]
-      if not unit.startswith("http://www.ontology-of-units-of-measure.org/resource/om-2/"):
-        logging.warning(" Possibly wrong unit '" + unit + "' in vector '" +
-                         vector["name"] + "'. " +
-                         "Expecting an instance of OM-2 ontology class Unit.")
-
-      output.append([uuid_vector, "Instance", unit,
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", ""])
-
-    elif isinstance(vector["comp"], list):
-      logging.error(" Not implemented yet list component 2222222 ")
-
-    else:
-      logging.error(" Unknown type of vector['comp'] = '" + str(type(vector["comp"])) +
-                     "' in vector '" + vector["name"] + "'.")
-
-    #print("==============================")
-    return output
-    pass # getArrVector()
-    '''
-
     def arrInit(self, ontology):
         output = []
-        #baseName = self.ontoBase # + "-" + zeoname
 
         if "zeolite" == ontology:
-            tbox = "http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"
-            abox = "http://www.theworldavatar.com/kg/ontozeolite"
+            tbox = "https://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"
+            abox = "https://www.theworldavatar.com/kg/ontozeolite"
         else:
             logging.error(" Unknown ontology name '%s' in arrInit().", ontology)
 
@@ -513,7 +362,6 @@ class CsvMaker:
                     Typically is should be equal to "hasTiledStructure".
         """
 
-        #print("In arrTile, subj =", subject)
         if subject.find("CrystalInformation") < 0 and subject.find("CIF") < 0:
             logging.warning(" Subject in arrTiles() is '%s', expecting the" +
                             " name to contain 'CrystalInformation'.", subject)
@@ -528,7 +376,6 @@ class CsvMaker:
         dataIn = tools.readCsv(path)
 
         data = tilesignature.getDataByCode(dataIn, zeoname)
-        #print("tiles for zeoname:", zeoname, ":", data, type(data))
 
         if data is None:
             logging.warning(" No data available for tile '%s'.", zeoname)
@@ -537,7 +384,6 @@ class CsvMaker:
         uuid_tstructure, _ = self.uuidDB.addUUID(
                                        self.crystOntoPrefix + "TiledStructure",
                                        self.zeoOntoPrefix + "TiledStructure_" + zeoname)
-        print(">>> In arrTile: uuid_tstructure =", uuid_tstructure)
 
         output.append([uuid_tstructure, "Instance", self.crystOntoPrefix + "TiledStructure", "", "", ""])
         output.append([subject, "Instance", uuid_tstructure, predicate, "", ""])
@@ -546,67 +392,67 @@ class CsvMaker:
                        uuid_tstructure, "", data[2].strip(' "'), "string"])
 
         ### Begin of transitivity
-        uuid_tile_trans, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "Transitivity",
+        tile_trans_iri, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "Transitivity",
                                                  self.zeoOntoPrefix + "TileNumber_" + zeoname + "_transitivity")
-        output.append([uuid_tile_trans, "Instance", self.crystOntoPrefix + "Transitivity",
+        output.append([tile_trans_iri, "Instance", self.crystOntoPrefix + "Transitivity",
                        "", "", ""])
 
-        uuid_tile_transP, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
+        tile_trans_iri_P, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
                                                    self.zeoOntoPrefix + "TileNumber_" + zeoname + "_transitivityP")
-        output.append([uuid_tile_transP, "Instance", self.crystOntoPrefix + "VectorComponent",
+        output.append([tile_trans_iri_P, "Instance", self.crystOntoPrefix + "VectorComponent",
                        "", "", ""])
 
-        uuid_tile_transQ, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
+        tile_trans_iri_Q, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
                                                   self.crystOntoPrefix + "TileNumber_" + zeoname + "_transitivityQ")
-        output.append([uuid_tile_transQ, "Instance", self.crystOntoPrefix + "VectorComponent",
+        output.append([tile_trans_iri_Q, "Instance", self.crystOntoPrefix + "VectorComponent",
                        "", "", ""])
 
-        uuid_tile_transR, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
+        tile_trans_iri_R, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
                                                   self.zeoOntoPrefix + "TileNumber_" + zeoname + "_transitivityR")
-        output.append([uuid_tile_transR, "Instance", self.crystOntoPrefix + "VectorComponent",
+        output.append([tile_trans_iri_R, "Instance", self.crystOntoPrefix + "VectorComponent",
                        "", "", ""])
 
-        uuid_tile_transS, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
+        tile_trans_iri_S, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "VectorComponent",
                                          self.zeoOntoPrefix + "TileNumber_" + zeoname + "_transitivityS")
-        output.append([uuid_tile_transS, "Instance", self.crystOntoPrefix + "VectorComponent",
+        output.append([tile_trans_iri_S, "Instance", self.crystOntoPrefix + "VectorComponent",
                        "", "", ""])
 
-        output.append([uuid_tstructure, "Instance", uuid_tile_trans,
+        output.append([uuid_tstructure, "Instance", tile_trans_iri,
                        self.crystOntoPrefix + "hasTransitivity", "", ""])
 
-        output.append([uuid_tile_trans, "Instance", uuid_tile_transP,
+        output.append([tile_trans_iri, "Instance", tile_trans_iri_P,
                        self.crystOntoPrefix + "hasVectorComponent", "", ""])
 
-        output.append([uuid_tile_trans, "Instance", uuid_tile_transQ,
+        output.append([tile_trans_iri, "Instance", tile_trans_iri_Q,
                        self.crystOntoPrefix + "hasVectorComponent", "", ""])
 
-        output.append([uuid_tile_trans, "Instance", uuid_tile_transR,
+        output.append([tile_trans_iri, "Instance", tile_trans_iri_R,
                        self.crystOntoPrefix + "hasVectorComponent", "", ""])
 
-        output.append([uuid_tile_trans, "Instance", uuid_tile_transS,
+        output.append([tile_trans_iri, "Instance", tile_trans_iri_S,
                        self.crystOntoPrefix + "hasVectorComponent", "", ""])
 
         trans = self.getTransitivity(data[1])
 
         output.append([self.crystOntoPrefix + "hasComponentLabel", "Data Property",
-                       uuid_tile_transP, "", "p", "string"])
+                       tile_trans_iri_P, "", "p", "string"])
         output.append([self.crystOntoPrefix + "hasComponentValue", "Data Property",
-                       uuid_tile_transP, "", trans[0], "integer"])
+                       tile_trans_iri_P, "", trans[0], "integer"])
 
         output.append([self.crystOntoPrefix + "hasComponentLabel", "Data Property",
-                       uuid_tile_transQ, "", "q", "string"])
+                       tile_trans_iri_Q, "", "q", "string"])
         output.append([self.crystOntoPrefix + "hasComponentValue", "Data Property",
-                       uuid_tile_transQ, "", trans[1], "integer"])
+                       tile_trans_iri_Q, "", trans[1], "integer"])
 
         output.append([self.crystOntoPrefix + "hasComponentLabel", "Data Property",
-                       uuid_tile_transR, "", "r", "string"])
+                       tile_trans_iri_R, "", "r", "string"])
         output.append([self.crystOntoPrefix + "hasComponentValue", "Data Property",
-                       uuid_tile_transR, "", trans[2], "integer"])
+                       tile_trans_iri_R, "", trans[2], "integer"])
 
         output.append([self.crystOntoPrefix + "hasComponentLabel", "Data Property",
-                       uuid_tile_transS, "", "s", "string"])
+                       tile_trans_iri_S, "", "s", "string"])
         output.append([self.crystOntoPrefix + "hasComponentValue", "Data Property",
-                       uuid_tile_transS, "", trans[3], "integer"])
+                       tile_trans_iri_S, "", trans[3], "integer"])
     ### End of transitivity
 
         cages = tilesignature.cellToCages(data[2])
@@ -616,57 +462,51 @@ class CsvMaker:
         edgeN = data[10].split("+")
         faceN = data[11].split("+")
 
-        #print("faces =", faceN)
         for ic, cage in enumerate(cages):
-            uuid_tile, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "Tile", 
+            tile_iri, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "Tile",
                                                    self.zeoOntoPrefix + "Tile_" + zeoname + "_cage" + str(ic+1))
-            uuid_tile_num, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "TileNumber",
+            tile_num_iri, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "TileNumber",
                                                    self.zeoOntoPrefix + "TileNumber_" + zeoname + "_cage" + str(ic+1))
 
             if ic >= len(codeN):
-                logging.error("Too big ic in tile signature, skipping it... FIXME")
+                logging.error(" Too big ic in tile signature, skipping it... Data corrupted?")
                 continue
 
-            output.append([uuid_tile, "Instance", self.crystOntoPrefix + "Tile",
+            output.append([tile_iri, "Instance", self.crystOntoPrefix + "Tile",
                            "", "", ""])
 
-            output.append([uuid_tstructure, "Instance", uuid_tile,
+            output.append([uuid_tstructure, "Instance", tile_iri,
                            self.crystOntoPrefix + "hasTile", "", ""])
 
-            output.append([self.crystOntoPrefix + "hasTileCode", "Data Property",
-                           uuid_tile, "UNDEF", codeN[ic], "string"])
+            output.append([self.crystOntoPrefix + "hasTileCode",
+                          "Data Property", tile_iri, "", codeN[ic], "string"])
 
-            output.append([self.crystOntoPrefix + "hasNumberOfFaces", "Data Property",
-                           uuid_tile, "", faceN[ic], "integer"])
+            output.append([self.crystOntoPrefix + "hasNumberOfFaces",
+                           "Data Property", tile_iri, "", faceN[ic], "integer"])
 
-            output.append([self.crystOntoPrefix + "hasNumberOfEdges", "Data Property",
-                           uuid_tile, "", edgeN[ic], "integer"])
+            output.append([self.crystOntoPrefix + "hasNumberOfEdges",
+                           "Data Property", tile_iri, "", edgeN[ic], "integer"])
 
-            output.append([self.crystOntoPrefix + "hasNumberOfVertices", "Data Property",
-                           uuid_tile, "", vertN[ic], "integer"])
+            output.append([self.crystOntoPrefix + "hasNumberOfVertices",
+                           "Data Property", tile_iri, "", vertN[ic], "integer"])
 
-            # TODO
             #output.append([self.ontoPrefix + "hasTileSymmetry", "Data Property",
-            #                                   uuid_tile, "", symmN[ic], "string"])
+            #                                   tile_iri, "", symmN[ic], "string"])
 
-            output.append([self.crystOntoPrefix + "hasTileSignature", "Data Property",
-                           uuid_tile, "", signN[ic], "string"])
+            output.append([self.crystOntoPrefix + "hasTileSignature",
+                           "Data Property", tile_iri, "", signN[ic], "string"])
 
-            output.append([uuid_tile_num, "Instance", self.crystOntoPrefix + "TileNumber",
-                           "", "", ""])
+            output.append([tile_num_iri, "Instance",
+                           self.crystOntoPrefix + "TileNumber", "", "", ""])
 
-            output.append([uuid_tstructure, "Instance", uuid_tile_num,
+            output.append([uuid_tstructure, "Instance", tile_num_iri,
                            self.crystOntoPrefix + "hasTileNumber", "", ""])
 
-            output.append([uuid_tile_num, "Instance", uuid_tile,
+            output.append([tile_num_iri, "Instance", tile_iri,
                            self.crystOntoPrefix + "isNumberOfTiles", "", ""])
 
             output.append([self.crystOntoPrefix + "hasValue", "Data Property",
-                           #uuid_tile_num, "", cage[0], ""])
-                           uuid_tile_num, "", cage[0], "integer"])
-                           #uuid_tile_num, "", cage[0],
-                           #"http://www.w3.org/2001/XMLSchema#integer"])
-
+                           tile_num_iri, "", cage[0], "integer"])
 
             faces = tilesignature.cageToFaces(cage[1])
             signNshort = signN[ic].replace("[", "").replace("]", "").strip()
@@ -674,47 +514,47 @@ class CsvMaker:
             for f, face in enumerate(faces):
 
                 suffix = "_" + zeoname + "_cage" + str(ic+1) + "_face" + str(f+1)
-                uuid_tile_face, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "TileFace",
-                                                            self.zeoOntoPrefix + "TileFace" + suffix)
-                uuid_tile_face_num, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "TileFaceNumber",
-                                                            self.zeoOntoPrefix + "TileFaceNumber" + suffix)
+                tile_face_iri, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "TileFace",
+                                                           self.zeoOntoPrefix + "TileFace" + suffix)
+                tile_face_num_iri, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "TileFaceNumber",
+                                                           self.zeoOntoPrefix + "TileFaceNumber" + suffix)
 
-                output.append([uuid_tile_face,     "Instance", self.crystOntoPrefix + "TileFace",
-                             "" , "", ""])
+                output.append([tile_face_iri, "Instance",
+                               self.crystOntoPrefix + "TileFace",
+                               "" , "", ""])
 
-                output.append([uuid_tile,   "Instance", uuid_tile_face,
-                             self.crystOntoPrefix + "hasTileFace" , "", ""])
+                output.append([tile_iri,   "Instance", tile_face_iri,
+                               self.crystOntoPrefix + "hasTileFace" , "", ""])
 
-                output.append([uuid_tile_face_num, "Instance", self.crystOntoPrefix + "TileFaceNumber",
-                             "" , "", ""])
+                output.append([tile_face_num_iri, "Instance",
+                               self.crystOntoPrefix + "TileFaceNumber",
+                               "" , "", ""])
 
-                output.append([uuid_tile, "Instance", uuid_tile_face_num,
-                             self.crystOntoPrefix + "hasTileFaceNumber" , "", ""])
+                output.append([tile_iri, "Instance", tile_face_num_iri,
+                               self.crystOntoPrefix + "hasTileFaceNumber" , "", ""])
 
-                output.append([uuid_tile_face_num, "Instance", uuid_tile_face,
-                             self.crystOntoPrefix + "isNumberOfTileFaces" , "", ""])
+                output.append([tile_face_num_iri, "Instance", tile_face_iri,
+                               self.crystOntoPrefix + "isNumberOfTileFaces" , "", ""])
 
                 output.append([self.crystOntoPrefix + "hasValue", "Data Property",
-                                  #uuid_tile_face_num, "", face[1], ""])
-                                  uuid_tile_face_num, "", face[1], "integer"])
-                                  #uuid_tile_face_num, "", face[1],
-                                  #"http://www.w3.org/2001/XMLSchema#integer"])
+                               tile_face_num_iri, "", face[1], "integer"])
 
                 output.append([self.crystOntoPrefix + "hasNumberOfEdges", "Data Property",
-                                  #uuid_tile_face, "", int(face[0]), ""])
-                                  uuid_tile_face, "", int(face[0]), "integer"])
-                                  #uuid_tile_face, "", int(face[0]),
-                                  #"http://www.w3.org/2001/XMLSchema#integer"])
+                               tile_face_iri, "", int(face[0]), "integer"])
 
                 if f < len(signF):  # FIXME why f here can exceed len(signF)?
                     output.append([self.crystOntoPrefix + "hasFaceCode", "Data Property",
-                                   uuid_tile_face, "", signF[f], "string"])
-                               #uuid_tile_face, "", "UNDEF", "string"])
-                               #uuid_tile_face, "", str("UNKNOWN"), "string"])
+                                   tile_face_iri, "", signF[f], "string"])
 
-                # TODO add face code (?), like 14a, 14b, etc
-                #output.append([self.ontoBase + "#hasFaceCode", "Data Property",
-                #                               uuid_tile_face, "", int(cell[0]), "string"])
+                # Tile face code, like 14a, 14b, etc.
+                # The actual shape (coordinates of atoms) of the faces even
+                # for the same tile may be different in different frameworks,
+                # Blatov name them using a,b,c...
+                # For now this difference is not included, as a minor information.
+                # Also, the data from Blatov in incomplete because
+                # new frameworks have been discovered since publication.
+                #output.append([self.crystOntoPrefix + "hasFaceCode", "Data Property",
+                #               tile_face_iri, "", int(cell[0]), "string"])
 
         return output
         # === end of CsvMaker.arrTiles()
@@ -724,7 +564,6 @@ class CsvMaker:
             logging.error(" input must be string")
             return None
 
-        # print("In getTransitivity(): strValue =", strValue)
         short = strValue.strip()
         if short[0] != "[" or short[-1] != "]":
             logging.error(" Transitivity must be in [] brackets")
@@ -790,12 +629,10 @@ class CsvMaker:
 
                     output.append([subject, "Instance", uuid_xrd, predicate, "", ""])
 
-                    #print(zeoname, "=====>", xrd[5])
-                    #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)
                     filename = os.path.join("ontozeolite", "zeolite", "data", xrd[5])
                     output += self.loadXRDPeaks(uuid_xrd,
-                                    self.crystOntoPrefix + "hasCharacteristicPeak",
-                                    zeoname + str(nSpectra), filename)
+                                   self.crystOntoPrefix + "hasCharacteristicPeak",
+                                   zeoname + str(nSpectra), filename)
 
                     if xrd[6] != "" and xrd[6] is not None:
                         print("TODO Add DOI ")
@@ -833,8 +670,10 @@ class CsvMaker:
                 #print(il, "=>", line.strip(), "=>", words)
 
                 uuid_peak, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "CharacteristicPeak",
-                            self.zeoOntoPrefix + "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1))
-                output.append([uuid_peak, "Instance", self.crystOntoPrefix + "CharacteristicPeak", "", "", ""])
+                               self.zeoOntoPrefix + "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1))
+                output.append([uuid_peak, "Instance",
+                               self.crystOntoPrefix + "CharacteristicPeak",
+                               "", "", ""])
 
                 output.append([subject, "Instance", uuid_peak, predicate, "", ""])
 
@@ -845,10 +684,10 @@ class CsvMaker:
                                uuid_peak, "", True, "boolean"])
 
                 miller = ocdt.OntoVector(
-                           class_name = "MillerIndices",
-                           item_name  = self.zeoOntoPrefix + "MillerIndices_" + zeoname + "_peak_" + str(il+1),
-                           uuidDB = self.uuidDB,
-                           unit      = "om:dimensionOne")
+                         class_name = "MillerIndices",
+                         item_name  = self.zeoOntoPrefix + "MillerIndices_" + zeoname + "_peak_" + str(il+1),
+                         uuidDB = self.uuidDB,
+                         unit = "om:dimensionOne")
 
                 miller.addComponent(label = "h", value = str(words[0]))
                 miller.addComponent(label = "k", value = str(words[1]))
@@ -870,51 +709,6 @@ class CsvMaker:
         # === end of CsvMaker.loadXRDPeaks()
 
     '''
-  # TODO delete this function from this class:
-  def splitErrorBarLoop(self, line, headers, file_line):
-    """
-    Remove error bars from the CIF file and save the result to a temporary file
-    """
-    #print("Running error bar loop", line)
-    #words = line.split()
-    nBracket = 0
-    words = tools.strSplit(line)
-    #words = tools.strSplit(line.relpace("\t", " ")) # Some CIFs have a tab in a line
-    #print (">>>>>>>>>>> ", words)
-
-    if len(words) == 0:
-      logging.error(" Empty line " + file_line)
-      return line, 0
-
-    if len(words) != len(headers):
-      logging.error(" Number of elements on line is different from the " +
-                     "definition of the loop: " + str(len(words)) +" vs " +
-                     str(len(headers)) + ": " + str(words) + " vs " + str(headers) +
-                     " " + file_line + ".")
-      return line, 0
-
-    lineNew = line
-    #print(self.entriesWithUncertainties)
-    #for i in range(len(headers)):
-    for ih, h in enumerate(headers):
-      #print("=== '" + h + "' ===")
-      if h in self.entriesWithUncertainties:
-        #print("   need to process")
-        #logging.warning(" Found one of the entries in a loop")
-
-        vOut, eOut = self.splitErrorBar(words[ih].strip(), file_line)
-        if eOut != "":
-          nBracket += 1
-          #self._setValueAndError(cifName, h, vOut, eOut)
-
-        pos = line.find(words[ih])
-        lineNew = lineNew.replace(words[ih], vOut)
-
-    #print("lineNew =", lineNew)
-    return lineNew, nBracket
-    pass # CsvMaker.splitErrorBarLoop()
-     '''
-
     # TODO detele this function from this class:
     def _setValueAndError(self, cifName, entry, value, error):
         """
@@ -965,60 +759,9 @@ class CsvMaker:
                           entry)
 
         # === end of CsvMaker._setValueAndError()
-
-    '''
-    # TODO delete this function from here:
-    def splitStr(self, value):
-        """
-        Function splits a string of a form "12.345(6)" into two strings: "12.345" and "0.006".
-        """
-
-        pos1 = value.find("(")
-        pos2 = value.find(")")
-        vOut = value[:pos1] + value[pos2+1:]
-        eOut = value[pos1+1:pos2]
-
-        '' ' This sometimes return value like 0.007000000001, last digit round effect
-        n = len(eOut)
-        vOut = vOut
-        v = 0
-        factor = ""
-        for ix, x in enumerate(vOut):
-          if ix == len(vOut) - 1:
-            factor += "1"
-          elif "." == x:
-            factor += "."
-          else:
-            factor += "0"
-        eOut = str(float(factor) * float(eOut))
-        '' '
-
-        #iv = len(vOut) - 1
-        #ie = len(eOut) - 1
-        ie = 1
-        factor = []
-        for ix,x in enumerate(vOut[::-1]):
-            if "." == x:
-                factor.insert(0, ".")
-            elif ie <= len(eOut):
-                factor.insert(0, eOut[-ie])
-                ie += 1
-            else:
-                factor.insert(0, "0")
-                ie += 1
-
-        #print(factor)
-        factor = "".join(factor)
-        if factor.find(".") < 0:
-            eOut = str(int(factor))
-        else:
-            eOut = str(float(factor))
-        #for i in range(len(eOut)):
-          #vOut[-i-1] = eOut[-i-1]
-        return vOut, eOut
-        # === end of CsvMaker.splitStr()
     '''
 
+    '''
     def splitErrorBar(self, value, file_line):
         # TODO delete this function from here.
 
@@ -1047,6 +790,7 @@ class CsvMaker:
         #print("value, vOut, eOut =", value, vOut, eOut)
         return vOut, eOut
         # === end of CsvMaker.splitErrorBar()
+    '''
 
     def readWithUncertainties(self, fileIn, cifName,
                               lineFr=None, lineTo=None,
@@ -1112,7 +856,7 @@ class CsvMaker:
             pos1 = line.find("#")
             pos2 = line.find(";")
             if   0 == pos1:
-                logging.info("Found a comment in string '%s', %s.",
+                logging.info(" Found a comment in string '%s', %s.",
                              line.strip(), file_line)
                 #short = line[:pos] + "\n"
                 if len(fileOut) > 0:
@@ -1130,9 +874,7 @@ class CsvMaker:
             elif pos1 > 0 or pos2 > 0:
                 logging.warning(" Comment starts not from beginning" +
                                 " of the line: '%s', %s.",
-                                line.strip(), file_line
-                               #+ " This is not supported by readWithUncertainties()."
-            )
+                                line.strip(), file_line)
                 if len(fileOut) > 0:
                     fOut.write(line)
                 continue
@@ -1253,7 +995,6 @@ class CsvMaker:
         if len(fileOut) > 0:
             fOut.close()
 
-        #print("Number of brackets =", countBrackets)
         return countBrackets
         # === end of CsvMaker.readWithUncertainties()
 
@@ -1263,74 +1004,34 @@ class CsvMaker:
         self.prepare()   # <- self.zeoList is defined inside
 
         # Load all general information about zeolitic materials:
-        #zeoData = ontozeolite.OntoZeolite(#itemName = z, className = "Zeolite",
-        #                                  uuidDB = self.uuidDB)
-        #zeoData.load_zeolites()
+        zeoData = ontozeolite.OntoZeolite(uuidDB = self.uuidDB,
+                                          abox_prefix=self.zeoOntoPrefix)
+        zeoData.load_zeolites()
 
         zeoDataBase = zeolite_db.ZeoliteDB(uuidDB = self.uuidDB)
-        #zeoDataBase.load("zeolites_merged.json")
-        #zeoDataBase.load("a_final_3.json")
-        #zeoDataBase.load("a_final_species.json")
         zeoDataBase.load(os.path.join(DATA_DIR, "zeolite", # "data",
                                       "a_final_species_nodup.json"))
 
-        #print("Number of zeoData in csv_maker =", len(self.zeoList))
-        #print(self.zeoList)
         t_start = datetime.datetime.now()
-        #for iz, z in enumerate(["MFS"]):
-        #for iz, z in enumerate(["MWW"]):
-        #for iz, z in enumerate(["DFO"]):
-        #for iz, z in enumerate([self.zeoList[3]]):
-        #for iz, z in enumerate(self.zeoList[0:10]):
-        #for iz, z in enumerate(["ZON"]):
-        #for iz, z in enumerate(["ABW"]):
-        #for iz, z in enumerate(["FAU"]):
-        #for iz, z in enumerate(["-CHI"]):
-        #for iz, z in enumerate(["VFI"]):
-        #for iz, z in enumerate(["JSN"]):
-        #for iz, z in enumerate(["GOO"]):
         for iz, z in enumerate(self.zeoList):
-            print(">>>> In zeolist z =", z)
-
             # Each framework is saved in a separate arr (and separate file):
             arr = []
 
             # The header (tbox and abox description):
             arr += self.arrInit("zeolite")
 
-            #uuid_zeoframe = tools.getUUID(self.uuidDB.uuidDB,
-            #                              "ZeoliteFramework", "Zeolite_" + z)
-
-            #arr.append([uuid_zeoframe, "Instance", "ZeoliteFramework", "", "", ""])
-
-            #arr.append([self.zeoOntoPrefix + "hasZeoliteCode", "Data Property",
-            #              uuid_zeoframe, "", z.strip(' "'), "string"])
-
             # Description of the framework:
-            #arr += zeoData.getCsvArrFramework(z, "", "")
             arr += zeoDataBase.get_csv_arr_framework(z)
 
-            # get the framework from the zeoData.
-            # This is necessary, because OntoCrystal is not a separate module.
-            # Otherwise I would simply call Crystal information from the
-            # OntoZeolite class. TODO
-            #uuid_zeoframe = zeoData.get_framework_UUID(z)
-            zeoframe_iri = zeoDataBase.get_framework_UUID(z)
+            zeoframe_iri = zeoDataBase.get_framework_iri(z)
 
-
-            #logging.warning(" For debugging no CIF data")
             # CIF information for the given framework:
-            framework_cif = crystalinfo.CrystalInfo(uuidDB = self.uuidDB, abox_prefix=self.zeoOntoPrefix)
+            framework_cif = crystalinfo.CrystalInfo(uuidDB = self.uuidDB,
+                                                    abox_prefix=self.zeoOntoPrefix)
 
-            #safe_name = zeolite.get_iri()
-            #arr += framework_cif.get_csv_arr_from_cif(cif_path, safe_name, safe_name)
-
-            # uuuuuuu
-            #path = os.path.join("CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
             path = os.path.join("ontozeolite", "crystal", "data", "cifdir", z + ".cif")
 
-            #print(">>> zeoframe =", uuid_zeoframe, type(uuid_zeoframe))
-            arr += framework_cif.get_csv_arr_from_cif(path, z, new_uuid=None, 
+            arr += framework_cif.get_csv_arr_from_cif(path, z, new_uuid=None,
                                                       subject=zeoframe_iri,
                                                       predicate=self.crystOntoPrefix + "hasCrystalInformation")
             if not os.path.isfile(path):
@@ -1340,76 +1041,37 @@ class CsvMaker:
             if uuid_cif is None:
                 print("Error: uuid_cif is None")
 
-            #print("starting arrTile for", z)
-            tmp = self.arrTiles(self.zeoOntoPrefix + uuid_cif, self.crystOntoPrefix + "hasTiledStructure", z)
+            tmp = self.arrTiles(self.zeoOntoPrefix + uuid_cif,
+                                self.crystOntoPrefix + "hasTiledStructure", z)
             if tmp is None:
                 logging.warning(" Missing Tiled Structure information! for %s", z)
             else:
-                # uuuuuuuuu
                 arr += tmp
                 pass
 
-            tmp = self.arrSpectrum(self.zeoOntoPrefix + uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z)
+            tmp = self.arrSpectrum(self.zeoOntoPrefix + uuid_cif,
+                                   self.crystOntoPrefix + "hasXRDSpectrum", z)
             if tmp is None or tmp == []:
-                logging.warning(" Missing Spectrum information! for %s", z)
+                # logging.warning(" Missing Spectrum information! for %s", z)
+                pass
             else:
-                # uuuuuuuuu
                 arr += tmp
                 pass
-            #arr +=[[">>>>>>>>>>", "After spectrum", z]]
-            #arr +=[[">>>>>>>>>>", "Number of material:", len(zeoDataBase.get_framework_materials(z))]]
-            #print([">>>>>>>>>>", "Number of material:", len(zeoDataBase.get_framework_materials(z))])
-            #1/0
-            # FIXME
-
-            #continue
-            # To add Citation information, or is it loaded in get_csv_arr_from_cif ?
 
             # Descibe topological priperties of selected zeolite
-            #uuid_zeolite
-            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe, 
-            #       ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
-            #print("going to check the topological property")
-            #if zeolite.is_reference_material():
-            #print(">>>>>>>>>> reference, so using it")
             arr += zeoDataBase.get_csv_arr_topology(zeoframe_iri,
                    ontozeolite.zeoOntoPrefix + "hasTopologicalProperties", z)
-               #ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
-
 
             # Description of all the zeolites for this framework:
-            #for cif_line, ext_line in zeoData.getMaterialIDs(z):
-            #for cif_line, mat_line in zeoData.getMaterialIDs(z):
             for zeolite in zeoDataBase.get_framework_materials(z):
-                # getMaterialIDs return a list of tuples: cif and material
 
-                print(">>>>> starting zeolite =", zeolite)
-                #print("cif_line =", cif_line)
-                #print("mat_line =", mat_line)
-                #arr += zeoData.get_csv_arr_material(cif_line, mat_line, uuid_zeoframe,
-                #                                    self.zeoOntoPrefix + "hasZeoliticMaterial")
                 arr += zeolite.get_csv_arr_material(zeoframe_iri,
                                                     self.zeoOntoPrefix + "hasZeoliticMaterial")
 
-                #print(arr[-1])
-                #print(zeolite.data)
-                #1/0
-                #arr +=[[">>>>>>>>>>", "After csv_arr_material", uuid_zeoframe, zeolite.data["safe_name"]]]
-                #for line in arr:
-                #    print(line)
+                zeolite_iri = zeolite.get_material_iri()
 
-                #uuid_zeolite = zeoData.get_material_UUID(cif_line, mat_line)
-                uuid_zeolite = zeolite.get_material_UUID()
-
-                # CIF if exists:
-                #cif_path = zeoData.get_cif_file(cif_line)
-                #cif_path = zeolite.data["cif_path"] #get_cif_file()
-                #cif_path = os.path.join("CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
-                #material_cif = crystalinfo.CrystalInfo(uuidDB=self.uuidDB)
-
-                logging.warning(" FIXME: no CIF data ")
+                # Add CIF data, if exists:
                 paths = []
-
                 if "cif_path" in zeolite.data:
                     paths = zeolite.data["cif_path"]
                     if isinstance(paths, str):
@@ -1419,7 +1081,7 @@ class CsvMaker:
                     else:
                         logging.error("'cif_path' must be a string or list of str: %s",
                                       str(zeolite.data["cif_file"]))
- 
+
                 if "cif_file" in zeolite.data:
                     tmp = zeolite.data["cif_file"]
                     if isinstance(tmp, str):
@@ -1434,24 +1096,17 @@ class CsvMaker:
                                       str(zeolite.data["cif_file"]))
 
                 if len(paths) == 0:
-                    print("  Not found CIF in zeolite", zeolite.data["safe_name"], zeolite.data["uuid"])
+                    print("  Not found CIF in zeolite",
+                          zeolite.data["safe_name"], zeolite.data["uuid"])
+
                 for cif_path in paths:
-                    #print("-------------> starting CIF", cif_path, "for", zeolite.get_iri())
-                    if True:
-                        pass
                     try:
-                        material_cif = crystalinfo.CrystalInfo(uuidDB=self.uuidDB)
-                        # uuuuuuuuu
-                        # arr += self.get_csv_arr_from_cif(cif_path, cif_line[1], uuid_zeolite)
-                        #safe_name = zeolite.data["safe_name"]
+                        material_cif = crystalinfo.CrystalInfo(uuidDB=self.uuidDB,
+                                                               abox_prefix=self.zeoOntoPrefix)
                         safe_name = zeolite.get_iri()
-                        #print(">>> csv_maker: subj =", uuid_zeolite, safe_name)
-                        arr += material_cif.get_csv_arr_from_cif(cif_path, #safe_name,
-                                                                 new_uuid=None,
-                                                                 subject=uuid_zeolite,
-                                                                 predicate=self.crystOntoPrefix + "hasCrystalInformation")
-                        #arr += material_cif.get_csv_arr_from_cif(cif_path, safe_name, uuid_zeolite)
-                        #print("aaa")
+                        arr += material_cif.get_csv_arr_from_cif(cif_path,
+                               new_uuid=None, subject=zeolite_iri,
+                               predicate=self.crystOntoPrefix + "hasCrystalInformation")
                         pass
                     except :
                         logging.error("=================================================")
@@ -1460,31 +1115,23 @@ class CsvMaker:
                         with open("failed_cif_files.txt", "a", encoding="utf-8") as fp:
                             fp.write(cif_path + "\n")
 
-                    #print( safe_name, uuid_zeolite)
-                    #1/0
-
-                # Description of the recipe for the given zeolite (if exists):
-                logging.warning(" FIXME: no recipe data")
-                #arr += zeoData.get_csv_arr_recipe(cif_line, uuid_zeolite, "")
-
                 # Description of the chemical constituent for the given zeolite:
                 #logging.warning(" FIXME: no constituent data")
-                #arr += zeoData.getCsvArrConstituent(cif_line, uuid_zeolite, "")
-                arr += zeoDataBase.getCsvArrConstituent(uuid_zeolite, "predicate")
+                #arr += zeoData.getCsvArrConstituent(cif_line, zeolite_iri, "")
+                arr += zeoDataBase.getCsvArrConstituent(zeolite_iri, "predicate")
 
-            #arr += zeoData.get_csv_material(uuid_zeoframe,
-            #       ontozeolite.zeoOntoPrefix + "hasZeoliticMaterial", z)
-
-            #tmp = zeoData.getCsvArr(uuid_cif, self.crystOntoPrefix + "has???")
-
-            #if None == tmp:
-            #    logging.warning(" Missing zeolite information!")
-            #else:
-            #    arr += tmp
+                # Description of the recipe for the given zeolite (if exists):
+                if "recipe" in zeolite.data:
+                    # Example of the recipe file:
+                    # cif_file = os.path.join("ontozeolite", "zeolite", "data", "recipes", "p403.txt")
+                    cif_file = zeolite.data["recipe"]
+                    arr += zeoData.get_csv_arr_recipe(cif_file, zeolite_iri,
+                                                      "", new_uuid=zeolite.get_uuid())
+                else:
+                    # logging.warning(" For zeolite no recipe data")
+                    pass
 
             # Saving the framework in a file:
-            #print("arr =", arr)
-            #csvWrite(arr)
             path = os.path.join(self.outputDir, z + ".csv")
             tools.writeCsv(path, arr)
 
@@ -1493,41 +1140,17 @@ class CsvMaker:
                 t_finish = datetime.datetime.now()
                 t_delta = t_finish - t_start
                 t_delta = t_delta.total_seconds()
-                print("Finished", iz, "compounds. Saved uuidDB in", round(t_delta,1), "sec.")
-                #print(t_finish - t_start)
+                print("Finished", iz, "compounds. Saved uuidDB in",
+                      round(t_delta,1), "sec.")
 
-            #err_count += 1
-            #logging.warning("Not implemented creating zeolite csv")
-
-        self.finalize() # << Important! Saves the current list of the UUIDs
+        self.finalize()
 
         if err_count > 0:
-            logging.warning("CSV_maker: Detected %d errors.", err_count)
+            logging.warning(" CSV_maker: Detected %d errors.", err_count)
 
         # === end of CsvMaker.makeCsvs()
 
     # === end of class CsvMaker
-
-
-    """
-  0) Prepare the header lines (standard).
-  1) For CIF related data:
-    a) Load CIF data and store internally.
-       by loadCifZeolite()   - zeolite-specific, calls the next funtion:
-                               Some CIF files may be a merge of several files ??? TODO
-
-          loadCifStructure() - this function does not know about zeolites,
-                               it can be used for any kind of CIF file.
-    b) Modify CIF data (if necessary).
-       by ???
-    c) Save data related to CIF (it can be in different structure,
-       according to the settings).
-       arrUnitCell()
-       arrAtomSite()
-       arrTransform()
-    """
-
-
 
 
 if __name__ == "__main__":
@@ -1538,20 +1161,3 @@ if __name__ == "__main__":
     a.settings = CommandLine()
 
     a.makeCsvs()
-
-    #fileIn  = os.path.join("test", "913885.cif")
-    #filesOut = a.cleanCif(fileIn)
-    #print("Created", len(filesOut), "file(s) after clean-up:", filesOut)
-
-    #input_strings = ["123450(16)", "123450(160)", "1234.5(16)", "123.45(16)", "12.345(16)"]
-    #for input_string in input_strings:
-    #  value, error = a.splitStr(input_string)
-    #  print(f"Input: {input_string}, Value: {value}, Error: {error}")
-
-    #input_strings = ["1 2 3 4 5", "1   2  3   4  5\n", "1 '2 3' 4 5", "1 2 3 '4   5'"]
-    #for input_string in input_strings:
-    #  out = tools.strSplit(input_string)
-    #  print(f"Input: {input_string}, Out: {str(out)}")
-    #  #print(out)
-
-

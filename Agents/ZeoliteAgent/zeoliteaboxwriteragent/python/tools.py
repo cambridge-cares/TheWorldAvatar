@@ -55,7 +55,6 @@ class UuidDB:
         """
 
         default = os.path.join("uuid" + "-default.csv")
-        # default = os.path.join("ontozeolite", "uuid", "default.csv")
 
         if filename is None or "" == filename:
             self.dbFilename = default
@@ -64,12 +63,12 @@ class UuidDB:
             if os.path.isfile(filename):
                 self.dbFilename = filename
             elif os.path.isdir(filename):
-                logging.error(" Uuid database path: '%s' is a directory."
-                              " Using default.", filename)
+                logging.warning(" Uuid database path: '%s' is a directory."
+                                " Using default.", filename)
                 self.dbFilename = default
             else:
-                logging.error(" Uuid database file does not exist: '%s'." +
-                              " Create a new one.", filename)
+                logging.warning(" Uuid database file does not exist: '%s'." +
+                                " Create a new one.", filename)
                 self.dbFilename = filename
 
         else:
@@ -78,7 +77,6 @@ class UuidDB:
             self.dbFilename = filename
 
         self.loadDB(self.dbFilename)
-
         # === end of UuidDB.__init__()
 
     def valueIsValid(self, value):
@@ -88,7 +86,7 @@ class UuidDB:
 
         """
         if not isinstance(value, str):
-            logging.error("Value must be string, but got '%s'.", str(value))
+            logging.error(" Value must be string, but got '%s'.", str(value))
             return False
 
         short = value.strip()
@@ -116,7 +114,7 @@ class UuidDB:
         Load the database.
         """
         if not os.path.isfile(file_path):
-            logging.info("UUID DB does not exist, initialize a new DB")
+            logging.warning(" UUID DB does not exist, initialize a new DB")
             self.uuidDB = {}
             return self.uuidDB
 
@@ -162,7 +160,6 @@ class UuidDB:
         Save the database to file.
         """
         if "" == filename:
-            # file_path = os.path.join("ontozeolite", "uuid", "default.csv")
             file_path = self.dbFilename
         else:
             file_path = filename
@@ -180,7 +177,7 @@ class UuidDB:
 
         nLinesWarn = 20 * 1000
         if len(array) > nLinesWarn:
-            logging.warning("The size of the uuid database is over %s" +
+            logging.warning(" The size of the uuid database is over %s" +
                             " entries: %s.", str(nLinesWarn), str(len(array)))
 
         writeCsv(file_path, array)
@@ -361,14 +358,11 @@ class UuidDB:
     def tmpUUID(self, name):
         """
         Create an instance and uuid without adding them to the database.
-        Why is this necessary?
         """
 
         uuid_str = str(uuid.uuid4())
 
         output = name + "_" + uuid_str
-
-        #logging.warning("Not implemented getUUID(), using '" + str(uuid_str) + "'.")
 
         return output, uuid_str
         # === end of UuidDB.tmpUUID()
@@ -410,20 +404,17 @@ def getCifLineRanges(fileIn):
     # === end of getCifLineRanges()
 
 
-'''
-'''
 def getUUID(uuidDB, class_name, instanceName, new_uuid = ""):
     """
-  new_uuid - Recommended uuid for this instance.
-            If uuidDB has an element with this class+instance+uuid -> use it.
-            If uuidDB has class+instance different uuid -> warning.
-            If uuidDB does not have class+instance -> create with given new_uuid.
-  class_name - Is saved in the database for easier error detection,
-              but it will not be added to the instanceName.
-              It is your responsibility to write a correct instanceName.
-  instanceName - Instance, exactly how it should look in the database and later in ontology.
+    new_uuid     - Recommended uuid for this instance.
+                   If uuidDB has an element with this class+instance+uuid -> use it.
+                   If uuidDB has class+instance different uuid -> warning.
+                   If uuidDB does not have class+instance -> create with given new_uuid.
+    class_name   - Is saved in the database for easier error detection,
+                   but it will not be added to the instanceName.
+                   It is your responsibility to write a correct instanceName.
+    instanceName - Instance, exactly how it should look in the database and later in ontology.
     """
-    # Check the input names:
     if not valueIsValid(class_name):
         logging.error(" Class '%s' is not valid. a5", class_name)
 
@@ -439,7 +430,7 @@ def getUUID(uuidDB, class_name, instanceName, new_uuid = ""):
         logging.error(" new_uuid must be a string, but got %s.",
                       str(type(new_uuid)))
 
-    # Check whether the instanceName exists in other classes:
+    # Check whether the instanceName exists in other classes (optinal, takes time):
     tmp = []
     #for k1 in list(uuidDB.keys()):
     #  for k2 in list(uuidDB[k1].keys()):
@@ -456,7 +447,6 @@ def getUUID(uuidDB, class_name, instanceName, new_uuid = ""):
                                     " conflict with existing '%s.%s'.",
                                     k2, class_name, k1, k2 )
                     break  # <= Find only the first error (to speed up)
-
 
     # Find and return or assign new UUID for the class_name.instanceName
     #if class_name in list(uuidDB.keys()):
@@ -494,37 +484,29 @@ def getUUID(uuidDB, class_name, instanceName, new_uuid = ""):
 
     output = instanceName + "_" + str(uuid_str)
 
-    return output #, uuid_str
-    pass # getUUID()
+    return output  # , uuid_str
+    pass  # getUUID()
 
 
 def getUUID_random(code):
     """
     Create an instance and uuid without adding them to the database.
-    Why is this necessary?
     """
-
-    # output = ""
-    # output = "uuid-" + code
 
     uuid_str = str(uuid.uuid4())
 
     output = code + "_" + str(uuid_str)
 
-    logging.warning("Not implemented getUUID(), using '%s'.", str(uuid_str))
-
     return output
     # === end of getUUID_random()
 
 
-def strSplit(inline, sep = [" ", "\t"], quotes = ["'", '"']):
+def strSplit(inline, sep=[" ", "\t"], quotes=["'", '"']):
     """
 
     """
     words = []
     w = []
-    #inQuote1 = False
-    #inQuote2 = False
     inQuote = ""
     if isinstance(sep, list):
         sepArr = sep
@@ -536,7 +518,6 @@ def strSplit(inline, sep = [" ", "\t"], quotes = ["'", '"']):
 
     for ic, c in enumerate(inline.strip()):
         if inQuote == "":
-            #if "'" == c or '"' == c:
             if c in quotes:
                 inQuote = c
             elif c in sepArr:
@@ -547,14 +528,10 @@ def strSplit(inline, sep = [" ", "\t"], quotes = ["'", '"']):
                 w.append(c)
 
         else:
-            #if "'" == c or '"' == c:
             if c in quotes:
                 inQuote = ""
                 words.append("".join(w))
                 w = []
-
-            #elif " " == c:
-            #  w.append(c)
 
             else:
                 w.append(c)
@@ -600,30 +577,28 @@ def readCsv(filename, encoding="utf-8"):
     output = []
     if os.path.exists(filename):
         try:
-            # print(">>> In tools.py going to open file", filename)
-            # with open(filename, "r", encoding="utf-8") as f:
             if encoding == "utf-8":
-                f = open(filename, "r", encoding="utf-8")
                 # print("Opening as utf")
+                f = open(filename, "r", encoding="utf-8")
             else:
-                f = open(filename, "r")
                 # print("Opening as default")
+                f = open(filename, "r")
             csvr = csv.reader(f)
 
             for ir, row in enumerate(csvr):
-                # print(filename, ir, row)
                 output.append(row)
+
             f.close()
 
         except Exception as e:
-            print("Failed to open file '", filename, "' as utf-8", sep="")
-            print("An error:", e)
+            print("Failed to open file '", filename, "' as ", encoding, sep="")
+            print("Error details:", e)
             raise e
     else:
         print("readCSV: file does not exist: '" + filename + "'.")
 
     return output
-    # === end of loadCSV()
+    # === end of readCsv()
 
 
 def get_csv_init(base_name, t_prefix, a_prefix):
@@ -651,29 +626,28 @@ def get_csv_init(base_name, t_prefix, a_prefix):
 if __name__ == "__main__":
 
     # Test and example of use:
-    db = loadUUID()
+    db = UuidDB("test-uuid-db.csv")
 
-    print(getUUID(db, "ClassA", "a1"))
-    print(getUUID(db, "ClassA", "a2"))
-    print(getUUID(db, "ClassA", "a3"))
-    print(getUUID(db, "ClassB", "b1"))
-    print(getUUID(db, "ClassB", "a1"))
-    # print(getUUID(db, "ClassC", "c1"))
-    # print(getUUID(db, "ClassC", "c2"))
-    # print(getUUID(db, "ClassC", "c3"))
-    print(getUUID("ss", "ClassC", "c3"))
+    print(db.addUUID("ClassA", "a1"))
+    print(db.addUUID("ClassA", "a2"))
+    print(db.addUUID("ClassA", "a3"))
+    print(db.addUUID("ClassB", "b1"))
+    print(db.addUUID("ClassB", "a1"))
+    # print(db.addUUID(db, "ClassC", "c1"))
+    # print(db.addUUID(db, "ClassC", "c2"))
+    # print(db.addUUID(db, "ClassC", "c3"))
+    print(db.addUUID("ClassC", "c3"))
 
-    for k1 in db.keys():
+    for k1 in db.uuidDB.keys():
         # print("Class '" + k1 +"': ")
-        for k2 in db[k1].keys():
+        for k2 in db.uuidDB[k1].keys():
             # print(" ", k2, ":", db[k1][k2])
             pass
 
-    saveUUID(db)
+    db.saveDB()
 
     input_strings = ["1 2 3 4 5", "1   2  3   4  5\n",
                      "1 '2 3' 4 5", "1 2 3 '4   5'"]
     for input_string in input_strings:
         out = strSplit(input_string)
         print(f"Input: {input_string}, Out: {str(out)}")
-        # print(out)

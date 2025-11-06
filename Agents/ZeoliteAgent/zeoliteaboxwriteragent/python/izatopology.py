@@ -11,9 +11,10 @@ import logging
 import tools
 import ontocrystal_datatypes as ocdt
 
-zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
 
 class IzaTopology:
+    __slots__ = ["uuidDB", "iza_file_path", "iza_data_base", "abox_prefix", ]
 
     def __init__(self, uuidDB=None):
 
@@ -689,7 +690,7 @@ class IzaTopology:
 
                 if nCBU > 0:
                     uuid_cbu, _ = self.uuidDB.addUUID("CompositeBU",
-                                                      "CompositeBU_" + code)
+                                                      zeoOntoPrefix + "CompositeBU_" + code)
                     output.append([uuid_cbu, "Instance", "CompositeBU",
                                    "", "", ""])
                     output.append([zeotopo_iri, "Instance", uuid_cbu,
@@ -852,7 +853,7 @@ class IzaTopology:
         if "TopologicalDensity" in topo_data:
             if isinstance(topo_data["TopologicalDensity"], dict):
                 uuid_tden, _ = self.uuidDB.addUUID("TopologicalDensity",
-                                                   "TopoDens_" + code)
+                                                   zeoOntoPrefix + "TopoDens_" + code)
                 output.append([uuid_tden, "Instance", "TopologicalDensity",
                                "", "", ""])
                 output.append([zeotopo_iri, "Instance", uuid_tden,
