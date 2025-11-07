@@ -193,6 +193,7 @@ The notebook is currently **not deployed** on Binder because
 # TO DO
 
 - Remove extraction of information from IRI string in [./agent/exposure_calculator/templates/absolute_time_filter.sparql](./agent/exposure_calculator/templates/absolute_time_filter.sparql).
+- Replace usage of WKB with WKT processing in both [./resources/ontop.obda](./resources/ontop.obda) and SPARQL templates, e.g. [./agent/exposure_calculator/templates/get_greenspace_area.sparql](./agent/exposure_calculator/templates/get_greenspace_area.sparql). Name the templates more accurately. NB The GeoSPARQL standard to include CRS is in the WKT literal itself, e.g. `geo:Geometry{id} geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {wkt}"^^geo:wktLiteral`. Instead, consider pre-converting everything into 4326 and not including the CRS IRI in the WKT literals at all because Ontop does not handle multiple coordinate reference systems within a single instance of Ontop well.
 
 &nbsp;
 # Authors
