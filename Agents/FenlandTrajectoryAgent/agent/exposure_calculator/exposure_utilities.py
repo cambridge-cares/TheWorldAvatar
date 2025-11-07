@@ -699,6 +699,12 @@ class ExposureUtils:
             self.logger.info(f"[fetch_env_data] Cache hit for env_data_iri: {env_data_iri}")
             return self.env_data_cache[env_data_iri]
 
+        # TODO: Streamline this entire if-else block. Explain more clearly
+        # via comments and/or in the readme. E.g. many things can be
+        # retrieved via a single query, rather than choosing the appropriate
+        # query via different if-else blocks. This avoids issues such as
+        # get_point_generic being out-of-date relative to absolute_time_filter,
+        # which is the case at the moment.
         if feature_type.upper() == "POINT" and dl_lower.startswith("food hygiene rating") and reference_time is not None:
             self.logger.info(f"[fetch_env_data] Using absolute-time-filter for {env_data_iri} at {reference_time}")
             template_file = "absolute_time_filter.sparql"  # You might have named it absolute-time-filter.sparql
