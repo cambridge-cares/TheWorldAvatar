@@ -622,6 +622,9 @@ class ExposureUtils:
         """
         self.logger.info("==== fetch_trajectory_data_from_db() called ====")
         conn = None
+        # TODO: Time-series data should not be obtained by querying the
+        # database directly via SQL. Use the relevant methods of the time
+        # series client instead!
         try:
             conn = self.connect_to_database(
                 self.TRAJECTORY_DB_HOST,
@@ -636,6 +639,9 @@ class ExposureUtils:
             if conn:
                 conn.close()
 
+        # TODO: The sequence of the following list should not be hardcoded,
+        # because it is a Map in TimeSeriesClient and hence is not
+        # guaranteed to be the same!
         df = df.rename(columns={
             "column1": "SPEED",
             "column2": "DISTANCE",
