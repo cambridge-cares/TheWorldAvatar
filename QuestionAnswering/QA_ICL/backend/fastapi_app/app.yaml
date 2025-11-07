@@ -19,7 +19,8 @@ qt_recog:
 location_iq:
   api_key: ""
 chemistry_endpoints:
-  ontospecies: 
+  ontospecies:
+  ontospecies_v3: 
   ontokin: 
   ontocompchem: 
   ontozeolite: 

@@ -1,0 +1,66 @@
+{
+    "ServiceSpec": {
+        "Name": "keycloak",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "quay.io/keycloak/keycloak:26.0.5",
+                "Env": [
+                    "KC_DB=postgres",
+                    "KC_DB_USERNAME=postgres",
+                    "KC_DB_PASSWORD=",
+                    "KC_DB_URL=jdbc:postgresql://timeline-postgis:5432/postgres",
+                    "KC_DB_SCHEMA=keycloak",
+                    "KC_HOSTNAME=https://auth.theworldavatar.io/keycloak",
+                    "KC_HOSTNAME_ADMIN=https://auth.theworldavatar.io/keycloak",
+                    "KC_HOSTNAME_DEBUG=false",
+                    "KC_HTTP_RELATIVE_PATH=keycloak",
+                    "KC_HTTP_ENABLED=true",
+                    "KC_HOSTNAME_STRICT=true",
+                    "KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/conf/keycloak.pem",
+                    "KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/conf/keycloak-key.pem"
+                ],
+                "Command": [
+                    "./keycloak_start.sh"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "keycloak/themes",
+                        "Target": "/opt/keycloak/themes"
+                    },
+                    {
+                        "Type": "bind",
+                        "Source": "keycloak_start.sh",
+                        "Target": "/keycloak_start.sh"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "fullchain.pem",
+                        "File": {
+                            "Name": "/opt/keycloak/conf/keycloak.pem"
+                        }
+                    },
+                    {
+                        "SecretName": "privkey.pem",
+                        "File": {
+                            "Name": "/opt/keycloak/conf/keycloak-key.pem"
+                        }
+                    },
+                    {
+                        "SecretName": "keycloak_admin_username"
+                    },
+                    {
+                        "SecretName": "keycloak_admin_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/keycloak/",
+            "externalPath": "/keycloak/"
+        }
+    }
+}

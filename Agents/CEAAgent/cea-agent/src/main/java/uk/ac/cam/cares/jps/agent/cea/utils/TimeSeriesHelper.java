@@ -7,25 +7,43 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.jooq.exception.DataAccessException;
 
 public class TimeSeriesHelper {
-    public static final String timeUnit = OffsetDateTime.class.getSimpleName();
+    public static final String timeUnit = Instant.class.getSimpleName();
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient rdbStoreClient;
-    private TimeSeriesClient<OffsetDateTime> tsClient;
+    private TimeSeriesClient<Instant> tsClient;
 
-    public TimeSeriesHelper(RemoteStoreClient remoteStoreClient, RemoteRDBStoreClient remoteRDBStoreClient) {
+    public TimeSeriesHelper(RemoteStoreClient remoteStoreClient, RemoteRDBStoreClient remoteRDBStoreClient, String dbName) {
         this.storeClient = remoteStoreClient;
         this.rdbStoreClient = remoteRDBStoreClient;
+        ensureDatabaseExist(dbName);
+    }
+
+    private void ensureDatabaseExist(String dbName) {
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            return;
+        } catch (SQLException e) {
+            if ("3D000".equals(e.getSQLState())) {
+                // Database does not exist
+                PostGISClient.getInstance().createDatabase(dbName);
+            } else {
+                throw new RuntimeException("Unexpected SQLstate: " + e.getSQLState(), e);
+            }
+        }
     }
 
     /**
@@ -33,7 +51,7 @@ public class TimeSeriesHelper {
      * @param fixedIris map containing time series iris mapped to measurement type
      */
     public void createTimeSeries(LinkedHashMap<String,String> fixedIris) {
-        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
+        tsClient = new TimeSeriesClient<>(storeClient, Instant.class);
 
         // Create a iri for each measurement
         List<String> iris = new ArrayList<>();
@@ -77,20 +95,18 @@ public class TimeSeriesHelper {
 
         // If CreateTimeSeries has not been run, get time series client
         if (tsClient == null) {
-            tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
+            tsClient = new TimeSeriesClient<>(storeClient, Instant.class);
         }
-        TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
+
+        // Time series must be in Instant for feature info agent to work
+
+        List<Instant> instants = times.stream().map(OffsetDateTime::toInstant).collect(Collectors.toList());
+
+
+        TimeSeries<Instant> currentTimeSeries = new TimeSeries<>(instants, iris, values);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            OffsetDateTime endDataTime = tsClient.getMaxTime(currentTimeSeries.getDataIRIs().get(0), conn);
-            OffsetDateTime beginDataTime = tsClient.getMinTime(currentTimeSeries.getDataIRIs().get(0), conn);
-
-            // Delete old data if exists
-            if (endDataTime != null) {
-                for (Integer i = 0; i < currentTimeSeries.getDataIRIs().size(); i++) {
-                    tsClient.deleteTimeSeriesHistory(currentTimeSeries.getDataIRIs().get(i), beginDataTime, endDataTime, conn);
-                }
-            }
+            
             // Add New data
             tsClient.addTimeSeriesData(currentTimeSeries, conn);
         }

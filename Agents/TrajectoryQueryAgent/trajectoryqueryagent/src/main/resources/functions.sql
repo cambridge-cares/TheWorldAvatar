@@ -9,10 +9,12 @@ BEGIN
     FROM time_series_quantities
     WHERE data_iri = iri;
 
+
     RETURN column_name_result;
 END;
 $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION get_table_name(iri VARCHAR)
 RETURNS VARCHAR AS
@@ -25,10 +27,12 @@ BEGIN
     FROM time_series_quantities
     WHERE data_iri = iri;
 
+
     RETURN table_name_result;
 END;
 $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION get_time_series(iri VARCHAR)
 RETURNS VARCHAR AS
@@ -41,10 +45,12 @@ BEGIN
     FROM time_series_quantities
     WHERE data_iri = iri;
 
+
     RETURN time_series_result;
 END;
 $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION get_user_id(device TEXT)
 RETURNS VARCHAR AS
@@ -54,15 +60,15 @@ DECLARE
 BEGIN
     -- Check if the schema 'timeline' exists
     IF EXISTS (
-        SELECT 1 
-        FROM pg_catalog.pg_namespace 
+        SELECT 1
+        FROM pg_catalog.pg_namespace
         WHERE nspname = 'timeline'
     ) THEN
         -- Check if the table 'smartPhone' exists in the 'timeline' schema
         IF EXISTS (
-            SELECT 1 
-            FROM pg_catalog.pg_tables 
-            WHERE schemaname = 'timeline' 
+            SELECT 1
+            FROM pg_catalog.pg_tables
+            WHERE schemaname = 'timeline'
               AND tablename = 'smartPhone'
         ) THEN
             -- Perform the query to get the user_id
@@ -79,20 +85,23 @@ BEGIN
         RETURN NULL;
     END IF;
 
+
     RETURN user_result;
 END;
 $$
 LANGUAGE plpgsql;
 
 
+
+
 CREATE OR REPLACE FUNCTION get_location_table(
     device_id_array TEXT[]
 )
 RETURNS TABLE (
-    "time" bigint, 
-    "geom" geometry, 
-    "speed" double precision, 
-    "altitude" double precision, 
+    "time" bigint,
+    "geom" geometry,
+    "speed" double precision,
+    "altitude" double precision,
     "bearing" double precision,
     "session_id" character varying,
     "device_id" TEXT,
@@ -105,6 +114,7 @@ BEGIN
         IF i > 1 THEN
             query := query || ' UNION ALL ';
         END IF;
+
 
         query := query || format(
             'SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing, %I AS session_id, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri=%L',
@@ -120,8 +130,52 @@ BEGIN
         );
     END LOOP;
 
+
     RETURN QUERY EXECUTE query;
 END $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_activity_table(
+    device_id_array TEXT[]
+)
+RETURNS TABLE (
+    "time" bigint,
+    "activity_type" VARCHAR,
+    "confidence_level" integer,
+    "device_id" TEXT,
+    "user_id" TEXT
+) AS $$
+DECLARE
+    query TEXT := '';
+BEGIN
+    FOR i IN 1..array_length(device_id_array, 1) LOOP
+        IF i > 1 THEN
+            query := query || ' UNION ALL ';
+        END IF;
+
+
+        device_id := device_id_array[i];
+
+
+
+
+        query := query || format(
+            'SELECT time, %I AS activity_type, %I ::INTEGER AS confidence_level, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri = %L',
+            get_column_name(get_activity_type_iri(device_id)),
+            get_column_name(get_confidence_level_iri(device_id)),
+            device_id,
+            get_user_id(device_id),
+            get_table_name(get_activity_type_iri(device_id)),
+            get_time_series(get_activity_type_iri(device_id))
+        );
+    END LOOP;
+
+
+     RETURN QUERY EXECUTE query;
+END $$ LANGUAGE plpgsql;
+
+
+
 
 -- used by timeline app only
 CREATE OR REPLACE FUNCTION get_device_ids(id VARCHAR)
@@ -136,12 +190,61 @@ BEGIN
     FROM timeline."smartPhone" sp
     WHERE sp.user_id = id
     AND EXISTS (
-        SELECT 1 
+        SELECT 1
         FROM devices d
         WHERE d.device_id = sp.phone_id
     );
+
 
     RETURN phone_id_list;
 END;
 $$
 LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION fill_activity_types(activity_types varchar[], times bigint[])
+RETURNS TABLE (
+    "time" bigint,
+    "activity_type" VARCHAR
+) AS $$
+DECLARE
+    result varchar[] := '{}';
+    last_valid varchar := '';
+    activity varchar;
+    activity_time bigint;
+    i integer := 1;
+BEGIN
+
+    FOREACH activity IN ARRAY activity_types
+    LOOP
+        IF activity <> 'others' THEN
+            last_valid := activity;
+            EXIT;
+        END IF;
+    END LOOP;
+
+
+    FOREACH activity IN ARRAY activity_types
+    LOOP
+        IF activity <> 'others' THEN
+            last_valid := activity;
+        END IF;
+
+
+        result := array_append(result, last_valid);
+    END LOOP;
+
+
+    FOR i IN 1..array_length(times, 1)
+    LOOP
+        activity_time := times[i];
+        RETURN QUERY SELECT activity_time, result[i];
+    END LOOP;
+
+
+    RETURN;
+END;
+$$
+LANGUAGE plpgsql

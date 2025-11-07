@@ -1,7 +1,0 @@
-{
-    "name": "ontopOldWithCreds",
-    "hostName": "hosty",
-    "port": "1234",
-    "username": "user",
-    "passwordFile": "/passwordFile"
-}

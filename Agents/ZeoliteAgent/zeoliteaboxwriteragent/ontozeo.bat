@@ -11,7 +11,7 @@ set DATADIR=ontozeolite
 rem Blazegraph server and namespace:
 rem For example, local computer:
 set SERVER=http://localhost:8080/blazegraph/namespace/
-set NAMESPACE=zeo06g
+set NAMESPACE=zeo06k
 set AUTHFILE=
 rem For example: remove server:
 rem set SERVER=http://178.128.105.213:3838/blazegraph-dev/ui/namespace/

@@ -1,7 +1,0 @@
-{
-    "name": "nonTrivialExternal",
-    "externalDatasets":[
-        "trivialExternal",
-        "explicitlyNamed"
-    ]
-}

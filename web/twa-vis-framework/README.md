@@ -1,6 +1,9 @@
-# TWA Visualisation Framework
+# TWA Visualisation Framework [NOT IN ACTIVE DEVELOPMENT]
 
 <img align="right" width="250" height="250" src="./docs/img/twa-vf-logo.svg">
+
+> [!IMPORTANT]  
+> This version of the framework is no longer in active development. Please use the [latest version](https://github.com/TheWorldAvatar/viz) instead.
 
 A central framework for TWA Visualisations (the TWA Visualisation Framework, or TWA-VF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer who is inexperienced with Typescript (or the JavaScript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
 

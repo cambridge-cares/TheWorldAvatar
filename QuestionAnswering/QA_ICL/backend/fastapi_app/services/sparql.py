@@ -71,6 +71,12 @@ def get_ontospecies_endpoint(
 ):
     return settings.chemistry_endpoints.ontospecies
 
+# TODO: ONTOSPECIES_V3 should be remove after merging
+def get_ontospecies_endpoint_v3(
+    settings: Annotated[AppSettings, Depends(get_app_settings)]
+):
+    return settings.chemistry_endpoints.ontospecies_v3
+
 
 def get_ontokin_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return settings.chemistry_endpoints.ontokin

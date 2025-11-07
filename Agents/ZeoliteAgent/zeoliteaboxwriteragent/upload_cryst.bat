@@ -54,7 +54,7 @@ set OWL_DIR=ontozeolite\biblio\owl
 %PREFIX% pyuploader ts_upload %OWL_DIR%"\onto_bib.csv.owl" --url=%URL% %AUTH%
 
 set OWL_DIR=ontozeolite\crystal\owl
-for /L %%i in (0,1,128) do (
+for /L %%i in (0,1,134) do (
   %PREFIX% pyuploader ts_upload %OWL_DIR%"\cif_twa_"%%i".csv.owl" --url=%URL% %AUTH%
 )
 goto EXIT

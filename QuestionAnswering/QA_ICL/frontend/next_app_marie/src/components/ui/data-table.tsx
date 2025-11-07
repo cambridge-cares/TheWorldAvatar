@@ -121,11 +121,32 @@ export function DataTable<TData>({
               key={row.id}
               data-state={row.getIsSelected() && 'selected'}
             >
-              {row.getVisibleCells().map(cell => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+              {row.getVisibleCells().map(cell => {
+                const value = cell.getValue();
+
+                return (
+                  <TableCell 
+                    key={cell.id}
+                  >
+                    {Array.isArray(value) && value.length > 1 ? (
+                      <div className="flex flex-col divide-y divide-gray-300">
+                        {value.map((item, idx) => (
+                          <div 
+                            key={idx} 
+                            className={` flex items-center justify-center pl-2 py-1 `}
+                          >
+                            {typeof item === 'object' ? JSON.stringify(item) : String(item)}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                    )}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))
         ) : (

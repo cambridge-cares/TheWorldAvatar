@@ -11,13 +11,12 @@ import androidx.work.WorkerParameters;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.ac.cam.cares.jps.utils.di.UtilsModule.compressData;
+import static uk.ac.cam.cares.jps.utils.Utils.compressData;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedInject;
@@ -73,7 +72,7 @@ public class SensorUploadWorker extends Worker {
         }
     }
 
-    private void uploadSensorData() throws JSONException, IOException {
+    private void uploadSensorData() throws IOException {
         int PAGE_SIZE = 800;
         int offset = 0;
         boolean hasMoreData = true;

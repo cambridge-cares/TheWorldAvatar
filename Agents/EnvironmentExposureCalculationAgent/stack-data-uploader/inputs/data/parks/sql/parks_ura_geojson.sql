@@ -1,0 +1,12 @@
+ALTER TABLE parks_2019
+ADD COLUMN "PRP_STATUS" TEXT;
+
+UPDATE parks_2019
+SET "PRP_STATUS" = REGEXP_REPLACE(
+  "Description",
+  '.*PRP_STATUS</th>\s*<td>([^<]*)</td>.*',
+  '\1'
+);
+
+DELETE FROM parks_2019
+WHERE "PRP_STATUS" NOT LIKE '%EXISTING%';

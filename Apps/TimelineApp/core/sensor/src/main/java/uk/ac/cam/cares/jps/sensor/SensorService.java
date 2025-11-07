@@ -15,7 +15,6 @@ import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.HandlerThread;
 import android.os.IBinder;
 
 import androidx.work.Data;
@@ -31,7 +30,6 @@ import androidx.work.WorkManager;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -52,7 +50,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.source.activity.ActivityRecognitionReceiver;
 import uk.ac.cam.cares.jps.sensor.source.worker.BufferFlushWorker;
-import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.worker.SensorUploadWorker;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
@@ -331,7 +328,7 @@ public class SensorService extends Service {
                         .setContentText(getString(R.string.sensors_are_running_for_data_collection))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                        .setSmallIcon(uk.ac.cam.cares.jps.ui.R.drawable.twa_notification_icon)
+                        .setSmallIcon(uk.ac.cam.cares.jps.ui.base.R.drawable.twa_notification_icon)
                         .setOngoing(true)
                         .setContentIntent(pendingIntent)
                         .build();
@@ -375,7 +372,13 @@ public class SensorService extends Service {
 
         // Unregister the NetworkChangeReceiver when the service is destroyed
         if (networkChangeReceiver != null) {
-            unregisterReceiver(networkChangeReceiver);
+            try {
+                LOGGER.info("unregister network change receiver");
+                unregisterReceiver(networkChangeReceiver);
+            } catch (Exception e) {
+                LOGGER.warn("network change receiver is deregister already");
+            }
+
         }
 
         // Stop activity recognition updates

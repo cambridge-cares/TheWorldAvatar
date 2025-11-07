@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'kotlin-kapt'
 apply from: "${project.rootDir}/common.gradle"
 apply from: "${project.rootDir}/ui.gradle"
 apply from: "${project.rootDir}/worker_dependencies.gradle"
@@ -17,17 +18,14 @@ dependencies {
 
     implementation project(path: ':core:utils')
     implementation project(path: ':core:login')
-    implementation project(path: ':core:ui')
+    implementation project(path: ':core:ui-base')
     implementation project(path: ':core:data')
-
 
     def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava3:$room_version"
-    // To use Kotlin annotation processing tool (kapt)
     kapt "androidx.room:room-compiler:$room_version"
-
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
 }

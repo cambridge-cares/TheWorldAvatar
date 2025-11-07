@@ -64,9 +64,11 @@ prefixBIBO = "bibo"
 # biboPrefix = "http://bibo/"
 biboPrefix = "http://purl.org/ontology/bibo/"
 
-# These two are required for the extension of Bibo (for list of authors):
+dctPrefix = "http://purl.org/dc/terms/"
+# required for the extension of Bibo (for list of authors):
 foafPrefix = "http://xmlns.com/foaf/0.1/"
-crystPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 
 def is_http(value):
@@ -643,7 +645,6 @@ class OntoBibo:
         # file = self.entryInBibFile[entity.key]
         # print("Starting key: ",  entity.key, file)
 
-        dctPrefix = "http://purl.org/dc/terms/"
         item_name = entity.key
         class_name = "AcademicArticle"
 
@@ -652,7 +653,7 @@ class OntoBibo:
         iri, uuidStr = get_bib_iri(item_name)
         if not iri:
             iri, uuidStr = self.uuidDB.addUUID(biboPrefix + class_name,
-                                                     self.abox_prefix + "Citation_" + safe_name)
+                                               self.abox_prefix + "Citation_" + safe_name)
         output.append([iri, "Instance", biboPrefix + class_name,
                        "", "", ""])
 
@@ -805,26 +806,26 @@ class OntoBibo:
                         pass
 
                     output.append([iri, "Instance", auth_iri,
-                                   crystPrefix + "hasAuthor", "", ""])
+                                   crystOntoPrefix + "hasAuthor", "", ""])
 
                     #Creating the author's position in the list
                     uuid_tmp = str(uuid.uuid4())  # New unique uuid
                     #auth_ind, _ = self.uuidDB.addUUID(foafPrefix + "AuthorIndex",
                     #                                  foafPrefix + "AuthorIndex_" + nameID + str(ia+1),
                     #                                  newUuid=uuid_tmp)
-                    auth_ind = crystPrefix + "AuthorIndex_" + uuid_tmp
+                    auth_ind = crystOntoPrefix + "AuthorIndex_" + uuid_tmp
 
-                    output.append([auth_ind, "Instance", crystPrefix + "AuthorIndex",
+                    output.append([auth_ind, "Instance", crystOntoPrefix + "AuthorIndex",
                                    "", "", ""])
 
                     output.append([iri, "Instance", auth_ind,
-                                   crystPrefix + "hasAuthorIndex", "", ""])
+                                   crystOntoPrefix + "hasAuthorIndex", "", ""])
 
-                    output.append([crystPrefix + "hasIndexValue", "Data Property",
+                    output.append([crystOntoPrefix + "hasIndexValue", "Data Property",
                                    auth_ind, "", ia + 1, "xsd:integer"])
 
                     output.append([auth_ind, "Instance", auth_iri,
-                                   crystPrefix + "isAuthorIndexOf", "", ""])
+                                   crystOntoPrefix + "isAuthorIndexOf", "", ""])
 
             elif "title" == field.key.lower():
                 # print(field.key, "not implemented")
@@ -835,7 +836,7 @@ class OntoBibo:
             elif "abstract" == field.key.lower():
                 # print(field.key, "not implemented")
                 if field.value.strip() != "":
-                    output.append([crystPrefix + "hasAbstract",
+                    output.append([crystOntoPrefix + "hasAbstract",
                                    "Data Property", iri, "",
                                    str2owlsafe(field.value), "xsd:string"])
 
@@ -946,20 +947,20 @@ class OntoBibo:
                         print("field value: '", field.value, "'", sep="")
                         1/0
                     # print(field.key, "not implemented")
-                    output.append([crystPrefix + "hasUrl", "Data Property",
+                    output.append([crystOntoPrefix + "hasUrl", "Data Property",
                                    iri, "", field.value.strip(), "xsd:string"])
 
             elif "eprint" == field.key.lower():
                 if field.value.strip() != "":
                     # print(field.key, "not implemented")
-                    output.append([crystPrefix + "hasEPrint", "Data Property",
+                    output.append([crystOntoPrefix + "hasEPrint", "Data Property",
                                    iri, "", field.value.strip(), "xsd:string"])
 
             elif "keywords" == field.key:
                 if field.value.strip() != "":
                     # print(field.key, "not implemented")
                     for kw in field.value.split(","):
-                        output.append([crystPrefix + "hasKeyword", "Data Property",
+                        output.append([crystOntoPrefix + "hasKeyword", "Data Property",
                                        iri, "", kw.strip(), "xsd:string"])
 
             elif "note" == field.key:
@@ -1018,7 +1019,6 @@ class OntoBibo:
         # file = self.entryInBibFile[entity.key]
         # print("Starting key: ",  entity.key, file)
 
-        dctPrefix = "http://purl.org/dc/terms/"
         item_name = entity.key
         class_name = "InProceedings"
 
@@ -1153,12 +1153,12 @@ if __name__ == "__main__":
     #uuidDB = tools.UuidDB(os.path.join(PARENT_DIR, "final", "uuid", "biblio.csv"))
     uuidDB = tools.UuidDB(os.path.join(PARENT_DIR, "biblio", "biblio_uuid.csv"))
 
-    output = getCsvInit("base", tPrefix=crystPrefix, aPrefix=crystPrefix)
+    output = getCsvInit("base", tPrefix=crystOntoPrefix, aPrefix=crystOntoPrefix)
 
-    b = OntoBibo(path, abox_prefix=crystPrefix,
+    b = OntoBibo(path, abox_prefix=crystOntoPrefix,
                  uuidDB=uuidDB)
 
-                 #tbox_prefix=crystPrefix, uuidDB=uuidDB)
+                 #tbox_prefix=crystOntoPrefix, uuidDB=uuidDB)
 
     csv_data, err = b.getCsvArr("", "")
     output += csv_data

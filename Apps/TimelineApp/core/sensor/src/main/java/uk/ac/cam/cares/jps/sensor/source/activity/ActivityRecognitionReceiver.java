@@ -95,7 +95,7 @@ public class ActivityRecognitionReceiver extends BroadcastReceiver {
             case DetectedActivity.STILL:
                 return "still";
             default:
-                return "unknown";
+                return "others";
         }
     }
 

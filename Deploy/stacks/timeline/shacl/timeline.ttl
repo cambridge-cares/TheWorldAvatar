@@ -1,0 +1,33 @@
+@prefix ontots:       <https://www.theworldavatar.com/kg/ontotimeseries/> .
+@prefix ontodevice:     <https://www.theworldavatar.com/kg/ontodevice/> .
+@prefix traj:     <https://www.theworldavatar.io/kg/trajectory/> .
+
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:        <http://www.w3.org/ns/shacl#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+@prefix om:        <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+
+traj:TrajectoryShape
+  a sh:NodeShape ;
+  sh:targetClass <https://w3id.org/MON/person.owl#Person> ;
+  sh:property [
+    sh:name "id";
+    sh:description "The identifier of the trajectory.";
+    sh:order 1 ;
+    sh:path (
+      ontots:hasTimeSeries
+      [sh:inversePath ontots:hasTimeSeries]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "time series";
+    sh:description "The time series associated with the trajectory.";
+    sh:order 3 ;
+    sh:path ontots:hasTimeSeries ;
+    sh:class ontots:TimeSeries ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .

@@ -10,7 +10,7 @@ class SparqlDataReqForm(BaseModel):
     type: Literal["sparql"] = "sparql"
     triplestore: str
     query: str
-    pkeys: list[str]
+    pkeys: list[str] | None
 
 
 class FuncDataReqForm(BaseModel):

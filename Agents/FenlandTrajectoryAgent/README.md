@@ -154,6 +154,43 @@ This route is used when the environmental data and the Fenland Trajectory Agent 
 ### Example HTTP Requests
 Example requests are available in detailed HTTP files. You can access these examples at the [exposure_count] file and the [exposure_count_single_stack] file. Services can also be triggered using CURL from a bash terminal. Examples are displayed in [CURL commands folder]. 
 
+# 5. Jupyter Notebook
+
+A Jupyter notebook is provided in [/notebook](./notebook/) to demonstrate the following functionalities:
+- Fetch environmental features
+- Fetch trajectory data
+- Process trajectory
+- Exposure calculation on area features
+- Exposure calculation on point feature
+
+## Configuration
+User is required to provide the configuration of knowledge graph and database in [config.env](./notebook/config.env). The complete setup guide can be found in the [notebook](./notebook/environment_exposure.ipynb).
+
+## Docker Deployment
+User is encouraged to use docker to launch the notebook, where the requirements are pre-installed in the container. However, the `config.env` file and `templates/` folder are bind-mount, allowing any changes made to be reflected immediately inside the container.
+
+Execute the following command in [/notebook](./notebook/) to launch the jupyter notebook.
+```
+docker compose up --build
+```
+
+## Binder Deployment
+Binder suggests [not to build with customized Dockerfile](https://mybinder.readthedocs.io/en/latest/tutorials/dockerfile.html#use-a-dockerfile-for-your-binder-repository) but use `requirements.txt` for [python package installation](https://mybinder.readthedocs.io/en/latest/examples/sample_repos.html#python-environment-with-a-requirements-txt) and `apt.txt` for [apt packages](https://mybinder.readthedocs.io/en/latest/examples/sample_repos.html#installing-packages-from-apt-repositories). 
+
+The notebook uses [`twa` python package](https://pypi.org/project/twa/), which requires `openjdk-17-jdk-headless` to be installed. This has been included in the pre-configured `apt.txt`. And the required python packages has been added to `requirements.txt` as well. 
+
+The notebook is currently **not deployed** on Binder because
+1. Binder reduced their computation capacity due to funding issue. Services deployed with Binder is not stable.
+2. Binder restricts access to all ports except 80 (HTTP) and 443 (HTTPS). The notebook fails to access the TWA stack because it is deployed on other ports and doesn't have HTTPS setup.
+
+
+> [!IMPORTANT]  
+> Binder restricts access to all ports except 80 (HTTP) and 443 (HTTPS). The TWA stack used by the notebook should have Nginx deployed on these ports.
+
+> [!IMPORTANT]  
+> Binder requires a repository link to build the notebook image, and both requirements.txt and apt.txt must be located in the root directory of the repository. To deploy the notebook using Binder, create a separate repository and copy the contents of the [notebook](./notebook/) folder into it.
+
+
 &nbsp;
 # Authors
 Jiying Chen (jc2341@cam.ac.uk), Jan 2025

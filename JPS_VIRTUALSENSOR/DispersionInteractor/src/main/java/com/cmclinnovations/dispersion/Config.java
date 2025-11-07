@@ -26,6 +26,8 @@ public class Config {
     public static final String WEATHER_LAYER_NAME = System.getenv("WEATHER_LAYER_NAME");
     public static final String NUMBER_OF_LAYERS = System.getenv("NUMBER_OF_LAYERS");
     public static final Long VIS_TIME_LIMIT = Long.parseLong(System.getenv("VIS_TIME_LIMIT"));
+    public static final String SCHEMA = System.getenv("SCHEMA") != null ? System.getenv("SCHEMA") : "public";
+    public static final String ONTOP_CONTAINER_NAME = System.getenv("ONTOP_CONTAINER_NAME") != null ? System.getenv("ONTOP_CONTAINER_NAME") : "ontop";
 
     private Config() {
         throw new IllegalStateException();

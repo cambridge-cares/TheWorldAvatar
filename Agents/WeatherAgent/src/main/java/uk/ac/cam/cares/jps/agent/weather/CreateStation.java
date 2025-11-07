@@ -82,7 +82,7 @@ public class CreateStation extends HttpServlet {
             if (!postgisClient.checkTableExists(Config.LAYERNAME, conn)) {
                 // add ontop mapping file
                 Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
-                OntopClient ontopClient = OntopClient.getInstance();
+                OntopClient ontopClient = OntopClient.getInstance(Config.ONTOP_CONTAINER_NAME);
                 ontopClient.updateOBDA(obda_file);
 
                 station = weatherClient.createStation(lat, lon, req.getParameter("name"));

@@ -5,6 +5,14 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+def localProperties = new Properties()
+def localPropertiesFile = new File(settingsDir, 'local.properties') // Use settingsDir to reference the root directory
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+def mapboxToken = localProperties.getProperty('MAPBOX_DOWNLOADS_TOKEN') ?: ""
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -21,7 +29,7 @@ dependencyResolutionManagement {
                 // This should always be `mapbox` (not your username).
                 username = "mapbox"
                 // Use the secret token you stored in gradle.properties as the password
-                password = providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN").get()
+                password = mapboxToken
             }
         }
     }
@@ -32,7 +40,7 @@ include ':app'
 include ':core'
 include ':core:utils'
 include ':feature'
-include ':core:ui'
+include ':core:ui-base'
 include ':core:network'
 include ':core:data'
 include ':core:model'
@@ -40,3 +48,4 @@ include ':feature:timeline'
 include ':core:login'
 include ':feature:user'
 include ':core:sensor'
+include ':core:ui-impl'

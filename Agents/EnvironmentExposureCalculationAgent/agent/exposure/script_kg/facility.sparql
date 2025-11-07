@@ -1,0 +1,56 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# NOTICE: this is template file for getting culture env feature. Should be redesigned after a proper ontology is done.
+
+SELECT ?iri ?name ?type ?geom ?type_label
+WHERE{ 
+  {
+    ?iri a ontocompany:DataCentre.
+    BIND(ontocompany:DataCentre AS ?type).
+    BIND("datacentre" AS ?type_label)
+  }
+  UNION
+  {
+    ?iri a ontochemplant:ChemicalPlant.
+    BIND(ontochemplant:ChemicalPlant AS ?type).
+    BIND("chemicalplant" AS ?type_label)
+  }
+  UNION
+  {
+    ?iri a ontocompany:SemiconductorPlant.
+    BIND(ontocompany:SemiconductorPlant AS ?type).
+    BIND("semiconductorplant" AS ?type_label)
+  }
+  UNION
+  {
+    ?iri a ontocompany:FoodPlant.
+    BIND(ontocompany:FoodPlant AS ?type).
+    BIND("foodplant" AS ?type_label)
+  }
+  UNION
+  {
+    ?iri a ontocompany:PrecisionEngineeringPlant.
+    BIND(ontocompany:PrecisionEngineeringPlant AS ?type).
+    BIND("precisionengineeringplant" AS ?type_label)
+  }
+  UNION
+  {
+    ?iri a ontocompany:PrintingPlant.
+    BIND(ontocompany:PrintingPlant AS ?type).
+    BIND("printingplant" AS ?type_label)
+  }
+  UNION
+  {
+    ?iri a ontocompany:PharmaceuticalPlant.
+    BIND(ontocompany:PharmaceuticalPlant AS ?type).
+    BIND("pharmaceuticalplant" AS ?type_label)
+  }
+  
+ 
+  ?iri rdfs:label ?name.
+  ?building ontobim:hasFacility ?iri; geo:hasGeometry/geo:asWKT ?geom. 
+}

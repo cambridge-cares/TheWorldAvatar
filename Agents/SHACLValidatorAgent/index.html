@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHACL Validation Form</title>
+</head>
+<body>
+    <h1>The World Avatar (TWA) SHACL Validator</h1>
+    <form action="http://localhost:3737/validate" method="POST" enctype="multipart/form-data">
+        <label for="dataGraph">Knowledge Graph (Turtle/RDF/OWL):</label><br>
+        <input type="file" id="dataGraph" name="dataGraph" accept=".ttl,.rdf,.owl" required><br><br>
+
+        <label for="shaclGraph">SHACL Shapes (Turtle):</label><br>
+        <input type="file" id="shaclGraph" name="shaclGraph" accept=".ttl" required><br><br>
+
+        <button type="submit">Validate</button>
+    </form>
+</body>
+</html>

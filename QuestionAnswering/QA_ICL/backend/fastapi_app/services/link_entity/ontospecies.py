@@ -6,7 +6,7 @@ from fastapi import Depends
 from rdflib import SKOS
 from constants.namespace import ONTOSPECIES
 from model.entity_linking.ontospecies import ElementLinkingArgs, SpeciesLinkingArgs
-from services.sparql import SparqlClient, get_ontospecies_endpoint
+from services.sparql import SparqlClient, get_ontospecies_endpoint, get_ontospecies_endpoint_v3
 from .base import LinkerManager
 
 
@@ -20,8 +20,10 @@ class OntospeciesLinkerManager(LinkerManager):
         "iupac_name": "IUPACName",
     }
 
-    def __init__(self, ontospecies_endpoint: str):
+    # TODO: ONTOSPECIES_V3 should be remove after merging
+    def __init__(self, ontospecies_endpoint: str, ontospecies_endpoint_v3: str):
         self.sparql_client = SparqlClient(ontospecies_endpoint)
+        self.sparql_client_v3 = SparqlClient(ontospecies_endpoint_v3)
 
     @property
     def cls2linker(self):
@@ -42,9 +44,13 @@ class OntospeciesLinkerManager(LinkerManager):
 SELECT ?Species
 WHERE {{
     ?Species a os:Species .
-    ?Species os:has{key}/os:value "{val}"
+    ?Species os:has{key} ?Identifier.
+    ?Identifier os:value | rdfs:label "{val}".
 }}"""
+            # TODO: ONTOSPECIES_V3 should be remove after merging
             _, bindings = self.sparql_client.querySelectThenFlatten(query)
+            _, bindings_v3 = self.sparql_client_v3.querySelectThenFlatten(query)
+            bindings += bindings_v3
             iris = [row["Species"] for row in bindings]
 
             if iris:
@@ -67,13 +73,17 @@ PREFIX os: <{os}>
 SELECT ?Species WHERE {{
     ?Species a os:Species .
     VALUES ?Text {{ {values} }}
-    ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|skos:altLabel) ?Text .
+    ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES|os:hasIdentifier)/os:value)|rdfs:label|skos:altLabel) ?Text .
 }}""".format(
             skos=SKOS,
             os=ONTOSPECIES,
             values=" ".join('"{val}"'.format(val=text) for text in texts),
         )
+
+        # TODO: ONTOSPECIES_V3 should be remove after merging
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        _, bindings_v3 = self.sparql_client_v3.querySelectThenFlatten(query)
+        bindings += bindings_v3
         iris = [row["Species"] for row in bindings]
         return iris
 
@@ -97,8 +107,11 @@ WHERE {{
         return iris
 
 
+# TODO: ONTOSPECIES_V3 should be remove after merging
 @cache
 def get_ontospecies_linkerManager(
-    ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)]
+    ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)],
+    ontospecies_endpoint_v3: Annotated[str, Depends(get_ontospecies_endpoint_v3)]    
 ):
-    return OntospeciesLinkerManager(ontospecies_endpoint=ontospecies_endpoint)
+    return OntospeciesLinkerManager(ontospecies_endpoint=ontospecies_endpoint, 
+                                    ontospecies_endpoint_v3=ontospecies_endpoint_v3)

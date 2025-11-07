@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
+import uk.ac.cam.cares.jps.timeline.model.trajectory.TrajectoryByDate;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
@@ -21,15 +22,16 @@ import uk.ac.cam.cares.jps.utils.RepositoryCallback;
  */
 @HiltViewModel
 public class NormalBottomSheetViewModel extends ViewModel {
-    private DatesWithTrajectoryRepository datesWithTrajectoryRepository;
-    private MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
-    private MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
+    private final DatesWithTrajectoryRepository datesWithTrajectoryRepository;
+    private final MutableLiveData<LocalDate> _selectedDate = new MutableLiveData<>(LocalDate.now());
+    private final MutableLiveData<Map<YearMonthCompositeKey, List<Integer>>> _datesWithTrajectory = new MutableLiveData<>();
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
     public LiveData<Map<YearMonthCompositeKey, List<Integer>>> datesWithTrajectory = _datesWithTrajectory;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
+     *
      * @param datesWithTrajectoryRepository
      */
     @Inject
@@ -53,14 +55,17 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     /**
      * Set the selected date
+     *
      * @param date selected date
      */
     public void setDate(LocalDate date) {
         _selectedDate.setValue(date);
     }
 
+
     /**
      * Get dates which has trajectory data from server
+     *
      * @param timezone current timezone
      */
     public void getDatesWithTrajectory(String timezone) {
@@ -79,9 +84,11 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     /**
      * Get the user selected date in millisecond
+     *
      * @return selected date in millisecond
      */
     public long getSelectedDateLong() {
         return selectedDate.getValue().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
+
 }

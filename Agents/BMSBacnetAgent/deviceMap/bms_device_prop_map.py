@@ -1,6 +1,6 @@
 from config import config
 #bms IRI to bacnet input ID
-from config.config import BMS_DEVICE_FILE, DOMAIN
+from config.config import DEVICE_NAME_MAPPING, DOMAIN
 import csv
 
 #{bms_IRI, bms file_name}
@@ -11,7 +11,7 @@ class bmsPropMap():
 
     def build(self):
         namedict = {}
-        with open(BMS_DEVICE_FILE) as csv_file:
+        with open(DEVICE_NAME_MAPPING) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             idx = 0
             for row in csv_reader:

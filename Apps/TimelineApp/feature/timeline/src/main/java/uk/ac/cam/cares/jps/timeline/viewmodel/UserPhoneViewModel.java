@@ -49,6 +49,7 @@ public class UserPhoneViewModel extends ViewModel {
 
     /**
      * get error of phone to user registration
+     *
      * @return Error LiveData
      */
     public LiveData<Throwable> getError() {
@@ -57,6 +58,7 @@ public class UserPhoneViewModel extends ViewModel {
 
     /**
      * Get session expired dialog
+     *
      * @param fragment Host fragment
      * @return session expired dialog
      */

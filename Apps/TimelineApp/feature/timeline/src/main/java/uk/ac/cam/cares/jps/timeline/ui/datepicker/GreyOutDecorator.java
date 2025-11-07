@@ -16,9 +16,11 @@ import java.util.Map;
 
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
 
+
 public class GreyOutDecorator extends DayViewDecorator {
     private ColorStateList greyColor;
-    private ColorStateList normalColor;
+    private ColorStateList highlightColor;
+
     private Map<YearMonthCompositeKey, List<Integer>> datesWithTrajectory = new HashMap<>();  // in local timezone
 
     @Override
@@ -27,15 +29,23 @@ public class GreyOutDecorator extends DayViewDecorator {
         int textColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOutline, GreyOutDecorator.class.getSimpleName());
         greyColor = ColorStateList.valueOf(textColor);
 
-        int normalTextColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnBackground, GreyOutDecorator.class.getSimpleName());
-        normalColor = ColorStateList.valueOf(normalTextColor);
+        int neonBlue = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, GreyOutDecorator.class.getSimpleName());
+        highlightColor = ColorStateList.valueOf(neonBlue);
     }
 
     @Nullable
     @Override
     public ColorStateList getTextColor(@NonNull Context context, int year, int month, int day, boolean valid, boolean selected) {
-        return shouldShowGreyOut(year, month, day, valid, selected) ? greyColor : normalColor;
+        java.util.Calendar today = java.util.Calendar.getInstance();
+
+        if (selected) {
+            int readableColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnPrimary, GreyOutDecorator.class.getSimpleName());
+            return ColorStateList.valueOf(readableColor);
+        }
+
+        return shouldShowGreyOut(year, month, day, valid, selected) ? greyColor : highlightColor;
     }
+
 
     @Override
     public int describeContents() {

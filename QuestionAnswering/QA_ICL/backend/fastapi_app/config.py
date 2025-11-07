@@ -17,6 +17,7 @@ class RedisSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     host: str
+    port:int = 6379
 
 
 class TextEmbeddingSettingsTriton(BaseModel):
@@ -61,6 +62,9 @@ class ChemistryEndpointsSettings(BaseModel):
     ontocompchem: str
     ontozeolite: str
     ontomops: str
+    
+    # TODO: ONTOSPECIES_V3 should be remove after merging
+    ontospecies_v3: str
 
 
 class SingaporeEndpointsSettings(BaseModel):

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/back"
+        app:title="Frequently Asked Questions"
+        app:titleCentered="true"
+        app:navigationIconTint="?attr/colorOnSurface" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:padding="20dp"
+        android:clipToPadding="false"
+        android:background="#FAFAFA">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_faq"
+                android:contentDescription="FAQ icon"
+                android:layout_marginTop="12dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/faq_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/faq_description"
+                android:textSize="15sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp" />
+
+            <LinearLayout
+                android:id="@+id/faq1_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq1_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faw_no_permission_grant_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq1_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faw_no_permission_grant_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq2_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq2_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_auto_delete_data_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq2_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_auto_delete_data_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq5_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq5_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_data_deletion_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq5_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_data_deletion_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq3_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq3_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_data_storage_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq3_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_data_storage_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq4_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq4_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_insights_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq4_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faw_insights_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq6_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq6_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_force_stop_app_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq6_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_force_stop_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq7_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq7_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_missing_route_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq7_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_missing_route_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq8_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/faq8_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_location_tracking_working_principle_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111111" />
+
+                <TextView
+                    android:id="@+id/faq8_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_location_tracking_working_principle_description"
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

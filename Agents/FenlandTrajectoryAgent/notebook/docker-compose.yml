@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  jupyter:
+    build:
+      context: .         
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"      
+    volumes:
+      - ./environment_exposure.ipynb:/home/jovyan/work/environment_exposure.ipynb
+      - ./templates:/opt/app/templates
+      - ./config.env:/opt/app/config.env
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - CONFIG_DIR=/opt/app/config.env
+    container_name: jupyter-env-exposure

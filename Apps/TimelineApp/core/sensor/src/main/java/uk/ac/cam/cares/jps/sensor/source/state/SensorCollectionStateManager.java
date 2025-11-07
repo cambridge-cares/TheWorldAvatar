@@ -10,10 +10,8 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
+import uk.ac.cam.cares.jps.utils.Utils;
 
 /**
  * A class that manages the sensor collection states. It is considered as a data source level component.
@@ -56,7 +55,7 @@ public class SensorCollectionStateManager {
      * @param userId User id of the current logged in user
      */
     public void initSensorCollectionState(String userId) {
-        String sharedPrefFileName = getHashedFileName(userId);
+        String sharedPrefFileName = Utils.getHashedFileName(userId);
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
 
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
@@ -119,9 +118,9 @@ public class SensorCollectionStateManager {
         synchronized (sensorCollectionState.get()) {
             sensorCollectionState.get().setTaskId(taskId);
 
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(sensorCollectionState.get().getUserId()));
+            SharedPreferences sharedPreferences = getSharedPreferences(Utils.getHashedFileName(sensorCollectionState.get().getUserId()));
             sharedPreferences.edit()
-                    .putString("task_id", taskId)
+                    .putString(TASK_ID_KEY, taskId)
                     .apply();
         }
     }
@@ -171,7 +170,7 @@ public class SensorCollectionStateManager {
         synchronized (sensorCollectionState.get()) {
             sensorCollectionState.get().setRecordingState(isRecording);
 
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(sensorCollectionState.get().getUserId()));
+            SharedPreferences sharedPreferences = getSharedPreferences(Utils.getHashedFileName(sensorCollectionState.get().getUserId()));
             sharedPreferences.edit()
                     .putBoolean(RECORDING_STATE_KEY, isRecording)
                     .apply();
@@ -199,7 +198,7 @@ public class SensorCollectionStateManager {
         sensorCollectionState.set(null);
         LOGGER.info("sensor collection state is set to null");
 
-        SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(userId));
+        SharedPreferences sharedPreferences = getSharedPreferences(Utils.getHashedFileName(userId));
         sharedPreferences.edit()
                 .putBoolean(RECORDING_STATE_KEY, false)
                 .apply();
@@ -256,28 +255,6 @@ public class SensorCollectionStateManager {
     }
 
     /**
-     * Get the hashed file name with the provided user Id
-     * @param userId user id
-     * @return hashed file name
-     */
-    private String getHashedFileName(String userId) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(userId.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
      * Get the hashed file name with the current status's user id
      * @return hashed file name
      */
@@ -286,7 +263,7 @@ public class SensorCollectionStateManager {
             throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
         }
 
-        return getHashedFileName(sensorCollectionState.get().getUserId());
+        return Utils.getHashedFileName(sensorCollectionState.get().getUserId());
     }
 
     public List<SensorType> getSelectedSensors() throws SensorCollectionStateException {
@@ -304,7 +281,7 @@ public class SensorCollectionStateManager {
             sensorCollectionState.get().setSelectedSensors(sensors);
 
             // Save to SharedPreferences
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(sensorCollectionState.get().getUserId()));
+            SharedPreferences sharedPreferences = getSharedPreferences(Utils.getHashedFileName(sensorCollectionState.get().getUserId()));
             Set<String> sensorNames = new HashSet<>();
             for (SensorType sensor : sensors) {
                 sensorNames.add(sensor.name());

@@ -20,8 +20,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
+import android.database.Cursor;
 
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.ActivityDataDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GravityDao;
@@ -101,8 +104,8 @@ public class SensorLocalSource {
      * recognition service class.
      *
      * @param activityType the type of activity detected with the highest confidence level
-     * @param confidence value 0-100 denoting how likely the activity is being performed
-     * @param timestamp time-series of when the activity was first detected
+     * @param confidence   value 0-100 denoting how likely the activity is being performed
+     * @param timestamp    time-series of when the activity was first detected
      */
     public void saveActivityData(String activityType, int confidence, long timestamp) {
         ActivityData activityData = new ActivityData(activityType, confidence, timestamp);
@@ -183,7 +186,7 @@ public class SensorLocalSource {
             });
 
             Log.e("local source", "unsent data inserted");
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e("local source", "error inserting unsent data", e);
         }
     }
@@ -193,8 +196,39 @@ public class SensorLocalSource {
      *
      * @return a list of {@link UnsentData} objects
      */
-    public List<UnsentData> retrieveUnsentData() {
-        return unsentDataDao.getAllUnsentData();
+    public List<UnsentData> retrieveUnsentData(int limit, int offset) {
+        Cursor cursor = unsentDataDao.getAllUnsentData(limit, offset);
+        List<UnsentData> unsentDataList = new ArrayList<>();
+
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    // Check bounds before accessing
+                    if (cursor.getPosition() < cursor.getCount()) {
+                        UnsentData data = mapCursorToUnsentData(cursor);
+                        unsentDataList.add(data);
+                    }
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return unsentDataList;
+    }
+
+    private UnsentData mapCursorToUnsentData(Cursor cursor) {
+        UnsentData unsentData = new UnsentData();
+
+        unsentData.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+        unsentData.data = cursor.getString(cursor.getColumnIndexOrThrow("data"));
+        unsentData.deviceId = cursor.getString(cursor.getColumnIndexOrThrow("device_id"));
+        unsentData.timestamp = cursor.getLong(cursor.getColumnIndexOrThrow("timestamp"));
+        unsentData.dataHash = cursor.getString(cursor.getColumnIndexOrThrow("dataHash"));
+
+        return unsentData;
     }
 
     public void deleteUnsentData(UnsentData unsentData) {
@@ -202,8 +236,18 @@ public class SensorLocalSource {
             executor.execute(() -> {
                 unsentDataDao.deleteById(unsentData.id);
             });
-            Log.e("local source", "unsent data deleted");
-        } catch (Exception e){
+            Log.i("local source", "unsent data deleted");
+        } catch (Exception e) {
+            Log.e("local source", "error deleting unsent data", e);
+        }
+    }
+
+    public void deleteUnsentData(List<UnsentData> unsentDataList) {
+        try {
+            executor.execute(() -> unsentDataDao.deleteByIds(unsentDataList.stream().map(d -> d.id)
+                    .collect(Collectors.toList())));
+            Log.i("local source", "unsent data deleted");
+        } catch (Exception e) {
             Log.e("local source", "error deleting unsent data", e);
         }
     }
@@ -233,8 +277,8 @@ public class SensorLocalSource {
      * Also, marks the retrieved data's timestamps for later marking as uploaded.
      *
      * @param selectedSensors A list of {@link SensorType} representing the sensors for which to retrieve data.
-     * @param limit The maximum number of records to retrieve for each sensor.
-     * @param offset The starting point for retrieving records (for pagination).
+     * @param limit           The maximum number of records to retrieve for each sensor.
+     * @param offset          The starting point for retrieving records (for pagination).
      * @return A {@link JSONArray} containing the unsent sensor data for all specified sensors.
      */
     public JSONArray retrieveUnUploadedSensorData(List<SensorType> selectedSensors, int limit, int offset) {
@@ -306,7 +350,6 @@ public class SensorLocalSource {
     }
 
 
-
     /**
      * Extracts the timestamps from a list of sensor data objects.
      *
@@ -324,6 +367,7 @@ public class SensorLocalSource {
 
     /**
      * Checks if the given data already exists in the UnsentData table.
+     *
      * @param dataHash hash code that identifies the data
      * @return True if data exists, false otherwise.
      */

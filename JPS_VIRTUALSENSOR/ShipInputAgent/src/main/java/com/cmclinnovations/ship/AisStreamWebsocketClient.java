@@ -138,7 +138,7 @@ public class AisStreamWebsocketClient extends WebSocketClient {
 
             thread = new Thread(() -> {
                 try {
-                    DataUploader.uploadShips(ships, queryClient, ShipDataSource.JSON);
+                    DataUploader.uploadShips(ships, queryClient, ShipDataSource.JSON, null);
                 } catch (IOException e) {
                     LOGGER.warn("Error in uploading ship data");
                     LOGGER.warn(e.getMessage());

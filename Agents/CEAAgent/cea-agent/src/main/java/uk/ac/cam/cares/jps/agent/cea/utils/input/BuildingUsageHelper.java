@@ -2,62 +2,49 @@ package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
-import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
-import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class BuildingUsageHelper
-{
+public class BuildingUsageHelper {
+    
     /**
-     * Retrieves the usages of a building and each usage's corresponding weight, and returns the usages and their weight as a map
-     * @param uriString building IRI
-     * @param endpoint SPARQL endpoint
+     * Process query result of building usage
+     * 
+     * @param queryResultArray query result
      * @return the usages and their corresponding weighting
      */
-    public static Map<String, Double> getBuildingUsages(String uriString, String endpoint) {
+    private static Map<String, Double> processBuildingUsageData(JSONArray queryResultArray) {
         Map<String, Double> result = new HashMap<>();
         Map<String, Double> temp = new HashMap<>();
         String usage;
-        Query query = getBuildingUsagesQuery(uriString);
-
-        JSONArray queryResultArray;
-
-        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(endpoint);
-
-        try {
-            queryResultArray = remoteStoreClient.executeQuery(query.toString());
-        }
-        catch (Exception e) {
-            System.out.println("No building usage retrieved, agent will run CEA with CEA's default building usage.");
-            queryResultArray = new JSONArray();
-        }
-
-        // CEA only support up to three usages for each building
-        // convert all usages to CEA defined usages first
-
         if (queryResultArray.isEmpty()) {
             usage = toCEAConvention("default");
             result.put(usage, 1.00);
-        }
-        else if (queryResultArray.length() == 1){
-            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString().split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
+        } else if (queryResultArray.length() == 1) {
+            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString()
+                    .split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0]
+                    .toUpperCase();
             usage = toCEAConvention(usage);
             result.put(usage, 1.00);
-        }
-        else {
+        } else {
             for (int i = 0; i < queryResultArray.length(); i++) {
-                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString().split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
+                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString()
+                        .split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0]
+                        .toUpperCase();
                 usage = toCEAConvention(usage);
 
                 if (temp.containsKey(usage)) {
@@ -77,7 +64,7 @@ public class BuildingUsageHelper
             // normalise the usage weights in result so that they sum up to 1
             Double sum = 0.00;
 
-            for (Double val : result.values()){
+            for (Double val : result.values()) {
                 sum += val;
             }
 
@@ -90,81 +77,129 @@ public class BuildingUsageHelper
     }
 
     /**
-     * Builds a SPARQL query for a specific URI to retrieve the building usages and the building usage share with OntoBuiltEnv concepts
-     * @param uriString building IRI
+     * Retrieves the usages of a list of building and each usage's corresponding weight, and
+     * returns the usages and their weight as a map
+     * 
+     * @param uriStringList list of building IRI
+     * @param endpoint  SPARQL endpoint
+     * @return the usages and their corresponding weighting
+     */
+
+    public static List<Map<String, Double>> bulkGetBuildingUsages(List<String> uriStringList, String endpoint) {
+
+        Query query = bulkGetBuildingUsageQuery(uriStringList);
+
+        JSONArray queryResultArray;
+
+        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(endpoint);
+
+        try {
+            queryResultArray = remoteStoreClient.executeQuery(query.toString());
+        } catch (Exception e) {
+            System.out.println("No building usage retrieved, agent will run CEA with CEA's default building usage.");
+            queryResultArray = new JSONArray();
+        }
+
+        // create HashMap to group results per building IRI
+
+        Map<String, JSONArray> queryMap = new HashMap<>();
+
+        // Traverse JSONArray and group by building IRI
+        for (int i = 0; i < queryResultArray.length(); i++) {
+            JSONObject row = queryResultArray.getJSONObject(i);
+            String buildingIRI = row.getString("building");
+            queryMap.computeIfAbsent(buildingIRI, k -> new JSONArray()).put(row);
+        }
+
+        List<Map<String, Double>> listBuildingUsageMap = new ArrayList<>();
+
+        for (String uri : uriStringList) {
+            JSONArray resultJSONArray = queryMap.getOrDefault(uri, new JSONArray());
+            listBuildingUsageMap.add(processBuildingUsageData(resultJSONArray));
+        }
+
+        return listBuildingUsageMap;
+
+    }
+
+    /**
+     * Builds a SPARQL query for a list of URI to retrieve the building usages and
+     * the building usage share with OntoBuiltEnv concepts
+     * 
+     * @param uriStringList list of building IRI
      * @return returns a query string
      */
-    private static Query getBuildingUsagesQuery(String uriString) {
+    private static Query bulkGetBuildingUsageQuery(List<String> uriStringList) {
         WhereBuilder wb = new WhereBuilder();
         SelectBuilder sb = new SelectBuilder();
-
         wb.addPrefix("ontoBuiltEnv", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addWhere("?building", "ontoBuiltEnv:hasPropertyUsage", "?usage")
                 .addWhere("?usage", "rdf:type", "?BuildingUsage")
                 .addOptional("?usage", "ontoBuiltEnv:hasUsageShare", "?UsageShare");
 
-        sb.addVar("?BuildingUsage").addVar("?UsageShare")
-                .addWhere(wb)
-                .addOrderBy("UsageShare", Order.DESCENDING);
-
-        sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
-
+        sb.addVar("?BuildingUsage").addVar("?UsageShare").addVar("?building")
+                .addWhere(wb);
+        // Add VALUES clause for building IRIs
+        for (String uri : uriStringList) {
+            sb.addValueVar("?building", NodeFactory.createURI(uri));
+        }
         return sb.build();
     }
 
     /**
      * Converts OntoBuiltEnv building usage type to convention used by CEA
+     * 
      * @param usage OntoBuiltEnv building usage type
      * @return building usage per CEA convention
      */
-    public static String toCEAConvention(String usage){
-        switch(usage){
-            case("DOMESTIC"):
+    public static String toCEAConvention(String usage) {
+        switch (usage) {
+            case ("DOMESTIC"):
                 return "MULTI_RES";
-            case("SINGLERESIDENTIAL"):
+            case ("SINGLERESIDENTIAL"):
                 return "SINGLE_RES";
-            case("MULTIRESIDENTIAL"):
+            case ("MULTIRESIDENTIAL"):
                 return "MULTI_RES";
-            case("EMERGENCYSERVICE"):
+            case ("EMERGENCYSERVICE"):
                 return "HOSPITAL";
-            case("FIRESTATION"):
+            case ("FIRESTATION"):
                 return "HOSPITAL";
-            case("POLICESTATION"):
+            case ("POLICESTATION"):
                 return "HOSPITAL";
-            case("MEDICALCARE"):
+            case ("MEDICALCARE"):
                 return "HOSPITAL";
-            case("HOSPITAL"):
+            case ("HOSPITAL"):
                 return usage;
-            case("CLINIC"):
+            case ("CLINIC"):
                 return "HOSPITAL";
-            case("EDUCATION"):
+            case ("EDUCATION"):
                 return "UNIVERSITY";
-            case("SCHOOL"):
+            case ("SCHOOL"):
                 return usage;
-            case("UNIVERSITYFACILITY"):
+            case ("UNIVERSITYFACILITY"):
                 return "UNIVERSITY";
-            case("OFFICE"):
+            case ("OFFICE"):
                 return usage;
-            case("RETAILESTABLISHMENT"):
+            case ("RETAILESTABLISHMENT"):
                 return "RETAIL";
-            case("RELIGIOUSFACILITY"):
+            case ("RELIGIOUSFACILITY"):
                 return "MUSEUM";
-            case("INDUSTRIALFACILITY"):
+            case ("INDUSTRIALFACILITY"):
                 return "INDUSTRIAL";
-            case("EATINGESTABLISHMENT"):
+            case ("EATINGESTABLISHMENT"):
                 return "RESTAURANT";
-            case("DRINKINGESTABLISHMENT"):
+            case ("DRINKINGESTABLISHMENT"):
                 return "RESTAURANT";
-            case("HOTEL"):
+            case ("HOTEL"):
                 return usage;
-            case("SPORTSFACILITY"):
+            case ("SPORTSFACILITY"):
                 return "GYM";
-            case("CULTURALFACILITY"):
+            case ("CULTURALFACILITY"):
                 return "MUSEUM";
-            case("TRANSPORTFACILITY"):
+            case ("TRANSPORTFACILITY"):
                 return "INDUSTRIAL";
-            case("NON-DOMESTIC"):
+            case ("NON-DOMESTIC"):
                 return "INDUSTRIAL";
             default:
                 return "MULTI_RES";

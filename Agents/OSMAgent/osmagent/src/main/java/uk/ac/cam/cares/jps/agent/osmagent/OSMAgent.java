@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.osmagent;
 
-import com.bigdata.bop.rdf.aggregate.COUNT;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
@@ -141,7 +140,7 @@ public class OSMAgent extends JPSAgent {
             virtualCount.setName("building_usage_count");
             virtualCount.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
             geoCount.setVirtualTable(virtualCount);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "building_usage_count" ,geoCount);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "building_usage_count" ,geoCount);
 
 
             UpdatedGSVirtualTableEncoder virtualArea = new UpdatedGSVirtualTableEncoder();
@@ -151,7 +150,7 @@ public class OSMAgent extends JPSAgent {
             virtualArea.setName("building_usage_area");
             virtualArea.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
             geoArea.setVirtualTable(virtualArea);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "building_usage_area" ,geoArea);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "building_usage_area" ,geoArea);
 
             try {
                 OntopClient ontopClient = OntopClient.getInstance();

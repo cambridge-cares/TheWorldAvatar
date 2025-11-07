@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+    <string name="done">Done</string>
+    <string name="not_yet_implemented">This function has not yet been implemented.</string>
+    <string name="ok">OK</string>
+
+    <string name="tooltip_user_menu_title">User Menu</string>
+    <string name="tooltip_user_menu_message">Tap here to access your account settings and sensor preferences</string>
+    <string name="tooltip_quick_start_title">Quick Start Recording</string>
+    <string name="tooltip_quick_start_message">Instantly toggle all sensors.\nWant control? Customize your selection in Sensor Settings.</string>
+    <string name="tooltip_journey_title">Track your journey here</string>
+    <string name="tooltip_journey_message">Swipe up or down to see where you’ve been and how you got there.</string>
+    <string name="tooltip_about_title">Need this info again?</string>
+    <string name="tooltip_about_message">Tap the menu and select \'About\'.</string>
+</resources>

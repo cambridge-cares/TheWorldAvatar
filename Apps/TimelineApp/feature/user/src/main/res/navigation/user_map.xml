@@ -3,44 +3,116 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/user_map"
-    app:startDestination="@id/login_fragment">
+    app:startDestination="@id/onboarding_fragment">
 
     <fragment
-        android:id="@+id/login_fragment"
-        android:name="uk.ac.cam.cares.jps.user.LoginFragment"
-        tools:layout="@layout/fragment_login">
-        <deepLink
-            app:uri="@string/login_fragment_link">
-        </deepLink>
-    </fragment>
-
-    <fragment
-        android:id="@+id/user_fragment"
-        android:name="uk.ac.cam.cares.jps.user.UserFragment"
-        tools:layout="@layout/fragment_user_page">
-        <deepLink
-            app:uri="@string/user_fragment_link">
-        </deepLink>
-        <action
-            android:id="@+id/action_user_fragment_to_account_setting"
-            app:destination="@id/account_setting" />
-        <action
-            android:id="@+id/action_user_fragment_to_sensor_setting"
-            app:destination="@id/sensor_setting" />
+        android:id="@+id/onboarding_fragment"
+        android:name="uk.ac.cam.cares.jps.user.landing.OnboardingFragment"
+        tools:layout="@layout/fragment_onboarding">
+        <deepLink app:uri="@string/onboarding_fragment_link" />
     </fragment>
 
     <fragment
         android:id="@+id/account_setting"
-        android:name="uk.ac.cam.cares.jps.user.AccountSettingFragment"
+        android:name="uk.ac.cam.cares.jps.user.setting.AccountSettingFragment"
         tools:layout="@layout/fragment_account_setting">
+        <deepLink app:uri="@string/account_setting_link"/>
     </fragment>
 
     <fragment
         android:id="@+id/sensor_setting"
-        android:name="uk.ac.cam.cares.jps.user.SensorSettingFragment"
+        android:name="uk.ac.cam.cares.jps.user.setting.sensor.SensorSettingFragment"
         tools:layout="@layout/fragment_sensor_setting">
-        <deepLink
-            app:uri="@string/sensor_fragment_link">
-        </deepLink>
+        <deepLink app:uri="@string/sensor_fragment_link" />
     </fragment>
+
+    <fragment
+        android:id="@+id/help_page"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpPageFragment"
+        tools:layout="@layout/fragment_help">
+        <deepLink app:uri="@string/help_fragment_link" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/help_about_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpAboutFragment"
+        tools:layout="@layout/help_about" />
+
+    <fragment
+        android:id="@+id/timeline_setting"
+        android:name="uk.ac.cam.cares.jps.user.setting.TimelineSettingFragment"
+        tools:layout="@layout/fragment_timeline_setting">
+        <deepLink app:uri="@string/timeline_setting_link" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/help_recording_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpRecordingFragment"
+        tools:layout="@layout/help_recording" />
+
+    <fragment
+        android:id="@+id/help_sensor_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpSensorFragment"
+        tools:layout="@layout/help_sensor_documentation" />
+
+    <fragment
+        android:id="@+id/help_faq_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpFaqFragment"
+        tools:layout="@layout/help_faq" />
+
+    <fragment
+        android:id="@+id/help_map_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpMapFragment"
+        tools:layout="@layout/help_map_interactions" />
+
+    <fragment
+        android:id="@+id/help_features_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpFeaturesFragment"
+        tools:layout="@layout/help_helpful_features" />
+
+    <fragment
+        android:id="@+id/help_getting_started_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpGettingStartedFragment"
+        tools:layout="@layout/help_getting_started" />
+
+    <fragment
+        android:id="@+id/help_location_fragment"
+        android:name="uk.ac.cam.cares.jps.user.help.HelpLocationFragment"
+        tools:layout="@layout/help_location_history" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpLocationFragment"
+        app:destination="@id/help_location_fragment" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpFeaturesFragment"
+        app:destination="@id/help_features_fragment" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpGettingStartedFragment"
+        app:destination="@id/help_getting_started_fragment" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpFaqFragment"
+        app:destination="@id/help_faq_fragment" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpRecordingFragment"
+        app:destination="@id/help_recording_fragment" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpMapFragment"
+        app:destination="@id/help_map_fragment" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpSensorFragment"
+        app:destination="@id/help_sensor_fragment" />
+
+    <action android:id="@+id/action_global_account_setting"
+        app:destination="@id/account_setting" />
+
+    <action android:id="@+id/action_global_sensor_setting"
+        app:destination="@id/sensor_setting" />
+
+    <action android:id="@+id/action_global_help_page"
+        app:destination="@id/help_page" />
+
+    <action android:id="@+id/action_global_timeline_setting"
+        app:destination="@id/timeline_setting" />
+
+    <action android:id="@+id/action_helpPageFragment_to_helpAboutFragment"
+        app:destination="@id/help_about_fragment" />
 </navigation>

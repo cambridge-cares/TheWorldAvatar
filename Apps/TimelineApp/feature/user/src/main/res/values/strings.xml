@@ -41,6 +41,197 @@
     <string name="sensor_description_microphone">Captures sound levels.</string>
     <string name="sensor_description_activity">Detects user activity.</string>
     <string name="sensor_description">Sensor Description</string>
+    <string name="help">Help</string>
+    <string name="help_topic_about">About</string>
+    <string name="help_topic_getting_started">Getting Started</string>
+    <string name="help_topic_map">Map Interactions</string>
+    <string name="help_topic_sensor_documentation">Sensor Documentation</string>
+    <string name="help_topic_helpful_features">Helpful Features</string>
+    <string name="help_topic_location_history">Track Where You\'ve Been</string>
+    <string name="help_topic_recording">How to Start/Stop recording</string>
+    <string name="help_topic_faq">FAQ</string>
     <string name="toggle_all">Toggle All</string>
     <string name="toggle_off">Toggle Off</string>
+    <string name="help_quick_start_html">
+    &lt;b&gt;Via Quick Start&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
+    1. Tap the green play button on the main screen.&lt;br/&gt;
+    2. Grant permission when prompted (only once).&lt;br/&gt;
+    3. The button turns red and a popup says "Recording Started".&lt;br/&gt;
+    4. Your journey is now being logged automatically.&lt;br/&gt;
+    5. To stop, tap the red button again. It will turn green.
+    </string>
+
+    <string name="help_sensor_settings_html">
+    &lt;b&gt;Via Sensor Settings&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
+    1. Tap the profile icon > Sensor Settings.&lt;br/&gt;
+    2. Toggle the sensors you want to use.&lt;br/&gt;
+    3. Check the descriptions under each sensor to understand what it tracks.&lt;br/&gt;
+    4. Tap "Start Recording" at the top.&lt;br/&gt;
+    5. Grant permissions only for selected sensors.&lt;br/&gt;
+    6. You may leave the page. It keeps recording.&lt;br/&gt;
+    7. To stop, return and tap "Stop Recording".
+    </string>
+    <string name="map_icon_legend_title">What do the icons and colors mean?</string>
+    <string name="map_starting_position_description">When the app starts, the map auto-focuses on your most current location. Tap the positioning button to recenter anytime.</string>
+    <string name="starting_position_title">• Starting Position</string>
+    <string name="map_navigation_description1">• Pinch to zoom in or out.\n• Drag with one finger to move around the map.\n• Double tap to quickly zoom in.</string>
+    <string name="map_navigation_description2">Tap on a session pin to view its details. Colored lines reflect session activity, and timestamps help track when events occurred.</string>
+    <string name="nmap_navigation_title">• Map Navigation</string>
+    <string name="map_usage_title">How do I use the map?</string>
+    <string name="map_overview_description">The map displays your movement as colored trajectory lines. Markers indicate start and end points, and a blue dot shows your current location.</string>
+    <string name="map_overview_title">What does the map show?</string>
+    <string name="map_icon">Map icon</string>
+    <string name="map_title">Map</string>
+    <string name="map_description">Learn how to explore and interact with your timeline map.</string>
+    <string name="map_tip">Tip: Sessions can also be accessed from the bottom timeline bar on the home screen.</string>
+    <string name="map_icon_legend_description">Colored paths: your recorded routes with different transport modes.\nTap it to view more info.</string>
+    <string name="map_quick_summary_title">Quick Summary</string>
+    <string name="map_quick_summary_description">• Travel mode icons show how you moved (e.g., walking, bus).\n• Total time per transport is displayed beside its icon.\n• Timestamps and location names show the order and duration of stops.</string>
+    <string name="features_tips">Need more help? Tap the Help icon in the top-right menu to contact support or revisit tutorials.</string>
+    <string name="features_summary_description">We\'re working on a feature that gives you weekly insights and trends. Stay tuned via the Help or About page for updates.</string>
+    <string name="features_summary_title">Coming Soon: Smart Summaries</string>
+    <string name="features_tooltips_description"><![CDATA[New to Timeline? Don’t worry — tooltips will guide you through key features the first time you use the app. These popups explain buttons, panels, and map tools.\n\nYou can dismiss tips anytime, and even revisit them later through Help > About .]]></string>
+    <string name="features_tooltips_title">Built-in Help Tooltips</string>
+    <string name="features_auto_start_description"><![CDATA[When enabled, this feature automatically starts sensor recording the moment you open the app — no need to tap any buttons. \n\nYou can toggle this in Timeline Settings > Auto-Start Recording.\n\nThis is ideal if you want seamless, passive tracking without manual input.]]></string>
+    <string name="features_auto_start_title">Auto-Start Recording</string>
+    <string name="features_data_privacy_description"><![CDATA[Your data stays on your device unless you choose to export it. You can delete sessions anytime under Timeline Settings > Location History.\n\n• Set auto-delete timeframes\n• Manually clear sessions by date\nYou\'re always in control.]]></string>
+    <string name="features_data_privacy_title">Data Privacy Controls</string>
+    <string name="features_sensor_preference_description">While the app works out of the box, you can fine-tune it to suit your needs. Go to Sensor Settings to:\n\n• Enable/disable specific sensors\n• Adjust sampling frequency\n• Reduce battery usage by disabling unused sensors\n\nThis ensures you\'re collecting only what matters to you.</string>
+    <string name="features_sensor_preference_title">Customize Sensor Preferences</string>
+    <string name="features_session_history_description">Your movement history is grouped by date and session in the bottom drawer of the main screen. Each session shows:\n\n• Where and when you moved\n• How long you stayed in one place\n• A visual trajectory line connecting your points\n\nThis helps you recall where you\'ve been.</string>
+    <string name="features_senssion_history_title">View Past Sessions at a Glance</string>
+    <string name="features_overview_description">Timeline offers more than just basic tracking. It’s designed to help you make sense of your movements, reflect on your journeys, and manage your data easily.</string>
+    <string name="features_overview_title">Discover helpful features</string>
+    <string name="faq_title">FAQ</string>
+    <string name="faq_description">Have questions? Here are some helpful answers.</string>
+    <string name="faw_no_permission_grant_title">What happens if I don’t grant permi ssion for some sensors?</string>
+    <string name="faw_no_permission_grant_description">If you deny permission for a sensor, that sensor will be disabled during recording. Other enabled sensors will continue functioning. You can always enable them later in Sensor Settings.</string>
+    <string name="faq_auto_delete_data_title">Will my data be automatical ly deleted?</string>
+    <string name="faq_auto_delete_data_description">No. All session data stays on your device and the cloud until you manually delete it via the Timeline Settings page.</string>
+    <string name="faq_data_storage_title">How is my recording data stored?</string>
+    <string name="faq_data_storage_description">Your data is stored locally and in the cloud, session by session. It includes movement data, time intervals, and optional sensor input.</string>
+    <string name="faq_insights_title">What insights can I gain from using this app?</string>
+    <string name="faw_insights_description">You’ll see where you’ve been, how you traveled, how long you stayed, and how often you return to places. It’s a helpful way to reflect on routines, mobility, and travel time.</string>
+    <string name="faq_data_deletion_title">How do I delete my data manually?</string>
+    <string name="faq_data_deletion_description"><![CDATA[Navigate to the User Menu > Timeline Settings. There, you’ll find options to delete specific sessions or clear all history.]]></string>
+    <string name="faq_force_stop_app_title">What happens if I force stop the app while recording?</string>
+    <string name="faq_force_stop_description">If the app is force stopped, recording will still running in background until you stop it manually.</string>
+    <string name="faq_missing_route_title">Why is the map not showing my full route?</string>
+    <string name="faq_missing_route_description">This may be due to GPS signal issues, battery optimization settings, or missing permissions. Make sure the app has location access and is not being restricted in the background.</string>
+    <string name="faq_location_tracking_working_principle_title">How does location tracking work?</string>
+    <string name="faq_location_tracking_working_principle_description">Timeline collects your GPS location periodically and logs time spent at places.</string>
+    <string name="twa_icon">Timeline icon</string>
+    <string name="about_title">About Timeline</string>
+    <string name="about_description">Understand what Timeline does and how it helps you track movement.</string>
+    <string name="about_builtin_help_title">Need help using Timeline?</string>
+    <string name="about_builtin_help_description">New? Learn how timeline works.</string>
+    <string name="about_builtin_help_button">Show me how this works</string>
+    <string name="about_what_is_timeline_title">What is Timeline?</string>
+    <string name="about_what_is_timeline_title_description">Timeline is a smart location tracker that automatically logs where you’ve been, when, and for how long.</string>
+    <string name="about_timeline_usage_title">What is it used for?</string>
+    <string name="about_usage_description">Great for fieldwork, travel logs, or daily tracking. Your data stays on your device unless you choose to share it.</string>
+    <string name="about_timeline_title">Where can I see my timeline?</string>
+    <string name="about_timeline_description">The timeline history can be viewed from the map on the main page. More details for individual trip can be found from the bottom sheet or by clicking the trajectory on map.</string>
+    <string name="timeline_title">Track Where You’ve Been</string>
+    <string name="timeline_description">Timeline helps you reflect on your movement patterns by storing daily history with detailed trajectories.</string>
+    <string name="timeline_datepicker_title">Browse by Day</string>
+    <string name="timeline_datepicker_description">Swipe left or right on the horizontal date bar above the map to select a different day. Each date loads its own set of tracked data.</string>
+    <string name="timeline_trajectory_title">See Your Trajectory</string>
+    <string name="timeline_trajectory_description">Your movements are displayed as a line connecting GPS points on the map. You can zoom in or tap on parts of the path for more context.</string>
+    <string name="timeline_session_summary_title">Open the Summary View</string>
+    <string name="timeline_session_summary_description">Swipe up the bottom sheet to view summaries of recorded sessions, start and end times, and distances travelled.</string>
+    <string name="timeline_tips">Need more help? Tap the Help icon in the top-right menu to revisit guides or contact support.</string>
+    <string name="timeline_datepicker_image">[Datepicker image]</string>
+    <string name="timeline_session_summary_image">[Session summary image]</string>
+    <string name="timeline_trajectory_image">[Trajectory image]]</string>
+    <string name="recording_title">Recording</string>
+    <string name="recording_description">Track your movement using the recording button on the main screen.</string>
+    <string name="recording_overview_title">What does \'recording\' mean?</string>
+    <string name="recording_overview_description">Recording activates your device’s sensors and location to track your movement over time. These are saved as sessions you can view later.</string>
+    <string name="recording_on_off">How to start/stop recording</string>
+    <string name="recording_quick_start_image">Screenshot of the recording button on the main screen</string>
+    <string name="recording_setting_image">Screenshot of the sensor settings recording screen</string>
+    <string name="recording_after_data_collection_title">What happens after?</string>
+    <string name="recording_after_data_collection_description">Your recorded data appears in the timeline bar and map view. You can explore each session, view trajectories, and check time intervals.</string>
+    <string name="recording_tips">Tip: Once recording starts, you can freely navigate the app or even lock your screen. Data will continue to log in the background until stopped.</string>
+    <string name="sensor_permission_title"><![CDATA[Sensors & Permissions]]></string>
+    <string name="sensor_permission_description">Learn what each sensor does and why it’s used.</string>
+    <string name="motion_sensors">Motion Sensors</string>
+    <string name="accelerometer_icon">Accelerometer icon</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="acceleration_description">Tracks how your device moves—used to detect steps, shakes, or orientation.</string>
+    <string name="acceleration_description2">Data: X, Y, Z acceleration</string>
+    <string name="permission_not_required">Permission: Not required</string>
+    <string name="activity_icon">Activity icon</string>
+    <string name="activity_recognition">Activity Recognition</string>
+    <string name="activity_recognition_description">Estimates your movement type—walking, cycling, or stationary—for smarter context tracking.</string>
+    <string name="activity_recognition_description2"><![CDATA[Data: Activity type & confidence]]></string>
+    <string name="permission_activity_recognition">Permission: ACTIVITY_RECOGNITION</string>
+    <string name="gravity_icon">Gravity icon</string>
+    <string name="gravity">Gravity</string>
+    <string name="gravity_description">Measures the force of gravity acting on the device—helps determine tilt, orientation, and motion when combined with other sensors.</string>
+    <string name="gravity_description2">Data: Gravity vector (X, Y, Z)</string>
+    <string name="gyroscope_icon">Gyroscope icon</string>
+    <string name="gyroscope">Gyroscope</string>
+    <string name="gyroscope_description">Tracks your phone’s rotation. Often used with the accelerometer to better understand movement.</string>
+    <string name="gyroscope_description2">Data: Rotation rate (X, Y, Z)</string>
+    <string name="location">Location</string>
+    <string name="location_icon">Location icon</string>
+    <string name="location_gps">Location (GPS)</string>
+    <string name="location_description">Records where you are. Enables route tracking, trip summaries, and map visualization.</string>
+    <string name="location_description2">Data: Latitude, Longitude, Speed</string>
+    <string name="permission_access_fine_location">Permission: ACCESS_FINE_LOCATION</string>
+    <string name="magnetometer_icon">Magnetometer icon</string>
+    <string name="magnetometer">Magnetometer</string>
+    <string name="magnetometer_description">Measures the strength and direction of Earth’s magnetic field—used to determine compass orientation and detect nearby metal objects.</string>
+    <string name="magnetometer_description2">Data: Magnetic field (X, Y, Z)</string>
+    <string name="audio">Audio</string>
+    <string name="microphone_icon">Microphone icon</string>
+    <string name="microphone_title">Microphone (Ambient Sound)</string>
+    <string name="microphone_description">Captures ambient sound levels—used to understand noise exposure (no recordings stored).</string>
+    <string name="microphone_description2">Data: Decibel (dB) levels</string>
+    <string name="permission_record_audio">Permission: RECORD_AUDIO</string>
+    <string name="environmental_sensors">Environmental Sensors</string>
+    <string name="light_icon">Light icon</string>
+    <string name="light">Light</string>
+    <string name="light_description">Senses the lighting around your device—can help detect ambient brightness or daylight exposure.</string>
+    <string name="light_description2">Data: Light intensity (lux)</string>
+    <string name="humidity_icon">Humidity icon</string>
+    <string name="humidity">Humidity</string>
+    <string name="humidity_description">Detects the amount of moisture in the air—helpful for analyzing comfort, climate, or indoor air quality.</string>
+    <string name="data_relative_humidity2">Data: Relative Humidity (%)</string>
+    <string name="pressure_icon">Pressure icon</string>
+    <string name="pressure">Pressure</string>
+    <string name="pressure_description">Measures atmospheric pressure—commonly used to estimate altitude, detect weather changes, or enhance location precision.</string>
+    <string name="pressure_description2">Data: Pressure (hectopascals, hPa)</string>
+    <string name="sensor_tips">All data is stored locally unless you choose to share it. You can review or disable any sensor in Settings.</string>
+    <string name="onboarding_main_text">Welcome to Timeline</string>
+    <string name="onboarding_subtext">Every walk, train ride, and detour saved automatically, just for you!</string>
+    <string name="onboarding2_main_text">Your Move, Your Story</string>
+    <string name="onboarding2_subtext">Spot trends, not just timestamps. Know how you move, be it by foot, MRT, car, or bike.</string>
+    <string name="onboarding3_main_text">Set It Up Your Way</string>
+    <string name="onboarding3_subtext">Prefer quiet tracking? Want the full breakdown? Choose what Timeline records and when.\n\nYou\'re in charge!</string>
+    <string name="get_start_title">Getting Started with Timeline</string>
+    <string name="get_start_description">This page will help you do the set up, learn the basics, and start logging your journey automatically with Timeline.</string>
+    <string name="set_up_your_account">Set Up Your Account</string>
+    <string name="set_up_account_description">Sign in or create an account to save preferences, link your data, and sync across devices securely..</string>
+    <string name="allow_location_access">Allow Location Access</string>
+    <string name="allow_location_access_description">Timeline uses your device\'s GPS and motion sensors. Grant location permission when prompted to ensure accurate tracking.</string>
+    <string name="choose_what_to_track">Choose What to Track</string>
+    <string name="choose_what_to_track_description">Go to Sensor Settings to enable sensors like location, movement, or battery. Toggle only what’s useful to you.</string>
+    <string name="get_start_start_recording">Start Recording</string>
+    <string name="get_start_start_recording_description">Tap the floating “Start Recording” button on the main screen or from the Timeline Settings page to begin logging your movements.</string>
+    <string name="view_your_history">View Your History</string>
+    <string name="view_your_history_description">Swipe up the bottom sheet on the map to see daily summaries. Tap a date to explore detailed movement sessions..</string>
+    <string name="get_start_tips">Need more help? Tap the Help icon in the top-right menu to contact support or revisit tutorials.</string>
+    <string name="upload_frequency">Upload Frequency</string>
+    <string name="upload_frequency_description">Control how frequent you would like the app to upload data to cloud</string>
+    <string name="recording_note">Note: Sensors cannot be toggled while recording is active.</string>
+    <string name="auto_start_description">Automatically start recording your activity when the app is opened</string>
+    <string name="auto_start_recording_off">Auto-Start Recording (off)</string>
+    <string name="auto_delete_on_off">Auto-delete (off)</string>
+    <string name="auto_delete_on_off_option">Choose an auto-delete option</string>
+    <string name="auto_delete_on_off_description">Automatically delete old location data after a chosen period</string>
+
+
 </resources>

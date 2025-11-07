@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  hawker-centre-agent:
+    image: hawker-centre-agent:1.0.0
+    build: .
+    container_name: hawker-centre-agent
+    pull_policy: if_not_present
+    ports:
+      - "1070:8080"
