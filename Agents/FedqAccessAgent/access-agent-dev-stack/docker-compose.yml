@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+  # NGINX reverse proxy
+  nginx:
+    image: nginx:latest
+    container_name: nginx-reverse-proxy
+    restart: unless-stopped
+    ports:
+      - "3838:3838"  # Map port 3838 to NGINX's port 3838
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Custom NGINX config file
+    networks:
+      - default
+
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph-access-agent"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    restart: unless-stopped
+    volumes:
+      - blazegraph_data:/data
+    # ports:
+    #   - "8080:8080"  # Expose port 8080 from the container to the host
+    networks:
+      - default
+
+
+  # Dragonfly
+  dragonfly:
+    image: ghcr.io/dragonflydb/dragonfly:v1.26.2-ubuntu
+    container_name: "dragonfly-access-agent"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    ports:
+      - "6379:6379"  # Expose internally to NGINX (no port mapping needed externally)
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "healthcheck", "--dir", "/data", "--dbfilename", "dump.rdb", "--notify-keyspace-events", "KEA" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - dragonfly-data:/data
+  
+# Volumes
+volumes:
+  blazegraph_data:
+  dragonfly-data:
+
+# Networks
+networks:
+  default:
+    name: access-agent-network
