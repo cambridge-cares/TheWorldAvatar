@@ -2,6 +2,8 @@ from flask import Flask
 # Import blueprints
 from agent.flaskapp.gpstasks.routes import gps_instantiation_bp
 from agent.flaskapp.home.routes import gps_bp
+from agent.flaskapp.exposure.route import exposure_bp
+#from agent.flaskapp.trip_detection.route import trip_detection_bp
 # Import utilities for RDF store and database initialization
 from agent.kgutils.initialise_kg import create_blazegraph_namespace
 from agent.kgutils.utils import *
@@ -20,6 +22,12 @@ def create_app(test_config=None):
     # Register blueprints for application components
     app.register_blueprint(gps_instantiation_bp, url_prefix='')
     app.register_blueprint(gps_bp, url_prefix='')
+    app.register_blueprint(exposure_bp, url_prefix='')
+    # Note: There is a trip detection route as part of the exposure, hence
+    # the following line is commented out.
+    # TODO: Tidy this up!
+    #app.register_blueprint(trip_detection_bp, url_prefix='')
+
 
     # Perform initial setup actions within the app context
     with app.app_context():

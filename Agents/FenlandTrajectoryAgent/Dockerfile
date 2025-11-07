@@ -1,10 +1,10 @@
 # Install the fenland-trajectory-agent agent in Docker container
 #==================================================================================================
-FROM ghcr.io/cambridge-cares/stack-client:1.27.1 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.27.1 AS stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.9.14-slim-buster as base
+FROM python:3.9.14-slim-buster AS base
 # Meta data
 LABEL authors = "jc2341@cam.ac.uk"
 LABEL description = "Fenland Trajectory Agent"
@@ -43,7 +43,7 @@ EXPOSE 5000
 #------------------------------------------------------
 # Debugging image reusing the base
 #------------------------------------------------------
-FROM base as debug
+FROM base AS debug
 # Install additional dependencies for debugging
 RUN pip install debugpy
 
@@ -59,7 +59,7 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
-FROM base as prod
+FROM base AS prod
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app

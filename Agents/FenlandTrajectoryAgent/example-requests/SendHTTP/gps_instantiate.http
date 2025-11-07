@@ -1,7 +1,3 @@
-
-POST http://localhost:3840/fenland-trajectory-agent/instantiate
+POST http://localhost:3838/fenland-trajectory-agent/instantiate
 Content-Type: application/json
 
-{
-  "file_path": "/app/agent/raw_data/gps_target_folder"
-}

@@ -1,0 +1,3 @@
+curl -X POST "http://localhost:3840/fenland-trajectory-agent/trip_detection" \
+     -H "Content-Type: application/json" \
+     -d '{"trajectoryIRI": "https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_a57a5978-0d2f-41b3-ab35-35944166f322"}'

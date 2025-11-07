@@ -5,6 +5,7 @@ build/
 dist/
 *~*
 .idea/
+!.vscode/
 py4jps/
 coverage.xml
 .coverage
