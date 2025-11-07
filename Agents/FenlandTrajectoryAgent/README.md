@@ -190,6 +190,9 @@ The notebook is currently **not deployed** on Binder because
 > [!IMPORTANT]  
 > Binder requires a repository link to build the notebook image, and both requirements.txt and apt.txt must be located in the root directory of the repository. To deploy the notebook using Binder, create a separate repository and copy the contents of the [notebook](./notebook/) folder into it.
 
+# TO DO
+
+- Remove extraction of information from IRI string in [./agent/exposure_calculator/templates/absolute_time_filter.sparql](./agent/exposure_calculator/templates/absolute_time_filter.sparql).
 
 &nbsp;
 # Authors
