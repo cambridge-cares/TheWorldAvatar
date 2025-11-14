@@ -58,14 +58,10 @@ class TSClient:
             logger.error("Unable to initialise TS Remote Store client.")
             raise ex
 
-        # 2) Initiliase TimeSeriesClient
+        # 2) Initialise TimeSeriesClient
         try:
-            # PROPERTY_FILE= os.path.abspath(os.path.join(Path(__file__).parent.parent,"datainstantiation", "resources","FenlandTrajectory.properties"))
-            ##
-            self.tsclient = TSClient.stackClients_view.TimeSeriesClient(kg_client.kg_client, timeclass)
-            # self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(timeclass, PROPERTY_FILE)
-            # self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass, rdb_url, rdb_user, rdb_password)
-            
+            ts_rdb_client = TSClient.stackClients_view.com.cmclinnovations.stack.clients.timeseries.TimeSeriesRDBClient(timeclass)
+            self.tsclient = TSClient.stackClients_view.TimeSeriesClient(kg_client.kg_client, ts_rdb_client)
             logger.info("TimeSeriesClient initialized successfully.")
         except Exception as ex:
             logger.error("rdb_USER:")
@@ -128,8 +124,11 @@ class TSClient:
         """
 
         with self.connect() as conn:
-            self.tsclient.initTimeSeries(dataIRI, ts_type, time_format, conn)
-            ts = TSClient.create_timeseries(times, dataIRI, values)
+            self.tsclient.bulkInitTimeSeries([dataIRI], [ts_type], [time_format], 4326, conn)
+            time_class_name = TSClient.INSTANT.getName()
+            time_instants = TSClient.stackClients_view.TimeSeriesClientFactory.timestampFactory(
+                time_class_name, times)
+            ts = TSClient.create_timeseries(time_instants, dataIRI, values)
             self.tsclient.addTimeSeriesData(ts, conn)
         logger.info(f"Time series successfully initialised in KG and RDB for dataIRI: {dataIRI}")
 
