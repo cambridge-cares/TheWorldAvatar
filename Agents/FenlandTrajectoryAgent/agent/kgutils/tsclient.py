@@ -6,8 +6,6 @@
 
 from contextlib import contextmanager
 
-from twa import agentlogging
-
 ## from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 from agent.datainstantiation.jpsSingletons import stackClientsGw
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
@@ -15,10 +13,11 @@ from agent.errorhandling.exceptions import TSException
 from agent.datamodel.time_series_classes import FORMAT, TIMECLASS, DATATYPE
 import os
 from pathlib import Path
-
+import logging
 
 # Initialise logger instance (ensure consistent logger level)
-logger = agentlogging.get_logger('prod')
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class TSException(Exception):
     """Raise in case of exception when using the TimeSeriesClient."""
@@ -83,6 +82,7 @@ class TSClient:
         TimeSeries client (i.e. to ensure connection is closed after use)
         """
         conn = None
+        logger.info("Attempting to connect to RDB...")
         try:
             conn = self.connection.getConnection()
             logger.info("Connected to the RDB successfully.")
