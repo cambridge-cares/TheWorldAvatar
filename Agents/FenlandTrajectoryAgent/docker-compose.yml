@@ -1,6 +1,6 @@
 services:
   fenland-trajectory-agent:
-    image: ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0
+    image: ghcr.io/theworldavatar/fenland-trajectory-agent:1.1.0
     environment:
       - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace
