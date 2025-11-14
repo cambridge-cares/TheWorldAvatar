@@ -1,10 +1,8 @@
-# Install the fenland-trajectory-agent agent in Docker container
-#==================================================================================================
-FROM ghcr.io/cambridge-cares/stack-client:1.27.1 AS stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.55.0-time-series-for-ontop-SNAPSHOT AS stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.9.14-slim-buster AS base
+FROM python:3.13.3-slim AS base
 # Meta data
 LABEL authors = "jc2341@cam.ac.uk"
 LABEL description = "Fenland Trajectory Agent"
@@ -15,7 +13,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install Java
-RUN apt update && apt install -y openjdk-11-jdk-headless git
+RUN apt update && apt install -y openjdk-17-jre-headless git
 
 # Copy StackClients resource required to update twa later
 RUN mkdir -p ./tmp_stack
@@ -70,4 +68,3 @@ COPY ./app_entry_point.sh .
 RUN chmod +x app_entry_point.sh
 # Set the entrypoint
 ENTRYPOINT ./app_entry_point.sh
-#==================================================================================================
