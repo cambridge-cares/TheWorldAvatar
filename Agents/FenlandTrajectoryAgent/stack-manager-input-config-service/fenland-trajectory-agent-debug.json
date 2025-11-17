@@ -14,7 +14,7 @@
                         "Target": "/app"
                     },
                     {
-                        "Type": "volume",
+                        "Type": "bind",
                         "Source": "fta-input",
                         "Target": "/app/agent/raw_data/gps_target_folder"
                     }
