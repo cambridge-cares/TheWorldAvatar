@@ -1,4 +1,4 @@
-FROM ghcr.io/theworldavatar/stack-client:1.55.0-time-series-for-ontop-SNAPSHOT AS stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.55.0 AS stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
