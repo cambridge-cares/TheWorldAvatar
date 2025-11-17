@@ -3,7 +3,7 @@
         "Name": "fenland-trajectory-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0",
+                "Image": "ghcr.io/theworldavatar/fenland-trajectory-agent:1.1.0",
                 "Env": [
                     "NAMESPACE=gps_trajectory",
                     "DATABASE=postgres",
