@@ -40,6 +40,7 @@ import java.util.stream.IntStream;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.locationtech.jts.geom.Geometry;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -103,6 +104,10 @@ public class CEAAgent extends JPSAgent {
     private String ontopUrl;
     private List<String> ceaDb;
     private CEAOutputUpdater updater;
+
+    private Gson ceaGsonBuilder = new GsonBuilder()
+                        .registerTypeAdapter(Geometry.class, new GeometryTypeAdapter()) 
+                        .create();
 
     public CEAAgent() {
         readConfig();
@@ -251,13 +256,9 @@ public class CEAAgent extends JPSAgent {
 
                     CEAExecutionInput inputData = new CEAExecutionInput(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar);
 
-                    Gson CUSTOM_GSON = new GsonBuilder()
-                        .registerTypeAdapter(org.locationtech.jts.geom.Geometry.class, new uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryTypeAdapter()) 
-                        .create();
-
                     String jsonInput;
                     try {
-                        jsonInput = CUSTOM_GSON.toJson(inputData);
+                        jsonInput = ceaGsonBuilder.toJson(inputData);
                     } catch (Exception e) {
                         // Handle serialization error using your JPSRuntimeException pattern
                         System.err.println("Error packaging CEA inputs to JSON: " + e.getMessage());
@@ -335,13 +336,9 @@ public class CEAAgent extends JPSAgent {
 
                 // unpack input data from caller's request
 
-                Gson CUSTOM_GSON = new GsonBuilder()
-                    .registerTypeAdapter(org.locationtech.jts.geom.Geometry.class, new uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryTypeAdapter()) 
-                    .create();
-
                 CEAExecutionInput inputData;
                 try {
-                    inputData = CUSTOM_GSON.fromJson(jsonPayload, CEAExecutionInput.class);
+                    inputData = ceaGsonBuilder.fromJson(jsonPayload, CEAExecutionInput.class);
                 } catch (Exception e) {
                     throw new JPSRuntimeException("cannot read CEA payload.");
                 }
@@ -591,9 +588,18 @@ public class CEAAgent extends JPSAgent {
      * @return boolean saying if request is valid or not
      */
     private boolean validateExecuteInput(JSONObject requestParams) {
-        String bodyString = requestParams.getString("body");
 
-        boolean error = bodyString.isEmpty();//requestParams.get(KEY_CEA_PAYLOAD).toString().isEmpty() || requestParams.get(KEY_CALLER_URL).toString().isEmpty();
+        String rawBodyString = requestParams.getString("body");
+
+        JSONObject trueParams;
+        try {
+            trueParams = parseFormEncodedString(rawBodyString); 
+        } catch (Exception e) {
+            System.err.println("Failed to parse form-encoded request body: " + e.getMessage());
+            return true;
+        }
+
+        boolean error = trueParams.get(KEY_CEA_PAYLOAD).toString().isEmpty() || trueParams.get(KEY_CALLER_URL).toString().isEmpty();
 
         return error;
     }
@@ -671,7 +677,7 @@ public class CEAAgent extends JPSAgent {
                 String key = pair.substring(0, idx);
                 String encodedValue = pair.substring(idx + 1);
                 
-                // Decode the value using UTF-8 (essential step!)
+                // Decode the value using UTF-8
                 String value = URLDecoder.decode(encodedValue, StandardCharsets.UTF_8.toString());
                 
                 // Put the decoded key-value pair into the JSONObject
