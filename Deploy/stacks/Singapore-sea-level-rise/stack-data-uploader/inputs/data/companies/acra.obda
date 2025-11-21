@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+twa:                https://www.theworldavatar.com/kg/
+geo:                http://www.opengis.net/ont/geosparql#
+sf:                 http://www.opengis.net/ont/sf
+rdfs:	            http://www.w3.org/2000/01/rdf-schema#
+xsd:                http://www.w3.org/2001/XMLSchema#
+fibo-fnd-rel-rel:   https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/
+bldg:				http://www.opengis.net/citygml/building/2.0/
+spec-com-dt: 	  	https://www.omg.org/spec/Commons/DatesAndTimes/
+spec-com-org:		https://www.omg.org/spec/Commons/Organizations/
+fibo-fnd-arr-id:    https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/
+spec-com-loc:	https://www.omg.org/spec/Commons/Locations/
+time: 				https://www.w3.org/TR/owl-time/#
+
+[MappingDeclaration] @collection [[
+mappingId	Singapore ACRA Registered Company
+target       twa:Building/{building_uuid} a bldg:Building.
+			twa:company/{ogc_fid} a twa:ontocompany/Company;
+			twa:ontocompany/hasUniqueEntityNumberStatus {uen_status_desc};
+			twa:ontocompany/hasCompanyType {entity_type_desc};
+			fibo-fnd-rel-rel:hasLegalName {entity_name};
+			twa:ontocompany/hasUniqueEntityNumber twa:ontocompany/UniqueEntityNumber/{ogc_fid};
+			twa:ontocompany/hasUniqueEntityNumberRegisteredAddress twa:ontocompany/UniqueEntityNumberRegisteredAddress/{ogc_fid};
+			twa:ontocompany/isLocatedIn twa:Building/{building_uuid}.
+			twa:ontocompany/UniqueEntityNumber/{ogc_fid} a twa:ontocompany/UniqueEntityNumber;
+			spec-com-dt:hasDateOfIssuance twa:ontocompany/IssueDate/{ogc_fid};
+			fibo-fnd-rel-rel:isIssuedBy twa:ontocompany/FormalOrganization/{issuance_agency_desc};
+			twa:ontocompany/hasIdentifierValue {uen}.
+			twa:ontocompany/FormalOrganization/{issuance_agency_desc} a spec-com-org:FormalOrganization.
+			twa:ontocompany/IssueDate/{ogc_fid} a time:Instant;
+			time:inXSDDate "{uen_issue_date}"^^xsd:date.
+			twa:ontocompany/UniqueEntityNumberRegisteredAddress/{ogc_fid} a twa:ontocompany/UniqueEntityNumberRegisteredAddress;
+			fibo-fnd-arr-id:isIndexTo twa:location/{ogc_fid}.
+			twa:location/{ogc_fid} a spec-com-loc:PhysicalLocation, sf:Point;
+			geo:asWKT "{wkb_geometry}"^^geo:wktLiteral.
+source		SELECT ogc_fid, uen, issuance_agency_desc, uen_status_desc, entity_name, entity_type_desc, uen_issue_date, building_uuid, ST_ASTEXT(wkb_geometry) as wkb_geometry FROM acraregisteredcompanyaddress
+]]
