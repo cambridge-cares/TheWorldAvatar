@@ -7,6 +7,14 @@ FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
 # Base image to be reused
 #------------------------------------------------------
 FROM python:3.9-slim-buster as base
+RUN set -eux; \
+    sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list; \
+    sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list; \
+    printf 'Acquire::Check-Valid-Until "false";\nAcquire::AllowInsecureRepositories "true";\n' \
+      > /etc/apt/apt.conf.d/99archive; \
+    apt-get -o Acquire::Check-Valid-Until=false update; \
+    apt-get install -y --no-install-recommends openjdk-11-jdk-headless; \
+    rm -rf /var/lib/apt/lists/*
 # Meta data
 LABEL authors = "lp521@cam.ac.uk"
 LABEL description = "Agents that imports data from PubChem and populate OntoSpecies"
