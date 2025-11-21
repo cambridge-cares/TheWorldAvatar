@@ -66,39 +66,26 @@ Note that installing the project for in-place development (setting the `-e` flag
 
 ### Environment variables
 
-The dockerised agent can be deployed as standalone version (i.e. outside a larger Docker stack) or deployed to an (existing) stack. Several key environment variables need to be set in the Docker compose file:
+The dockerised agent can be deployed as standalone version (i.e. outside a larger Docker stack) or deployed to an (existing) stack. Several key environment variables need to be set in the docker-compose.yml file:
 
 ```docker
 # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-- STACK_NAME=TEST         # to be left blank for "standalone" deployment
+  # Leave it blank for "standalone" deployment. If the stack name is "chemistry_stack", for stack deployment set STACK_NAME=chemistry_stack
+- STACK_NAME=
 # Additional environment variables required for Stack deployment
-# (can be left blank for "standalone" deployment)
-- NAMESPACE=ontospecies   # Target Blazegraph namespace
+  # Target Blazegraph namespace. Leave it blank for "standalone" deployment. If the namespace is "ontospecies4", for stack deployment set NAMESPACE=ontospecies4
+- NAMESPACE=
 # Additional environment variables required for "standalone deployment"
-# (can be left blank for Stack deployment)
+  # Query endpoint. Leave it blank for Stack deployment. For "standalone" deployment, set QUERY_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
 - QUERY_ENDPOINT=
+  # Update endpoint. Leave it blank for Stack deployment. For "standalone" deployment, set UPDATE_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
 - UPDATE_ENDPOINT=
 # Additional environment variables (when required)
-- BG_USER= # Blazegraph user
-- BG_PASSWORD= # Blazegraph password
+  # Blazegraph user
+- BG_USER=
+  # Blazegraph password
+- BG_PASSWORD=
 ```
-
-The STACK_NAME variable is used to identify the deployment mode of the agent. In case the STACK_NAME is left blank, default Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided NAMESPACE variable.
-
-Please note:
-
-All variables defined here (except for STACK_NAME) serve as default values. To omit any of those default values, either remove the key completely or just leave it blank.
-
-A missing STACK_NAME variable will result in an error; however, when deploying using the stack-manager start up script, the STACK_NAME variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the STACK_NAME used by the stack-manager!
-
-For standalone deployment, ensure that you specify the QUERY_ENDPOINT and UPDATE_ENDPOINT if they differ from the default settings. Below are the default values for these endpoints:
-
-- QUERY_ENDPOINT: <https://theworldavatar.io/chemistry/blazegraph-dev/namespace/ontospecies>
-- UPDATE_ENDPOINT: <https://theworldavatar.io/chemistry/blazegraph-dev/namespace/ontospecies>
-
-Leave the NAMESPACE variable blank when setting these endpoints.
-
-For deployments where the Blazegraph endpoints are secured with credentials, you must set BG_USER and BG_PASSWORD variables.
 
 ### Build and publish the Docker image
 
@@ -110,7 +97,7 @@ docker-compose -f docker-compose.yml  build
 docker-compose -f docker-compose.debug.yml  build
 
 # Publish the Docker image to the Github container registry
-docker image push ghcr.io/cambridge-cares/<image tag>:<version>
+docker image push ghcr.io/theworldavatar/<image tag>:<version>
 ```
 
 Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by
