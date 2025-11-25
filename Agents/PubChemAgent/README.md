@@ -76,9 +76,9 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 - STACK_NAME=
 # Target Blazegraph namespace. If the namespace is "ontospecies4", set NAMESPACE=ontospecies4
 - NAMESPACE=
-# Query endpoint. Set QUERY_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
+# Query endpoint. Set QUERY_ENDPOINT=http(s)://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
 - QUERY_ENDPOINT=
-# Update endpoint. Set UPDATE_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
+# Update endpoint. Set UPDATE_ENDPOINT=http(s)://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
 - UPDATE_ENDPOINT=
 # Additional environment variables (when required)
   # Blazegraph user
@@ -97,13 +97,7 @@ docker-compose -f docker-compose.yml  build
 docker-compose -f docker-compose.debug.yml  build
 
 # Publish the Docker image to the Github container registry
-docker image push ghcr.io/theworldavatar/<image tag>:<version>
-```
-
-Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by
-
-```bash
-docker pull docker.cmclinnovations.com/stack-client:1.6.2
+docker image push ghcr.io/theworldavatar/pubchem_agent:1.0.0
 ```
 
 ### Docker deployment
@@ -116,7 +110,10 @@ docker-compose -f docker-compose.yml  up
 docker-compose -f docker-compose.debug.yml  up
 ```
 
-To verify the correct startup of the agent, open the URL address the agent is running on, e.g. <http://localhost:5000> in your browser.
+To verify that the agent has started correctly, open <http://localhost:5000> in your browser.
+
+To retrieve the IRI of a species (e.g., argon), open <http://localhost:5000/query/species?inchi=InChI=1/Ar>. If argon already exists in the namespace, the agent will return its IRI.
+If it does not exist, the agent will instantiate it by querying PubChem and then return the newly created IRI.
 
 ### Stack Deployment
 
@@ -197,3 +194,4 @@ In order to use the pubchemagent as a web agent when installed from the version-
 
 Laura Pascazio (<lp521@cam.ac.uk>)
 Ali Naseri
+Feroz Farazi (<msff2@cam.ac.uk>)
