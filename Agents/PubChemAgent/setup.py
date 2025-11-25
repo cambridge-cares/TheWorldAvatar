@@ -26,6 +26,9 @@ setup(
         'bioservices',
         'unit-parse'  # Verify the correct package name on PyPI
     ],
+    extras_require={
+        "no_apscheduler": []
+    },
     entry_points={
         'console_scripts': [
             'pubchemagent=pubchemagent.driver:main',
