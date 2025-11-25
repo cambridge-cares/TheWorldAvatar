@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Requirements
 
-- You need Python > 3.9 to run the `PubChem Agent`. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
+- You need Python ≥ 3.9 to run the `PubChem Agent`. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
 - You also need to install a [Java Runtime Environment version >=8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 
 ### Virtual environment setup
@@ -29,7 +29,7 @@ $ pubchemagent_venv\Scripts\activate.bat
 
 ```sh
 $ python3 -m venv pubchemagent_venv
-$ source pubchemagent_venv\bin\activate
+$ source pubchemagent_venv/bin/activate
 (pubchemagent_venv) $
 ```
 
