@@ -30,6 +30,8 @@ $ pubchemagent_venv\Scripts\activate.bat
 ```sh
 $ python3 -m venv pubchemagent_venv
 $ source pubchemagent_venv/bin/activate
+# Install wheel to prevent "invalid command 'bdist_wheel'"
+(pubchemagent_venv) $ pip install wheel
 (pubchemagent_venv) $
 ```
 
