@@ -50,9 +50,6 @@ def retrieve_default_settings():
         # 2) Stack deployment: retrieve settings from Stack Clients
         logger.info('Deploying agent to stack "{STACK_NAME}".')
 
-        # Initialise boolean flags whether namespace and database are given
-        namespace_given = True
-
         # Retrieve target Blazegraph namespace for data to instantiate
         NAMESPACE = os.getenv('NAMESPACE')
         if not NAMESPACE:
