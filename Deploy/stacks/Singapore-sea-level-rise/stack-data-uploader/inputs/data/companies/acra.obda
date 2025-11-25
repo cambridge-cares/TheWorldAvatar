@@ -14,13 +14,12 @@ target       twa:Building/{building_uuid} a bldg:Building.
 			twa:ontocompany/hasUniqueEntityNumberStatus {uen_status_desc};
 			twa:ontocompany/hasCompanyType {entity_type_desc};
 			twa:ontocompany/hasName {entity_name};
-			twa:ontocompany/hasUniqueEntityNumber twa:ontocompany/UniqueEntityNumber/{ogc_fid}.
+			twa:ontocompany/hasUniqueEntityNumber twa:ontocompany/UniqueEntityNumber/{ogc_fid};
 			twa:ontocompany/isLocatedIn twa:Building/{building_uuid}.
 			twa:ontocompany/UniqueEntityNumber/{ogc_fid} a twa:ontocompany/UniqueEntityNumber;
 			twa:ontocompany/hasIssueDate twa:ontocompany/IssueDate/{ogc_fid};
 			twa:company/isIssuedBy twa:ontocompany/FormalOrganization/{issuance_agency_desc};
 			twa:ontocompany/hasIdentifierValue {uen}.
-			twa:ontocompany/FormalOrganization/{issuance_agency_desc} .
 			twa:ontocompany/IssueDate/{ogc_fid} a time:Instant;
 			time:inXSDDate "{uen_issue_date}"^^xsd:date.
 			
