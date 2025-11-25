@@ -6,16 +6,14 @@ services:
     image: ghcr.io/theworldavatar/pubchem_agent:1.0.0
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-        # Leave it blank for "standalone" deployment. If the stack name is "chemistry_stack", for stack deployment set STACK_NAME=chemistry_stack
+      # Leave it blank for "standalone" deployment. If the stack name is "chemistry_stack", for stack deployment set STACK_NAME=chemistry_stack
       - STACK_NAME=
-      # Additional environment variables required for Stack deployment
-        # Target Blazegraph namespace. Leave it blank for "standalone" deployment. If the namespace is "ontospecies4", for stack deployment set NAMESPACE=ontospecies4
-      - NAMESPACE=
-      # Additional environment variables required for "standalone deployment"
-        # Query endpoint. Leave it blank for Stack deployment. For "standalone" deployment, set QUERY_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
-      - QUERY_ENDPOINT=
-        # Update endpoint. Leave it blank for Stack deployment. For "standalone" deployment, set UPDATE_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
-      - UPDATE_ENDPOINT=
+      # Target Blazegraph namespace. If the namespace is "ontospecies4", set NAMESPACE=ontospecies4
+      - NAMESPACE=ontospecies4
+      # Query endpoint. Set QUERY_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
+      - QUERY_ENDPOINT=http://159.223.42.53:3838/blazegraph/namespace/ontospecies4/sparql
+      # Update endpoint. Set UPDATE_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
+      - UPDATE_ENDPOINT=http://159.223.42.53:3838/blazegraph/namespace/ontospecies4/sparql
       # Additional environment variables (when required)
         # Blazegraph user
       - BG_USER=
