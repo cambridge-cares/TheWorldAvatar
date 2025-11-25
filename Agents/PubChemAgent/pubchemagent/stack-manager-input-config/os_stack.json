@@ -7,7 +7,7 @@
             "ontop",
             "gdal",
             "geoserver",
-		"postgis"
+		    "postgis"
         ]
     }
 }

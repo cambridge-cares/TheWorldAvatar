@@ -5,7 +5,9 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/pubchem_agent:1.0.0",
                 "Env": [
-                    "NAMESPACE=ontospecies"
+                    "NAMESPACE=ontospecies4",
+                    "QUERY_ENDPOINT=http(s)://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
+                    "UPDATE_ENDPOINT=http(s)://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql"                    
                 ],
                 "Configs": [
                     {
