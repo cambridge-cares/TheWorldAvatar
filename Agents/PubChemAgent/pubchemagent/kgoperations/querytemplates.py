@@ -1,5 +1,8 @@
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL, ONTOSPECIES_KB_URL
 
+# Named the DissociationConstant class in sigular form
+KG_DISSOCIATION_CONSTANT_CLASS = "DissociationConstant"
+
 def get_iri_query(inchi_string):
     query= f"""
     PREFIX os: <{ONTOSPECIES_URL}>
@@ -8,8 +11,7 @@ def get_iri_query(inchi_string):
     WHERE
     {{
     ?speciesIRI rdf:type os:Species ;
-         os:inChI ?x .
-      FILTER (str(?x) ="{inchi_string}")
+         os:hasInChI/os:value "{inchi_string}" .
     }}    
     """
     return query
@@ -63,30 +65,58 @@ def pubchem_synonym_insert(type, uuid, data):
 
 # numerical properties insert (not thermo)
 def pubchem_num_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, data):
-    insert_str = f"""<{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> rdf:type os:{data.get('key')} .
-    os:{data.get('key')} rdfs:subClassOf os:Property .
-    <{ONTOSPECIES_KB_URL}/{type}_{uuid}> os:has{data.get('key')} <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:value \'{data['value'].get('value')}\'^^xsd:float .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_iri}>  .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_iri}> .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:dateOfAccess \'{data.get('dateofaccess')}\'^^xsd:date .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:originalDataString \'{data.get('description')}\'^^xsd:string .  
-    """      
-    return insert_str
+    if data.get('key') == "DissociationConstants":
+        clas = KG_DISSOCIATION_CONSTANT_CLASS
+        insert_str = f"""<{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> rdf:type os:{clas} .
+        os:{clas} rdfs:subClassOf os:Property .
+        <{ONTOSPECIES_KB_URL}/{type}_{uuid}> os:has{clas} <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:value \'{data['value'].get('value')}\'^^xsd:float .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_iri}>  .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_iri}> .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:dateOfAccess \'{data.get('dateofaccess')}\'^^xsd:date .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:originalDataString \'{data.get('description')}\'^^xsd:string .  
+        """      
+        return insert_str
+    else:
+        insert_str = f"""<{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> rdf:type os:{data.get('key')} .
+        os:{data.get('key')} rdfs:subClassOf os:Property .
+        <{ONTOSPECIES_KB_URL}/{type}_{uuid}> os:has{data.get('key')} <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:value \'{data['value'].get('value')}\'^^xsd:float .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_iri}>  .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_iri}> .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:dateOfAccess \'{data.get('dateofaccess')}\'^^xsd:date .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:originalDataString \'{data.get('description')}\'^^xsd:string .  
+        """      
+        return insert_str
 
 def pubchem_thermo_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, ref_state_uuid, data):
-    insert_str = f"""<{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> rdf:type os:{data.get('key')} .
-    os:{data.get('key')} rdfs:subClassOf os:ThermoProperty .
-    os:ThermoProperty rdfs:subClassOf os:Property .
-    <{ONTOSPECIES_KB_URL}/{type}_{uuid}> os:has{data.get('key')} <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:value \'{data['value'].get('value')}\'^^xsd:float .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_iri}>  .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:hasReferenceState <{ONTOSPECIES_KB_URL}/ReferenceState_{ref_state_uuid}> .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_iri}> .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:dateOfAccess \'{data.get('dateofaccess')}\'^^xsd:date .
-    <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:originalDataString "{data.get('description')}"^^xsd:string .   
-    """       
-    return insert_str
+    if data.get('key') == "DissociationConstants":
+        clas = KG_DISSOCIATION_CONSTANT_CLASS
+        insert_str = f"""<{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> rdf:type os:{clas} .
+        os:{clas} rdfs:subClassOf os:ThermoProperty .
+        os:ThermoProperty rdfs:subClassOf os:Property .
+        <{ONTOSPECIES_KB_URL}/{type}_{uuid}> os:has{clas} <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:value \'{data['value'].get('value')}\'^^xsd:float .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_iri}>  .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:hasReferenceState <{ONTOSPECIES_KB_URL}/ReferenceState_{ref_state_uuid}> .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_iri}> .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:dateOfAccess \'{data.get('dateofaccess')}\'^^xsd:date .
+        <{ONTOSPECIES_KB_URL}/{clas}_{item}_{type}_{uuid}> os:originalDataString "{data.get('description')}"^^xsd:string .   
+        """       
+        return insert_str
+    else:
+        insert_str = f"""<{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> rdf:type os:{data.get('key')} .
+        os:{data.get('key')} rdfs:subClassOf os:ThermoProperty .
+        os:ThermoProperty rdfs:subClassOf os:Property .
+        <{ONTOSPECIES_KB_URL}/{type}_{uuid}> os:has{data.get('key')} <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:value \'{data['value'].get('value')}\'^^xsd:float .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_iri}>  .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:hasReferenceState <{ONTOSPECIES_KB_URL}/ReferenceState_{ref_state_uuid}> .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_iri}> .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:dateOfAccess \'{data.get('dateofaccess')}\'^^xsd:date .
+        <{ONTOSPECIES_KB_URL}/{data.get('key')}_{item}_{type}_{uuid}> os:originalDataString "{data.get('description')}"^^xsd:string .   
+        """       
+        return insert_str
 
 def pubchem_string_prop_insert(typeIRI, type, uuid, item, prov_iri, data):
     insert_str = f"""<{ONTOSPECIES_KB_URL}/{type}_{uuid}> rdf:type {typeIRI} .
@@ -151,12 +181,12 @@ def pubchem_atom_insert(uuid, geometryIRI, prov_uuid, unit_uuid, data):
                 os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_uuid}> ;
                 os:fromGeometry {geometryIRI} .
         """
-        text_atom = text_atom + text
+        text_atom = text_atom + text.replace("<None>", "<file:///app/None>")
     
     insert_str = f"""
     <{ONTOSPECIES_KB_URL}/Species_{uuid}> os:hasGeometry {geometryIRI} .
     {geometryIRI} rdf:type os:Geometry ;
-        os:hasProverance <{ONTOSPECIES_KB_URL}/Reference_{prov_uuid}> .
+        os:hasProvenance <{ONTOSPECIES_KB_URL}/Reference_{prov_uuid}> .
     {text_atom}    
     """
     return insert_str
@@ -294,7 +324,7 @@ def generic_insert(name, typeIRI, uuid, string, comment):
     {{
     <{ONTOSPECIES_KB_URL}/{name}_{uuid}> rdf:type {typeIRI} ;
                 rdfs:label "{string}" ;
-                rdfs:comment \'{comment}\'
+                rdfs:comment \'{comment}\' .
     }}    
     """
     return insert_str
