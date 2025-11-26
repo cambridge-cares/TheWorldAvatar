@@ -1,27 +1,27 @@
 [PrefixDeclaration]
-twa:                https://www.theworldavatar.com/kg/
-geo:                http://www.opengis.net/ont/geosparql#
-sf:                 http://www.opengis.net/ont/sf
-rdfs:	            http://www.w3.org/2000/01/rdf-schema#
-xsd:                http://www.w3.org/2001/XMLSchema#
-bldg:				http://www.opengis.net/citygml/building/2.0/
-time: 				https://www.w3.org/TR/owl-time/#
+twa:		https://www.theworldavatar.com/kg/
+geo:		http://www.opengis.net/ont/geosparql#
+sf:			http://www.opengis.net/ont/sf
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+xsd:		http://www.w3.org/2001/XMLSchema#
+bldg:		http://www.opengis.net/citygml/building/2.0/
+time:		http://www.w3.org/2006/time#
 
 [MappingDeclaration] @collection [[
 mappingId	Singapore ACRA Registered Company
-target       twa:Building/{building_uuid} a bldg:Building.
+target		twa:Building/{building_uuid} a bldg:Building.
 			twa:company/{ogc_fid} a twa:ontocompany/Company;
-			twa:ontocompany/hasUniqueEntityNumberStatus {uen_status_desc};
-			twa:ontocompany/hasCompanyType {entity_type_desc};
-			twa:ontocompany/hasName {entity_name};
-			twa:ontocompany/hasUniqueEntityNumber twa:ontocompany/UniqueEntityNumber/{ogc_fid};
-			twa:ontocompany/isLocatedIn twa:Building/{building_uuid}.
+				twa:ontocompany/hasUniqueEntityNumberStatus {uen_status_desc};
+				twa:ontocompany/hasCompanyType {entity_type_desc};
+				twa:ontocompany/hasName {entity_name};
+				twa:ontocompany/hasUniqueEntityNumber twa:ontocompany/UniqueEntityNumber/{ogc_fid};
+				twa:ontocompany/isLocatedIn twa:Building/{building_uuid}.
 			twa:ontocompany/UniqueEntityNumber/{ogc_fid} a twa:ontocompany/UniqueEntityNumber;
-			twa:ontocompany/hasIssueDate twa:ontocompany/IssueDate/{ogc_fid};
-			twa:ontocompany/isIssuedBy twa:ontocompany/FormalOrganization/{issuance_agency_desc};
-			twa:ontocompany/hasIdentifierValue {uen}.
+				twa:ontocompany/hasIssueDate twa:ontocompany/IssueDate/{ogc_fid};
+				twa:ontocompany/isIssuedBy twa:ontocompany/FormalOrganization/{issuance_agency_desc};
+				twa:ontocompany/hasIdentifierValue {uen}.
 			twa:ontocompany/IssueDate/{ogc_fid} a time:Instant;
-			time:inXSDDate "{uen_issue_date}"^^xsd:date.
+				time:inXSDDate "{uen_issue_date}"^^xsd:date.
 			
 source		SELECT ogc_fid, uen, issuance_agency_desc, uen_status_desc, entity_name, entity_type_desc, uen_issue_date, building_uuid, ST_ASTEXT(wkb_geometry) as wkb_geometry FROM acraregisteredcompanyaddress
 ]]
