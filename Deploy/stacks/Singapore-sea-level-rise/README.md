@@ -142,15 +142,12 @@ Not run together with data uploader due to the SQL script requiring the city fur
 Finally run [company.http] to match entities to the closest buildings.
 
 ### Entities Registered with ACRA
-Ensure that the data uploader is ran for the "Buildings" and "sgpostcode" datasets.
+Download the "Entities Registered with ACRA" dataset (downloaded from https://data.gov.sg/datasets?query=acra+registered&resultId=d_3f960c10fed6145404ca7b821f263b87) from [CARES dropbox link](https://www.dropbox.com/scl/fi/xx1opj6rh48xbpavrf7ln/acraregisteredcompanyaddress.csv?rlkey=qmq8h0zr0aez6t2m0iop5yhdl&st=3s0j7k10&dl=0). After downloading, copy the dataset to the following location: TheWorldAvatar\Deploy\stacks\Singapore-sea-level-rise\stack-data-uploader\inputs\data\companies\acra_registered_company_address.
 
-Copy the Entities Registered with ACRA dataset (downloaded from https://data.gov.sg/datasets?query=acra+registered&resultId=d_3f960c10fed6145404ca7b821f263b87) from [CARES dropbox link](https://www.dropbox.com/scl/fi/xx1opj6rh48xbpavrf7ln/acraregisteredcompanyaddress.csv?rlkey=qmq8h0zr0aez6t2m0iop5yhdl&st=3s0j7k10&dl=0) and place it in the folder TheWorldAvatar\Deploy\stacks\Singapore-sea-level-rise\stack-data-uploader\inputs\data\companies\acra_registered_company_address.
-
-Run stack-data-uploader with the acraregisteredcompanyaddress.json to upload acraregisteredcompanyaddress dataset into postgis.
-
-Run acra.sql to match wkb_geometry from sgpostcode data to acraregisteredcompanyaddress dataset. Note as the building identification agent cannot handle "NULL" wkb_geometry, entries with "NULL" wkb_geometry are removed from the dataset.
-
-Run acra_matching.http in to use building identification agent to identify the building uuid for each post code.
+Run the stack-data-uploader to upload the dataset into PostGIS.
+Please note that the Building Identification Agent cannot process entries with "NULL" in the wkb_geometry field. As a result, any records with a "NULL" wkb_geometry will be removed from the dataset prior to upload.
+ 
+Run the acra_matching.http script to use the Building Identification Agent, which will identify the building UUID for each postal code.
 
 ### CEA data
 CEA data is stored in the `cea` namespace in Blazegraph and the `CEAAgent` database in postgres for timeseries data.

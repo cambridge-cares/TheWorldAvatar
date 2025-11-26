@@ -1,5 +1,5 @@
 ALTER TABLE acraregisteredcompanyaddress
-ADD COLUMN wkb_geometry geometry(Point,4326);
+ADD COLUMN if not exists wkb_geometry geometry(Point,4326);
 UPDATE acraregisteredcompanyaddress 
 SET wkb_geometry = sgpostcode.wkb_geometry
 FROM sgpostcode 

@@ -2,6 +2,10 @@
     "name": "acraregisteredcompanyaddress",
     "database": "postgres",
     "workspace": "twa",
+    "externalDatasets": [
+        "sgpostcode",
+        "buildings"
+    ],
     "skip": false,
     "datasetDirectory": "companies",
     "dataSubsets": [
@@ -9,7 +13,8 @@
             "name": "acraregisteredcompanyaddress",
             "type": "vector",
             "subdirectory": "acra_registered_company_address",
-            "skip": false
+            "skip": false,
+            "sql": "@/inputs/config/acra.sql"
             
         }
     ],

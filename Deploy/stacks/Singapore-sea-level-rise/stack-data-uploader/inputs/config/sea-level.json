@@ -10,6 +10,7 @@
         "routing",
         "tbox",
         "tree",
-        "isochrone"
+        "isochrone",
+        "acraregisteredcompanyaddress"
     ]
 }
