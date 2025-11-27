@@ -141,6 +141,14 @@ Not run together with data uploader due to the SQL script requiring the city fur
 
 Finally run [company.http] to match entities to the closest buildings.
 
+### Entities Registered with ACRA
+Download the "Entities Registered with ACRA" dataset (downloaded from https://data.gov.sg/datasets?query=acra+registered&resultId=d_3f960c10fed6145404ca7b821f263b87) from [CARES dropbox link](https://www.dropbox.com/scl/fi/xx1opj6rh48xbpavrf7ln/acraregisteredcompanyaddress.csv?rlkey=qmq8h0zr0aez6t2m0iop5yhdl&st=3s0j7k10&dl=0). After downloading, copy the dataset to the following location: TheWorldAvatar\Deploy\stacks\Singapore-sea-level-rise\stack-data-uploader\inputs\data\companies\acra_registered_company_address.
+
+Run the stack-data-uploader to upload the dataset into PostGIS.
+Please note that the Building Identification Agent cannot process entries with "NULL" in the wkb_geometry field. As a result, any records with a "NULL" wkb_geometry will be removed from the dataset prior to upload.
+ 
+Run the acra_matching.http script to use the Building Identification Agent, which will identify the building UUID for each postal code.
+
 ### CEA data
 CEA data is stored in the `cea` namespace in Blazegraph and the `CEAAgent` database in postgres for timeseries data.
 
@@ -206,14 +214,14 @@ Replace http://localhost:3838 to an appropriate URL depending on the deployment 
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
 Kok Foong Lee (kokfoong.lee@cares.cam.ac.uk)
 
-[sea-level.json]: ./stack-manager/inputs/config/sea-level.json
-[landplot_matching.http]: ./http_requests/landplot_matching.http
-[landplot_layer.sql]: ./additional_sql_scripts/landplot_layer.sql
+[api.properties (weather)]: ./cares_weather_config/api.properties
+[cares_weather.http]: ./http_requests/cares_weather.http
 [cityfurniture-footprint-height.sql]: ./additional_sql_scripts/cityfurniture-footprint-height.sql
+[client.properties (weather)]: ./cares_weather_config/client.properties
 [company.http]: ./http_requests/company.http
 [geoserver_layer.sql]: ./additional_sql_scripts/geoserver_layer.sql
-[api.properties (weather)]: ./cares_weather_config/api.properties
-[client.properties (weather)]: ./cares_weather_config/client.properties
-[cares_weather.http]: ./http_requests/cares_weather.http
+[landplot_layer.sql]: ./additional_sql_scripts/landplot_layer.sql
+[landplot_matching.http]: ./http_requests/landplot_matching.http
 [nginx-2]: ./stack-manager/inputs/config/services/nginx-2.json
 [postcode_matching.http]: ./http_requests/postcode_matching.http
+[sea-level.json]: ./stack-manager/inputs/config/sea-level.json
