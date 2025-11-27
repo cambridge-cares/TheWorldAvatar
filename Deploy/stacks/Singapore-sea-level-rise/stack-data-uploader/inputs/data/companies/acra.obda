@@ -20,6 +20,8 @@ target		twa:Building/{building_uuid} a bldg:Building.
 				twa:ontocompany/hasIssueDate twa:ontocompany/IssueDate/{ogc_fid};
 				twa:ontocompany/isIssuedBy twa:ontocompany/FormalOrganization/{issuance_agency_desc};
 				twa:ontocompany/hasIdentifierValue {uen}.
+			twa:ontocompany/FormalOrganization/{issuance_agency_desc} a twa:ontocompany/FormalOrganization ;
+				twa:ontocompany/hasName {issuance_agency_desc}.
 			twa:ontocompany/IssueDate/{ogc_fid} a time:Instant;
 				time:inXSDDate "{uen_issue_date}"^^xsd:date.
 			
