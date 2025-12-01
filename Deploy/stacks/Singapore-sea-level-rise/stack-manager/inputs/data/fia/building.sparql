@@ -9,6 +9,10 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX sf: <http://www.opengis.net/ont/sf>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX time: <http://www.w3.org/2006/time#>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
@@ -313,5 +317,55 @@ WHERE {
       }
     }
   }
+  UNION
+  # ACRA
+  {
+      SERVICE [ONTOP] {
+        SELECT ?Company ?Property ?Value WHERE {
+         ?Company ontocompany:isLocatedIn [IRI].
+         ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
+         filter (?Status = "Registered").
+         ?Company ontocompany:hasName ?Value.
+         BIND ("ACRA Registered Company Name" AS ?Property) .
+        }
+      }
+   }
+   UNION {
+      SERVICE [ONTOP] {
+        SELECT ?Company ?Property ?Value WHERE {
+         ?Company ontocompany:isLocatedIn [IRI].
+         ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
+         filter (?Status = "Registered") .
+         ?Company ontocompany:hasName ?CompanyName.
+         ?Company ontocompany:hasCompanyType ?Value.
+         BIND (CONCAT(STR(?CompanyName)," Type") AS ?Property) .
+               }
+            }
+        }
+   UNION {
+      SERVICE [ONTOP] {
+        SELECT ?Company ?Property ?Value WHERE {
+          ?Company ontocompany:isLocatedIn [IRI].
+          ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
+          filter (?Status = "Registered") .
+          ?Company ontocompany:hasName ?CompanyName.
+          ?Company ontocompany:hasUniqueEntityNumber/ontocompany:hasIdentifierValue ?Value.
+          BIND (CONCAT(STR(?CompanyName)," UEN") AS ?Property) .
+              }
+           }
+         }
+   UNION {
+      SERVICE [ONTOP] {
+        SELECT ?Company ?Property ?Value WHERE {
+          ?Company ontocompany:isLocatedIn [IRI].
+          ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
+          filter (?Status = "Registered") .
+          ?Company ontocompany:hasName ?CompanyName.
+          ?Company ontocompany:hasUniqueEntityNumber/ontocompany:hasIssueDate ?TimeInstant.
+          ?TimeInstant time:inXSDDate ?Value.
+          BIND (CONCAT(STR(?CompanyName)," UEN Issued Date") AS ?Property) .
+              }
+            }
+          }
 }
 ORDER BY ?facility ?Property
