@@ -11,9 +11,9 @@ services:
       # Target Blazegraph namespace. If the namespace is "ontospecies4", set NAMESPACE=ontospecies4
       - NAMESPACE=ontospecies4
       # Query endpoint. Set QUERY_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
-      - QUERY_ENDPOINT=http://159.223.42.53:3838/blazegraph/namespace/ontospecies4/sparql
+      - QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
       # Update endpoint. Set UPDATE_ENDPOINT=http(s)://<server-address>/blazegraph/namespace/ontospecies4/sparql
-      - UPDATE_ENDPOINT=http://159.223.42.53:3838/blazegraph/namespace/ontospecies4/sparql
+      - UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
       # Additional environment variables (when required)
         # Blazegraph user
       - BG_USER=
