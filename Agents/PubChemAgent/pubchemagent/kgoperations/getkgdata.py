@@ -8,7 +8,6 @@ logger = agentlogging.get_logger('prod')
 
 def get_iri_data(inchi):
     """Return (iri, True) if found, else (None, False)."""
-
     kg_client = kg_operations(QUERY_ENDPOINT)
 
     # --- 1. Try original InChI ---
