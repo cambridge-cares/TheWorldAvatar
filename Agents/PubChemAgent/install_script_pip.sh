@@ -41,115 +41,157 @@ function usage {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./install_script.sh -v                            - this will create the base virt. env. for the project"
-	echo "./install_script.sh -v -i                         - this will create the base virt. env. for the project"
-    echo "                                                    and install it with all its dependencies"
-	echo "./install_script.sh -v -i -e                      - this will create the base virt. env. for the project"
-    echo "                                                    and install it in developer mode with all its dev-dependencies"
-	echo "./install_script.sh -i                            - this will install the project and its dependencies in"
-    echo "                                                    the default "$VENV_NAME" environment."
-	echo "./install_script.sh -i -n my_env -d my_env_dir    - this will install the project and its dependencies in"
-    echo "                                                    the my_env environment. Use it if you want to include the"
-    echo "                                                    "$PROJECT_NAME" in a different environment as a dependency"
-    echo "./install_script.sh -v -n my_env -i -e            - this will create virtual environment 'my_env' with all project"
-	echo "                                                    dependencies and install the project in a developer mode"
+    echo "./install_script.sh -v"
+	echo "./install_script.sh -v -i"
+	echo "./install_script.sh -v -i -e"
+	echo "./install_script.sh -i"
+	echo "./install_script.sh -i -n my_env -d my_env_dir"
+    echo "./install_script.sh -v -n my_env -i -e"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
 }
 
 function create_env {
-	echo "Creating virtual environment for this project"
+    echo "Creating virtual environment for this project"
     echo "-----------------------------------------------"
     echo
-        echo "Creating "$VENV_NAME" virtual environment..."
-		if [ -d "$VENV_DIR/$VENV_NAME" ]; then
-			rm -r $VENV_DIR"/"$VENV_NAME
-		fi
-		python -m venv $VENV_DIR"/"$VENV_NAME
-		if [ $? -eq 0 ]; then
-			echo ""
-			echo "    INFO: Virtual environment created."
-			echo "-----------------------------------------"
-		else
-			echo ""
-			echo "    ERROR: Failed to create virtual environment."
-			echo "-----------------------------------------"
-            read -n 1 -s -r -p "Press any key to continue"
-			exit -1
-		fi
-		echo ""
+    echo "Detecting suitable Python interpreter (>= 3.9)..."
+
+    # Try python3.12 → python3.11 → python3.10 → python3.9 → fallback
+    for candidate in python3.12 python3.11 python3.10 python3.9 python3 python; do
+        if command -v $candidate >/dev/null 2>&1; then
+            PYTHON=$candidate
+            break
+        fi
+    done
+
+    if [ -z "$PYTHON" ]; then
+        echo ""
+        echo "    ERROR: No Python interpreter found on the system."
+        echo "-----------------------------------------"
+        exit 1
+    fi
+
+    # Extract version number (major.minor)
+    VERSION=$($PYTHON -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+
+    # Check version requirement (>= 3.9)
+    REQUIRED_MAJOR=3
+    REQUIRED_MINOR=9
+
+    MAJOR=$(echo $VERSION | cut -d. -f1)
+    MINOR=$(echo $VERSION | cut -d. -f2)
+
+    if [ "$MAJOR" -lt "$REQUIRED_MAJOR" ] || { [ "$MAJOR" -eq "$REQUIRED_MAJOR" ] && [ "$MINOR" -lt "$REQUIRED_MINOR" ]; }; then
+        echo ""
+        echo "    ERROR: Python $VERSION is too old."
+        echo "           Python >= 3.9 is required for this project."
+        echo "-----------------------------------------"
+        exit 1
+    fi
+
+    echo "    INFO: Using Python $VERSION ($PYTHON)"
+    echo ""
+
+    echo "Creating $VENV_NAME virtual environment..."
+
+    # Remove previous virtual environment if it exists
+    if [ -d "$VENV_DIR/$VENV_NAME" ]; then
+        rm -r "$VENV_DIR/$VENV_NAME"
+    fi
+
+    # Create the virtual environment
+    $PYTHON -m venv "$VENV_DIR/$VENV_NAME"
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo "    INFO: Virtual environment created successfully."
+        echo "-----------------------------------------"
+    else
+        echo ""
+        echo "    ERROR: Failed to create virtual environment."
+        echo "-----------------------------------------"
+        exit 1
+    fi
+
+    echo ""
 }
 
 function get_pip_path {
-    if [[ $CREATE_VENV == 'y' ]]
-	then        
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
-            PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
-		else
-		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3
-		fi
-	else
+
+    # *** FIX: Correct detection of pip3 path ***
+    if [[ $CREATE_VENV == 'y' ]]; then
+        
+        if [ -f "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+            # Linux/macOS venv path
+            PIPPATH="$VENV_DIR/$VENV_NAME/bin/pip3"
+        elif [ -f "$VENV_DIR/$VENV_NAME/Scripts/pip3.exe" ]; then
+            # Windows venv path
+            PIPPATH="$VENV_DIR/$VENV_NAME/Scripts/pip3.exe"
+        elif [ -f "$VENV_DIR/$VENV_NAME/Scripts/pip3" ]; then
+            # Some Windows variants
+            PIPPATH="$VENV_DIR/$VENV_NAME/Scripts/pip3"
+        else
+            echo "ERROR: Could not locate pip3 in the virtual environment."
+            echo "Checked:"
+            echo "  $VENV_DIR/$VENV_NAME/bin/pip3"
+            echo "  $VENV_DIR/$VENV_NAME/Scripts/pip3"
+            exit 1
+        fi
+
+    else
         PIPPATH=pip3
-	fi
+    fi
 }
 
 function install_project {
-	echo "Installing the project"
+    echo "Installing the project"
     echo "-----------------------------------------------"
     echo
+
     get_pip_path
-    $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
-	#$PIPPATH --disable-pip-version-check install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
-    if [[ "${DEV_INSTALL}" == "-e" ]];
-    then
-        $PIPPATH --disable-pip-version-check install -r $SPATH"/"dev_requirements.txt
+
+    # Always install local source in editable mode
+    $PIPPATH --disable-pip-version-check install -e "$SPATH"
+
+    if [[ "${DEV_INSTALL}" == "-e" ]]; then
+        $PIPPATH --disable-pip-version-check install -r "$SPATH/dev_requirements.txt"
     fi
+
     if [ $? -eq 0 ]; then
-    	echo ""
-    	echo "    INFO: installation complete."
-    	echo "-----------------------------------------"
+        echo ""
+        echo "    INFO: installation complete."
+        echo "-----------------------------------------"
     else
         echo ""
-    	echo ""
-    	echo "    ERROR: installation failed."
-    	echo "-----------------------------------------"
-        read -n 1 -s -r -p "Press any key to continue"
+        echo "    ERROR: installation failed."
+        echo "-----------------------------------------"
         exit -1
     fi
-
 }
 
-# Scan command-line arguments
-if [[ $# = 0 ]]
-then
+# Parse arguments
+if [[ $# = 0 ]]; then
    usage
 fi
-while [[ $# > 0 ]]
-do
+
+while [[ $# > 0 ]]; do
 key="$1"
 case $key in
-    -h)
-     usage;;
+    -h) usage;;
     -v) CREATE_VENV='y'; shift;;
 	-n) VENV_NAME=$2; shift 2;;
 	-d) VENV_DIR=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
 	-e) DEV_INSTALL='-e'; shift;;
-    *)
-	# otherwise print the usage
-    usage
-    ;;
+    *) usage;;
 esac
-
 done
 
-if [[ $CREATE_VENV == 'y' ]]
-then
+if [[ $CREATE_VENV == 'y' ]]; then
     create_env
 fi
-if [[ $INSTALL_PROJ == 'y' ]]
-then
+if [[ $INSTALL_PROJ == 'y' ]]; then
     install_project
 fi
 
