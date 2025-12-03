@@ -23,6 +23,38 @@ $ git clone https://github.com/cambridge-cares/TheWorldAvatar.git
 $ cd TheWorldAvatar/Agents/PubChemAgent
 ```
 
+### Set Environment variables
+
+The Dockerised PubChem Agent can be deployed either as a standalone container, or within an existing Docker stack. Several key environment variables need to be set in your ```docker-compose.yml``` file:
+
+```docker
+# Required environment variables for both stack and standalone (i.e. outside stack) deployment
+
+# Stack name. Leave blank for standalone deployment.
+# Example: STACK_NAME=chemistry_stack
+- STACK_NAME=
+
+# Target Blazegraph namespace.
+# Example: NAMESPACE=ontospecies4
+- NAMESPACE=
+
+# Blazegraph SPARQL query endpoint.
+# Example: QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
+- QUERY_ENDPOINT=
+
+# Blazegraph SPARQL update endpoint.
+# Example: UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
+- UPDATE_ENDPOINT=
+
+# Optional environment variables (if authentication is needed)
+
+# Blazegraph user
+- BG_USER=
+
+# Blazegraph password
+- BG_PASSWORD=
+```
+
 ### Installation from the version-controlled source
 
 To install the `PubChem Agent` on Linux or WSL, choose one of the following four installation methods.
@@ -82,38 +114,6 @@ Run the tests using:
 ```
 
 ## Build and deploy the agent with Docker
-
-### Environment variables
-
-The Dockerised PubChem Agent can be deployed either as a standalone container, or within an existing Docker stack. Several key environment variables need to be set in your ```docker-compose.yml``` file:
-
-```docker
-# Required environment variables for both stack and standalone (i.e. outside stack) deployment
-
-# Stack name. Leave blank for standalone deployment.
-# Example: STACK_NAME=chemistry_stack
-- STACK_NAME=
-
-# Target Blazegraph namespace.
-# Example: NAMESPACE=ontospecies4
-- NAMESPACE=
-
-# Blazegraph SPARQL query endpoint.
-# Example: QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
-- QUERY_ENDPOINT=
-
-# Blazegraph SPARQL update endpoint.
-# Example: UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
-- UPDATE_ENDPOINT=
-
-# Optional environment variables (if authentication is needed)
-
-# Blazegraph user
-- BG_USER=
-
-# Blazegraph password
-- BG_PASSWORD=
-```
 
 ### Build and publish the Docker image
 
