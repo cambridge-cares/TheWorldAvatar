@@ -126,6 +126,10 @@ docker-compose -f docker-compose.yml  build
 # Build the Docker image (debug)
 docker-compose -f docker-compose.debug.yml  build
 
+# Authenticate with the GitHub Container Registry (if not already logged in)
+docker login ghcr.io
+# If prompted, enter your GitHub username and a personal access token with permission and scope to read and write the container repository.
+
 # Publish the Docker image to the Github Container Registry
 docker image push ghcr.io/theworldavatar/pubchem_agent:1.0.0
 ```
@@ -167,13 +171,6 @@ If you want to deploy this agent as part of a TWA stack, follow these steps:
 $ git clone https://github.com/TheWorldAvatar/stack.git
 $ cd stack/stack-manager
 ```
-- Authenticate with the GitHub Container Registry (if not already logged in)
-
-    ```console
-    docker login ghcr.io
-    ```
-    If prompted, enter your GitHub username and a personal access token with permission and scope to read and write the container repository.
-
 - Create two files called ```postgis_password``` and ```geoserver_password``` in the ```stack-manager/inputs/secrets/``` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
 - Copy the ```pubchem-agent.json``` and ```blazegraph.json``` file from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```. The environmental variable ```STACK_NAME``` is already set to ```chemistry_stack``` in the provided configuration. Do not change it.
 - Copy ```chemistry_stack.json``` from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config``` folder of the stack manager.
