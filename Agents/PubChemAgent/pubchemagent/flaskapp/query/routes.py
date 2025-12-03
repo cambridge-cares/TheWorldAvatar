@@ -8,20 +8,36 @@ query_bp = Blueprint(
 # Define a route for API requests
 @query_bp.route('/query/species', methods=['GET'])
 def api():
-    # Check arguments (query parameters)
-    print(request.args)
-    inchi_string = request.args['inchi']
-    inchi_string=inchi_string.replace('%2b','+').replace('%3b',';').replace('%28','(').replace('%29',')').replace('%2e','.').replace('%2c',',')
-    print(inchi_string)
-    
+    inchi_raw = request.args.get('inchi', '')
+    print("Received InChI:", inchi_raw)
+
+    if not inchi_raw:
+        return jsonify({
+            "status": "400",
+            "errormsg": "Missing required parameter: inchi"
+        }), 400
+
+    # --- Require URL-formatted (URL-encoded) InChI ---
+    # Detect illegal character: space.
+    illegal_chars = [' ']
+
+    if any(ch in inchi_raw for ch in illegal_chars):
+        return jsonify({
+            "status": "400",
+            "errormsg": (
+                "Invalid InChI: the InChI string must be URL-encoded. "
+                "For example, '+' must be encoded as '%2B'. "
+                "Please send a URL-formatted InChI string."
+            )
+        }), 400
+
     try:
-        # Run the model
-        IRI_species = species_instantiation(inchi_string)
-        return IRI_species
+        result = species_instantiation(inchi_raw)
+        return result
 
     except Exception as ex:
-        print(ex)
-        return jsonify({"status": '500', 'errormsg': 'Invalid request'})
+        print("❌ Error:", ex)
+        return jsonify({"status": "500", "errormsg": "Internal server error"}), 500
 
 
 # Define a route for API requests
