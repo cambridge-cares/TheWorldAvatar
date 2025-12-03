@@ -7,7 +7,7 @@ from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 
 def get_iri_data(inchi):
-    """Return (iri, True) if found, else (None, False)."""
+    """Return (iri, False) if found, else (None, True)."""
     kg_client = kg_operations(QUERY_ENDPOINT)
 
     # --- 1. Try original InChI ---
@@ -16,20 +16,20 @@ def get_iri_data(inchi):
 
     if data:
         iri = data[0]["speciesIRI"]
-        return iri, True
+        return iri, False   # FOUND → no need to instantiate
 
     # --- 2. Try after replacing =1S/ with =1/ ---
     modified_inchi = inchi.replace("=1S/", "=1/")
-    if modified_inchi != inchi:     # Only query again if the string changed
+    if modified_inchi != inchi:
         query = get_iri_query(modified_inchi)
         data = kg_client.querykg(queryStr=query)
 
         if data:
             iri = data[0]["speciesIRI"]
-            return iri, True
+            return iri, False  # FOUND → no need to instantiate
 
     # --- 3. Not found ---
-    return None, False
+    return None, True  # NOT FOUND → instantiation required
 
 def get_uuid(typeIRI, string):
     # query = get_iri_query(inchi_string=inchi)
