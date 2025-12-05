@@ -181,6 +181,13 @@ def pubchem_atom_insert(uuid, geometryIRI, prov_uuid, unit_uuid, data):
                 os:unit <{ONTOSPECIES_KB_URL}/Unit_{unit_uuid}> ;
                 os:fromGeometry {geometryIRI} .
         """
+        # TODO:
+        # When an element IRI is missing in the PubChem data, `data[p_item].get('element')`
+        # returns `None`, which results in the invalid RDF term `<None>`. As a temporary
+        # workaround, `<None>` is replaced with `<file:///app/None>`. This should be replaced
+        # with a proper error-handling mechanism that: (1) validates element IRIs before
+        # generating triples, (2) reports missing elements clearly, and (3) generates
+        # only valid RDF triples.
         text_atom = text_atom + text.replace("<None>", "<file:///app/None>")
     
     insert_str = f"""

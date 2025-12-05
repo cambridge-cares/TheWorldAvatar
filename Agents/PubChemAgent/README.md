@@ -254,6 +254,28 @@ In order to use the pubchemagent as a web agent when installed from the version-
 (pubchemagent_venv) $ export FLASK_APP=pubchemagent\flaskapp\wsgi.py && flask run
 ```
 
+## To-Do
+
+The following improvements are planned for future releases:
+
+### 1. Replace placeholder `<None>` handling in triple generation
+
+In some cases, PubChem does not provide an element IRI for an atom.  
+When this happens, the current implementation produces a placeholder IRI such as `<None>`, which is invalid.  
+To avoid generating invalid triples, the code replaces `<None>` with `<file:///app/None>` as a workaround.
+
+This behaviour is not correct and should be replaced with a proper handling strategy.
+
+A complete fix should:
+
+- Validate all atom (element) IRIs before triple generation  
+- Raise a clear, descriptive error when required chemical information is missing  
+- Prevent generation of invalid or placeholder IRIs  
+- Remove the need for post-generation string replacement
+
+**Relevant code:**  
+`pubchemagent/kgoperations/querytemplates.py` → inside `pubchem_atom_insert()`
+
 ## Authors
 
 Laura Pascazio (<lp521@cam.ac.uk>)
