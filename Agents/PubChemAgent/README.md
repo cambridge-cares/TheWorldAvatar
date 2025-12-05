@@ -63,7 +63,7 @@ To install the `PubChem Agent` on Linux or WSL, choose one of the following four
 
 ```bash
 # create a virtual environment
-$ python3.9 -m venv pubchemagent_venv
+$ python3 -m venv pubchemagent_venv
 # activate the virtual environment
 $ source pubchemagent_venv/bin/activate
 # perform a standard installation (package files are copied into the environment)
@@ -74,7 +74,7 @@ $ source pubchemagent_venv/bin/activate
 
 ```bash
 # create a virtual environment
-$ python3.9 -m venv pubchemagent_venv
+$ python3 -m venv pubchemagent_venv
 # activate the virtual environment
 $ source pubchemagent_venv/bin/activate
 # install in editable mode, which links the project directory into the environment for active development
