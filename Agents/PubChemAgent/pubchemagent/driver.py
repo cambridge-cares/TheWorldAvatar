@@ -13,7 +13,7 @@ Options:
 def main():
 
     try:
-        args = docopt(__doc__, version='1.0.0rc2')
+        args = docopt(__doc__, version='1.1.0rc2')
     except DocoptExit:
         raise DocoptExit('Error: pubchemagent called with wrong arguments.')
 

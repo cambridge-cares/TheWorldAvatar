@@ -1,5 +1,3 @@
-# pip install rdkit-pypi requests
-
 from rdkit import Chem
 from rdkit.Chem.inchi import MolFromInchi, MolToInchiKey
 from urllib.parse import quote
