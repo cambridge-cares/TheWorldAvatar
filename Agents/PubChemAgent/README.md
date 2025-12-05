@@ -172,7 +172,7 @@ $ git clone https://github.com/TheWorldAvatar/stack.git
 $ cd stack/stack-manager
 ```
 - Create two files called ```postgis_password``` and ```geoserver_password``` in the ```stack-manager/inputs/secrets/``` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
-- Copy the ```pubchem-agent.json``` and ```blazegraph.json``` file from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```. The environmental variable ```STACK_NAME``` is already set to ```chemistry_stack``` in the provided configuration. Do not change it.
+- Copy the ```pubchem-agent.json``` and ```blazegraph.json``` files from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```. The environmental variable ```STACK_NAME``` is already set to ```chemistry_stack``` in the provided configuration. Do not change it.
 - Copy ```chemistry_stack.json``` from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config``` folder of the stack manager.
 - To start the stack manager using the default port 3838, run the following from ```stack/stack-manager``` directory.
 
@@ -194,6 +194,28 @@ To retrieve the IRI of a species (e.g., argon), open <http://localhost:3838/pubc
 If not, the agent will query PubChem, instantiate the species, and return the new IRI.
 
 If you can access this endpoint successfully, it means you have successfully spun up the agent within the stack. You can now start retrieving and instantiating species using their InChI identifiers, and you may skip the rest of the sections.
+
+#### Why do you need `blazegraph.json`?
+
+The file `PubChemAgent/pubchemagent/stack-manager-input-config/blazegraph.json` is included in the stack manager only to spin up an additional Blazegraph instance for development.
+
+When deploying the `PubChemAgent` inside a stack, some developers find it useful to launch a dedicated Blazegraph service for local testing or experimentation.  
+The provided `blazegraph.json` enables the stack manager to start this optional Blazegraph instance.
+
+**Important notes:**
+
+- This file is *not required* to run the agent.
+- The PubChem Agent works fully with any external Blazegraph endpoint, as long as the appropriate `NAMESPACE`, `QUERY_ENDPOINT` and `UPDATE_ENDPOINT` environment variables are provided.
+
+If your deployment uses an existing remote Blazegraph (e.g., a server-hosted namespace), you may safely omit this file **and** remove the corresponding `Configs` block from the `pubchem-agent.json` file:
+
+```json
+"Configs": [
+    {
+        "ConfigName": "blazegraph"
+    }
+]
+```
 
 ### Notes on debugging
 
