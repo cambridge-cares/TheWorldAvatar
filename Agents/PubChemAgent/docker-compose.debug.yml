@@ -3,17 +3,17 @@ version: "3.8"
 services:
   pubchem_agent:
     container_name: "pubchem_agent"
-    image: ghcr.io/theworldavatar/pubchem_agent:1.0.0
+    image: ghcr.io/theworldavatar/pubchem_agent:1.1.0
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-      - STACK_NAME= # to be left blank for "standalone" deployment
-      # Additional environment variables required for Stack deployment
-      # (can be left blank for "standalone" deployment)
-      - NAMESPACE=  # Target Blazegraph namespace
-      # Additional environment variables required for "standalone deployment"
-      # (can be left blank for Stack deployment)
-      - QUERY_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies
-      - UPDATE_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies
+      # Leave it blank for "standalone" deployment. If the stack name is "chemistry_stack", for stack deployment set STACK_NAME=chemistry_stack
+      - STACK_NAME=
+      # Target Blazegraph namespace. If the namespace is "ontospecies4", set NAMESPACE=ontospecies4
+      - NAMESPACE=ontospecies4
+      # Query endpoint. Set QUERY_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies4/sparql
+      - QUERY_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies4/sparql
+      # Update endpoint. Set UPDATE_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies4/sparql
+      - UPDATE_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies4/sparql
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .

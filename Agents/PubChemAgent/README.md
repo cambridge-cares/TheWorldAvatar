@@ -131,7 +131,7 @@ docker login ghcr.io
 # If prompted, enter your GitHub username and a personal access token with permission and scope to read and write the container repository.
 
 # Publish the Docker image to the Github Container Registry
-docker image push ghcr.io/theworldavatar/pubchem_agent:1.0.0
+docker image push ghcr.io/theworldavatar/pubchem_agent:1.1.0
 ```
 
 ### Docker deployment
@@ -164,7 +164,7 @@ If you want to deploy this agent as part of a TWA stack, follow these steps:
 - Assuming that you already built and published the docker image. If not, build and publish the production image using the commands provided below:
   ```bash
   docker-compose -f docker-compose.yml build
-  docker image push ghcr.io/theworldavatar/pubchem_agent:1.0.0
+  docker image push ghcr.io/theworldavatar/pubchem_agent:1.1.0
   ```
 - Clone the stack repository and enter the ```stack-manager``` directory using these commands:
 ```bash

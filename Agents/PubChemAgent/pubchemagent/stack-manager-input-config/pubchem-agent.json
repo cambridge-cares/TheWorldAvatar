@@ -3,7 +3,7 @@
         "Name": "pubchem-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/theworldavatar/pubchem_agent:1.0.0",
+                "Image": "ghcr.io/theworldavatar/pubchem_agent:1.1.0",
                 "Env": [
                     "STACK_NAME=chemistry_stack",
                     "NAMESPACE=",

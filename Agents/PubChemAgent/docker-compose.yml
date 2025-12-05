@@ -3,7 +3,7 @@ version: "3.8"
 services:
   pubchem_agent:
     container_name: "pubchem_agent"
-    image: ghcr.io/theworldavatar/pubchem_agent:1.0.0
+    image: ghcr.io/theworldavatar/pubchem_agent:1.1.0
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
       # Leave it blank for "standalone" deployment. If the stack name is "chemistry_stack", for stack deployment set STACK_NAME=chemistry_stack
