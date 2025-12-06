@@ -6,9 +6,6 @@ from pubchemagent.kgoperations.querytemplates import *
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL
 
-if UPDATE_ENDPOINT is None:
-    from pubchemagent.utils.url_configs import UPDATE_ENDPOINT 
-
 def get_chebi_tree(chebiID):
     ch = ChEBI()
     res = ch.getCompleteEntity(chebiID)

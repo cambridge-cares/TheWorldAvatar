@@ -150,32 +150,40 @@ class pug_api():
                             i=i+1       
                         if key in num_prop_list or key in thermo_list or key in class_list:
                             for item in prop_list:
-                                exp_prop[i]={}
+                                exp_prop[i] = {}
+                                Q = None
+                                ep_unit = ''
+                                description = ''
+                                ep_string = ''
+
                                 if 'StringWithMarkup' in item.get('Value'):
                                     value = item.get('Value').get('StringWithMarkup')
                                     for i_value in value:
                                         ep_string = i_value.get('String')
-                                        ep_unit=''
                                         description = ep_string
                                         Q, ep_string = pug_api.string_parser(ep_string)
+
                                 elif 'Number' in item.get('Value'):
                                     value = item.get('Value')
                                     ep_string = value.get('Number')
-                                    if value.get('Unit'):
-                                        ep_unit = value.get('Unit')
-                                    else:
-                                        ep_unit=''
+                                    ep_unit = value.get('Unit') if value.get('Unit') else ''
                                     description = str(ep_string[0]) + ' ' + ep_unit
                                     Q, ep_string = pug_api.string_parser(description)
-                                if Q != None:
-                                    Qtot = Qtot + [Q]
+
+                                # If neither block executes, Q stays None (safe)
+                                if Q is not None:
+                                    Qtot.append(Q)
                                 reference_num = item.get('ReferenceNumber')
+                                reference = ""
                                 if item.get('Reference'):
-                                        reference='DOI:' + item.get('Reference')[0].partition('DOI:')[2]
-                                if 'Reference' not in item or reference == 'DOI:':    
+                                    ref_str = item.get('Reference')[0]
+                                    doi_val = ref_str.partition('DOI:')[2]
+                                    reference = "DOI:" + doi_val if doi_val else ""
+                                if not reference:
                                     for r in Reference:
                                         if r.get('ReferenceNumber') == reference_num:
-                                            reference=r.get('URL')   
+                                            reference=r.get('URL')
+                                            break 
                                 exp_prop[i]['key'] = key.replace(' ', '').replace('/','').replace('\'','')                                       
                                 exp_prop[i]['value'] = ep_string
                                 exp_prop[i]['description'] = description.replace("\'","").replace("\\","/").replace('"','')
@@ -220,9 +228,10 @@ class pug_api():
 
     def format_result(result): 
         props = {}     
-        unit = ''
-        ref_quantity = ''
-        ref_unit = ''  
+        quantity = None
+        unit = ""
+        ref_quantity = None
+        ref_unit = ""
         if hasattr(result, 'm'):
             result = result.to_base_units()
             quantity = result.m
@@ -326,6 +335,7 @@ class pug_api():
                             prop_list = prop.get('Information')
                             key = prop.get('TOCHeading')
                             for item in prop_list:
+                                ep_string = ""
                                 if 'StringWithMarkup' in item.get('Value'):
                                     value = item.get('Value').get('StringWithMarkup')
                                     for i_value in value:
@@ -418,17 +428,18 @@ class pug_api():
                     data = data.get('Record').get('Section')[0].get('Section')[0].get('Section')[0].get('Information')[0]
                     value = data.get('Value').get('StringWithMarkup')
                     reference_num = data.get('ReferenceNumber')
+                    reference = None
                     for r in Reference:
                         if r.get('ReferenceNumber') == reference_num:
                             reference=r.get('URL')
-                    key = i_key.replace('+',' ')
+                            break
                     for i_value in value:
                         if 'Information on' not in i_value.get('String'):
                             uses[i]={}
                             uses[i]['key']='Use'
                             use_string = i_value.get('String')
                             uses[i]['value'] = use_string.replace('• ','')
-                            uses[i]['provenance'] = reference
+                            uses[i]['provenance'] = reference or ""
                             uses[i]['type']='use'
                             i=i+1
                 #else:
@@ -498,11 +509,14 @@ class pug_api():
                                             if item2.get('Name') and ("Shift" in item2.get('Name') or "Top 5 Peaks" in item2.get('Name')):
                                                 key = item.get('TOCHeading')
                                                 value = item2.get('Value').get('StringWithMarkup')
+                                                reference = None
                                                 reference_num = item2.get('ReferenceNumber')
                                                 for r in Reference:
                                                     if r.get('ReferenceNumber') == reference_num:
                                                         reference=r.get('URL') 
                                                         break  
+                                                if reference is None:
+                                                    reference = ""
                                                 x1 = []  
                                                 x2 = []
                                                 intensity = []
@@ -605,6 +619,7 @@ class pug_api():
                         if key in el_prop_list:
                             for item in prop_list:
                                 el_props[i]={}
+                                ep_string = ""
                                 if 'StringWithMarkup' in item.get('Value'):
                                     value = item.get('Value').get('StringWithMarkup')
                                     for i_value in value:

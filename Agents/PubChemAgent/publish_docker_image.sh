@@ -26,8 +26,8 @@ usage() {
     echo "  -h              : Print this usage message."
     echo ""
     echo "Example usage:"
-    echo "./publish_docker_image.sh -v 1.0.0            - upload version 1.0.0"
-    echo "./publish_docker_image.sh -v 1.0.0-SNAPSHOT   - upload version 1.0.0-SNAPSHOT"
+    echo "./publish_docker_image.sh -v 1.1.0            - upload version 1.1.0"
+    echo "./publish_docker_image.sh -v 1.1.0-SNAPSHOT   - upload version 1.1.0-SNAPSHOT"
     echo "==============================================================================================================="
     read -n 1 -s -r -p "Press any key to continue"
     exit

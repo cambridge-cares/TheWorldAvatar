@@ -2,48 +2,34 @@ from pubchemagent.kgoperations.querykg import kg_operations
 from pubchemagent.kgoperations.querytemplates import *
 import os
 from pubchemagent.utils.default_configs import QUERY_ENDPOINT
-from pubchemagent.utils.url_configs import SPARQL_ENDPOINTS_ONTOSPECIES
-
-if QUERY_ENDPOINT is None:
-    from pubchemagent.utils.url_configs import QUERY_ENDPOINT 
 
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 
 def get_iri_data(inchi):
-    inchi_string=inchi
-    query = get_iri_query(inchi_string)
-    sparqlendpoint = SPARQL_ENDPOINTS_ONTOSPECIES
-    # create a SPARQL object for performing the query
-    kg_client = kg_operations(sparqlendpoint)
+    """Return (iri, False) if found, else (None, True)."""
+    kg_client = kg_operations(QUERY_ENDPOINT)
+
+    # --- 1. Try original InChI ---
+    query = get_iri_query(inchi)
     data = kg_client.querykg(queryStr=query)
-    iri = None
-    flag = "true"
-    if data:
-        data = data[0]
-        iri = data['speciesIRI']
-        flag = "true"
 
-    inchi_string = inchi_string.replace("=1S/", "=1/")
-    query = get_iri_query(inchi_string)
-    data = kg_client.querykg(query)
     if data:
-        data = data[0]
-        iri = data['speciesIRI']
-        flag = "true"
-    
-    inchi_string = inchi_string.replace("=1/", "=1S/")
-    query = spec_inchi_query(inchi_string)
-    sparqlendpoint = QUERY_ENDPOINT
-    # create a SPARQL object for performing the query
-    kg_client = kg_operations(sparqlendpoint)
-    data = kg_client.querykg(query)
-    if data:
-        data = data[0]
-        iri = data['speciesIRI']
-        flag = "false"
+        iri = data[0]["speciesIRI"]
+        return iri, False   # FOUND → no need to instantiate
 
-    return iri, flag
+    # --- 2. Try after replacing =1S/ with =1/ ---
+    modified_inchi = inchi.replace("=1S/", "=1/")
+    if modified_inchi != inchi:
+        query = get_iri_query(modified_inchi)
+        data = kg_client.querykg(queryStr=query)
+
+        if data:
+            iri = data[0]["speciesIRI"]
+            return iri, False  # FOUND → no need to instantiate
+
+    # --- 3. Not found ---
+    return None, True  # NOT FOUND → instantiation required
 
 def get_uuid(typeIRI, string):
     # query = get_iri_query(inchi_string=inchi)

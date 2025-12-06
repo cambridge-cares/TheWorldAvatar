@@ -1,12 +1,17 @@
 # Install PubChem agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.55.0 as stackclients
 
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.9-slim-buster as base
+FROM python:3.11-slim as base
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends openjdk-21-jre-headless; \
+    rm -rf /var/lib/apt/lists/*
 # Meta data
 LABEL authors = "lp521@cam.ac.uk"
 LABEL description = "Agents that imports data from PubChem and populate OntoSpecies"
@@ -15,9 +20,6 @@ LABEL description = "Agents that imports data from PubChem and populate OntoSpec
 ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
-
-# Install Java
-RUN apt update && apt install -y openjdk-11-jdk-headless
 
 # Copy Stack-Client resource from published Docker image (potentially ensure
 # directory structure matches requirements for jpsrm to update py4jps resources)
