@@ -10,7 +10,7 @@ These instructions will help you get a copy of the project running on your local
 
 ### Requirements
 
-- You need Python ≥ 3.9 to run the `PubChem Agent`. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
+- You need Python ≥ 3.11 to run the `PubChem Agent`. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
 - You also need to install a [Java Runtime Environment version ≥ 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 
 ### Clone the Repository

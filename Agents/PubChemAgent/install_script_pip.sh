@@ -62,7 +62,7 @@ function create_env {
     echo "Creating virtual environment for this project"
     echo "-----------------------------------------------"
     echo
-    echo "Detecting suitable Python interpreter (>= 3.9)..."
+    echo "Detecting suitable Python interpreter (>= 3.11)..."
 
     # Try python3.12 → python3.11 → python3.10 → python3.9 → fallback
     for candidate in python3.12 python3.11 python3.10 python3.9 python3 python; do
@@ -82,7 +82,7 @@ function create_env {
     # Extract version number (major.minor)
     VERSION=$($PYTHON -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
 
-    # Check version requirement (>= 3.9)
+    # Check version requirement (>= 3.11)
     REQUIRED_MAJOR=3
     REQUIRED_MINOR=9
 
@@ -92,7 +92,7 @@ function create_env {
     if [ "$MAJOR" -lt "$REQUIRED_MAJOR" ] || { [ "$MAJOR" -eq "$REQUIRED_MAJOR" ] && [ "$MINOR" -lt "$REQUIRED_MINOR" ]; }; then
         echo ""
         echo "    ERROR: Python $VERSION is too old."
-        echo "           Python >= 3.9 is required for this project."
+        echo "           Python >= 3.11 is required for this project."
         echo "-----------------------------------------"
         exit 1
     fi

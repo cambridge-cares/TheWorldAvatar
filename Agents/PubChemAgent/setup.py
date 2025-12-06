@@ -9,7 +9,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),
     url="https://github.com/cambridge-cares/TheWorldAvatar",
-    python_requires='>=3.9',
+    python_requires='>=3.11',
     include_package_data=True,
     install_requires=[
         'numpy<2.0',
