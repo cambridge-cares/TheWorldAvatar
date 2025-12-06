@@ -153,6 +153,31 @@ If not, the agent queries PubChem, instantiates the species in the target namesp
 
 If you are able to access this endpoint successfully, it means the agent has been deployed correctly. You can now begin retrieving and instantiating species using their InChIs.
 
+**Important notes:**
+
+The PubChem Agent works fully with any external Blazegraph endpoint, as long as the required environment variables `NAMESPACE`, `QUERY_ENDPOINT` and `UPDATE_ENDPOINT` are correctly set.
+
+If your deployment already relies on a remote Blazegraph instance (for example, a server-hosted namespace), you can safely remove the Blazegraph service definition from both the `docker-compose.yml` and `docker-compose.debug.yml` files:
+
+This means deleting the following blocks:
+
+```yaml
+  blazegraph_os:
+    container_name: "blazegraph_os"
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - blazegraph_os_data:/blazegraph
+    networks:
+      - default
+
+volumes:
+  blazegraph_os_data:
+    name: "blazegraph_os_data"
+```
+
 ### Stack Deployment
 
 If you want to deploy this agent as part of a TWA stack, follow these steps:
