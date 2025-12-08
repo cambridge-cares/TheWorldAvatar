@@ -64,8 +64,8 @@ function create_env {
     echo
     echo "Detecting suitable Python interpreter (>= 3.11)..."
 
-    # Try python3.12 → python3.11 → python3.10 → python3.9 → fallback
-    for candidate in python3.12 python3.11 python3.10 python3.9 python3 python; do
+    # Try Python interpreters (>= 3.11) in descending version order
+    for candidate in python3.12 python3.11 python3; do
         if command -v $candidate >/dev/null 2>&1; then
             PYTHON=$candidate
             break
