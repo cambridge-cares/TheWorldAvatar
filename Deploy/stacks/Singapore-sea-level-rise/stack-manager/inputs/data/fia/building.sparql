@@ -10,8 +10,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX sf: <http://www.opengis.net/ont/sf>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX time: <http://www.w3.org/2006/time#>
 
 SELECT ?Property ?Value ?Unit
