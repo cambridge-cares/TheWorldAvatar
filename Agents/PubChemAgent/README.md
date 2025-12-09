@@ -139,7 +139,7 @@ docker image push ghcr.io/theworldavatar/pubchem_agent:1.1.0
 To deploy the Dockerised agent, run the following commands from the directory where this README is located (use a bash terminal to avoid potential issues with inconsistent path separators).
 
 ```bash
-# Run the production container locally
+# Run the production container outside of a stack
 docker compose up
 
 # Run the debug container locally
