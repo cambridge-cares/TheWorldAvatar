@@ -6,7 +6,7 @@ FROM ghcr.io/theworldavatar/stack-client:1.55.0 AS stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.11-slim as base
+FROM python:3.11-slim AS base
 
 RUN set -eux; \
     apt-get update; \
