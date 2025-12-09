@@ -140,7 +140,7 @@ To deploy the Dockerised agent, run the following commands from the directory wh
 
 ```bash
 # Run the production container locally
-docker-compose -f docker-compose.yml  up
+docker compose up
 
 # Run the debug container locally
 docker-compose -f docker-compose.debug.yml  up
