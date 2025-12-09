@@ -121,7 +121,7 @@ To build and publish the agent's Docker image, use the following commands. All o
 
 ```bash
 # Build the Docker image (production)
-docker-compose -f docker-compose.yml  build
+docker compose build
 
 # Build the Docker image (debug)
 docker-compose -f docker-compose.debug.yml  build
