@@ -1,7 +1,7 @@
 # Install PubChem agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM ghcr.io/theworldavatar/stack-client:1.55.0 as stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.55.0 AS stackclients
 
 #------------------------------------------------------
 # Base image to be reused
