@@ -7,7 +7,7 @@
                 "Env": [
                     "STACK_NAME=chemistry_stack",
                     "NAMESPACE=",
-                    "QUERY_ENDPOINT=QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
+                    "QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
                     "UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
                     "BG_USER=",
                     "BG_PASSWORD="
