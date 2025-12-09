@@ -124,7 +124,7 @@ To build and publish the agent's Docker image, use the following commands. All o
 docker compose build
 
 # Build the Docker image (debug)
-docker-compose -f docker-compose.debug.yml  build
+docker compose -f docker-compose.debug.yml build
 
 # Authenticate with the GitHub Container Registry (if not already logged in)
 docker login ghcr.io
