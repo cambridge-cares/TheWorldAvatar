@@ -188,7 +188,7 @@ If you want to deploy this agent as part of a TWA stack, follow these steps:
   ```
 - Assuming that you already built and published the docker image. If not, build and publish the production image using the commands provided below:
   ```bash
-  docker-compose -f docker-compose.yml build
+  docker compose build
   docker image push ghcr.io/theworldavatar/pubchem_agent:1.1.0
   ```
 - Clone the stack repository and enter the ```stack-manager``` directory using these commands:
