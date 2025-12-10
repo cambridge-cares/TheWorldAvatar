@@ -202,7 +202,7 @@ $ cd stack/stack-manager
 - To start the stack manager using the default port 3838, run the following from ```stack/stack-manager``` directory.
 
 ```bash
-bash ./stack.sh start chemistry_stack
+bash ./stack.sh start <STACK_NAME>
 ```
 
 If you want to run it on a different port, run the following command instead by setting the port number:
