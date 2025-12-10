@@ -1,13 +1,15 @@
 {
     "services": {
-        "includes": [
-            "pubchem-agent"
+        "includes": [  
+            "pubchem-agent"   
         ],
         "excludes": [
             "ontop",
             "gdal",
             "geoserver",
-		"postgis"
+            "postgis",
+            "citytiler",
+            "citydbimpexp"
         ]
     }
 }

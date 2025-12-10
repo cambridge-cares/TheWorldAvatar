@@ -1,11 +1,19 @@
+import os
+import pytest
+
+# ---------------------------------------------------------
+# FIX: Set dummy SPARQL endpoints BEFORE any package import
+# ---------------------------------------------------------
+os.environ["QUERY_ENDPOINT"] = "http://example.org/sparql"
+os.environ["UPDATE_ENDPOINT"] = "http://example.org/update"
+
+# Now safe to import
 from pubchemagent.app import *
 from pubchemagent.pug import pug_api
 from pubchemagent.flaskapp import create_app
-import pytest
-import os
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-TEST_DIR = os.path.join(THIS_DIR,'refData')
+TEST_DIR = os.path.join(THIS_DIR, 'refData')
 
 @pytest.fixture
 def client():

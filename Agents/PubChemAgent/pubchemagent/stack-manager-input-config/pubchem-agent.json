@@ -3,9 +3,12 @@
         "Name": "pubchem-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/pubchem_agent:1.0.0",
+                "Image": "ghcr.io/theworldavatar/pubchem_agent:1.1.0",
                 "Env": [
-                    "NAMESPACE=ontospecies"
+                    "QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
+                    "UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
+                    "BG_USER=",
+                    "BG_PASSWORD="
                 ],
                 "Configs": [
                     {

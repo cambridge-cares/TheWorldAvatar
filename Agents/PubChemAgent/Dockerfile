@@ -1,12 +1,17 @@
 # Install PubChem agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.55.0 AS stackclients
 
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.9-slim-buster as base
+FROM python:3.11-slim AS base
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends openjdk-21-jre-headless; \
+    rm -rf /var/lib/apt/lists/*
 # Meta data
 LABEL authors = "lp521@cam.ac.uk"
 LABEL description = "Agents that imports data from PubChem and populate OntoSpecies"
@@ -15,9 +20,6 @@ LABEL description = "Agents that imports data from PubChem and populate OntoSpec
 ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
-
-# Install Java
-RUN apt update && apt install -y openjdk-11-jdk-headless
 
 # Copy Stack-Client resource from published Docker image (potentially ensure
 # directory structure matches requirements for jpsrm to update py4jps resources)
@@ -49,7 +51,7 @@ EXPOSE 5000
 #------------------------------------------------------
 # Debugging image reusing the base
 #------------------------------------------------------
-FROM base as debug
+FROM base AS debug
 # Install additional dependencies for debugging
 RUN pip install debugpy
 
@@ -64,7 +66,7 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
-FROM base as prod
+FROM base AS prod
 # Install additional dependencies
 RUN pip install gunicorn
 
