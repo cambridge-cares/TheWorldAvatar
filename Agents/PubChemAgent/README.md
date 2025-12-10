@@ -243,8 +243,8 @@ If your deployment uses an existing remote Blazegraph (e.g., a server-hosted nam
 The stack deployment of the agent is focused on the production image of the agent. To debug the agent, it is easiest to deploy the debug version locally by providing all required parameters in the docker-compose.debug.yml and running the below commands (build as required):
 
 ```bash
-docker-compose -f docker-compose.debug.yml  build
-docker-compose -f docker-compose.debug.yml  up
+docker compose -f docker-compose.debug.yml  build
+docker compose -f docker-compose.debug.yml  up
 ```
 
 This spins up the agent on <http://localhost:5000>, waiting for the debugger to attach. To attach to the container and start debugging, please use the provided Python: Debug Flask within Docker debug configuration. Although outside the stack, this procedure allows to debug all essential functionality of the agent (without the need to have a full stack running).
