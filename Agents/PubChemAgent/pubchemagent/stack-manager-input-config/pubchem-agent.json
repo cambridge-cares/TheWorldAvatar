@@ -6,7 +6,6 @@
                 "Image": "ghcr.io/theworldavatar/pubchem_agent:1.1.0",
                 "Env": [
                     "STACK_NAME=chemistry_stack",
-                    "NAMESPACE=",
                     "QUERY_ENDPOINT=QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
                     "UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql",
                     "BG_USER=",
