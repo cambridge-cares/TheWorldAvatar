@@ -51,7 +51,7 @@ EXPOSE 5000
 #------------------------------------------------------
 # Debugging image reusing the base
 #------------------------------------------------------
-FROM base as debug
+FROM base AS debug
 # Install additional dependencies for debugging
 RUN pip install debugpy
 
@@ -66,7 +66,7 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
-FROM base as prod
+FROM base AS prod
 # Install additional dependencies
 RUN pip install gunicorn
 

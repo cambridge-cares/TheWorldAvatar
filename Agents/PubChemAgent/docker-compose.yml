@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   pubchem_agent:
     container_name: "pubchem_agent"
