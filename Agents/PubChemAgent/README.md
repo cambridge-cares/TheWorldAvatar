@@ -197,7 +197,7 @@ $ git clone https://github.com/TheWorldAvatar/stack.git
 $ cd stack/stack-manager
 ```
 - Create two files called ```postgis_password``` and ```geoserver_password``` in the ```stack-manager/inputs/secrets/``` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
-- Copy the ```pubchem-agent.json``` and ```blazegraph.json``` files from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```. The environmental variable ```STACK_NAME``` is already set to ```chemistry_stack``` in the provided configuration. Do not change it.
+- Copy the ```pubchem-agent.json``` and ```blazegraph.json``` files from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```.
 - Copy ```chemistry_stack.json``` from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config``` folder of the stack manager.
 - To start the stack manager using the default port 3838, run the following from ```stack/stack-manager``` directory.
 
