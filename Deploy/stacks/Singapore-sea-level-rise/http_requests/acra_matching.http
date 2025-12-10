@@ -2,7 +2,7 @@ POST http://localhost:3838/buildingidentificationagent/postgis
 content-type: application/json
 
 {
-    "maxDistance": "100.0",
+    "maxDistance": "50",
     "table": "acraregisteredcompanyaddress",
     "column": "wkb_geometry",
     "oneToMany": "false"
