@@ -121,10 +121,10 @@ To build and publish the agent's Docker image, use the following commands. All o
 
 ```bash
 # Build the Docker image (production)
-docker-compose -f docker-compose.yml  build
+docker compose build
 
 # Build the Docker image (debug)
-docker-compose -f docker-compose.debug.yml  build
+docker compose -f docker-compose.debug.yml build
 
 # Authenticate with the GitHub Container Registry (if not already logged in)
 docker login ghcr.io
@@ -139,11 +139,11 @@ docker image push ghcr.io/theworldavatar/pubchem_agent:1.1.0
 To deploy the Dockerised agent, run the following commands from the directory where this README is located (use a bash terminal to avoid potential issues with inconsistent path separators).
 
 ```bash
-# Run the production container locally
-docker-compose -f docker-compose.yml  up
+# Run the production container outside of a stack
+docker compose up
 
-# Run the debug container locally
-docker-compose -f docker-compose.debug.yml  up
+# Run the debug container outside of a stack
+docker compose -f docker-compose.debug.yml up
 ```
 
 To verify that the agent has started correctly, open <http://localhost:5000> in your browser.
@@ -184,7 +184,7 @@ If you want to deploy this agent as part of a TWA stack, follow these steps:
 
 - Assuming that you already built and published the docker image. If not, build and publish the production image using the commands provided below:
   ```bash
-  docker-compose -f docker-compose.yml build
+  docker compose build
   docker image push ghcr.io/theworldavatar/pubchem_agent:1.1.0
   ```
 - Clone the stack repository and enter the ```stack-manager``` directory using these commands:
@@ -193,18 +193,18 @@ $ git clone https://github.com/TheWorldAvatar/stack.git
 $ cd stack/stack-manager
 ```
 - Create two files called ```postgis_password``` and ```geoserver_password``` in the ```stack-manager/inputs/secrets/``` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
-- Copy the ```pubchem-agent.json``` and ```blazegraph.json``` files from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```. The environmental variable ```STACK_NAME``` is already set to ```chemistry_stack``` in the provided configuration. Do not change it.
+- Copy the ```pubchem-agent.json``` and ```blazegraph.json``` files from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config/services``` folder of the stack manager. Set the enviromental variables NAMESPACE, QUERY_ENDPOINT and UPDATE_ENDPOINT in ```pubchem-agent.json```.
 - Copy ```chemistry_stack.json``` from the ```PubChemAgent/pubchemagent/stack-manager-input-config``` folder into the ```inputs/config``` folder of the stack manager.
 - To start the stack manager using the default port 3838, run the following from ```stack/stack-manager``` directory.
 
 ```bash
-bash ./stack.sh start chemistry_stack
+bash ./stack.sh start <STACK_NAME>
 ```
 
 If you want to run it on a different port, run the following command instead by setting the port number:
 
 ```bash
-bash ./stack.sh start chemistry_stack <PORT_NUMBER>
+bash ./stack.sh start <STACK_NAME> <PORT_NUMBER>
 ```
 
 Use a Bash terminal to avoid potential issues with inconsistent path separators. Once started, the agent will be available at <http://localhost:PORT/pubchemagent/> (e.g. <http://localhost:3838/pubchemagent/> when using the default port).
