@@ -182,10 +182,6 @@ volumes:
 
 If you want to deploy this agent as part of a TWA stack, follow these steps:
 
-- Set the ```STACK_NAME``` in your ```docker-compose.yml``` file, for example:
-  ```bash
-  STACK_NAME=chemistry_stack
-  ```
 - Assuming that you already built and published the docker image. If not, build and publish the production image using the commands provided below:
   ```bash
   docker-compose -f docker-compose.yml build
@@ -253,6 +249,51 @@ docker-compose -f docker-compose.debug.yml  up
 
 This spins up the agent on <http://localhost:5000>, waiting for the debugger to attach. To attach to the container and start debugging, please use the provided Python: Debug Flask within Docker debug configuration. Although outside the stack, this procedure allows to debug all essential functionality of the agent (without the need to have a full stack running).
 
+## Running the agent without Docker
+
+If you installed the agent from the version-controlled source, you can run it using Flask.
+Before starting the server, you must define the following required SPARQL endpoint environment variables.
+
+1. Set mandatory environment variables
+
+The agent requires the following variables:
+
+NAMESPACE – the Blazegraph namespace (e.g., ontospecies4)
+
+QUERY_ENDPOINT – SPARQL query endpoint URL
+
+UPDATE_ENDPOINT – SPARQL update endpoint URL
+
+`(Windows)`
+
+```cmd
+(pubchemagent_venv) $ set NAMESPACE=ontospecies4
+(pubchemagent_venv) $ set QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
+(pubchemagent_venv) $ set UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
+```
+
+`(Linux)`
+
+```bash
+(pubchemagent_venv) $ export NAMESPACE=ontospecies4
+(pubchemagent_venv) $ export QUERY_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
+(pubchemagent_venv) $ export UPDATE_ENDPOINT=http://<your-blazegraph-host>/blazegraph/namespace/ontospecies4/sparql
+```
+
+2. Start the Flask server
+
+`(Windows)`
+
+```cmd
+(pubchemagent_venv) $ set FLASK_APP=pubchemagent\flaskapp\wsgi.py & flask run
+```
+
+`(Linux)`
+
+```bash
+(pubchemagent_venv) $ export FLASK_APP=pubchemagent.flaskapp.wsgi.py && flask run
+```
+
 ## How to use
 
 The agent can be used as a simple command line tool or as a web agent.
@@ -275,30 +316,35 @@ Example usage:
 (pubchemagent_venv) $ pubchemagent --inchi='InChI=1/Ar'
 ```
 
-### Web agent usage
+### Using the agent with HTTP requests
 
-The agent can be run as a web agent sending the following http request with the following option:
+You can interact with the agent through its HTTP API using tools such as `curl`.
 
-(If the agent has been installed from the version-controlled source or deployed from docker image)
-<http://localhost:5000/pubchemagent/query/species?inchi='inchi_string>'
-example usage: <http://localhost:5000/pubchemagent/query/species?inchi='InChI=1/Ar>'
+#### Flask
 
-(Stack deployment)
-<http://localhost:3838/pubchemagent/query/species?inchi='inchi_string>'
-example usage: <http://localhost:3838/pubchemagent/query/species?inchi='InChI=1/Ar>'
-
-In order to use the pubchemagent as a web agent when installed from the version-controlled source, simply start a server with the following app entry point:
-
-`(Windows)`
-
-```cmd
-(pubchemagent_venv) $ set FLASK_APP=pubchemagent\flaskapp\wsgi.py & flask run
-```
-
-`(Linux)`
+If the Flask server is running at http://127.0.0.1:5000, send a GET request to:
 
 ```bash
-(pubchemagent_venv) $ export FLASK_APP=pubchemagent\flaskapp\wsgi.py && flask run
+(pubchemagent_venv) $ curl -G "http://127.0.0.1:5000/query/species" \
+     --data-urlencode "inchi=InChI=1/Ar"
+```
+
+#### Docker (outside the stack)
+
+If the agent is running in Docker at http://localhost:5000, send a GET request to:
+
+```bash
+(pubchemagent_venv) $ curl -G "http://localhost:5000/query/species" \
+     --data-urlencode "inchi=InChI=1/Ar"
+```
+
+#### Docker (in the stack)
+
+If the stack is running on http://localhost:3838, send a GET request to:
+
+```bash
+(pubchemagent_venv) $ curl -G "http://localhost:3838/pubchemagent/query/species" \
+     --data-urlencode "inchi=InChI=1/Ar"
 ```
 
 ## To-Do
@@ -325,6 +371,6 @@ A complete fix should:
 
 ## Authors
 
-Laura Pascazio (<lp521@cam.ac.uk>)
-Ali Naseri
-Feroz Farazi (<msff2@cam.ac.uk>)
+- Laura Pascazio (<lp521@cam.ac.uk>)
+- Ali Naseri
+- Feroz Farazi (<msff2@cam.ac.uk>)
