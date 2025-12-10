@@ -320,18 +320,9 @@ Example usage:
 
 You can interact with the agent through its HTTP API using tools such as `curl`.
 
-#### Flask
+#### Flask or Docker (outside the stack)
 
-If the Flask server is running at http://127.0.0.1:5000, send a GET request to:
-
-```bash
-(pubchemagent_venv) $ curl -G "http://127.0.0.1:5000/query/species" \
-     --data-urlencode "inchi=InChI=1/Ar"
-```
-
-#### Docker (outside the stack)
-
-If the agent is running in Docker at http://localhost:5000, send a GET request to:
+If the Flask server or Docker is running at http://127.0.0.1:5000, send a GET request to:
 
 ```bash
 (pubchemagent_venv) $ curl -G "http://localhost:5000/query/species" \
