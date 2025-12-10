@@ -208,7 +208,7 @@ bash ./stack.sh start <STACK_NAME>
 If you want to run it on a different port, run the following command instead by setting the port number:
 
 ```bash
-bash ./stack.sh start chemistry_stack <PORT_NUMBER>
+bash ./stack.sh start <STACK_NAME> <PORT_NUMBER>
 ```
 
 Use a Bash terminal to avoid potential issues with inconsistent path separators. Once started, the agent will be available at <http://localhost:PORT/pubchemagent/> (e.g. <http://localhost:3838/pubchemagent/> when using the default port).
