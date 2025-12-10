@@ -319,7 +319,7 @@ WHERE {
   # ACRA
   {
       SERVICE [ONTOP] {
-        SELECT ?Company ?Property ?Value WHERE {
+        SELECT ?Property ?Value WHERE {
          ?Company ontocompany:isLocatedIn [IRI].
          ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
          filter (?Status = "Registered").
@@ -330,7 +330,7 @@ WHERE {
    }
    UNION {
       SERVICE [ONTOP] {
-        SELECT ?Company ?Property ?Value WHERE {
+        SELECT ?Property ?Value WHERE {
          ?Company ontocompany:isLocatedIn [IRI].
          ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
          filter (?Status = "Registered") .
@@ -342,7 +342,7 @@ WHERE {
         }
    UNION {
       SERVICE [ONTOP] {
-        SELECT ?Company ?Property ?Value WHERE {
+        SELECT ?Property ?Value WHERE {
           ?Company ontocompany:isLocatedIn [IRI].
           ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
           filter (?Status = "Registered") .
@@ -354,7 +354,7 @@ WHERE {
          }
    UNION {
       SERVICE [ONTOP] {
-        SELECT ?Company ?Property ?Value WHERE {
+        SELECT ?Property ?Value WHERE {
           ?Company ontocompany:isLocatedIn [IRI].
           ?Company ontocompany:hasUniqueEntityNumberStatus ?Status.
           filter (?Status = "Registered") .
