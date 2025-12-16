@@ -1,0 +1,51 @@
+{
+  "exposures": [
+    {
+      "name": "ah4leis",
+      "transform": "log1p",
+      "direction": "lower_better",
+      "percentile_low": 5,
+      "percentile_high": 95,
+      "age_mode": "ai",
+      "urban_ctrl_mode": "categorical",
+      "use_air": true,
+      "use_health": true,
+      "use_imd": true
+    }
+  ],
+  "x_tickstep": {
+    "ah4gpas": 0.1,
+    "ah4ffood": 2.0,
+    "ah4leis": 2.0
+  },
+  "custom_x_limits": {
+    "ah4leis": [5, 95],
+    "ah4gpas": [4.3, 95],
+    "ah4ffood": [5, 95]
+  },
+  "y_tick_step": 0.1,
+  "peak_pad_frac": 0.2,
+  "base_target": 0.4,
+  "style": {
+    "ci_alpha": 0.75,
+    "line_width": 2.2,
+    "line_color": "#1565C0",
+    "ci_color": "#64B5F6",
+    "hist_color": "#B0BEC5",
+    "hist_alpha": 0.45,
+    "baseline_color": "#6C757D",
+    "baseline_ls": "--",
+    "baseline_lw": 1.0
+  },
+  "fonts": {
+    "title": 15,
+    "axlabel": 12,
+    "tick": 16,
+    "suptitle": 16,
+    "annot": 12
+  },
+  "independent_y": true,
+  "show_iqr": false,
+  "custom_y_enabled": false
+}
+

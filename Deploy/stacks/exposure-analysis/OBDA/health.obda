@@ -1,0 +1,30 @@
+[PrefixDeclaration]
+twa:     https://theworldavatar.io/kg/
+ontoons: https://www.ordnancesurvey.co.uk/linked-data/ontology/
+sosa:    http://www.w3.org/ns/sosa/
+mesh:    http://id.nlm.nih.gov/mesh/
+om:      http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+
+mappingId LSOA-Instances
+target <https://theworldavatar.io/kg/LSOA/{lsoa_code}>
+       a ontoons:LSOA ;
+       ontoons:hasLSOACode {lsoa_code} .
+source SELECT DISTINCT lsoa_code FROM gp_lsoa_patients
+
+mappingId Disease-Prevalence-Observation
+target <https://theworldavatar.io/kg/Observation/DiseasePrevalence/{year}/{mesh_id}/{lsoa_code}>
+       a sosa:Observation ;
+       sosa:hasFeatureOfInterest <https://theworldavatar.io/kg/LSOA/{lsoa_code}> ;
+       sosa:observedProperty mesh:{mesh_id} ;
+       sosa:hasResult <https://theworldavatar.io/kg/Measure/Prevalence/{year}/{mesh_id}/{lsoa_code}> .
+source SELECT lsoa_code, year, mesh_id FROM v_lsoa_condition_prevalence
+
+mappingId Disease-Prevalence-Measure
+target <https://theworldavatar.io/kg/Measure/Prevalence/{year}/{mesh_id}/{lsoa_code}>
+       a om:Measure ;
+       om:hasNumericalValue {prevalence} .
+source SELECT lsoa_code, year, mesh_id, prevalence FROM v_lsoa_condition_prevalence
+
+]]

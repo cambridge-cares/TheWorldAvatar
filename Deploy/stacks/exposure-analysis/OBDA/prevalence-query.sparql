@@ -1,0 +1,20 @@
+PREFIX ontoons: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX sosa:    <http://www.w3.org/ns/sosa/>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX mesh:    <http://id.nlm.nih.gov/mesh/>
+
+SELECT ?prevalence
+WHERE {
+  BIND("E01017943" AS ?lsoaCode)
+  BIND(mesh:D029424 AS ?disease)  # 示例：把这里换成你在 qof_condition_mesh_map 里用的 mesh_id
+
+  ?lsoa a ontoons:LSOA ;
+        ontoons:hasLSOACode ?lsoaCode .
+
+  ?obs a sosa:Observation ;
+       sosa:hasFeatureOfInterest ?lsoa ;
+       sosa:observedProperty ?disease ;
+       sosa:hasResult ?m .
+
+  ?m om:hasNumericalValue ?prevalence .
+}

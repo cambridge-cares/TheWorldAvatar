@@ -1,0 +1,14 @@
+# Placeholder SPARQL template. Replace GRAPH/IRIs with real values.
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?lsoa ?Total
+       ?ah4leis ?ah4gpas ?ah4ffood ?ah4no2 ?ah4so2 ?ah4pm10 ?ah4gp
+       ?Urban_rural_flag ?RUC21CD
+       ?prop_0_14 ?prop_15_44 ?prop_45_64 ?prop_65_74 ?prop_75_84 ?prop_85_plus
+       ?prevalence_CHD ?prevalence_COPD ?prevalence_DM ?prevalence_HF
+       ?prevalence_HYP ?prevalence_OB ?prevalence_PAD ?prevalence_STIA
+WHERE {
+  # TODO: bind these variables from the target graph.
+  # The query should return the same columns as the fallback CSV/JSON sources.
+}
+
