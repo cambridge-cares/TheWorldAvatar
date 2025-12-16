@@ -28,7 +28,7 @@ def csvrow2jsonobj(row: pd.Series):
                 k: v
                 for k, v in {
                     "triplestore": row["sparql_triplestore"],
-                    "query": row["sparql_query"],
+                    "query": row["sparql_query"].replace("\r", ""),
                     "pkeys": pkeys if pkeys else [],
                 }.items()
                 if v or len(v) == 0
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument("filename", help="CSV file containing examples")
     args = parser.parse_args()
 
-    df = pd.read_csv(args.filename, encoding="ISO-8859-1")
+    df = pd.read_csv(args.filename, encoding="UTF-8")
     examples = df.apply(csvrow2jsonobj, axis=1).to_list()
-    with open(args.filename.rsplit(".", maxsplit=1)[0] + ".json", "w") as f:
-        json.dump(examples, f, indent=4)
+    with open(args.filename.rsplit(".", maxsplit=1)[0] + ".json", "w", encoding="UTF-8") as f:
+        json.dump(examples, f, indent=4, ensure_ascii=False)

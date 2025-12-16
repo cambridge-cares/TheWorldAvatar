@@ -1,18 +1,22 @@
 services:
   redis-stack:
     image: redis/redis-stack:7.2.0-v9
+    container_name: redis-marie
     ports:
       - 6379:6379
   triton:
     build:
       context: triton_inference_server
+    image: triton-marie:1.0.0
+    container_name: triton-marie
     shm_size: 256m
     ports:
       - 8001:8001
   fastapi:
     build:
       context: fastapi_app
-    container_name: fastapi_app
+    image: fastapi_app-marie:1.0.0
+    container_name: fastapi_app-marie
     environment:
       - APP_ENV=prod
     volumes:

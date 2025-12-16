@@ -1,6 +1,6 @@
 [
   {
-    "heading": "Chemical Species (PubChem) Properties",
+    "heading": "Chemical Species (general)",
     "questions": [
       "What is the charge of benzene?",
       "How many hydrogen bonds can an ethylene glycol molecule accept and donate?",
@@ -12,32 +12,29 @@
       "Find me all aliphatic amines",
       "What are solubilities in water of various amino acids?",
       "List all alcohol solvents with a boiling point between 100°C and 120°C",
-      "Show me the 3D structure of reduced coenzyme M"
+      "Show me the 3D structure of reduced coenzyme M",
+      "Which compounds have multiple IUPAC names listed?"
     ]
   },
   {
-    "heading": "Chemical Species (IUPAC) Properties",
+    "heading": "Chemical Species (acid-base ionisation constants)",
     "questions": [
-      "What pK values are reported for InChI 1S/C2H6N2/c1-2(3)4/h1H3,(H3,3,4)?",
-      "List all compounds that have both pKa and pKb measurements.",
+      "What are the pKa values for species with InChI string InChI=1S/C6H15N/c1-5(2)7-6(3)4/h5-7H,1-4H3?",
+      "What pKa values are reported for propenoic acid?",
+      "What are the pKa values of acid CCCC(=O)O?",
+      "What pK values are reported for InChI=1S/C2H6N2/c1-2(3)4/h1H3,(H3,3,4)?",
+      "What is the temperature dependence of the pKa of acetic acid?",
       "For perrin2, what is the temperature dependence of pKaH1?",
-      "Which measurements were tagged Uncertain or Reliable?",
-      "Average pKaH1 value per method (quality-agnostic).",
-      "Average pKaH1 per assessment (Reliable/Approximate/Uncertain).",
-      "Which provenance reference contribute to measurements for methylamine (InChI=1S/CH5N/c1-2/h2H2,1H3)?",
-      "Show all high-pressure pKb measurements (pressure field non-empty)",
-      "List all compounds of perrin and counts of measurements.",
-      "Which measurements carry an acidity_label of “AH” or “B”?",
-      "Find duplicate recordIds with differing pK values under the same reference state (potential curation flag).",
-      "For compound with InChI 1S/CH5N/c1-2/h2H2,1H3, compare pKaH1 value by method between 23 to 27 °C.",
-      "Extract verbatim remarks to audit conditions/ionic strengths.",
-      "Which compounds have multiple original IUPAC names listed?",
-      "Retrieve all measurements lacking a parsed numeric temperature (to clean).",
-      "For amidine (InChI=1S/C2H6N2/c1-2(3)4/h1H3,(H3,3,4)), list pKaH1 at all temperatures with assessment.",
-      "Identify pressure-dependent pKb series for the same compound and temperature T.",
-      "Count measurements per pK type across the dataset.",
-      "For each compound, report min, median and max pKaH1 (use AVG as proxy for median in SPARQL 1.1).",
-      "Which methods are associated with “Uncertain” assessments most often?"
+      "What species have pKa values reported at high pressures?",
+      "What species have the most pKaH values?",
+      "What are the ionic strengths associated with the pK values of methylamine?",
+      "List all compounds with pK values that appear across multiple data sources.",
+      "Which pK measurement methods are associated with “Uncertain” reliability assessments most often?",
+      "List all compounds that have both pKa and pKb measurements.",
+      "Which pK measurements are tagged Uncertain?",
+      "Which provenance references contribute to measurements for methylamine (InChI=1S/CH5N/c1-2/h2H2,1H3)?",
+      "List all compounds studied by Perrin together with their counts of pK measurements.",
+      "Which pK measurements carry an acidity label of “AH”?"
     ]
   },
   {
