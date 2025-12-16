@@ -1,0 +1,25 @@
+PREFIX ontoons: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoa ?lsoaCode ?laCode ?laName ?urbanFlag ?rucCode ?rucName ?region
+       ?popTotal ?age_0_14 ?age_15_44 ?age_45_64 ?age_65_74 ?age_75_84 ?age_85_plus
+WHERE {
+  ?lsoa a ontoons:LSOA ;
+        ontoons:hasLSOACode ?lsoaCode .
+
+  OPTIONAL { ?lsoa ontoons:hasLocalAuthorityCode ?laCode }
+  OPTIONAL { ?lsoa ontoons:hasLocalAuthorityName ?laName }
+  OPTIONAL { ?lsoa ontoons:hasUrbanRuralFlag ?urbanFlag }
+  OPTIONAL { ?lsoa ontoons:hasRUC21Code ?rucCode }
+  OPTIONAL { ?lsoa ontoons:hasRUC21Name ?rucName }
+  OPTIONAL { ?lsoa <http://schema.org/containedInPlace> ?region }
+
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/Population/{?lsoaCode}> om:hasNumericalValue ?popTotal }
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/AgeShare/{?lsoaCode}/0_14>    om:hasNumericalValue ?age_0_14 }
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/AgeShare/{?lsoaCode}/15_44>   om:hasNumericalValue ?age_15_44 }
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/AgeShare/{?lsoaCode}/45_64>   om:hasNumericalValue ?age_45_64 }
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/AgeShare/{?lsoaCode}/65_74>   om:hasNumericalValue ?age_65_74 }
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/AgeShare/{?lsoaCode}/75_84>   om:hasNumericalValue ?age_75_84 }
+  OPTIONAL { <https://theworldavatar.io/kg/Measure/AgeShare/{?lsoaCode}/85_plus> om:hasNumericalValue ?age_85_plus }
+}
+

@@ -29,7 +29,7 @@ AGE_DROP = 'prop_15_44'
 
 EXPOSURES = [
     # Each exposure can set its own percentile range (percentile_low to percentile_high)
-    # {"name": "ah4leis",  "transform": "log1p",        "direction": "lower_better",  "percentile_low": 5,  "percentile_high": 98},  # Shorter = healthier
+    {"name": "ah4leis",  "transform": "log1p",        "direction": "lower_better",  "percentile_low": 5,  "percentile_high": 98},  # Shorter = healthier
     {"name": "ah4gpas",  "transform": "logit_prop01", "direction": "higher_better", "percentile_low": 5,  "percentile_high": 95},  # NDVI higher = healthier
     # {"name": "ah4ffood", "transform": "log1p",        "direction": "higher_better", "percentile_low": 5,  "percentile_high": 95},  # Longer to fast-food = healthier
 ]
@@ -102,34 +102,88 @@ def load_json_config(path: Optional[str], defaults: Dict[str, Any]) -> Dict[str,
             log(f"[warning] Failed to load config {path}: {exc}", level=1)
     return cfg
 
-def fetch_dataframe_via_sparql(endpoint: Optional[str], template_path: Optional[str]) -> Optional[pd.DataFrame]:
-    if not endpoint or not template_path or not os.path.exists(template_path):
-        return None
-    try:
-        with open(template_path, "r") as f:
-            query = f.read()
-        resp = requests.post(
-            endpoint,
-            data={"query": query},
-            headers={"Accept": "application/sparql-results+json"},
-            timeout=30,
-        )
-        resp.raise_for_status()
-        payload = resp.json()
-        bindings = payload.get("results", {}).get("bindings", [])
-        if not bindings:
-            return pd.DataFrame()
-        rows = []
-        for b in bindings:
-            rows.append({k: v.get("value") for k, v in b.items()})
-        return pd.DataFrame(rows)
-    except Exception as exc:
-        log(f"[warning] SPARQL fetch failed: {exc}", level=1)
+def fetch_dataframe_via_sparql(endpoint: Optional[str], template_path: Optional[str], templates_map: Optional[Dict[str, str]]) -> Optional[pd.DataFrame]:
+    """
+    Try provided template, then mapped templates, then all .rq/.sparql under OBDA/SPARQL; join on LSOA code.
+    Returns merged DataFrame; if nothing usable, return empty so caller can fall back to CSV.
+    """
+    if not endpoint:
         return None
 
-def load_input_dataframe(data_path: str, sparql_cfg: Dict[str, Any], template_path: str) -> pd.DataFrame:
+    def _run_query(qpath: str) -> Optional[pd.DataFrame]:
+        try:
+            with open(qpath, "r") as f:
+                query = f.read()
+            resp = requests.post(
+                endpoint,
+                data={"query": query},
+                headers={"Accept": "application/sparql-results+json"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            payload = resp.json()
+            bindings = payload.get("results", {}).get("bindings", [])
+            if not bindings:
+                return pd.DataFrame()
+            rows = [{k: v.get("value") for k, v in b.items()} for b in bindings]
+            return pd.DataFrame(rows)
+        except Exception as exc:
+            log(f"[warning] SPARQL fetch failed for {qpath}: {exc}", level=1)
+            return None
+
+    def _pick_key(df: pd.DataFrame) -> Optional[str]:
+        for k in ("lsoaCode", "LSOA_CODE", "lsoa_code", "LSOA_code"):
+            if k in df.columns:
+                return k
+        return None
+
+    def _merge_frames(frames):
+        merged = frames[0]
+        key = _pick_key(merged)
+        if not key:
+            return pd.DataFrame()
+        for df in frames[1:]:
+            k = _pick_key(df)
+            if not k:
+                continue
+            merged = merged.merge(df, left_on=key, right_on=k, how="outer")
+            if k != key and k in merged.columns:
+                merged = merged.drop(columns=[k])
+            dup_bases = [c[:-2] for c in merged.columns if c.endswith("_x") and (c[:-2] + "_y") in merged.columns]
+            for base in dup_bases:
+                merged[base] = merged[base + "_x"].combine_first(merged[base + "_y"])
+                merged = merged.drop(columns=[base + "_x", base + "_y"])
+        return merged
+
+    candidates = []
+    if template_path and os.path.exists(template_path):
+        candidates.append(template_path)
+    if templates_map:
+        for _, path in templates_map.items():
+            if path and os.path.exists(path) and path not in candidates:
+                candidates.append(path)
+    obda_dir = os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL")
+    if os.path.isdir(obda_dir):
+        for fname in sorted(os.listdir(obda_dir)):
+            if fname.lower().endswith((".rq", ".sparql")):
+                fpath = os.path.join(obda_dir, fname)
+                if fpath not in candidates:
+                    candidates.append(fpath)
+
+    dfs = []
+    for qpath in candidates:
+        df = _run_query(qpath)
+        if df is not None and not df.empty:
+            dfs.append(df)
+
+    if not dfs:
+        return pd.DataFrame()
+    merged = _merge_frames(dfs)
+    return merged if not merged.empty else pd.DataFrame()
+
+def load_input_dataframe(data_path: str, sparql_cfg: Dict[str, Any], template_path: str, templates_map: Dict[str, str]) -> pd.DataFrame:
     endpoint = sparql_cfg.get("endpoint")
-    df = fetch_dataframe_via_sparql(endpoint, template_path)
+    df = fetch_dataframe_via_sparql(endpoint, template_path, templates_map)
     if df is None or df.empty:
         log("[info] SPARQL source missing or empty; falling back to file paths config.", level=1)
         return pd.read_csv(data_path)
@@ -199,9 +253,9 @@ DEFAULT_DETAILS_CSV = None  # Fill path if selecting best combos from combo_deta
 # IMD column mapping (aligned with check-baseline-1103.py)
 IMD_COL_DEFAULT = 'Income Decile (where 1 is most deprived 10% of LSOAs)'
 IMD_COL_MAPPING = {
-    'ah4gpas': 'Geographical Barriers Sub-domain',
-    'ah4leis': 'Income Score (rate)',
-    'ah4ffood': 'Wider Barriers Sub-domain Score'
+    'ah4gpas': 'Geographical Barriers Sub-domain score',
+    'ah4leis': 'Income score (rate)',
+    'ah4ffood': 'Wider Barriers Sub-domain score'
 }
 CUSTOM_X_LIMITS = {}
 USE_IMD_BY_EXPO = {}
@@ -209,9 +263,9 @@ IMD_COL_BY_EXPO = {}
 IMD_COL_DEFAULT = "Income Decile (where 1 is most deprived 10% of LSOAs)"
 # Optional overrides; falls back to default names if external config lacks them
 IMD_COL_MAPPING_FALLBACK = {
-    "ah4gpas": "Geographical Barriers Sub-domain",
-    "ah4leis": "Income Score (rate)",
-    "ah4ffood": "Wider Barriers Sub-domain Score",
+    "ah4gpas": "Geographical Barriers Sub-domain score",
+    "ah4leis": "Income score (rate)",
+    "ah4ffood": "Wider Barriers Sub-domain score",
 }
 
 # ---------------- Config paths ----------------
@@ -219,6 +273,7 @@ CONFIG_DIR = os.path.join(os.path.dirname(__file__), "config")
 DEFAULT_PATHS_CONFIG_PATH = os.path.join(CONFIG_DIR, "data_paths.json")
 DEFAULT_SPARQL_CONFIG_PATH = os.path.join(CONFIG_DIR, "sparql_config.json")
 DEFAULT_SPARQL_TEMPLATE_PATH = os.path.join(CONFIG_DIR, "sparql_template.rq")
+DEFAULT_SPARQL_TEMPLATES_PATH = os.path.join(CONFIG_DIR, "sparql_templates.json")
 
 DEFAULT_PATHS_CONFIG: Dict[str, Any] = {
     "data": None,
@@ -229,6 +284,14 @@ DEFAULT_PATHS_CONFIG: Dict[str, Any] = {
 
 DEFAULT_SPARQL_CONFIG: Dict[str, Any] = {
     "endpoint": "http://localhost:3838/sparql/ui"
+}
+
+DEFAULT_SPARQL_TEMPLATES: Dict[str, str] = {
+    "demographics": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "demographics_core.sparql"),
+    "exposures": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "exposures_all.sparql"),
+    "diseases": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "disease_all.sparql"),
+    "imd": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "imd_all.sparql"),
+    "crime_fuel": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "crime_fuel_all.sparql"),
 }
 
 SPARQL_COLUMN_RENAMES: Dict[str, str] = {
@@ -248,7 +311,7 @@ FIXED_PRESET = {
     "age_mode": "6band",           # Age control: "ai", "6band"
     "urban_ctrl_mode": "categorical",  # Urban control: "none", "binary", "categorical"
     "use_air": False,              # Use air-quality controls?
-    "use_health": False,            # Use healthcare access controls?
+    "use_health": True,            # Use healthcare access controls?
 }
 
 # ---------------- Utility functions ----------------
@@ -343,16 +406,16 @@ def build_controls_from_combo(df, combo):
     Combo fields: age_mode, urban_ctrl_mode, use_air, use_health, use_imd
     """
     parts = []
-    # 年龄
+    # Age controls
     parts.append(build_age_vars(df, combo.get('age_mode', '6band')))
-    # 城乡
+    # Urban/rural controls
     urban_mode = combo.get('urban_ctrl_mode', 'none')
     if urban_mode not in ['n/a', None, 'none']:
         parts.append(build_urban_control_vars(df, urban_mode))
-    # 空气
+    # Air-quality controls
     if combo.get('use_air', False):
         parts.append(build_air_quality_vars(df))
-    # 健康
+    # Healthcare access controls
     if combo.get('use_health', False):
         parts.append(build_healthcare_access_vars(df))
     # IMD
@@ -360,7 +423,7 @@ def build_controls_from_combo(df, combo):
         expo_name = combo.get('exposure')
         imd_col = IMD_COL_BY_EXPO.get(expo_name, IMD_COL_MAPPING.get(expo_name, IMD_COL_DEFAULT))
         parts.append(build_imd_vars(df, imd_col))
-    # 合并
+    # Merge all non-empty parts
     parts = [p for p in parts if p is not None and not p.empty]
     if not parts:
         return pd.DataFrame(index=df.index)
@@ -369,7 +432,7 @@ def build_controls_from_combo(df, combo):
         Xc = Xc.loc[:, ~Xc.columns.duplicated()]
     return Xc
 
-# IMD 变量
+# IMD variables
 def build_imd_vars(df, imd_col_name: str):
     if not imd_col_name or imd_col_name not in df.columns:
         return pd.DataFrame(index=df.index)
@@ -407,6 +470,9 @@ def _make_ticks_from_limits(vmin, vmax, step):
     """
     if step is None or step <= 0:
         return None
+    # Guard against non-finite bounds that can arise from failed fits or empty CIs
+    if not np.isfinite(vmin) or not np.isfinite(vmax):
+        return None
     start = math.ceil(vmin / step) * step
     ticks = np.arange(start, vmax + 1e-9, step)
     ticks = ticks[(ticks >= vmin - 1e-12) & (ticks <= vmax + 1e-12)]
@@ -415,8 +481,8 @@ def _make_ticks_from_limits(vmin, vmax, step):
 # ---------------- External config loader (aligned with check-baseline-1103.py) ----------------
 def _load_external_config(path: str):
     """
-    从 JSON 配置文件加载超参数，覆盖默认的可视化/截取/控制设置。
-    仅在 USE_EXTERNAL_CONFIG=True 时调用。
+    loading from json
+    only call when USE_EXTERNAL_CONFIG=True
     """
     import json
     with open(path, "r") as f:
@@ -425,8 +491,8 @@ def _load_external_config(path: str):
 
 def _apply_external_config(cfg: dict):
     """
-    将外部配置写回全局变量（影响绘图和部分拟合配置）。
-    仅在 USE_EXTERNAL_CONFIG=True 时调用。
+    Write external config back to globals (affects plotting and some fit settings).
+    Only called when USE_EXTERNAL_CONFIG=True.
     """
     global EXPOSURES, EXPOSURE_X_TICKSTEP, CUSTOM_X_LIMITS, Y_TICK_STEP
     global PEAK_PAD_FRAC, BASE_TARGET
@@ -448,27 +514,27 @@ def _apply_external_config(cfg: dict):
             if "imd_col" in e:
                 IMD_COL_BY_EXPO[name] = e["imd_col"]
 
-    # X 轴步长
+    # X-axis tick step
     if "x_tickstep" in cfg:
         EXPOSURE_X_TICKSTEP = cfg["x_tickstep"]
 
-    # 自定义 X 范围
+    # Custom X range
     if "custom_x_limits" in cfg:
         # Applies only to plot/grid truncation (fit still uses percentile_low/high from exposure cfg)
         global CUSTOM_X_LIMITS
         CUSTOM_X_LIMITS = cfg["custom_x_limits"]
 
-    # Y 轴刻度
+    # Y-axis tick step
     if "y_tick_step" in cfg:
         Y_TICK_STEP = cfg["y_tick_step"]
 
-    # Y 轴范围形状参数
+    # Y-axis range shape parameters
     if "peak_pad_frac" in cfg:
         PEAK_PAD_FRAC = cfg["peak_pad_frac"]
     if "base_target" in cfg:
         BASE_TARGET = cfg["base_target"]
 
-    # 样式
+    # Style
     style = cfg.get("style", {})
     CI_ALPHA = style.get("ci_alpha", CI_ALPHA)
     LINE_WIDTH = style.get("line_width", LINE_WIDTH)
@@ -480,21 +546,21 @@ def _apply_external_config(cfg: dict):
     DEFAULT_REFLINE_WIDTH = style.get("baseline_lw", DEFAULT_REFLINE_WIDTH)
     DEFAULT_REFLINE_ALPHA = style.get("baseline_alpha", DEFAULT_REFLINE_ALPHA)
 
-    # Y 轴独立/共享
+    # Y-axis independent/shared
     if "independent_y" in cfg:
         INDEPENDENT_Y = bool(cfg["independent_y"])
 
-    # IMD 总开关
+    # IMD master toggle
     if "use_imd" in cfg:
         USE_IMD = bool(cfg["use_imd"])
 
-    # IQR 参考线开关（若后续需要可扩展）
+    # IQR reference toggle (extend if needed later)
     # show_iqr = cfg.get("show_iqr", None)  # IQR reference toggle (unused)
 
 def _maybe_load_external_config():
     """
-    如果 USE_EXTERNAL_CONFIG=True，则加载并应用外部配置。
-    如果文件不存在或加载失败，将静默回退为默认配置。
+    If USE_EXTERNAL_CONFIG=True, load and apply external config.
+    If missing or failing to load, silently fall back to defaults.
     """
     if not USE_EXTERNAL_CONFIG:
         return
@@ -619,7 +685,7 @@ def fit_and_curve_one(df, exposure_cfg, combo, disease,
     X_fit_linear = X_linear.loc[row_ok]
     x_fit = x_raw.loc[row_ok]
 
-    # 拟合：样条模型与线性模型
+    # Fit spline model and linear comparator
     try:
         res_spline = sm.GLM(y_fit, X_fit_spline, family=Poisson(), offset=np.log(N_fit)).fit(cov_type='HC1')
     except Exception:
@@ -859,7 +925,7 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
         def covers(arr, lo, hi):
             return (arr[0] <= lo + 1e-12) and (arr[-1] >= hi - 1e-12)
 
-        # 优先三档
+        # Prefer three fixed sets first
         if covers(small, ymin, ymax):
             return small, (small[0], small[-1])
         if covers(medium, ymin, ymax):
@@ -867,7 +933,7 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
         if covers(large, ymin, ymax):
             return large, (large[0], large[-1])
 
-        # 对称扩展（以 1 为中心）
+        # Symmetric expansion around 1
         step = 0.20
         for _ in range(15):  # expand at most 15 times
             arr = np.array([1 - 2*step, 1 - step, 1.0, 1 + step, 1 + 2*step])
@@ -875,7 +941,7 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
                 return arr, (arr[0], arr[-1])
             step += 0.10
 
-        # 兜底：线性等分 + 插入 1.0
+        # Fallback: linear split + force 1.0
         lo = float(ymin); hi = float(ymax)
         if not np.isfinite(lo) or not np.isfinite(hi) or lo >= hi:
             return medium, (medium[0], medium[-1])
@@ -883,7 +949,7 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
         if np.all(np.abs(arr - 1.0) > 1e-8):
             arr = np.sort(np.append(arr, 1.0))
             if arr.size > 6:
-                # 去掉距离 1.0 最近的一个（保留 1.0）
+                # Drop the closest-to-1 extra point (keep 1.0)
                 d = np.abs(arr - 1.0)
                 idx = np.argsort(d)
                 remove = idx[1]
@@ -906,12 +972,12 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
     # Layout adapts to number of diseases (max 4 per row)
     if n_diseases == 4:
         nrows, ncols = 1, 4
-        figsize = (16, 4)  # 一行四个子图：宽度16，高度4
+        figsize = (16, 4)  # one row, four subplots
     elif n_diseases == 8:
         nrows, ncols = 2, 4
-        figsize = (16, 8)  # 两行四列：宽度16，高度8
+        figsize = (16, 8)  # two rows, four columns
     else:
-        # 自动计算合适的布局（尽量保持一行，如果超过4个则换行）
+        # Auto layout; keep one row if <=4, otherwise wrap
         ncols = min(4, n_diseases)  # cap at 4 columns per row
         nrows = int(np.ceil(n_diseases / ncols))
         figsize = (4 * ncols, 4 * nrows)  # 4x4 inches per subplot cell
@@ -957,7 +1023,7 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
         if SHOW_CI:
             ax.fill_between(d['x_raw'], d['rr_lo'], d['rr_hi'],
                            color=CI_COLOR, alpha=CI_ALPHA, linewidth=0)
-        # 主曲线：使用统一的线宽和颜色
+        # Main curve with unified line width/color
         ax.plot(d['x_raw'], d['rr'], lw=LINE_WIDTH, color=LINE_COLOR)
 
         # Histogram on right axis
@@ -995,9 +1061,14 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
             # Fallback to the default MaxNLocator when no step is configured
             ax.xaxis.set_major_locator(MaxNLocator(nbins=xticks, prune=None))
 
-        # Y axis: center around RR=1.0 for symmetric display
-        y_min_data = float(np.nanmin([d['rr_lo'].min(), d['rr'].min()]))
-        y_max_data = float(np.nanmax([d['rr_hi'].max(), d['rr'].max()]))
+        # Y axis: center around RR=1.0 for symmetric display; ignore non-finite values
+        rr_candidates = np.asarray(pd.concat([d['rr_lo'], d['rr'], d['rr_hi']]), dtype=float)
+        rr_candidates = rr_candidates[np.isfinite(rr_candidates)]
+        if rr_candidates.size == 0:
+            y_min_data, y_max_data = 0.8, 1.2
+        else:
+            y_min_data = float(np.nanmin(rr_candidates))
+            y_max_data = float(np.nanmax(rr_candidates))
 
         # Same logic as check-baseline-1103.py:
         # 1) pad peak by PEAK_PAD_FRAC, 2) add inner padding, 3) center around 1.0 (BASE_TARGET=0.40 means 1.0 at 40% height)
@@ -1060,7 +1131,7 @@ def plot_panels(df_curve, x_hist, exposure_name, out_png,
     plt.savefig(out_png, dpi=200)
     plt.close(fig)
 
-# ---------------- 主流程 ----------------
+# ---------------- Main flow ----------------
 def main():
     # Note: declare globals before first use (argparse defaults included)
     global USE_EXTERNAL_CONFIG, EXTERNAL_CONFIG_PATH
@@ -1087,12 +1158,15 @@ def main():
                     help="JSON config file containing SPARQL endpoint settings")
     ap.add_argument("--sparql-template", dest="sparql_template", default=DEFAULT_SPARQL_TEMPLATE_PATH,
                     help="SPARQL query template path used to fetch input data")
+    ap.add_argument("--sparql-templates", dest="sparql_templates", default=DEFAULT_SPARQL_TEMPLATES_PATH,
+                    help="JSON mapping from data category to SPARQL template path (demographics/exposures/diseases/imd/crime_fuel)")
     ap.add_argument("--log-level", type=int, default=LOG_LEVEL_DEFAULT, choices=[0,1,2],
                     help="Terminal verbosity: 0=silent, 1=progress, 2=extra diagnostics (no covariates)")
     args = ap.parse_args()
 
     paths_cfg = load_json_config(args.paths_config, DEFAULT_PATHS_CONFIG)
     sparql_cfg = load_json_config(args.sparql_config, DEFAULT_SPARQL_CONFIG)
+    sparql_templates_cfg = load_json_config(args.sparql_templates, DEFAULT_SPARQL_TEMPLATES)
 
     data_path = args.data or paths_cfg.get("data") or DEFAULT_DATA_PATH
     outdir = args.outdir or paths_cfg.get("outdir") or DEFAULT_OUTDIR
@@ -1129,7 +1203,7 @@ def main():
             print(f"[fixed-config] Settings: {FIXED_PRESET}")
     
     # Read raw data
-    df_raw = load_input_dataframe(data_path, sparql_cfg, args.sparql_template)
+    df_raw = load_input_dataframe(data_path, sparql_cfg, args.sparql_template, sparql_templates_cfg)
     log("=== Dose-response run ===", level=1)
     log(f"[args] data={data_path}", level=1)
     log(f"[args] outdir={outdir}", level=1)
@@ -1258,12 +1332,12 @@ def main():
             curves_this_exp = pd.concat(curves_this_exp, ignore_index=True)
             all_curves.append(curves_this_exp)
 
-            # 保存 CSV（按暴露+层）
+            # Save CSV (per exposure + stratum)
             out_csv = os.path.join(outdir, f"dose_response_{exp}_stratum-{level}.csv")
             curves_this_exp.to_csv(out_csv, index=False)
             print(f"[saved] dose_response_{exp}_stratum-{level}.csv")
 
-            # 出图（8面板）
+            # Render panels (up to 8)
             out_png = os.path.join(outdir, f"dose_response_{exp}_stratum-{level}.png")
             plot_panels(curves_this_exp, hist_source, exp, out_png)
             print(f"[saved] dose_response_{exp}_stratum-{level}.png")

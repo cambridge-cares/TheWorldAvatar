@@ -1,7 +1,8 @@
 {
-  "data": "/home/jc2341/AI4PH/LSOA-health/IMD-Integrated/crime-LSOA-aggregated-with-imd-1021.csv",
-  "outdir": null,
-  "details": null,
-  "external_config": "/home/jc2341/AI4PH/LSOA-health/Final-Dose-response/plot_config.json"
-}
-
+    "data": "Path_To/TheWorldAvatar/Deploy/stacks/exposure-analysis/LSOA_aggregated.csv",
+    "outdir": null,
+    "details": null,
+    "external_config": "Path_To/TheWorldAvatar/Deploy/stacks/exposure-analysis/config/plot_config.json"
+  }
+  
+  

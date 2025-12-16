@@ -1,0 +1,8 @@
+{
+  "demographics": "../OBDA/SPARQL/demographics_core.sparql",
+  "exposures": "../OBDA/SPARQL/exposures_all.sparql",
+  "diseases": "../OBDA/SPARQL/disease_all.sparql",
+  "imd": "../OBDA/SPARQL/imd_all.sparql",
+  "crime_fuel": "../OBDA/SPARQL/crime_fuel_all.sparql"
+}
+

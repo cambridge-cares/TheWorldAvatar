@@ -26,6 +26,7 @@ CONFIG_DIR = os.path.join(os.path.dirname(__file__), "config")
 DEFAULT_PATHS_CONFIG_PATH = os.path.join(CONFIG_DIR, "data_paths.json")
 DEFAULT_SPARQL_CONFIG_PATH = os.path.join(CONFIG_DIR, "sparql_config.json")
 DEFAULT_SPARQL_TEMPLATE_PATH = os.path.join(CONFIG_DIR, "sparql_template.rq")
+DEFAULT_SPARQL_TEMPLATES_PATH = os.path.join(CONFIG_DIR, "sparql_templates.json")
 
 DEFAULT_PATHS_CONFIG: Dict[str, Any] = {
     "data": None,
@@ -34,6 +35,14 @@ DEFAULT_PATHS_CONFIG: Dict[str, Any] = {
 
 DEFAULT_SPARQL_CONFIG: Dict[str, Any] = {
     "endpoint": "http://localhost:3838/sparql/ui"
+}
+
+DEFAULT_SPARQL_TEMPLATES: Dict[str, str] = {
+    "demographics": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "demographics_core.sparql"),
+    "exposures": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "exposures_all.sparql"),
+    "diseases": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "disease_all.sparql"),
+    "imd": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "imd_all.sparql"),
+    "crime_fuel": os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL", "crime_fuel_all.sparql"),
 }
 
 SPARQL_COLUMN_RENAMES: Dict[str, str] = {
@@ -66,33 +75,87 @@ def load_json_config(path: Optional[str], defaults: Dict[str, Any]) -> Dict[str,
             print(f"[warning] Failed to load config {path}: {exc}")
     return cfg
 
-def fetch_dataframe_via_sparql(endpoint: Optional[str], template_path: Optional[str]) -> Optional[pd.DataFrame]:
-    if not endpoint or not template_path or not os.path.exists(template_path):
-        return None
-    try:
-        with open(template_path, "r") as f:
-            query = f.read()
-        resp = requests.post(
-            endpoint,
-            data={"query": query},
-            headers={"Accept": "application/sparql-results+json"},
-            timeout=30,
-        )
-        resp.raise_for_status()
-        payload = resp.json()
-        bindings = payload.get("results", {}).get("bindings", [])
-        if not bindings:
-            return pd.DataFrame()
-        rows = []
-        for b in bindings:
-            rows.append({k: v.get("value") for k, v in b.items()})
-        return pd.DataFrame(rows)
-    except Exception as exc:
-        print(f"[warning] SPARQL fetch failed: {exc}")
+def fetch_dataframe_via_sparql(endpoint: Optional[str], template_path: Optional[str], templates_map: Optional[Dict[str, str]]) -> Optional[pd.DataFrame]:
+    """
+    Try provided template, then mapped templates, then all .rq/.sparql under OBDA/SPARQL; join on LSOA code.
+    Returns merged DataFrame; if nothing usable, return empty so caller can fall back to CSV.
+    """
+    if not endpoint:
         return None
 
-def load_input_dataframe(data_path: str, sparql_cfg: Dict[str, Any], template_path: str) -> pd.DataFrame:
-    df = fetch_dataframe_via_sparql(sparql_cfg.get("endpoint"), template_path)
+    def _run_query(qpath: str) -> Optional[pd.DataFrame]:
+        try:
+            with open(qpath, "r") as f:
+                query = f.read()
+            resp = requests.post(
+                endpoint,
+                data={"query": query},
+                headers={"Accept": "application/sparql-results+json"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            payload = resp.json()
+            bindings = payload.get("results", {}).get("bindings", [])
+            if not bindings:
+                return pd.DataFrame()
+            rows = [{k: v.get("value") for k, v in b.items()} for b in bindings]
+            return pd.DataFrame(rows)
+        except Exception as exc:
+            print(f"[warning] SPARQL fetch failed for {qpath}: {exc}")
+            return None
+
+    def _pick_key(df: pd.DataFrame) -> Optional[str]:
+        for k in ("lsoaCode", "LSOA_CODE", "lsoa_code", "LSOA_code"):
+            if k in df.columns:
+                return k
+        return None
+
+    def _merge_frames(frames):
+        merged = frames[0]
+        key = _pick_key(merged)
+        if not key:
+            return pd.DataFrame()
+        for df in frames[1:]:
+            k = _pick_key(df)
+            if not k:
+                continue
+            merged = merged.merge(df, left_on=key, right_on=k, how="outer")
+            if k != key and k in merged.columns:
+                merged = merged.drop(columns=[k])
+            dup_bases = [c[:-2] for c in merged.columns if c.endswith("_x") and (c[:-2] + "_y") in merged.columns]
+            for base in dup_bases:
+                merged[base] = merged[base + "_x"].combine_first(merged[base + "_y"])
+                merged = merged.drop(columns=[base + "_x", base + "_y"])
+        return merged
+
+    candidates = []
+    if template_path and os.path.exists(template_path):
+        candidates.append(template_path)
+    if templates_map:
+        for _, path in templates_map.items():
+            if path and os.path.exists(path) and path not in candidates:
+                candidates.append(path)
+    obda_dir = os.path.join(os.path.dirname(__file__), "OBDA", "SPARQL")
+    if os.path.isdir(obda_dir):
+        for fname in sorted(os.listdir(obda_dir)):
+            if fname.lower().endswith((".rq", ".sparql")):
+                fpath = os.path.join(obda_dir, fname)
+                if fpath not in candidates:
+                    candidates.append(fpath)
+
+    dfs = []
+    for qpath in candidates:
+        df = _run_query(qpath)
+        if df is not None and not df.empty:
+            dfs.append(df)
+
+    if not dfs:
+        return pd.DataFrame()
+    merged = _merge_frames(dfs)
+    return merged if not merged.empty else pd.DataFrame()
+
+def load_input_dataframe(data_path: str, sparql_cfg: Dict[str, Any], template_path: str, templates_map: Dict[str, str]) -> pd.DataFrame:
+    df = fetch_dataframe_via_sparql(sparql_cfg.get("endpoint"), template_path, templates_map)
     if df is None or df.empty:
         print("[info] SPARQL source missing or empty; falling back to configured file path.")
         return pd.read_csv(data_path)
@@ -1279,12 +1342,15 @@ if __name__ == "__main__":
                         help="JSON config file containing SPARQL endpoint")
     parser.add_argument("--sparql-template", dest="sparql_template", default=DEFAULT_SPARQL_TEMPLATE_PATH,
                         help="SPARQL query template for primary data source")
+    parser.add_argument("--sparql-templates", dest="sparql_templates", default=DEFAULT_SPARQL_TEMPLATES_PATH,
+                        help="JSON mapping from data category to SPARQL template paths (demographics/exposures/diseases/imd/crime_fuel)")
     parser.add_argument("--data", dest="data", default=None, help="Override data CSV path")
     parser.add_argument("--outdir", dest="outdir", default=None, help="Override output directory")
     args = parser.parse_args()
 
     paths_cfg = load_json_config(args.paths_config, DEFAULT_PATHS_CONFIG)
     sparql_cfg = load_json_config(args.sparql_config, DEFAULT_SPARQL_CONFIG)
+    sparql_templates_cfg = load_json_config(args.sparql_templates, DEFAULT_SPARQL_TEMPLATES)
     data_path = args.data or paths_cfg.get("data") or csv_path
     output_dir = args.outdir or paths_cfg.get("outdir") or base_out
 
@@ -1295,7 +1361,7 @@ if __name__ == "__main__":
     base_out = output_dir
     os.makedirs(base_out, exist_ok=True)
 
-    df = load_input_dataframe(csv_path, sparql_cfg, args.sparql_template)
+    df = load_input_dataframe(csv_path, sparql_cfg, args.sparql_template, sparql_templates_cfg)
 
     age_cols_all = ['prop_0_14','prop_15_44','prop_45_64','prop_65_74','prop_75_84','prop_85_plus']
     if set(age_cols_all).issubset(df.columns):

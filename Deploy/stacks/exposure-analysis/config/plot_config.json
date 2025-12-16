@@ -1,3 +1,4 @@
+
 {
   "exposures": [
     {
@@ -6,9 +7,21 @@
       "direction": "lower_better",
       "percentile_low": 5,
       "percentile_high": 95,
-      "age_mode": "ai",
+      "age_mode": "6band",
       "urban_ctrl_mode": "categorical",
       "use_air": true,
+      "use_health": true,
+      "use_imd": true
+    },
+    {
+      "name": "ah4gpas",
+      "transform": "logit_prop01",
+      "direction": "higher_better",
+      "percentile_low": 4.3,
+      "percentile_high": 95,
+      "age_mode": "6band",
+      "urban_ctrl_mode": "binary",
+      "use_air": false,
       "use_health": true,
       "use_imd": true
     }

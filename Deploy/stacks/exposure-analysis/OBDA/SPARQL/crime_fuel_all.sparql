@@ -1,0 +1,19 @@
+PREFIX ontoons: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoa ?lsoaCode ?crimeType ?crimeValue ?fuelPoverty
+WHERE {
+  ?lsoa a ontoons:LSOA ;
+        ontoons:hasLSOACode ?lsoaCode .
+
+  OPTIONAL {
+    ?crimeRes om:hasNumericalValue ?crimeValue .
+    FILTER(STRSTARTS(STR(?crimeRes), "https://theworldavatar.io/kg/Measure/CrimeRate/"))
+    BIND(REPLACE(STR(?crimeRes), ".*/CrimeRate/[^/]+/", "") AS ?crimeType)
+  }
+
+  OPTIONAL {
+    <https://theworldavatar.io/kg/Measure/FuelPoverty/{?lsoaCode}> om:hasNumericalValue ?fuelPoverty
+  }
+}
+

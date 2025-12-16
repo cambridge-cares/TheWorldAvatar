@@ -1,10 +1,10 @@
 # Exposure Analysis Toolkit
 
-This folder contains three analysis scripts plus shared configs. Data are fetched from a SPARQL endpoint first and fall back to the local CSV defined in `config/data_paths.json`. The intended audience is researchers preparing publication-grade figures (e.g., Lancet-level) using reproducible, scriptable workflows.
+This folder contains three analysis scripts and shared configs. Data load attempts the SPARQL endpoint first and falls back to the CSV set in `config/data_paths.json`. SPARQL templates are mapped in `config/sparql_templates.json` and merged by LSOA code before analysis.
 
 ## Environment
-- Python 3.10 (tested)
-- Install Python deps:
+- Python 3.10
+- Install Python packages:
   ```bash
   python3 -m venv .venv
   source .venv/bin/activate
@@ -13,59 +13,47 @@ This folder contains three analysis scripts plus shared configs. Data are fetche
 - If you prefer system Python, ensure the packages in `requirements.txt` are available.
 
 ## Data and config
-- Primary source: SPARQL endpoint configured in `config/sparql_config.json` (and query in `config/sparql_template.rq`). If the endpoint returns no data or is unreachable, scripts fall back to the local CSV.
-- All scripts read paths from `config/data_paths.json`:
-  - `data`: absolute path to the input CSV (shared by all scripts).
-  - `outdir`: optional override for outputs (defaults to each script’s local `results/`).
-  - `details`, `leaderboard`, `external_config`: optional; used where applicable.
-- Outputs: each script writes to `results/` under this directory unless `--outdir` or `outdir` in the JSON is provided.
+- Primary source: SPARQL endpoint configured in `config/sparql_config.json`. Templates are listed in `config/sparql_templates.json`; results are merged on LSOA code. If SPARQL is empty or unreachable, scripts fall back to the CSV in `config/data_paths.json`.
+- `config/data_paths.json`: set `data` (absolute CSV path, shared) and `outdir` (defaults to each script’s `results/`). Keys `details`, `leaderboard`, and `external_config` are read only when the corresponding script needs them.
 
-## Scripts (recommended reading order: PAF → exposure-prevalence pattern → population-weighted partial correlation)
+## Scripts (order: PAF → exposure-prevalence pattern → population-weighted partial correlation)
 
 ### 1) PAF combo search — `paf_experments.py`
-- Purpose: grid-search combinations of adjustment strategies and spline hyperparameters to maximize positive population attributable fractions (PAFs) and McFadden R².
-- Key outputs: `combo_details.csv`, `combo_leaderboard.csv`, plus console summaries.
-- Run:
+- Purpose: estimate population-attributable fractions using Poisson GLMs with restricted cubic splines across strata and adjustment sets; select configurations that reduce negative PAFs and increase McFadden R².
+- Inputs: prevalence outcomes (`prevalence-*`), population denominator (`Total`), exposure(s), IMD/air/healthcare covariates when available. Data source resolves via SPARQL first, then CSV.
+- How to run:
   ```bash
-  python3 paf_experments.py \
-    --paths-config config/data_paths.json \
-    --sparql-config config/sparql_config.json \
-    --sparql-template config/sparql_template.rq
+  cd /path/to/TheWorldAvatar/Deploy/stacks/exposure-analysis
+  python3 paf_experments.py
   ```
-- Notes: Requires `data` in `data_paths.json` (or `--data`). Results go to `results/` by default.
 
 ### 2) Exposure–prevalence patterns — `exposure_prevalence_pattern.py`
-- Purpose: fit spline-based exposure–prevalence curves (relative risks) with configurable baselines and per-exposure plotting settings.
-- Key outputs: per-exposure CSVs and PNG panels; aggregated `dose_response_all.csv`.
-- Run:
+- Purpose: estimate exposure–response curves (relative risks) via Poisson GLMs with spline terms; quantify non-linearity and interquartile risk contrasts per exposure–disease pair.
+- Inputs: exposure columns, prevalence outcomes, population denominator, controls for air quality, healthcare access, IMD when present. Data resolves via SPARQL then CSV. Plotting hyperparameters can be supplied via `external_config`.
+- How to run:
   ```bash
-  python3 exposure_prevalence_pattern.py \
-    --paths-config config/data_paths.json \
-    --sparql-config config/sparql_config.json \
-    --sparql-template config/sparql_template.rq
+  cd /path/to/TheWorldAvatar/Deploy/stacks/exposure-analysis
+  python3 exposure_prevalence_pattern.py
   ```
-- Notes: Uses external plot config if `external_config` is set in `data_paths.json` (or `--config-path`).
 
 ### 3) Population-weighted partial correlation — `population_weigted_partial_corr.py`
-- Purpose: compute (weighted) partial correlations and fitted lines between an environmental exposure and multiple disease prevalences, with optional covariate controls.
-- Key outputs: PNG panels per exposure, colorbars/legends, console correlation summaries.
-- Run:
+- Purpose: quantify population-weighted partial correlations (Pearson or Spearman) between exposures and disease prevalences, controlling for age structure, urban status, healthcare access, IMD, and pollutants; provide partial regression lines.
+- Inputs: exposure column(s), disease prevalence columns, population weights (`Total`), age shares, urban flag/category, GP/IMD/pollutant controls when present. Data resolves via SPARQL then CSV.
+- How to run:
   ```bash
-  python3 population_weigted_partial_corr.py \
-    --paths-config config/data_paths.json \
-    --sparql-config config/sparql_config.json \
-    --sparql-template config/sparql_template.rq
+  cd /path/to/TheWorldAvatar/Deploy/stacks/exposure-analysis
+  python3 population_weigted_partial_corr.py
   ```
 
 ## Common CLI overrides
 - `--data`: override input CSV path.
 - `--outdir`: override output directory.
-- `--paths-config`: point to an alternate `data_paths.json`.
-- `--sparql-config` / `--sparql-template`: customize endpoint/query.
+- `--paths-config`: alternate `data_paths.json`.
+- `--sparql-config` / `--sparql-template` / `--sparql-templates`: customize endpoint and templates.
 
 ## Repro checklist
-1) Set `data_paths.json` `data` to your CSV (and `outdir` if desired).
-2) (Optional) Configure SPARQL endpoint/query.
+1) Set `data_paths.json` `data` (and `outdir` if needed).
+2) Configure SPARQL endpoint (`config/sparql_config.json`) and templates (`config/sparql_templates.json`) if using SPARQL.
 3) Create and activate a virtualenv; install `requirements.txt`.
-4) Run scripts as above; inspect outputs under `results/`.
+4) Run scripts as above.
 

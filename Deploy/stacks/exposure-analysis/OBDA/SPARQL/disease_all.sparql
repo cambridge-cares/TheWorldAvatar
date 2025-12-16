@@ -1,0 +1,21 @@
+PREFIX ontoons: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX sosa:    <http://www.w3.org/ns/sosa/>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX mesh:    <http://id.nlm.nih.gov/mesh/>
+
+SELECT ?lsoa ?lsoaCode ?disease ?meshId ?prevalence
+WHERE {
+  ?lsoa a ontoons:LSOA ;
+        ontoons:hasLSOACode ?lsoaCode .
+
+  ?obs  a sosa:Observation ;
+        sosa:hasFeatureOfInterest ?lsoa ;
+        sosa:observedProperty ?mesh ;
+        sosa:hasResult ?measure .
+
+  ?measure om:hasNumericalValue ?prevalence .
+
+  BIND(STRAFTER(STR(?mesh), "mesh/") AS ?meshId)
+  BIND(REPLACE(STRAFTER(STR(?obs), "Observation/Prevalence/"), "/.*", "") AS ?disease)
+}
+

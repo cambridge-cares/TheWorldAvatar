@@ -1,0 +1,32 @@
+PREFIX ontoons: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoa ?lsoaCode ?exposure ?value ?rank ?percentile
+WHERE {
+  ?lsoa a ontoons:LSOA ;
+        ontoons:hasLSOACode ?lsoaCode .
+
+  OPTIONAL {
+    ?expRes om:hasNumericalValue ?value .
+    FILTER(STRSTARTS(STR(?expRes), "https://theworldavatar.io/kg/Exposure/"))
+    BIND(REPLACE(STR(?expRes), ".*/Exposure/[^/]+/", "") AS ?exposure)
+  }
+
+  OPTIONAL {
+    ?rankRes om:hasNumericalValue ?rank .
+    FILTER(STRSTARTS(STR(?rankRes), "https://theworldavatar.io/kg/ExposureRank/"))
+    BIND(REPLACE(STR(?rankRes), ".*/ExposureRank/[^/]+/", "") AS ?exposureRank)
+  }
+
+  OPTIONAL {
+    ?pctRes om:hasNumericalValue ?percentile .
+    FILTER(STRSTARTS(STR(?pctRes), "https://theworldavatar.io/kg/ExposurePercentile/"))
+    BIND(REPLACE(STR(?pctRes), ".*/ExposurePercentile/[^/]+/", "") AS ?exposurePct)
+  }
+
+  # Align exposure name across value/rank/percentile when present
+  BIND(COALESCE(?exposure, ?exposureRank, ?exposurePct) AS ?exposureNorm)
+  FILTER(BOUND(?exposureNorm))
+  BIND(?exposureNorm AS ?exposure)
+}
+

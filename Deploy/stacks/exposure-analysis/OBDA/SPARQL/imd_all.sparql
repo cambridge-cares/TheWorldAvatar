@@ -1,0 +1,19 @@
+PREFIX ontoons: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoa ?lsoaCode ?imdOverall ?subdomain ?imdValue
+WHERE {
+  ?lsoa a ontoons:LSOA ;
+        ontoons:hasLSOACode ?lsoaCode .
+
+  OPTIONAL {
+    <https://theworldavatar.io/kg/Measure/IMD/{?lsoaCode}> om:hasNumericalValue ?imdOverall
+  }
+
+  OPTIONAL {
+    ?imdSub om:hasNumericalValue ?imdValue .
+    FILTER(STRSTARTS(STR(?imdSub), "https://theworldavatar.io/kg/Measure/IMDSub/"))
+    BIND(REPLACE(STR(?imdSub), ".*/IMDSub/[^/]+/", "") AS ?subdomain)
+  }
+}
+

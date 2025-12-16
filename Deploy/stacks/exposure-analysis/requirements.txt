@@ -1,8 +1,0 @@
-numpy>=1.23
-pandas>=1.5
-matplotlib>=3.7
-statsmodels>=0.13
-patsy>=0.5
-scipy>=1.10
-requests>=2.31
-

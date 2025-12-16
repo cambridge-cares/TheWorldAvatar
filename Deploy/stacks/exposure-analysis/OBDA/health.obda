@@ -4,27 +4,144 @@ ontoons: https://www.ordnancesurvey.co.uk/linked-data/ontology/
 sosa:    http://www.w3.org/ns/sosa/
 mesh:    http://id.nlm.nih.gov/mesh/
 om:      http://www.ontology-of-units-of-measure.org/resource/om-2/
+geo:     http://www.opengis.net/ont/geosparql#
+locn:    http://www.w3.org/ns/locn#
+dct:     http://purl.org/dc/terms/
 
 [MappingDeclaration] @collection [[
 
-mappingId LSOA-Instances
-target <https://theworldavatar.io/kg/LSOA/{lsoa_code}>
-       a ontoons:LSOA ;
-       ontoons:hasLSOACode {lsoa_code} .
-source SELECT DISTINCT lsoa_code FROM gp_lsoa_patients
+############ ############
+mappingId LSOA-Instance
+target <https://theworldavatar.io/kg/LSOA/{LSOA_CODE}> a ontoons:LSOA ; ontoons:hasLSOACode {LSOA_CODE} ; ontoons:hasLocalAuthorityCode {LAD_CODE} ; ontoons:hasLocalAuthorityName {LAD_NAME} ; ontoons:hasUrbanRuralFlag {Urban_rural_flag} ; ontoons:hasRUC21Code {RUC21CD} ; ontoons:hasRUC21Name {RUC21NM} .
+source SELECT "LSOA_CODE","LAD 2021 Code" AS LAD_CODE,"LAD 2021 Name" AS LAD_NAME,
+              "Urban_rural_flag","RUC21CD","RUC21NM"
+       FROM urban_info
 
-mappingId Disease-Prevalence-Observation
-target <https://theworldavatar.io/kg/Observation/DiseasePrevalence/{year}/{mesh_id}/{lsoa_code}>
-       a sosa:Observation ;
-       sosa:hasFeatureOfInterest <https://theworldavatar.io/kg/LSOA/{lsoa_code}> ;
-       sosa:observedProperty mesh:{mesh_id} ;
-       sosa:hasResult <https://theworldavatar.io/kg/Measure/Prevalence/{year}/{mesh_id}/{lsoa_code}> .
-source SELECT lsoa_code, year, mesh_id FROM v_lsoa_condition_prevalence
+############ （lsoa_health）############
+mappingId LSOA-Population
+target <https://theworldavatar.io/kg/Measure/Population/{LSOA_CODE}> a om:Measure ; om:hasNumericalValue {Total} ; om:hasUnit om:person .
+source SELECT "LSOA_CODE","Total" FROM lsoa_health
+
+mappingId LSOA-AgeShare
+target <https://theworldavatar.io/kg/Measure/AgeShare/{LSOA_CODE}/{band}> a om:Measure ; om:hasNumericalValue {val} ; om:hasUnit om:percent .
+source SELECT "LSOA_CODE",'0_14' AS band,"prop_0_14" AS val FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'15_44',"prop_15_44" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'45_64',"prop_45_64" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'65_74',"prop_65_74" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'75_84',"prop_75_84" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'85_plus',"prop_85_plus" FROM lsoa_health
+
+############ （lsoa_health）############
+mappingId Disease-Prevalence-Obs
+target <https://theworldavatar.io/kg/Observation/Prevalence/{disease}/{LSOA_CODE}> a sosa:Observation ; sosa:hasFeatureOfInterest <https://theworldavatar.io/kg/LSOA/{LSOA_CODE}> ; sosa:observedProperty mesh:{mesh_id} ; sosa:hasResult <https://theworldavatar.io/kg/Measure/Prevalence/{disease}/{LSOA_CODE}> .
+source SELECT "LSOA_CODE",'prevalence-CHD' AS disease,'D002318' AS mesh_id,"prevalence-CHD" AS val FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-COPD','D029424',"prevalence-COPD" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-DM','D003924',"prevalence-DM"   FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-HF','D006333',"prevalence-HF"   FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-HYP','D006973',"prevalence-HYP" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-OB','D009765',"prevalence-OB"   FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-PAD','D018782',"prevalence-PAD" FROM lsoa_health
+UNION ALL SELECT "LSOA_CODE",'prevalence-STIA','D020521',"prevalence-STIA" FROM lsoa_health
+
 
 mappingId Disease-Prevalence-Measure
-target <https://theworldavatar.io/kg/Measure/Prevalence/{year}/{mesh_id}/{lsoa_code}>
-       a om:Measure ;
-       om:hasNumericalValue {prevalence} .
-source SELECT lsoa_code, year, mesh_id, prevalence FROM v_lsoa_condition_prevalence
+target <https://theworldavatar.io/kg/Measure/Prevalence/{disease}/{LSOA_CODE}> a om:Measure ; om:hasNumericalValue {val} .
+source -- 
+
+############ （exposures）： ############
+mappingId Exposure-Value
+target <https://theworldavatar.io/kg/Exposure/{LSOA_CODE}/{exp}> a om:Measure ; om:hasNumericalValue {val} .
+source SELECT "LSOA_CODE",'ah4blue' AS exp,"ah4blue" AS val FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4gp',"ah4gp" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4hosp',"ah4hosp" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4phar',"ah4phar" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4leis',"ah4leis" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4ffood',"ah4ffood" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4gpas',"ah4gpas" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4no2',"ah4no2" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4so2',"ah4so2" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4pm10',"ah4pm10" FROM exposures
+
+############（exposures）：rank ############
+mappingId Exposure-Rank
+target <https://theworldavatar.io/kg/ExposureRank/{LSOA_CODE}/{exp}> a om:Measure ; om:hasNumericalValue {val} .
+source SELECT "LSOA_CODE",'ah4gp' AS exp,"ah4gp_rnk" AS val FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4dent',"ah4dent_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4phar',"ah4phar_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4hosp',"ah4hosp_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4leis',"ah4leis_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4gpas',"ah4gpas_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4blue',"ah4blue_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4no2',"ah4no2_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4so2',"ah4so2_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4pm10',"ah4pm10_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4gamb',"ah4gamb_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4pubs',"ah4pubs_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4tob',"ah4tob_rnk" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4ffood',"ah4ffood_rnk" FROM exposures
+
+############ （exposures）：pct ############
+mappingId Exposure-Percentile
+target <https://theworldavatar.io/kg/ExposurePercentile/{LSOA_CODE}/{exp}> a om:Measure ; om:hasNumericalValue {val} .
+source SELECT "LSOA_CODE",'ah4gp' AS exp,"ah4gp_pct" AS val FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4dent',"ah4dent_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4phar',"ah4phar_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4hosp',"ah4hosp_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4leis',"ah4leis_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4gpas',"ah4gpas_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4blue',"ah4blue_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4no2',"ah4no2_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4so2',"ah4so2_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4pm10',"ah4pm10_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4gamb',"ah4gamb_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4pubs',"ah4pubs_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4tob',"ah4tob_pct" FROM exposures
+UNION ALL SELECT "LSOA_CODE",'ah4ffood',"ah4ffood_pct" FROM exposures
+
+############ （fuel_poverty）############
+mappingId Fuel-Poverty
+target <https://theworldavatar.io/kg/Measure/FuelPoverty/{LSOA_CODE}> a om:Measure ; om:hasNumericalValue {fuel_pct} ; om:hasUnit om:percent .
+source SELECT "LSOA_CODE","Proportion of households fuel poor (%)" AS fuel_pct FROM fuel_poverty
+
+############ （crime_rate）############
+mappingId Crime-Rate
+target <https://theworldavatar.io/kg/Measure/CrimeRate/{LSOA_CODE}/{crime}> a om:Measure ; om:hasNumericalValue {val} .
+source SELECT "LSOA_CODE",'Anti-social behaviour Rate' AS crime,"Anti-social behaviour Rate" AS val FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Bicycle theft Rate',"Bicycle theft Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Burglary Rate',"Burglary Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Criminal damage and arson Rate',"Criminal damage and arson Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Drugs Rate',"Drugs Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Other crime Rate',"Other crime Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Other theft Rate',"Other theft Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Possession of weapons Rate',"Possession of weapons Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Public order Rate',"Public order Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Robbery Rate',"Robbery Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Shoplifting Rate',"Shoplifting Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Theft from the person Rate',"Theft from the person Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Vehicle crime Rate',"Vehicle crime Rate" FROM crime_rate
+UNION ALL SELECT "LSOA_CODE",'Violence and sexual offences Rate',"Violence and sexual offences Rate" FROM crime_rate
+
+############ IMD （imd_scores）############
+mappingId IMD-Overall
+target <https://theworldavatar.io/kg/Measure/IMD/{LSOA_CODE}> a om:Measure ; om:hasNumericalValue {imd} .
+source SELECT "LSOA_CODE","imd" FROM imd_scores
+
+mappingId IMD-Sub
+target <https://theworldavatar.io/kg/Measure/IMDSub/{LSOA_CODE}/{sub}> a om:Measure ; om:hasNumericalValue {val} .
+source SELECT "LSOA_CODE",'Income Score' AS sub,"Income Score (rate)" AS val FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Employment Score',"Employment Score (rate)" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Education Score',"Education, Skills and Training Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Health Score',"Health Deprivation and Disability Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Crime Score',"Crime Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Barriers Score',"Barriers to Housing and Services Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Living Environment Score',"Living Environment Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Geographical Barriers',"Geographical Barriers Sub-domain Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Wider Barriers',"Wider Barriers Sub-domain Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Indoors',"Indoors Sub-domain Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Outdoors',"Outdoors Sub-domain Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Children & Young',"Children and Young People Sub-domain Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'Adult Skills',"Adult Skills Sub-domain Score" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'IDACI',"Income Deprivation Affecting Children Index (IDACI) Score (rate)" FROM imd_scores
+UNION ALL SELECT "LSOA_CODE",'IDAOPI',"Income Deprivation Affecting Older People (IDAOPI) Score (rate)" FROM imd_scores
 
 ]]
