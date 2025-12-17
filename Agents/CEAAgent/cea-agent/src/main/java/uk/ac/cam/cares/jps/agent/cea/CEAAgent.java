@@ -12,6 +12,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAExecutionInput;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;
@@ -27,6 +28,7 @@ import javax.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -35,20 +37,33 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.locationtech.jts.geom.Geometry;
+
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 @WebServlet(urlPatterns = {
         CEAAgent.URI_ACTION,
+        CEAAgent.URI_EXECUTE,
         CEAAgent.URI_UPDATE,
         CEAAgent.URI_QUERY
 })
 public class CEAAgent extends JPSAgent {
     public static final String KEY_REQ_METHOD = "method";
     public static final String URI_ACTION = "/run";
+    public static final String URI_EXECUTE = "/execute";
     public static final String URI_UPDATE = "/update";
     public static final String URI_QUERY = "/query";
     public static final String KEY_REQ_URL = "requestUrl";
     public static final String KEY_TARGET_URL = "targetUrl";
+    public static final String KEY_CALLER_URL = "callerUrl";
+    public static final String KEY_CEA_PAYLOAD = "ceaPayload";
     public static final String KEY_IRI = "iris";
     public static final String KEY_GEOMETRY = "geometryEndpoint";
     public static final String KEY_USAGE = "usageEndpoint";
@@ -58,8 +73,6 @@ public class CEAAgent extends JPSAgent {
     public static final String KEY_CEA = "ceaEndpoint";
     public static final String KEY_SOLAR = "solarProperties";
     public static final Set<String> SOLAR_PARAMETERS = new HashSet<>(Arrays.asList("annual-radiation-threshold", "max-roof-coverage", "panel-tilt-angle", "t-in-sc", "t-in-pvt"));
-
-    private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
     public static final String KEY_TIMES = "times";
     public static final String CEA_OUTPUTS = "ceaOutputs";
@@ -92,6 +105,10 @@ public class CEAAgent extends JPSAgent {
     private List<String> ceaDb;
     private CEAOutputUpdater updater;
 
+    private Gson ceaGsonBuilder = new GsonBuilder()
+                        .registerTypeAdapter(Geometry.class, new GeometryTypeAdapter()) 
+                        .create();
+
     public CEAAgent() {
         readConfig();
         ontopUrl = endpointConfig.getOntopUrl();
@@ -108,7 +125,12 @@ public class CEAAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
             requestUrl = requestParams.getString(KEY_REQ_URL);
-            String uriArrayString = requestParams.get(KEY_IRI).toString();
+            String uriArrayString = "[]";
+
+            if (!requestUrl.contains(URI_EXECUTE)) {
+                uriArrayString = requestParams.get(KEY_IRI).toString();
+            }
+
             JSONArray uriArray = new JSONArray(uriArrayString);
 
             if (requestUrl.contains(URI_ACTION)) {
@@ -223,7 +245,114 @@ public class CEAAgent extends JPSAgent {
                     ceaDatabase = tempS;
                 }
 
-                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar);
+                // either run locally or delegate CEA simulation to external CEA agent
+
+                String callerUrl = requestParams.has(KEY_CALLER_URL) ? requestParams.getString(KEY_CALLER_URL) : null;
+                String targetUrl = requestParams.has(KEY_TARGET_URL) ? requestParams.getString(KEY_TARGET_URL) : null;
+
+                if ((callerUrl!=null)&&(targetUrl!=null)) {
+
+                    // delegate CEA simulation to external CEA agent
+
+                    CEAExecutionInput inputData = new CEAExecutionInput(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar);
+
+                    String jsonInput;
+                    try {
+                        jsonInput = ceaGsonBuilder.toJson(inputData);
+                    } catch (Exception e) {
+                        // Handle serialization error using your JPSRuntimeException pattern
+                        System.err.println("Error packaging CEA inputs to JSON: " + e.getMessage());
+                        throw new JPSRuntimeException("cannot package CEA inputs to JSON.", e);
+                    }
+
+                    String encodedJsonPayload = URLEncoder.encode(jsonInput, StandardCharsets.UTF_8);
+                    String encodedCallerUrl = URLEncoder.encode(callerUrl, StandardCharsets.UTF_8);
+
+                    String requestBody = KEY_CEA_PAYLOAD + "=" + encodedJsonPayload + "&" + KEY_CALLER_URL + "=" + encodedCallerUrl;
+
+                    HttpClient client = HttpClient.newHttpClient();
+                    String fullExecutionUrl = targetUrl + URI_EXECUTE;
+
+                    CompletableFuture<HttpResponse<String>> futureResponse = client.sendAsync(
+                        HttpRequest.newBuilder()
+                            .uri(URI.create(fullExecutionUrl))
+                            .header("Content-Type", "application/x-www-form-urlencoded")
+                            // Pass the properly formatted and encoded string as the body
+                            .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                            .build(),
+                        HttpResponse.BodyHandlers.ofString()
+                    );
+
+                    // Use thenAccept/exceptionally to log the result without blocking the current thread
+                    futureResponse.thenAccept(response -> {
+                        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                            System.out.println("CEA delegation request sent successfully (status: " + response.statusCode() + ").");
+                        } else {
+                            System.err.println("Remote server responded with error status: " + response.statusCode() + ", Body: " + response.body());
+                        }
+                    }).exceptionally(e -> {
+                        System.err.println("Network connection error during CEA delegation: " + e.getMessage());
+                        return null;
+                    });
+
+
+                } else {
+
+                    if (targetUrl!=null) {
+                        System.out.println("Missing callerUrl, assume local execution");
+                    };
+
+                    if (callerUrl!=null) {
+                        System.out.println("Missing targetUrl, assume local execution");
+                    };
+
+                    runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs, ceaDatabase, solar, null);
+
+                }
+
+            } else if (requestUrl.contains(URI_EXECUTE)) {
+
+                String rawBodyString = requestParams.getString("body");
+
+                JSONObject trueParams;
+                try {
+                    trueParams = parseFormEncodedString(rawBodyString); 
+
+                } catch (Exception e) {
+                    System.err.println("Failed to parse form-encoded request body: " + e.getMessage());
+                    throw new JPSRuntimeException("Could not parse request body into parameters.", e);
+                }
+
+                String callerUrl = trueParams.has(KEY_CALLER_URL) ? trueParams.getString(KEY_CALLER_URL) : null;
+                
+                // Retrieve the entire JSON string payload from the single key
+                String jsonPayload = trueParams.has(KEY_CEA_PAYLOAD) ? trueParams.getString(KEY_CEA_PAYLOAD) : null;
+
+                if (jsonPayload == null) {
+                    System.err.println("Error: Missing CEA payload in request.");
+                    // Handle error response (e.g., return an error status/JSON)
+                    return requestParams; 
+                }
+
+                // unpack input data from caller's request
+
+                CEAExecutionInput inputData;
+                try {
+                    inputData = ceaGsonBuilder.fromJson(jsonPayload, CEAExecutionInput.class);
+                } catch (Exception e) {
+                    throw new JPSRuntimeException("cannot read CEA payload.");
+                }
+
+                ArrayList<CEABuildingData> buildingData = inputData.getBuildingData();
+                CEAMetaData ceaMetaData = inputData.getCeaMetaData();
+                ArrayList<String> uris = inputData.getUris();
+                Integer threadNumber = inputData.getThreadNumber();
+                String crs = inputData.getCrs();
+                String ceaDatabase = inputData.getCeaDatabase();
+                JSONObject solar = inputData.getSolar();
+
+                runCEA(buildingData, ceaMetaData, uris, threadNumber, crs, ceaDatabase, solar, callerUrl);
+
             } else if (requestUrl.contains(URI_UPDATE)) {
 
                 // unpack data from request
@@ -337,16 +466,18 @@ public class CEAAgent extends JPSAgent {
 
         if (!requestParams.isEmpty()) {
             Set<String> keys = requestParams.keySet();
-            if (keys.contains(KEY_REQ_METHOD) && keys.contains(KEY_REQ_URL) && keys.contains(KEY_IRI)) {
+            if (keys.contains(KEY_REQ_METHOD) && keys.contains(KEY_REQ_URL)) {
                 if (requestParams.get(KEY_REQ_METHOD).equals(HttpMethod.POST)) {
                     try {
                         URL reqUrl = new URL(requestParams.getString(KEY_REQ_URL));
-                        if (reqUrl.getPath().contains(URI_UPDATE)) {
+                        if (reqUrl.getPath().contains(URI_UPDATE) && keys.contains(KEY_IRI)) {
                             error = validateUpdateInput(requestParams);
-                        } else if (reqUrl.getPath().contains(URI_ACTION)) {
+                        } else if (reqUrl.getPath().contains(URI_ACTION) && keys.contains(KEY_IRI)) {
                             error = validateActionInput(requestParams);
-                        } else if (reqUrl.getPath().contains(URI_QUERY)) {
+                        } else if (reqUrl.getPath().contains(URI_QUERY) && keys.contains(KEY_IRI)) {
                             error = validateQueryInput(requestParams);
+                        } else if (reqUrl.getPath().contains(URI_EXECUTE)) { // execute route does not need IRI
+                            error = validateExecuteInput(requestParams);
                         }
                     } catch (Exception e) {
                         throw new BadRequestException();
@@ -451,6 +582,29 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
+     * Validates input specific to requests coming to URI_EXECUTE
+     * 
+     * @param requestParams - request body in JSON format
+     * @return boolean saying if request is valid or not
+     */
+    private boolean validateExecuteInput(JSONObject requestParams) {
+
+        String rawBodyString = requestParams.getString("body");
+
+        JSONObject trueParams;
+        try {
+            trueParams = parseFormEncodedString(rawBodyString); 
+        } catch (Exception e) {
+            System.err.println("Failed to parse form-encoded request body: " + e.getMessage());
+            return true;
+        }
+
+        boolean error = trueParams.get(KEY_CEA_PAYLOAD).toString().isEmpty() || trueParams.get(KEY_CALLER_URL).toString().isEmpty();
+
+        return error;
+    }
+
+    /**
      * Gets variables from config
      */
     private void readConfig() {
@@ -484,14 +638,53 @@ public class CEAAgent extends JPSAgent {
      * @param threadNumber int tracking thread that is running
      * @param crs          coordinate reference system
      */
-    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase, JSONObject solar) {
+    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs, String ceaDatabase, JSONObject solar, String callerUrl) {
+        
+        String updateUrl = null;
+        if (callerUrl!=null) {
+            try {
+                updateUrl = callerUrl + URI_UPDATE;
+                new URI(updateUrl);
+            } catch (URISyntaxException e) {
+                System.err.println("callerUrl is invalid: " + callerUrl);
+                new JPSRuntimeException(e);
+            }
+        }
+        
         try {
-            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, uris, threadNumber, crs, ceaDatabase, updater, solar);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, uris, threadNumber, crs, ceaDatabase, updater, solar, updateUrl);
             CEAExecutor.execute(task);
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
+    }
+
+    public static JSONObject parseFormEncodedString(String formString) throws UnsupportedEncodingException {
+        JSONObject result = new JSONObject();
+        if (formString == null || formString.trim().isEmpty()) {
+            return result;
+        }
+        
+        // Split the string by the '&' separator
+        String[] pairs = formString.split("&");
+        
+        for (String pair : pairs) {
+            // Find the position of the '=' sign
+            int idx = pair.indexOf("=");
+            
+            if (idx > 0) {
+                String key = pair.substring(0, idx);
+                String encodedValue = pair.substring(idx + 1);
+                
+                // Decode the value using UTF-8
+                String value = URLDecoder.decode(encodedValue, StandardCharsets.UTF_8.toString());
+                
+                // Put the decoded key-value pair into the JSONObject
+                result.put(key, value);
+            }
+        }
+        return result;
     }
 
 }
