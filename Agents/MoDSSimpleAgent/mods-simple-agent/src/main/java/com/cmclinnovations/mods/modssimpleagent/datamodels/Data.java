@@ -54,6 +54,32 @@ public class Data implements IDataTable {
         return rows;
     }
 
+    public List<List<Double>> getAllRows() throws Exception {
+        if (columns.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Integer length = null;
+
+        for (DataColumn column : columns) {
+            if (length != null && length != column.getLength()) {
+                throw new Exception("Columns have different lengths.");
+            } else {
+                length = column.getLength();
+            }
+        }
+
+        List<List<Double>> rows = IntStream.range(0, length)
+                .mapToObj(i -> new ArrayList<Double>()).collect(Collectors.toList());
+
+        columns.stream().map(DataColumn::getValues)
+                .forEachOrdered(column -> {
+                    Iterator<List<Double>> iterator = rows.iterator();
+                    column.forEach(value -> iterator.next().add(value));
+                });
+        return rows;
+    }
+
     @JsonIgnore
     private List<DoubleSummaryStatistics> getStats() {
         if (null == stats) {

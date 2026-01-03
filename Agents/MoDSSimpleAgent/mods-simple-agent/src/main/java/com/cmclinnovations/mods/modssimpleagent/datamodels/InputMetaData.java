@@ -33,8 +33,10 @@ public class InputMetaData {
             List<String> scalings) {
         List<InputMetaDataRow> dataInfoRows = new ArrayList<>();
         for (int i = 0; i < varNames.size(); i++) {
+            // ensure maximum is always bigger than minimum
+            Double maximum = Math.max(minima.get(i)*(1.+0.001*Math.signum(minima.get(i)))+0.001,maxima.get(i));
             dataInfoRows.add(
-                    new InputMetaDataRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scalings.get(i)));
+                    new InputMetaDataRow(varNames.get(i), minima.get(i), maximum, means.get(i), scalings.get(i)));
         }
         this.rows = dataInfoRows;
     }
