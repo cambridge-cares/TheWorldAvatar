@@ -515,6 +515,22 @@ def retrieve_timeseries_information_from_api(ts_ids=[], days_back=7) -> dict:
 
     return infos
 
+def repeat_http_post(url, body, headers, max_try = 3):
+    """
+    This will send a HTTP POST request and re-try if it fails.
+    Currently only used for time series retrieval as it is found to be unstable.
+    """
+    counter = 0
+    while counter < max_try:
+        try:
+            r = requests.post(url=url, data=json.dumps(body), headers=headers)
+            # Extract time series data
+            return r.json()
+        except Exception as ex:
+            logger.warning(f"Error while retrieving time series data from API: {ex}")
+            counter = counter + 1
+            time.sleep(5)
+    raise APIException("Error while retrieving time series data from API. Please try again later.")
 
 def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[], 
                                       period='P1D', chunksize=25) -> dict:
@@ -566,13 +582,7 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
                 "timeseries": chunk
         }
 
-        try:
-            r = requests.post(url=url, data=json.dumps(body), headers=headers)
-            # Extract time series data
-            ts_data = r.json()
-        except Exception as ex:
-            logger.error(f"Error while retrieving time series data from API: {ex}")
-            raise APIException("Error while retrieving time series data from API.") from ex
+        ts_data = repeat_http_post(url, body, headers)
 
         df = pd.DataFrame.from_dict(ts_data, orient='index')
         # Remove rows without entries
