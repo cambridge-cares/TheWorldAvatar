@@ -63,6 +63,21 @@ WHERE {{
             if iris:
                 logger.info(f"Linked IRIs: {iris}")
                 return iris
+            else:
+                # We were not able to link the species with an IRI.
+                logger.info("Unable to link species to IRI.")
+                # If we have an InChI...
+                if key == "InChI":
+                    # ...call the PubChem agent.
+                    logger.info(f"Calling PubChem agent at '{self.pubchem_agent_url}'...")
+                    pca_response = requests.get(self.pubchem_agent_url,
+                        params={"inchi": val})
+                    pca_resp_str = pca_response.text.strip()
+                    logger.info(f"Response: {pca_resp_str}")
+                    if pca_resp_str.startswith("http"):
+                        iris = [pca_resp_str]
+                        logger.info(f"Linked IRIs: {iris}")
+                        return iris
         except StopIteration:
             pass
 
