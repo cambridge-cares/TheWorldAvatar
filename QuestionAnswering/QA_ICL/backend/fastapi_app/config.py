@@ -54,6 +54,11 @@ class LocationIqSettings(BaseModel):
     api_key: str
 
 
+class AgentsSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    pubchem_agent: str
+
 class ChemistryEndpointsSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -131,6 +136,7 @@ class AppSettings(BaseModel):
     chat: OpenaiSettings
     qt_recog: OpenaiSettings
     location_iq: LocationIqSettings
+    agents: AgentsSettings
     chemistry_endpoints: ChemistryEndpointsSettings
     singapore_endpoints: SingaporeEndpointsSettings
     entity_linking: EntityLinkingSettings

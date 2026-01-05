@@ -65,6 +65,10 @@ class SparqlClient:
         res = self.querySelect(query)
         return self.flatten_select_response(res)
 
+def get_pubchem_agent_url(
+    settings: Annotated[AppSettings, Depends(get_app_settings)]
+):
+    return settings.agents.pubchem_agent
 
 def get_ontospecies_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]

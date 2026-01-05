@@ -1,12 +1,16 @@
 from functools import cache
 import logging
 from typing import Annotated
+import requests
 
 from fastapi import Depends
 from rdflib import SKOS
 from constants.namespace import ONTOSPECIES
 from model.entity_linking.ontospecies import ElementLinkingArgs, SpeciesLinkingArgs
-from services.sparql import SparqlClient, get_ontospecies_endpoint, get_ontospecies_endpoint_v3
+from services.sparql import (SparqlClient,
+    get_ontospecies_endpoint, get_ontospecies_endpoint_v3,
+    get_pubchem_agent_url
+)
 from .base import LinkerManager
 
 
@@ -21,9 +25,12 @@ class OntospeciesLinkerManager(LinkerManager):
     }
 
     # TODO: ONTOSPECIES_V3 should be remove after merging
-    def __init__(self, ontospecies_endpoint: str, ontospecies_endpoint_v3: str):
+    def __init__(self, ontospecies_endpoint: str,
+        ontospecies_endpoint_v3: str, pubchem_agent_url: str
+    ):
         self.sparql_client = SparqlClient(ontospecies_endpoint)
         self.sparql_client_v3 = SparqlClient(ontospecies_endpoint_v3)
+        self.pubchem_agent_url = pubchem_agent_url
 
     @property
     def cls2linker(self):
@@ -113,7 +120,9 @@ WHERE {{
 @cache
 def get_ontospecies_linkerManager(
     ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)],
-    ontospecies_endpoint_v3: Annotated[str, Depends(get_ontospecies_endpoint_v3)]    
+    ontospecies_endpoint_v3: Annotated[str, Depends(get_ontospecies_endpoint_v3)],
+    pubchem_agent_url: Annotated[str, Depends(get_pubchem_agent_url)]
 ):
     return OntospeciesLinkerManager(ontospecies_endpoint=ontospecies_endpoint, 
-                                    ontospecies_endpoint_v3=ontospecies_endpoint_v3)
+                                    ontospecies_endpoint_v3=ontospecies_endpoint_v3,
+                                    pubchem_agent_url=pubchem_agent_url)
