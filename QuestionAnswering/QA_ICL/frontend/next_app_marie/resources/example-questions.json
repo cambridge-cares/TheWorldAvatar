@@ -2,18 +2,9 @@
   {
     "heading": "Chemical Species (general)",
     "questions": [
-      "What is the charge of benzene?",
       "How many hydrogen bonds can an ethylene glycol molecule accept and donate?",
-      "What chemical classifications does caffeine fall under?",
       "Find all uses of 3-amino-2-propanol",
-      "Show me all species with molecular formula C6H8O6",
-      "What are some compounds with molecular weight around 150 g/mol?",
-      "What are some applications of alkanes?",
-      "Find me all aliphatic amines",
-      "What are solubilities in water of various amino acids?",
-      "List all alcohol solvents with a boiling point between 100°C and 120°C",
-      "Show me the 3D structure of reduced coenzyme M",
-      "Which compounds have multiple IUPAC names listed?"
+      "Show me all species with molecular formula C6H8O6"
     ]
   },
   {
