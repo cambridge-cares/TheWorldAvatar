@@ -90,17 +90,32 @@ bash ./stack.sh start Healthcare
 The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings semantically. Leveraging the Ontology of Food Hygiene Rating Scheme ([OntoFHRS]) and a defined OBDA mapping titled [FoodHygieneRating], the endpoint maps relational database records stored in PostGIS, such as business details, geolocation, and hygiene ratings, into a semantic framework. This allows queries to retrieve structured information like business names, inspection ratings, and geographic coordinates, supporting analyses across geographic scales and enabling integration with other datasets.
 
 ## 3.2) Greenspace (.shp) and Points of Interest (.csv)
-The [OS Open Greenspace] dataset provides a comprehensive mapping of greenspaces across Great Britain, including public parks, sports facilities, and allotments, along with access points. Similarly, the [Points of Interest (POI)] dataset includes detailed information about commercial and non-commercial establishments, such as businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and classifications. These datasets are crucial for spatial analyses related to urban planning, service accessibility, and community health.
 
-### 1) Stack data uploader
-Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Also, copy the files (.obda) from [mapping folder] and paste to `Deploy/stacks/dynamic/stack-data-uploader`.
+The data used in this project is sourced from [OS Open Greenspace] and [Points of Interest (POI)] datasets. The [OS Open Greenspace] dataset provides a comprehensive mapping of greenspaces across Great Britain, including 
+public parks, sports facilities, and allotments, along with access points. Similarly, the [Points of Interest 
+(POI)] dataset includes detailed information about commercial and non-commercial establishments, such as 
+businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and 
+classifications. 
 
-Finally, navigate to `Deploy/stacks/dynamic/stack-data-uploader` and execute:
+### 1) Greenspace data upload
+
+The greenspace data uploaded in this project is available via [Dropbox][greenspace-dropbox]. After downloading and unzipping the file, copy the greenspace vector data files (i.e., `GB_GreenspaceSite.dbf`, `GB_GreenspaceSite.prj`, `GB_GreenspaceSite.shp`, and `GB_GreenspaceSite.shx`) to `stack-data-uploader/inputs/data/GB_GreenspaceSite/vector/`. If the directory does not exist, please create it first.
+
+> :warning: **Note:** Some [OS Open Greenspace] data may not have the `MULTIPOLYGON` geometry type set. If you encounter errors about `MULTIPOLYGON` and `point` type mismatches in the logs, remove the `"-nlt": ["MULTIPOLYGON"]` line from the configuration file `stack-data-uploader/inputs/config/GBGreenspaceSite.json`.
+
+Copy configuration files from `config` to `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`. If using OBDA mappings, copy the `.obda` files from the [mapping folder] to `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/GB_GreenspaceSite/`.
+
+Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and execute:
 
 ```bash
 bash ./stack.sh start Healthcare
 ```
-### 2) SPARQL query via virtual knowledge graph
+
+### 2) Points of Interest data upload
+
+Similar to the Food Hygiene Rating data, the instantiation of the Points of Interest dataset also relies on the [Stack Data Uploader]. Replace the `readme.txt` files in the `data` sub-folders with the POI CSV files.
+
+### 3) SPARQL query via virtual knowledge graph
 
 The Ontop endpoint is also employed to support querying Greenspace and Points of Interest data semantically. Using [OntoGreenspace] and [OntoPOI] along with defined OBDA mappings, the endpoint semantically represents relational database records, including greenspace locations, access points, business details, and geographic coordinates.
 
@@ -174,3 +189,4 @@ Jiying Chen (jc2341@cam.ac.uk), Nov 2024
 [here]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-AI-for-Healthcare/Agents/FenlandTrajectoryAgent/README.md
 [OntoDevice]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontodevice
 [mapping folder]: ./stack-data-uploader/obda_mappings
+[greenspace-dropbox]: https://www.dropbox.com/scl/fi/sv7lqoc9xq3dnk6u0tlng/Download_AI_project_PA_OS_Open_Greenspace_2550192.zip?rlkey=ciw5cs9ju4lko6usj3iq4f9qi&st=c3qovqbp&dl=0
