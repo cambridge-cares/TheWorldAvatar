@@ -99,7 +99,7 @@ classifications.
 
 ### 1) Greenspace data upload
 
-The greenspace data uploaded in this project is available via [Dropbox][greenspace-dropbox]. After downloading and unzipping the file, copy the greenspace vector data files (i.e., `GB_GreenspaceSite.dbf`, `GB_GreenspaceSite.prj`, `GB_GreenspaceSite.shp`, and `GB_GreenspaceSite.shx`) to `stack-data-uploader/inputs/data/GB_GreenspaceSite/vector/`. If the directory does not exist, please create it first.
+The greenspace data used in this project is available via [Dropbox][greenspace-dropbox]. Upon downloading and extracting the archive file, navigate to the `open-greenspace_5585681` directory. Subsequently, copy the greenspace vector data files (namely, `GB_GreenspaceSite.dbf`, `GB_GreenspaceSite.prj`, `GB_GreenspaceSite.shp`, and `GB_GreenspaceSite.shx`) to the target data directory `stack-data-uploader/inputs/data/GB_GreenspaceSite/vector/`. Should the target directory not exist, please create it prior to copying the files.
 
 > :warning: **Note:** Some [OS Open Greenspace] data may not have the `MULTIPOLYGON` geometry type set. If you encounter errors about `MULTIPOLYGON` and `point` type mismatches in the logs, remove the `"-nlt": ["MULTIPOLYGON"]` line from the configuration file `stack-data-uploader/inputs/config/GBGreenspaceSite.json`.
 
