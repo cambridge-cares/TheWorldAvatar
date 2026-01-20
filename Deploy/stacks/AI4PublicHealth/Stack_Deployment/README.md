@@ -115,6 +115,20 @@ bash ./stack.sh start Healthcare
 
 Similar to the Food Hygiene Rating data, the instantiation of the Points of Interest dataset also relies on the [Stack Data Uploader]. Replace the `readme.txt` files in the `data` sub-folders with the POI CSV files.
 
+### 2.1) Supermarket and Takeaway data upload from Fenland Study
+
+The supermarket and takeaway datasets used in this project are sourced from the Fenland Study. These datasets contain geospatial point data for supermarkets and takeaways, including attributes such as business names, addresses, postcodes, and geographic coordinates.
+
+To upload these datasets, first obtain the CSV files following the data source links specified in the readme files within the `stack-data-uploader/inputs/data` directory. Copy the `supermarket.csv` file to `stack-data-uploader/inputs/data/supermarket/vector/` and the `takeaways.csv` file to `stack-data-uploader/inputs/data/takeaways/vector/`. Should these directories not exist, please create them prior to copying the files.
+
+> :warning: **Important:** After obtaining the CSV files, copy them directly to the specified directories without opening or editing them using Excel or other spreadsheet applications. Opening and saving CSV files with such tools may alter the file encoding, potentially causing UTF-8 encoding errors during the upload process. If you encounter encoding errors in the Docker logs, verify that the files are encoded in UTF-8 format.
+
+Copy the corresponding configuration files (`supermarket.json` and `takeaways.json`) from the `config` directory to `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`. Then navigate to `Deploy/stacks/dynamic/stack-data-uploader` and execute:
+
+```bash
+bash ./stack.sh start Healthcare
+```
+
 ### 3) SPARQL query via virtual knowledge graph
 
 The Ontop endpoint is also employed to support querying Greenspace and Points of Interest data semantically. Using [OntoGreenspace] and [OntoPOI] along with defined OBDA mappings, the endpoint semantically represents relational database records, including greenspace locations, access points, business details, and geographic coordinates.
