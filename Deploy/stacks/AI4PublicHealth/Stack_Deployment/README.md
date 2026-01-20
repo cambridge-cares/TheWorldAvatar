@@ -89,7 +89,7 @@ bash ./stack.sh start Healthcare
 ### 3) SPARQL query via virtual knowledge graph
 The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings semantically. Leveraging the Ontology of Food Hygiene Rating Scheme ([OntoFHRS]) and a defined OBDA mapping titled [FoodHygieneRating], the endpoint maps relational database records stored in PostGIS, such as business details, geolocation, and hygiene ratings, into a semantic framework. This allows queries to retrieve structured information like business names, inspection ratings, and geographic coordinates, supporting analyses across geographic scales and enabling integration with other datasets.
 
-## 3.2) Greenspace (.shp) and Points of Interest (.csv)
+## 3.2) Greenspace (.shp), OS Points of Interest (.csv), and Supermarket and Takeaways (.csv)
 
 The data used in this project is sourced from [OS Open Greenspace] and [Points of Interest (POI)] datasets. The [OS Open Greenspace] dataset provides a comprehensive mapping of greenspaces across Great Britain, including 
 public parks, sports facilities, and allotments, along with access points. Similarly, the [Points of Interest 
@@ -113,11 +113,11 @@ bash ./stack.sh start Healthcare
 
 ### 2) Points of Interest data upload
 
-Similar to the Food Hygiene Rating data, the instantiation of the Points of Interest dataset also relies on the [Stack Data Uploader]. Replace the `readme.txt` files in the `data` sub-folders with the POI CSV files.
+Similar to the Food Hygiene Rating data, the instantiation of the Points of Interest (POI) dataset published by the Ordnance Survey (OS) also relies on the [Stack Data Uploader]. Replace the `readme.txt` files in the `data` sub-folders with the POI CSV files.
 
-### 2.1) Supermarket and Takeaway data upload from Fenland Study
+### 3) Supermarket and Takeaway data upload from Fenland Study
 
-The supermarket and takeaway datasets used in this project are sourced from the Fenland Study. These datasets contain geospatial point data for supermarkets and takeaways, including attributes such as business names, addresses, postcodes, and geographic coordinates.
+Although the supermarket and takeaway datasets also contain geospatial point data similar to the OS Points of Interest dataset, they are sourced from the Fenland Study rather than Ordnance Survey. For this reason, they are presented in a separate subsection. These datasets include attributes such as business names, addresses, postcodes, and geographic coordinates.
 
 To upload these datasets, first obtain the CSV files following the data source links specified in the readme files within the `stack-data-uploader/inputs/data` directory. Copy the `supermarket.csv` file to `stack-data-uploader/inputs/data/supermarket/vector/` and the `takeaways.csv` file to `stack-data-uploader/inputs/data/takeaways/vector/`. Should these directories not exist, please create them prior to copying the files.
 
@@ -129,11 +129,11 @@ Copy the corresponding configuration files (`supermarket.json` and `takeaways.js
 bash ./stack.sh start Healthcare
 ```
 
-### 3) SPARQL query via virtual knowledge graph
+### 4) SPARQL query via virtual knowledge graph
 
 The Ontop endpoint is also employed to support querying Greenspace and Points of Interest data semantically. Using [OntoGreenspace] and [OntoPOI] along with defined OBDA mappings, the endpoint semantically represents relational database records, including greenspace locations, access points, business details, and geographic coordinates.
 
-## 3.3) GPS Trajectories (.csv)
+## 3.4) GPS Trajectories (.csv)
 Individual GPS trajectories used in this study are instantiated using the [Fenland Trajectory Agent]. This agent extracts key attributes such as latitude, longitude, speed, heading, and time from CSV files, organises them into triples using the Ontology of Devices ([OntoDevice]), and uploads the data into the knowledge graph and a relational database. Details on deploying this agent can be found [here].
 
 # 4. Visualisation
