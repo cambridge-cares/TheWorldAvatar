@@ -157,8 +157,8 @@ source      SELECT "id"
             FROM "GB_GreenspaceSite"
 
 mappingId       GS-Geometry-details
-target      geo:Geometry{id} geo:asWKT "{wkt}"^^geo:wktLiteral ; ex:hasWKB "{wkb_hex}"^^xsd:string ; geo:crs <http://www.opengis.net/def/crs/EPSG/0/27700> .
-source      SELECT "id", "wkb_geometry" AS "wkb_hex", ST_AsText("wkb_geometry") AS "wkt"
+target      geo:Geometry{id} geo:asWKT "{wkt}"^^geo:wktLiteral ; geo:crs <http://www.opengis.net/def/crs/EPSG/0/4326> .
+source      SELECT "id", ST_AsText(ST_Transform("wkb_geometry", 4326)) AS "wkt"
             FROM "GB_GreenspaceSite"
 
 mappingId       GreenspaceDomain

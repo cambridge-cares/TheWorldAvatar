@@ -1,6 +1,5 @@
 PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX ex: <http://example.org/ns#>
 
 SELECT DISTINCT ?feature ?function ?geometry
 WHERE {{
@@ -8,5 +7,5 @@ WHERE {{
            a geo:Feature ;
            gs:hasFunction ?function ;    
            geo:hasGeometry ?geomNode .
-  ?geomNode ex:hasWKB ?geometry .
+  ?geomNode geo:asWKT ?geometry .
 }}

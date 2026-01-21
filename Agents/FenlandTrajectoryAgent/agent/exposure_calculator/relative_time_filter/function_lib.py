@@ -207,10 +207,13 @@ WHERE {{
       # Bind the slice's start and end time
       BIND("{formatted_start}"^^xsd:dateTimeStamp AS ?givenTimeStart)
       BIND("{formatted_end}"^^xsd:dateTimeStamp AS ?givenTimeEnd)
-      BIND(SUBSTR(STR(?givenTimeStart), 1, 4) AS ?timeYear)
+      # Extract year from start time for geometry filtering
+      BIND(YEAR(?givenTimeStart) AS ?timeYear)
       ?be a fh:BusinessEstablishment ;
           geo:hasGeometry ?geometry .
-      FILTER(CONTAINS(STR(?geometry), CONCAT("/", ?timeYear)))
+      # Filter geometry by year: geometry IRI format is geo:Geometry/{FHRSID}/{year}
+      # This ensures we only get geometries matching the year of the time slice
+      FILTER(CONTAINS(STR(?geometry), CONCAT("/", STR(?timeYear))))
       ?geometry geo:asWKT ?wkt .
       OPTIONAL {{ ?geometry wgs:lat ?lat . }}
       OPTIONAL {{ ?geometry wgs:long ?long . }}

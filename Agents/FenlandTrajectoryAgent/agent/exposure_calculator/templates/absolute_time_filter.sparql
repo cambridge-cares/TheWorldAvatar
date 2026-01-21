@@ -7,10 +7,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 SELECT DISTINCT ?be ?geometry ?wkt ?lat ?long
 WHERE {{
   BIND("{given_time}"^^xsd:dateTimeStamp AS ?givenTime)
-  BIND(SUBSTR(STR(?givenTime), 1, 4) AS ?timeYear)
+  # Extract year from the given time for geometry filtering
+  BIND(YEAR(?givenTime) AS ?timeYear)
   ?be a fh:BusinessEstablishment ;
       geo:hasGeometry ?geometry .
-  FILTER(CONTAINS(STR(?geometry), CONCAT("/", ?timeYear)))
+  # Filter geometry by year: geometry IRI format is geo:Geometry/{FHRSID}/{year}
+  # This ensures we only get the geometry matching the year of the given time
+  FILTER(CONTAINS(STR(?geometry), CONCAT("/", STR(?timeYear))))
   ?geometry geo:asWKT ?wkt .
   OPTIONAL {{ ?geometry wgs:lat  ?lat  . }}
   OPTIONAL {{ ?geometry wgs:long ?long . }}

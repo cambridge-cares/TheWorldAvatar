@@ -3,7 +3,6 @@ import sys
 import time
 import logging
 import configparser
-import binascii
 import re
 from typing import Optional, Tuple, List, Dict
 import math
@@ -17,7 +16,6 @@ from shapely.geometry import Point, LineString, Polygon, MultiPolygon
 from shapely import wkt
 from pyproj import Geod
 from shapely.ops import unary_union
-from shapely.wkb import loads as wkb_loads
 from pyproj import CRS, Transformer
 from agent.utils.env_configs import DATABASE
 from agent.kgutils.kgclient import KGClient
@@ -212,16 +210,14 @@ class ExposureUtils:
                 except Exception:
                     continue
         else:
-            crs_uri = self.fetch_env_crs(env_data_iri, feature_type)
-            m = re.search(r"EPSG/0/(\d+)", crs_uri)
-            src_epsg = int(m.group(1)) if m else 4326
-            to_env = Transformer.from_crs(f"EPSG:{src_epsg}", aeqd_crs, always_xy=True).transform
+            # All geometries are now in WGS84 (EPSG:4326) as WKT format
+            to_env = Transformer.from_crs(4326, aeqd_crs, always_xy=True).transform
             for _, row in env_df.iterrows():
-                wkb_hex = row.get("Geometry", "")
-                if not wkb_hex or wkb_hex == "N/A":
+                wkt_str = row.get("Geometry", "")
+                if not wkt_str or wkt_str == "N/A":
                     continue
                 try:
-                    poly_src = wkb_loads(binascii.unhexlify(wkb_hex), hex=True)
+                    poly_src = wkt.loads(wkt_str)
                     proj_env.append((transform(to_env, poly_src), None))
                 except Exception:
                     continue
