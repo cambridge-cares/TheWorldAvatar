@@ -1,5 +1,5 @@
 > [!NOTE]  
-> This TWA monorepo is no longer maintained and has been migrated to several more organised repositories in [TheWorldAvatar's GitHub organisation](https://github.com/orgs/TheWorldAvatar/repositories). The core projects here are [stack](https://github.com/TheWorldAvatar/stack), [ontology](https://github.com/TheWorldAvatar/ontology) and [viz](https://github.com/TheWorldAvatar/viz)
+> This TWA monorepo is no longer the home of core TWA development. The main work has been migrated to several more organised repositories in [TheWorldAvatar's GitHub organisation](https://github.com/orgs/TheWorldAvatar/repositories). The core projects here are [stack](https://github.com/TheWorldAvatar/stack), [ontology](https://github.com/TheWorldAvatar/ontology) and [viz](https://github.com/TheWorldAvatar/viz)
 
 <p align="center"><a href="https://theworldavatar.io" target="_blank" rel="noopener noreferrer"><img width="100%" src="./web/media/twa-readme-header.png" alt="The World Avatar logo"></a></p>
 
