@@ -1,8 +1,8 @@
-FROM ghcr.io/theworldavatar/stack-client:1.55.0 AS stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.58.1-dev-swagger-dependencies-SNAPSHOT AS stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.13.3-slim AS base
+FROM python:3.13-slim AS base
 # Meta data
 LABEL authors = "jc2341@cam.ac.uk"
 LABEL description = "Fenland Trajectory Agent"
@@ -13,16 +13,15 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install Java
-RUN apt update && apt install -y openjdk-17-jre-headless git
+RUN apt update && apt install -y openjdk-21-jre-headless git &&\
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+WORKDIR /app
 
 # Copy StackClients resource required to update twa later
 RUN mkdir -p ./tmp_stack
 COPY --from=stackclients /app ./tmp_stack
 
-# Set the default working directory & copy files to install Python
-
-# Set the default working directory & copy files to install Python
-WORKDIR /app
 COPY ./setup.py .
 COPY ./resources/ontop.obda ./resources/ontop.obda
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
@@ -32,8 +31,12 @@ RUN python -m pip install --upgrade pip
 RUN pip install -e .
 # Installation of agentlogging currently suspended due to performance issues
 # Install StackClients twa resource
-RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
-    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
+RUN stack_clients_jar=$(find ./tmp_stack/stack-clients*.jar) \
+    && stack_clients_jar=${stack_clients_jar##*/} \
+    && jpsrm uninstall StackClients \
+    && jpsrm install StackClients ./tmp_stack --jar "$stack_clients_jar"
+#RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+#    jpsrm install StackClients ../tmp_stack --jar "$stack_clients_jar"
 
 # Expose port
 EXPOSE 5000
