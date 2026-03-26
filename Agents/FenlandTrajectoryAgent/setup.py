@@ -7,6 +7,7 @@ setup(
     author_email='jc2341@cam.ac.uk',  
     packages=find_packages(),  # Automatically find all packages 
     install_requires=[
+        'setuptools<81',
         'pyproj', #==3.4.0',
         'Flask', #==2.2.2',
         'flask-cors', #==3.0.10',
@@ -34,7 +35,7 @@ setup(
         'docopt==0.6.2',
         'pandas>=1.4.0',
         'JayDeBeApi==1.2.3',
-        'twa',
+        'twa==0.0.8',
         'requests', #==2.28.1',
         'gunicorn', #==20.1.0',
         'click>=8.0',
