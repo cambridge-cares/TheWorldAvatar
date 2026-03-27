@@ -1,4 +1,4 @@
-FROM ghcr.io/theworldavatar/stack-client:1.58.1-dev-swagger-dependencies-SNAPSHOT AS stackclients
+FROM ghcr.io/theworldavatar/stack-client:1.58.1 AS stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -35,8 +35,6 @@ RUN stack_clients_jar=$(find ./tmp_stack/stack-clients*.jar) \
     && stack_clients_jar=${stack_clients_jar##*/} \
     && jpsrm uninstall StackClients \
     && jpsrm install StackClients ./tmp_stack --jar "$stack_clients_jar"
-#RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
-#    jpsrm install StackClients ../tmp_stack --jar "$stack_clients_jar"
 
 # Expose port
 EXPOSE 5000
