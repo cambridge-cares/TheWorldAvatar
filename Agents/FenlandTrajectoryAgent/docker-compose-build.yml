@@ -1,6 +1,5 @@
 services:
   fenland-trajectory-agent:
-    image: ghcr.io/theworldavatar/fenland-trajectory-agent:1.1.2b
     build:
       context: .
       target: prod
