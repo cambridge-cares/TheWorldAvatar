@@ -18,6 +18,8 @@ qt_recog:
   model: 
 location_iq:
   api_key: ""
+agents:
+  pubchem_agent:
 chemistry_endpoints:
   ontospecies:
   ontospecies_v3: 

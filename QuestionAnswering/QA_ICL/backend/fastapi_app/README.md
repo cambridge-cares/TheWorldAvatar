@@ -36,6 +36,7 @@ This section outlines the services, resources, and configurations needed for nat
 #### Services to Deploy
 - Redis server: For data storage and retrieval. [Run Redis Stack in Docker](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/)
 - Text embedding service: Exposed via either OpenAI-compatible or NVIDIA's Triton API. For local deployment, see [triton_inference_server](../triton_inference_server/).
+- (Optional) An instance of the PubChem agent for on-demand instantiation of species queried from PubChem via InChI.
 
 #### External API Services
 These services are called directly and don't require setup, but may need API keys configured:
@@ -463,6 +464,8 @@ Some ontology has customsied manager and linker methods. The currently supported
 - ontozeolite:
     - zeo:ZeoliteFramework
     - zeo:ZeoliticMaterial
+
+NB If a species is not found via its InChI string in the KG, Marie will call the PubChem agent which will then instantiate the missing species in the KG before proceeding.
 
 ##### Fuzzy Match with Redis
 Allow vectors within certain Levenshtein distance as matched vectors.
