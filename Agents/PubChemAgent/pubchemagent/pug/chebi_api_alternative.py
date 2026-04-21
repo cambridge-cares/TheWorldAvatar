@@ -69,7 +69,9 @@ def _chebi_iri(chebi_id: str) -> str:
 
 def _ols_term_parents(iri: str, timeout=20):
     """Return parent terms (is_a) via OLS4."""
-    url = f"{OLS_BASE}/terms/{quote(iri, safe='')}/parents"
+    # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
+    # the IRI must be double URL encoded!
+    url = f"{OLS_BASE}/terms/{quote(quote(iri, safe=''), safe='')}/parents"
     try:
         r = requests.get(url, timeout=timeout)
         r.raise_for_status()
@@ -86,7 +88,9 @@ def _ols_term_parents(iri: str, timeout=20):
 
 def _ols_term_relations(iri: str, related_iri: str, timeout=20):
     """Return related terms (e.g., has role) via OLS4."""
-    url = f"{OLS_BASE}/terms/{quote(iri, safe='')}/relations"
+    # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
+    # the IRI must be double URL encoded!
+    url = f"{OLS_BASE}/terms/{quote(quote(iri, safe=''), safe='')}/relations"
     try:
         r = requests.get(url, params={"property": related_iri}, timeout=timeout)
         if r.status_code == 404:
