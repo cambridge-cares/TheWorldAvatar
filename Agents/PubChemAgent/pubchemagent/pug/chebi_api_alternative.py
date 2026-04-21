@@ -120,15 +120,18 @@ def chebi_request(inchi: str) -> dict:
     except Exception as e:
         print(f"❌ Failed to convert InChI to InChIKey: {e}")
         return {}
+    print(f"InChIKey: '{ikey}'")
 
     ids = _chebi_ids_from_inchikey(ikey)
     if not ids:
         print(f"⚠️ No ChEBI IDs found for InChIKey: {ikey}")
         return {}
+    print(f"ChEBI IDs: '{ids}'")
 
     primary_id = ids[0]
     curie = _chebi_curie(primary_id)
     iri = _chebi_iri(primary_id)
+    print(f"IRI: '{iri}'")
 
     i = 0
     chebi_prop[i] = {
@@ -176,3 +179,9 @@ def chebi_request(inchi: str) -> dict:
             i += 1
 
     return chebi_prop
+
+if __name__== '__main__':
+    inchi = "InChI=1S/CO2/c2-1-3"
+    print(f"Calling ChEBI API for InChI '{inchi}'...")
+    chebi_prop = chebi_request(inchi)
+    print(f"chebi_prop: '{chebi_prop}'")
