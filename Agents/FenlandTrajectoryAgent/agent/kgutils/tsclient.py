@@ -6,8 +6,6 @@
 
 from contextlib import contextmanager
 
-from twa import agentlogging
-
 ## from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 from agent.datainstantiation.jpsSingletons import stackClientsGw
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
@@ -15,10 +13,11 @@ from agent.errorhandling.exceptions import TSException
 from agent.datamodel.time_series_classes import FORMAT, TIMECLASS, DATATYPE
 import os
 from pathlib import Path
-
+import logging
 
 # Initialise logger instance (ensure consistent logger level)
-logger = agentlogging.get_logger('prod')
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class TSException(Exception):
     """Raise in case of exception when using the TimeSeriesClient."""
@@ -59,14 +58,10 @@ class TSClient:
             logger.error("Unable to initialise TS Remote Store client.")
             raise ex
 
-        # 2) Initiliase TimeSeriesClient
+        # 2) Initialise TimeSeriesClient
         try:
-            # PROPERTY_FILE= os.path.abspath(os.path.join(Path(__file__).parent.parent,"datainstantiation", "resources","FenlandTrajectory.properties"))
-            ##
-            self.tsclient = TSClient.stackClients_view.TimeSeriesClient(kg_client.kg_client, timeclass)
-            # self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(timeclass, PROPERTY_FILE)
-            # self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass, rdb_url, rdb_user, rdb_password)
-            
+            ts_rdb_client = TSClient.stackClients_view.com.cmclinnovations.stack.clients.timeseries.TimeSeriesRDBClient(timeclass)
+            self.tsclient = TSClient.stackClients_view.TimeSeriesClient(kg_client.kg_client, ts_rdb_client)
             logger.info("TimeSeriesClient initialized successfully.")
         except Exception as ex:
             logger.error("rdb_USER:")
@@ -83,6 +78,7 @@ class TSClient:
         TimeSeries client (i.e. to ensure connection is closed after use)
         """
         conn = None
+        logger.info("Attempting to connect to RDB...")
         try:
             conn = self.connection.getConnection()
             logger.info("Connected to the RDB successfully.")
@@ -128,8 +124,11 @@ class TSClient:
         """
 
         with self.connect() as conn:
-            self.tsclient.initTimeSeries(dataIRI, ts_type, time_format, conn)
-            ts = TSClient.create_timeseries(times, dataIRI, values)
+            self.tsclient.bulkInitTimeSeries([dataIRI], [ts_type], [time_format], 4326, conn)
+            time_class_name = TSClient.INSTANT.getName()
+            time_instants = TSClient.stackClients_view.TimeSeriesClientFactory.timestampFactory(
+                time_class_name, times)
+            ts = TSClient.create_timeseries(time_instants, dataIRI, values)
             self.tsclient.addTimeSeriesData(ts, conn)
         logger.info(f"Time series successfully initialised in KG and RDB for dataIRI: {dataIRI}")
 

@@ -1,9 +1,10 @@
 {
+    "type": "basic-agent",
     "ServiceSpec": {
         "Name": "fenland-trajectory-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0",
+                "Image": "ghcr.io/theworldavatar/fenland-trajectory-agent:1.1.2",
                 "Command": [
                     "tail", "-f", "/dev/null"
                 ],
@@ -14,7 +15,7 @@
                         "Target": "/app"
                     },
                     {
-                        "Type": "volume",
+                        "Type": "bind",
                         "Source": "fta-input",
                         "Target": "/app/agent/raw_data/gps_target_folder"
                     }
