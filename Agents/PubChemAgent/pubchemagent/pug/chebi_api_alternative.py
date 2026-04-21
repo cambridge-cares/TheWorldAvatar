@@ -4,7 +4,9 @@ from urllib.parse import quote
 import requests
 import json
 
+# This does not seem to be a valid/supported URL (any more).
 UNICHEM_POST = "https://www.ebi.ac.uk/unichem/api/v1/inchikey"
+
 UNICHEM_GET  = "https://www.ebi.ac.uk/unichem/rest/inchikey/{ikey}"
 OLS_BASE = "https://www.ebi.ac.uk/ols4/api/ontologies/chebi"
 RO_HAS_ROLE = "http://purl.obolibrary.org/obo/RO_0000087"
@@ -35,11 +37,12 @@ def _inchikey_from_inchi(inchi: str) -> str:
 def _chebi_ids_from_inchikey(ikey: str, timeout=20):
     """Return list of ChEBI IDs (src_id = 7) from UniChem."""
     try:
+        # TO DO: This seems to always fail (due to the URL, see comment above). Remove!
         r = requests.post(UNICHEM_POST, json={"inchikey": ikey}, timeout=timeout)
         r.raise_for_status()
         rows = _safe_json(r)
     except Exception as e:
-        print(f"⚠️ POST failed for UniChem, trying GET ({e})")
+        #print(f"⚠️ POST failed for UniChem, trying GET ({e})")
         r = requests.get(UNICHEM_GET.format(ikey=quote(ikey)), timeout=timeout)
         r.raise_for_status()
         rows = _safe_json(r)
@@ -64,9 +67,43 @@ def _chebi_iri(chebi_id: str) -> str:
     return f"http://purl.obolibrary.org/obo/CHEBI_{num}"
 
 
+def _ols_parents(iri: str, iris: list[str], timeout=20):
+    """
+    Return parent terms (is_a) via OLS4.
+    """
+    print(f"IRI: '{iri}'")
+    # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
+    # the IRI must be double URL encoded!
+    url = f"{OLS_BASE}/terms/{quote(quote(iri, safe=''), safe='')}/parents"
+    r = requests.get(url, timeout=timeout)
+    r.raise_for_status()
+    data = _safe_json(r)
+    if not isinstance(data, dict):
+        return []
+    embedded = data.get("_embedded", {})
+    terms = embedded.get("terms", [])
+    print(f"Terms: '{terms}'")
+    return
+    if isinstance(terms, list):
+        parent_iris = [t['iri'] for t in terms]
+        #parent_iris.append/extend? in place, or copy?
+        print(parent_iris)
+        for pi in parent_iris:
+            if pi not in iris:
+                pass
+        for t in terms:
+            print(f"  IRI:   '{t['iri']}'")
+            print(f"  Label: '{t['label']}'")
+            #parent_terms = _ols_term_parents(t['iri'])
+        return terms
+    else:
+        return []
+
 def _ols_term_parents(iri: str, timeout=20):
     """Return parent terms (is_a) via OLS4."""
-    url = f"{OLS_BASE}/terms/{quote(iri, safe='')}/parents"
+    # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
+    # the IRI must be double URL encoded!
+    url = f"{OLS_BASE}/terms/{quote(quote(iri, safe=''), safe='')}/parents"
     try:
         r = requests.get(url, timeout=timeout)
         r.raise_for_status()
@@ -83,7 +120,9 @@ def _ols_term_parents(iri: str, timeout=20):
 
 def _ols_term_relations(iri: str, related_iri: str, timeout=20):
     """Return related terms (e.g., has role) via OLS4."""
-    url = f"{OLS_BASE}/terms/{quote(iri, safe='')}/relations"
+    # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
+    # the IRI must be double URL encoded!
+    url = f"{OLS_BASE}/terms/{quote(quote(iri, safe=''), safe='')}/relations"
     try:
         r = requests.get(url, params={"property": related_iri}, timeout=timeout)
         if r.status_code == 404:
@@ -117,15 +156,18 @@ def chebi_request(inchi: str) -> dict:
     except Exception as e:
         print(f"❌ Failed to convert InChI to InChIKey: {e}")
         return {}
+    print(f"InChIKey: '{ikey}'")
 
     ids = _chebi_ids_from_inchikey(ikey)
     if not ids:
         print(f"⚠️ No ChEBI IDs found for InChIKey: {ikey}")
         return {}
+    print(f"ChEBI IDs: '{ids}'")
 
     primary_id = ids[0]
     curie = _chebi_curie(primary_id)
     iri = _chebi_iri(primary_id)
+    print(f"IRI: '{iri}'")
 
     i = 0
     chebi_prop[i] = {
@@ -138,6 +180,7 @@ def chebi_request(inchi: str) -> dict:
     i += 1
 
     # ---- Parents ----
+    #parents = _ols_parents(iri, [])
     parents = _ols_term_parents(iri)
     if isinstance(parents, list):
         for p in parents:
@@ -173,3 +216,9 @@ def chebi_request(inchi: str) -> dict:
             i += 1
 
     return chebi_prop
+
+if __name__== '__main__':
+    inchi = "InChI=1S/CO2/c2-1-3"
+    print(f"Calling ChEBI API for InChI '{inchi}'...")
+    chebi_prop = chebi_request(inchi)
+    print(f"chebi_prop: '{chebi_prop}'")
