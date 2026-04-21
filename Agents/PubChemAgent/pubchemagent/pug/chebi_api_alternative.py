@@ -4,7 +4,9 @@ from urllib.parse import quote
 import requests
 import json
 
+# This does not seem to be a valid/supported URL (any more).
 UNICHEM_POST = "https://www.ebi.ac.uk/unichem/api/v1/inchikey"
+
 UNICHEM_GET  = "https://www.ebi.ac.uk/unichem/rest/inchikey/{ikey}"
 OLS_BASE = "https://www.ebi.ac.uk/ols4/api/ontologies/chebi"
 RO_HAS_ROLE = "http://purl.obolibrary.org/obo/RO_0000087"
@@ -35,11 +37,12 @@ def _inchikey_from_inchi(inchi: str) -> str:
 def _chebi_ids_from_inchikey(ikey: str, timeout=20):
     """Return list of ChEBI IDs (src_id = 7) from UniChem."""
     try:
+        # TO DO: This seems to always fail (due to the URL, see comment above). Remove!
         r = requests.post(UNICHEM_POST, json={"inchikey": ikey}, timeout=timeout)
         r.raise_for_status()
         rows = _safe_json(r)
     except Exception as e:
-        print(f"⚠️ POST failed for UniChem, trying GET ({e})")
+        #print(f"⚠️ POST failed for UniChem, trying GET ({e})")
         r = requests.get(UNICHEM_GET.format(ikey=quote(ikey)), timeout=timeout)
         r.raise_for_status()
         rows = _safe_json(r)
