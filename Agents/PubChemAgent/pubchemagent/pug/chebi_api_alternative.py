@@ -67,6 +67,38 @@ def _chebi_iri(chebi_id: str) -> str:
     return f"http://purl.obolibrary.org/obo/CHEBI_{num}"
 
 
+def _ols_parents(iri: str, iris: list[str], timeout=20):
+    """
+    Return parent terms (is_a) via OLS4.
+    """
+    print(f"IRI: '{iri}'")
+    # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
+    # the IRI must be double URL encoded!
+    url = f"{OLS_BASE}/terms/{quote(quote(iri, safe=''), safe='')}/parents"
+    r = requests.get(url, timeout=timeout)
+    r.raise_for_status()
+    data = _safe_json(r)
+    if not isinstance(data, dict):
+        return []
+    embedded = data.get("_embedded", {})
+    terms = embedded.get("terms", [])
+    print(f"Terms: '{terms}'")
+    return
+    if isinstance(terms, list):
+        parent_iris = [t['iri'] for t in terms]
+        #parent_iris.append/extend? in place, or copy?
+        print(parent_iris)
+        for pi in parent_iris:
+            if pi not in iris:
+                pass
+        for t in terms:
+            print(f"  IRI:   '{t['iri']}'")
+            print(f"  Label: '{t['label']}'")
+            #parent_terms = _ols_term_parents(t['iri'])
+        return terms
+    else:
+        return []
+
 def _ols_term_parents(iri: str, timeout=20):
     """Return parent terms (is_a) via OLS4."""
     # NB According to the API documentation (https://www.ebi.ac.uk/ols4/api-docs),
@@ -148,6 +180,7 @@ def chebi_request(inchi: str) -> dict:
     i += 1
 
     # ---- Parents ----
+    #parents = _ols_parents(iri, [])
     parents = _ols_term_parents(iri)
     if isinstance(parents, list):
         for p in parents:
