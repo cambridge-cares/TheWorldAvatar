@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -112,7 +117,6 @@ public class IsochroneGenerator {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
     }
 
     /**
@@ -216,7 +220,6 @@ public class IsochroneGenerator {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
     }
 
     /**
@@ -240,11 +243,12 @@ public class IsochroneGenerator {
                 poiTypes.add(resultSet.getString("poi_type"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
 
         return poiTypes;
+    } catch (IOException e) {
+        throw new JPSRuntimeException("Failed to read get_nearest_node.sql", e);
     }
 
     /**
@@ -269,14 +273,13 @@ public class IsochroneGenerator {
         String smoothIsochrone_sql = "update isochrone_aggregated set geom = ST_CollectionExtract(geom, 3);\n" +
                 "update isochrone_aggregated set geom = ST_ChaikinSmoothing(geom, 3, false);";
 
-        try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            executeSql(connection, smoothIsochrone_sql);
+            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            executeSql(connection, query);
             System.out.println("Isochrone_aggregated smoothened.");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
     }
 
     /**

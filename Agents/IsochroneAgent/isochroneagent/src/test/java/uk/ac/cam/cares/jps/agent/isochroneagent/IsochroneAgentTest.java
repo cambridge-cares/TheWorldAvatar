@@ -35,28 +35,19 @@ import java.util.Properties;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-
 public class IsochroneAgentTest {
 
     @Mock
     private RemoteStoreClient remoteStoreClient;
 
     @Mock
-    private RemoteRDBStoreClient RemoteRDBStoreClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    private IsochroneAgent agent; 
+    private IsochroneAgent agent;
 
     @Test
-    public void testProcessRequestParameters_EmptyIRIInput() {
+    public void testProcessRequestParametersEmptyIRIInput() {
 
-        //Mock response 
-        MockedConstruction<EndpointConfig> endpointConfigMock = mockConstruction(EndpointConfig.class,
-                (mock, context) -> {
-                    doReturn("test").when(mock).getDbUrl(anyString());
-                    doReturn("test").when(mock).getDbUser();
-                    doReturn("test").when(mock).getDbPassword();
-                });
-                
         agent = new IsochroneAgent();
         HttpServletRequest setRequest = mock(HttpServletRequest.class);
         when(setRequest.getRequestURI()).thenReturn("localhost:10105/isochroneagent/update?");
@@ -81,33 +72,16 @@ public class IsochroneAgentTest {
         String PROPETIES_PATH ="/resources/configTest.properties";
 
         try(InputStream input = FileReader.getStream(PROPETIES_PATH)){
-        Properties prop = new Properties();
-        prop.load(input);
+            Properties prop = new Properties();
+            prop.load(input);
         assertEquals("test",prop.getProperty("db.name"));
         assertEquals(0.0002,prop.getProperty("segmentization_length"));
-        assertEquals("", prop.getProperty("kgEndpoint"));
-
-        String populationTables = prop.getProperty("populationTables");
-        // Split the string using the comma as the delimiter
-        String[] tableNames = populationTables.split("\\s*,\\s*");
-        ArrayList<String> populationTableList = new ArrayList<String>(Arrays.asList(tableNames));
+            assertEquals("", prop.getProperty("kgEndpoint"));
         }
-        catch (Exception e) {
-        }
-    
     }
 
-
     @Test
-    public void testProcessRequestParameters_ValidInput(){
-        //Mock response 
-        MockedConstruction<EndpointConfig> endpointConfigMock = mockConstruction(EndpointConfig.class,
-                (mock, context) -> {
-                    doReturn("test").when(mock).getDbUrl(anyString());
-                    doReturn("test").when(mock).getDbUser();
-                    doReturn("test").when(mock).getDbPassword();
-                });
-
+    public void testProcessRequestParametersValidInput() {
         agent = new IsochroneAgent();
         String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women\nupdateOntop=true";
 
@@ -153,6 +127,6 @@ public class IsochroneAgentTest {
         verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));
     }
 
-}
+    }
 
 }
