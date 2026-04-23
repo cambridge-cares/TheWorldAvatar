@@ -28,6 +28,11 @@ public class DataColumn implements IDataTable {
         return values;
     }
 
+    @JsonIgnore
+    public int getLength() {
+        return values.size();
+    }
+
     @Override
     @JsonIgnore
     public List<String> getHeaders() {

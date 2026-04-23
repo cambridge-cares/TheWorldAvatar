@@ -31,6 +31,8 @@ public class SimulationFactory {
                         simulationLoader);
             case "DKL":
                 return new DKL(request, inputFile, modsBackend, inputMetaData, simulationSaver, simulationLoader);
+            case "SampleSRM":
+                return new SampleSRM(request, inputFile, modsBackend, inputMetaData, simulationSaver, simulationLoader);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }

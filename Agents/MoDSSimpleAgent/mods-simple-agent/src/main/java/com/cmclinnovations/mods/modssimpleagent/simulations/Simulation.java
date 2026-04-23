@@ -10,6 +10,7 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,6 +90,10 @@ public abstract class Simulation {
         } else {
             inputFile = TemplateLoader.load(simulationType);
         }
+        if (request.getModelToLoad() != null) {
+            simulationLoader.loadModel(request.getModelToLoad());
+        }
+        
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
         SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
@@ -177,14 +182,14 @@ public abstract class Simulation {
         }
     }
 
-    private void populateModelNodes() {
+    protected void populateModelNodes() {
         String type = "Executable";
         for (String modelName : getModels()) {
             inputFile.addModel(modelName, type);
         }
     }
 
-    private void populateFileNodes() {
+    protected void populateFileNodes() {
         String type = "DSV";
         String delimiter = ",";
         for (String fileName : getFiles()) {
@@ -193,10 +198,12 @@ public abstract class Simulation {
     }
 
     private List<String> getFiles() {
-        return List.of(INITIAL_FILE_NAME);
+        return Stream.concat(List.of(INITIAL_FILE_NAME).stream(), 
+        Optional.ofNullable(request.files()).orElse(Collections.emptyList()).stream())
+        .collect(Collectors.toList());
     }
 
-    private void populateParameterNodes(List<Variable> variables) {
+    protected void populateParameterNodes(List<Variable> variables) {
         Iterator<Double> minItr = inputMetaData.getMinima().iterator();
         Iterator<Double> maxItr = inputMetaData.getMaxima().iterator();
         for (String name : inputMetaData.getVarNames()) {
@@ -398,6 +405,10 @@ public abstract class Simulation {
 
     public static Path getSurrogateSaveDirectoryPath() {
         return Path.of(System.getenv("MODS_SAVE_DIR"));
+    }
+
+    public static Path getModelSaveDirectoryPath() {
+        return Path.of(System.getenv("MODS_SAVE_MODEL_DIR"));
     }
 
     public SimulationSaver getSimulationSaver() {
