@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +31,7 @@ public class RunCEATask implements Runnable {
     private final String database;
     private final CEAMetaData metaData;
     private final String solarProperties;
+    private final String endpointUri;
     private Double weatherLat;
     private Double weatherLon;
     private Double weatherElevation;
@@ -63,9 +63,10 @@ public class RunCEATask implements Runnable {
             + "data";
 
     private CEAOutputUpdater updater;
+    private static final Gson GSON_INSTANCE = new Gson();
 
     public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris,
-            int thread, String crs, String ceaDatabase, CEAOutputUpdater updater, JSONObject solar) {
+            int thread, String crs, String ceaDatabase, CEAOutputUpdater updater, JSONObject solar, String endpointUri) {
         this.inputs = buildingData;
         this.uris = uris;
         this.threadNumber = thread;
@@ -74,6 +75,7 @@ public class RunCEATask implements Runnable {
         this.database = ceaDatabase;
         this.updater = updater;
         this.solarProperties = solar == null ? "null" : "\'" + solar.toString() + "\'";
+        this.endpointUri = endpointUri;
     }
 
     public void stop() {
@@ -123,6 +125,33 @@ public class RunCEATask implements Runnable {
         deleteDirectoryContents(file);
         file.delete();
     }
+
+    /**
+     * Returns output data to CEA Agent via http POST request
+     * 
+     * @param output output data
+     */
+    public void returnOutputs(CEAOutputData output) {
+        try {
+            String jsonOutput = GSON_INSTANCE.toJson(output);
+            if (!jsonOutput.isEmpty()) {
+                HttpResponse<?> response = Unirest.post(endpointUri)
+                        .header(HTTP.CONTENT_TYPE, CTYPE_JSON)
+                        .body(jsonOutput)
+                        .socketTimeout(300000)
+                        .asEmpty();
+                int responseStatus = response.getStatus();
+                if (responseStatus != HttpURLConnection.HTTP_OK) {
+                    throw new HttpException(endpointUri + " " + responseStatus);
+                }
+            }
+
+        } catch (HttpException | UnirestException e) {
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+    /**
 
     /**
      * Writes building geometry and usage data to text file to be read by the Python
@@ -463,7 +492,11 @@ public class RunCEATask implements Runnable {
                     renamePVT(pathOutputPVT, "ET");
 
                     CEAOutputData result = CEAOutputHandler.extractCEAOutputs(pathOutputCEA, this.uris);
-                    updater.updateCEA(result);
+                    if (this.endpointUri==null) {
+                        updater.updateCEA(result);
+                    } else {
+                        returnOutputs(result);
+                    };
                     cleanUp(strTmp);
                 } catch (NullPointerException | IOException e) {
                     cleanUp(strTmp);
