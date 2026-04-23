@@ -38,7 +38,7 @@ def retrieve_settings():
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
     # Ontop
-    ont = stackClientsView.OntopEndpointConfig("","","","","")
+    ont = stackClientsView.OntopEndpointConfig("","","","")
     ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
     # Extract PostgreSQL/PostGIS database URL

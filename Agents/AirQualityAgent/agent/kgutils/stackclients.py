@@ -40,7 +40,6 @@ class StackClient:
 class OntopClient(StackClient):
 
     def __init__(self, query_endpoint=ONTOP_URL):
-        # Initialise OntopClient as RemoteStoreClient
         try:
             self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
         except Exception as ex:
@@ -70,7 +69,8 @@ class OntopClient(StackClient):
             f = OntopClient.stackClients_view.java.io.File(ONTOP_FILE)
             fp = f.toPath()
             # Update ONTOP mapping (requires JAVA path object)
-            OntopClient.stackClients_view.OntopClient().updateOBDA(fp)
+            ontop_client_instance = OntopClient.stackClients_view.OntopClient.getInstance()
+            ontop_client_instance.updateOBDA(fp)
         except Exception as ex:
             logger.error("Unable to update OBDA mapping.")
             raise StackException("Unable to update OBDA mapping.") from ex
@@ -185,7 +185,7 @@ class GdalClient(StackClient):
     def __init__(self):
         # Initialise GdalClient with default upload/conversion settings
         try:
-            self.client = self.stackClients_view.GDALClient()
+            self.client = self.stackClients_view.GDALClient.getInstance()
             self.orgoptions = self.stackClients_view.Ogr2OgrOptions()
         except Exception as ex:
             logger.error("Unable to initialise GdalClient.")
@@ -196,7 +196,7 @@ class GdalClient(StackClient):
         """
             Calls StackClient function with default upload settings
         """
-        self.client.uploadVectorStringToPostGIS(database, table, geojson_string,
+        self.client.uploadVectorStringToPostGIS(database, "public", table, geojson_string,
                                                 self.orgoptions, True)
 
 
@@ -206,7 +206,7 @@ class GeoserverClient(StackClient):
 
         # Initialise Geoserver with default settings
         try:
-            self.client = self.stackClients_view.GeoServerClient()
+            self.client = self.stackClients_view.GeoServerClient.getInstance()
             self.vectorsettings = self.stackClients_view.GeoServerVectorSettings()
         except Exception as ex:
             logger.error("Unable to initialise GeoServerClient.")
@@ -225,7 +225,7 @@ class GeoserverClient(StackClient):
             Please note: Postgis database table assumed to have same name as
                          Geoserver layer
         """
-        self.client.createPostGISLayer(None, geoserver_workspace, postgis_database,
+        self.client.createPostGISLayer(geoserver_workspace, postgis_database, "public",
                                        geoserver_layer, self.vectorsettings)
 
 
