@@ -1,1 +1,0 @@
-This is a utility package developed with the intention to merge csv and xyz files of chemical building units into ontospecies (i.e. "os") json files, suitable for post-processing via A-Box writers. 
