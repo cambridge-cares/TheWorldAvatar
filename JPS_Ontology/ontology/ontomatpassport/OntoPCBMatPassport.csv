@@ -1,0 +1,29 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoWTBladeMatPassport,TBox,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoWTBladeMatPassport,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoWTBladeMatPassport,TBox,An ontology designed to represent data contained in material passports for PCB and its components.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoWTBladeMatPassport,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/dev-composite-materials-ontology/JPS_Ontology/ontology/ontomatpassport/OntoMatPassport.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
+DielectricType,Class,http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMaterial,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Dielectric type
+CurrentMeasure,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Current measure
+PowerMeasure,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Power measure
+ResistanceMeasure,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Resistance measure
+VoltageMeasure,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Voltage measure
+CapacitorTerminationStyle,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Capacitor termination style
+ResistorTerminationStyle,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Resistor termination style
+ElectricalProperty,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Electrical property
+http://www.ontology-of-units-of-measure.org/resource/om-2/Capacitance,Class,ElectricalProperty,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2,Capacitance
+CapacitorTolerance,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Capacitor tolerance
+OperatingCurrent,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Operating current
+OperatingVoltage,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Operating voltage
+PowerDissipation,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Power dissipation
+PowerRating,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Power rating
+http://www.ontology-of-units-of-measure.org/resource/om-2/ElectricalResistance,Class,ElectricalProperty,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2,Resistance
+ResistorTolerance,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Resistor tolerance
+VoltageRating,Class,ElectricalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Voltage rating
+VoltageRatingDC,Class,VoltageRating,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Voltage rating DC
+ElectricalProperty,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Electrical property
+OperatingTemperature,Class,http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Operating temperature
+MaximumOperatingTemperature,Class,OperatingTemperature,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Maximum operating temperature
+MinimumOperatingTemperature,Class,OperatingTemperature,IS-A,,,,,http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport,Minimum operating temperature
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2,Value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2,Unit

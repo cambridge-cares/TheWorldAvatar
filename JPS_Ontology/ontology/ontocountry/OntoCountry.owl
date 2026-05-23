@@ -1,0 +1,2311 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <Ontology/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://dbpedia.org/ontology/Country -->
+
+    <Class rdf:about="https://dbpedia.org/ontology/Country"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Afghanistan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Afghanistan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Afghanistan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/AlandIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/AlandIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Aland Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Albania -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Albania">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Albania</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Algeria -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Algeria">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Algeria</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/AmericanSamoa -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/AmericanSamoa">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">American Samoa</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Andorra -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Andorra">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Andorra</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Angola -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Angola">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angola</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Anguilla -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Anguilla">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Anguilla</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Antarctica -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Antarctica">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Antarctica</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/AntiguaandBarbuda -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/AntiguaandBarbuda">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Antigua and Barbuda</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Argentina -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Argentina">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Argentina</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Armenia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Armenia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Armenia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Aruba -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Aruba">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Aruba</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Australia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Australia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Austria -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Austria">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Austria</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Azerbaijan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Azerbaijan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Azerbaijan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bahamas -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bahamas">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bahamas</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bahrain -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bahrain">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bahrain</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bangladesh -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bangladesh">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bangladesh</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Barbados -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Barbados">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Barbados</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Belarus -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Belarus">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Belarus</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Belgium -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Belgium">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Belgium</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Belize -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Belize">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Belize</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Benin -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Benin">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Benin</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bermuda -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bermuda">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bermuda</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bhutan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bhutan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bhutan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bolivia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bolivia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bolivia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bonaire -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bonaire">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bonaire</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/BosniaandHerzegovina -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/BosniaandHerzegovina">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bosnia and Herzegovina</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Botswana -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Botswana">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Botswana</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/BouvetIsland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/BouvetIsland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bouvet Island</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Brazil -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Brazil">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brazil</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/BritishIndianOceanTerritory -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/BritishIndianOceanTerritory">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">British Indian Ocean Territory</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/BritishVirginIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/BritishVirginIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">British Virgin Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Brunei -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Brunei">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brunei</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Bulgaria -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Bulgaria">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bulgaria</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/BurkinaFaso -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/BurkinaFaso">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Burkina Faso</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Burundi -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Burundi">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Burundi</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/CaboVerde -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/CaboVerde">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cabo Verde</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Cambodia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Cambodia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cambodia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Cameroon -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Cameroon">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cameroon</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Canada -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Canada">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Canada</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/CaymanIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/CaymanIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cayman Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/CentralAfricanRepublic -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/CentralAfricanRepublic">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Central African Republic</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Chad -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Chad">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chad</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Chile -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Chile">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chile</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/China -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/China">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">China</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/ChristmasIsland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/ChristmasIsland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Christmas Island</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/CocosIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/CocosIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cocos Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Colombia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Colombia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Colombia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Comoros -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Comoros">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comoros</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/CookIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/CookIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cook Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/CostaRica -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/CostaRica">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Costa Rica</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Croatia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Croatia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Croatia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Cuba -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Cuba">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cuba</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Curacao -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Curacao">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Curacao</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Cyprus -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Cyprus">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cyprus</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Czechia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Czechia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Czechia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/DemocraticRepublicoftheCongo -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/DemocraticRepublicoftheCongo">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Democratic Republic of the Congo</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Denmark -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Denmark">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Denmark</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Djibouti -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Djibouti">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Djibouti</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Dominica -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Dominica">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dominica</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/DominicanRepublic -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/DominicanRepublic">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dominican Republic</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Ecuador -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Ecuador">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ecuador</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Egypt -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Egypt">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Egypt</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/ElSalvador -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/ElSalvador">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">El Salvador</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/EquatorialGuinea -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/EquatorialGuinea">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Equatorial Guinea</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Eritrea -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Eritrea">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eritrea</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Estonia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Estonia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Estonia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Eswatini -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Eswatini">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eswatini</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Ethiopia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Ethiopia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ethiopia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/FalklandIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/FalklandIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Falkland Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/FaroeIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/FaroeIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Faroe Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Fiji -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Fiji">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fiji</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Finland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Finland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Finland</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/France -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/France">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">France</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/FrenchGuiana -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/FrenchGuiana">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">French Guiana</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/FrenchPolynesia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/FrenchPolynesia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">French Polynesia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/FrenchSouthernTerritories -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/FrenchSouthernTerritories">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">French Southern Territories</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Gabon -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Gabon">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gabon</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Gambia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Gambia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gambia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Georgia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Georgia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Georgia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Germany -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Germany">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Germany</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Ghana -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Ghana">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ghana</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Gibraltar -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Gibraltar">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gibraltar</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Greece -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Greece">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Greece</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Greenland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Greenland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Greenland</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Grenada -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Grenada">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grenada</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guadeloupe -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guadeloupe">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guadeloupe</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guam -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guam">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guam</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guatemala -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guatemala">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guatemala</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guernsey -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guernsey">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guernsey</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guinea -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guinea">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guinea</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guinea-Bissau -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guinea-Bissau">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guinea-Bissau</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Guyana -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Guyana">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guyana</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Haiti -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Haiti">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Haiti</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/HeardIslandandMcDonaldIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/HeardIslandandMcDonaldIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heard Island and McDonald Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Honduras -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Honduras">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Honduras</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/HongKong -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/HongKong">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hong Kong</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Hungary -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Hungary">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hungary</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Iceland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Iceland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Iceland</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/India -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/India">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">India</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Indonesia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Indonesia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indonesia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Iran -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Iran">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Iran</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Iraq -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Iraq">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Iraq</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Ireland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Ireland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ireland</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/IsleofMan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/IsleofMan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Isle of Man</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Israel -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Israel">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Israel</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Italy -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Italy">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Italy</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/IvoryCoast -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/IvoryCoast">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ivory Coast</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Jamaica -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Jamaica">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Jamaica</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Japan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Japan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Japan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Jersey -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Jersey">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Jersey</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Jordan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Jordan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Jordan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Kazakhstan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Kazakhstan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kazakhstan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Kenya -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Kenya">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kenya</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Kiribati -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Kiribati">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kiribati</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Kosovo -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Kosovo">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kosovo</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Kuwait -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Kuwait">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kuwait</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Kyrgyzstan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Kyrgyzstan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kyrgyzstan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Laos -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Laos">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Laos</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Latvia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Latvia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Latvia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Lebanon -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Lebanon">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lebanon</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Lesotho -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Lesotho">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lesotho</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Liberia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Liberia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Liberia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Libya -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Libya">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Libya</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Liechtenstein -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Liechtenstein">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Liechtenstein</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Lithuania -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Lithuania">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lithuania</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Luxembourg -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Luxembourg">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luxembourg</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Macao -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Macao">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Macao</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Madagascar -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Madagascar">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Madagascar</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Malawi -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Malawi">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Malawi</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Malaysia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Malaysia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Malaysia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Maldives -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Maldives">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maldives</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mali -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mali">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mali</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Malta -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Malta">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Malta</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/MarshallIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/MarshallIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Marshall Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Martinique -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Martinique">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Martinique</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mauritania -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mauritania">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mauritania</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mauritius -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mauritius">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mauritius</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mayotte -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mayotte">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mayotte</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mexico -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mexico">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mexico</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Micronesia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Micronesia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Micronesia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Moldova -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Moldova">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Moldova</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Monaco -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Monaco">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monaco</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mongolia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mongolia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mongolia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Montenegro -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Montenegro">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Montenegro</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Montserrat -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Montserrat">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Montserrat</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Morocco -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Morocco">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Morocco</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Mozambique -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Mozambique">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mozambique</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Myanmar -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Myanmar">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Myanmar</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Namibia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Namibia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Namibia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Nauru -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Nauru">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nauru</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Nepal -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Nepal">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nepal</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Netherlands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Netherlands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Netherlands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NetherlandsAntilles -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NetherlandsAntilles">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Netherlands Antilles</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NewCaledonia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NewCaledonia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">New Caledonia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NewZealand -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NewZealand">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">New Zealand</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Nicaragua -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Nicaragua">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nicaragua</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Niger -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Niger">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Niger</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Nigeria -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Nigeria">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nigeria</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Niue -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Niue">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Niue</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NorfolkIsland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NorfolkIsland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Norfolk Island</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NorthKorea -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NorthKorea">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">North Korea</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NorthMacedonia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NorthMacedonia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">North Macedonia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/NorthernMarianaIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/NorthernMarianaIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Northern Mariana Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Norway -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Norway">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Norway</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Oman -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Oman">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oman</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Pakistan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Pakistan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pakistan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Palau -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Palau">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Palau</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/PalestinianTerritory -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/PalestinianTerritory">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Palestinian Territory</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Panama -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Panama">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Panama</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/PapuaNewGuinea -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/PapuaNewGuinea">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Papua New Guinea</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Paraguay -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Paraguay">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Paraguay</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Peru -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Peru">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Peru</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Philippines -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Philippines">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Philippines</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Pitcairn -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Pitcairn">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pitcairn</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Poland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Poland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Poland</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Portugal -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Portugal">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Portugal</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/PuertoRico -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/PuertoRico">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Puerto Rico</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Qatar -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Qatar">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Qatar</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/RepublicoftheCongo -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/RepublicoftheCongo">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Republic of the Congo</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Reunion -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Reunion">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reunion</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Romania -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Romania">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Romania</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Russia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Russia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Russia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Rwanda -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Rwanda">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rwanda</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintBarthelemy -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintBarthelemy">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Barthelemy</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintHelena -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintHelena">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Helena</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintKittsandNevis -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintKittsandNevis">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Kitts and Nevis</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintLucia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintLucia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Lucia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintMartin -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintMartin">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Martin</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintPierreandMiquelon -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintPierreandMiquelon">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Pierre and Miquelon</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaintVincentandtheGrenadines -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaintVincentandtheGrenadines">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saint Vincent and the Grenadines</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Samoa -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Samoa">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Samoa</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SanMarino -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SanMarino">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">San Marino</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaoTomeandPrincipe -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaoTomeandPrincipe">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sao Tome and Principe</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SaudiArabia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SaudiArabia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saudi Arabia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Senegal -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Senegal">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Senegal</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Serbia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Serbia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Serbia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SerbiaandMontenegro -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SerbiaandMontenegro">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Serbia and Montenegro</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Seychelles -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Seychelles">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Seychelles</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SierraLeone -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SierraLeone">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sierra Leone</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Singapore -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Singapore">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Singapore</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SintMaarten -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SintMaarten">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sint Maarten</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Slovakia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Slovakia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Slovakia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Slovenia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Slovenia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Slovenia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SolomonIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SolomonIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solomon Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Somalia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Somalia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Somalia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SouthAfrica -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SouthAfrica">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Africa</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SouthGeorgiaandtheSouthSandwichIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SouthGeorgiaandtheSouthSandwichIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Georgia and the South Sandwich Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SouthKorea -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SouthKorea">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Korea</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SouthSudan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SouthSudan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Sudan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Spain -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Spain">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spain</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SriLanka -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SriLanka">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sri Lanka</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Sudan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Sudan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sudan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Suriname -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Suriname">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Suriname</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/SvalbardandJanMayen -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/SvalbardandJanMayen">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Svalbard and Jan Mayen</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Sweden -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Sweden">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sweden</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Switzerland -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Switzerland">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Switzerland</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Syria -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Syria">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Syria</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Taiwan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Taiwan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Taiwan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Tajikistan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Tajikistan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tajikistan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Tanzania -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Tanzania">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tanzania</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Thailand -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Thailand">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thailand</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/TimorLeste -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/TimorLeste">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Timor Leste</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Togo -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Togo">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Togo</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Tokelau -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Tokelau">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tokelau</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Tonga -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Tonga">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tonga</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/TrinidadandTobago -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/TrinidadandTobago">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trinidad and Tobago</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Tunisia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Tunisia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tunisia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Turkey -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Turkey">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turkey</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Turkmenistan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Turkmenistan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turkmenistan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/TurksandCaicosIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/TurksandCaicosIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turks and Caicos Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Tuvalu -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Tuvalu">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tuvalu</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/U.S.VirginIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/U.S.VirginIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">U.S. Virgin Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Uganda -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Uganda">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Uganda</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Ukraine -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Ukraine">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ukraine</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/UnitedArabEmirates -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/UnitedArabEmirates">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">United Arab Emirates</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/UnitedKingdom -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/UnitedKingdom">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">United Kingdom</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/UnitedStates -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/UnitedStates">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">United States</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/UnitedStatesMinorOutlyingIslands -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/UnitedStatesMinorOutlyingIslands">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">United States Minor Outlying Islands</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Uruguay -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Uruguay">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Uruguay</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Uzbekistan -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Uzbekistan">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Uzbekistan</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Vanuatu -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Vanuatu">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vanuatu</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Vatican -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Vatican">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vatican</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Venezuela -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Venezuela">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Venezuela</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Vietnam -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Vietnam">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vietnam</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/WallisandFutuna -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/WallisandFutuna">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wallis and Futuna</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/WesternSahara -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/WesternSahara">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Western Sahara</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Yemen -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Yemen">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yemen</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Zambia -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Zambia">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zambia</rdfs:label>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocountry/Zimbabwe -->
+
+    <NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontocountry/Zimbabwe">
+        <rdf:type rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zimbabwe</rdfs:label>
+    </NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
