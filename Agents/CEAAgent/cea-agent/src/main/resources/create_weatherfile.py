@@ -23,8 +23,8 @@ ontoems_concepts = {"AirTemperature": 'drybulb_C',
              "CloudCover": 'totskycvr_tenths',
              "DirectNormalIrradiance": 'dirnorrad_Whm2',
              "DiffuseHorizontalIrradiance": 'difhorrad_Whm2',
-             "WindDirection": 'windspd_ms',
-             "WindSpeed" : 'winddir_deg'}
+             "WindDirection": 'winddir_deg',
+             "WindSpeed" : 'windspd_ms'}
 
 # EPW allowed range
 mi_ma = {'drybulb_C': [-70, 70],
