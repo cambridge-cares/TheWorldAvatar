@@ -23,8 +23,8 @@ ontoems_concepts = {"AirTemperature": 'drybulb_C',
              "CloudCover": 'totskycvr_tenths',
              "DirectNormalIrradiance": 'dirnorrad_Whm2',
              "DiffuseHorizontalIrradiance": 'difhorrad_Whm2',
-             "WindDirection": 'windspd_ms',
-             "WindSpeed" : 'winddir_deg'}
+             "WindDirection": 'winddir_deg',
+             "WindSpeed" : 'windspd_ms'}
 
 # EPW allowed range
 mi_ma = {'drybulb_C': [-70, 70],
@@ -130,10 +130,11 @@ def create_epw(times, data, weather_file, latitude, longitude, elevation, offset
                 mask = (df['month'] == '02') & (df['day'] == '29')
                 df[k] = df[k]
                 indices = df.index[mask].tolist()
-                df.loc[indices[-1]+1: , k] = df.loc[indices[0]: len(df)-len(indices)-1, k].values
-                for i in range(len(indices)):
-                    mask = (df['month'] == '02') & (df['day'] != '29') & (df['hour'] == f"{i:02d}")
-                    df.loc[indices[i], k] = df.loc[mask, k].mean()
+                if len(indices) > 0:
+                    df.loc[indices[-1]+1: , k] = df.loc[indices[0]: len(df)-len(indices)-1, k].values
+                    for i in range(len(indices)):
+                        mask = (df['month'] == '02') & (df['day'] != '29') & (df['hour'] == f"{i:02d}")
+                        df.loc[indices[i], k] = df.loc[mask, k].mean()
 
         # ensure that the weather values are within the allowed range for EPW parameters
         if k in mi_ma:

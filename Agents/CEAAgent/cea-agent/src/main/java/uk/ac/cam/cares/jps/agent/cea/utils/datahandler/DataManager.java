@@ -17,8 +17,10 @@ import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.logging.Logger;
 
 public class DataManager {
+    private static final Logger LOGGER = Logger.getLogger(DataManager.class.getName());
 
     private static final String RDF_TYPE = "rdf:type";
 
@@ -152,6 +154,29 @@ public class DataManager {
                     break;
                 }
             }
+        }
+
+        // re-ordered founded IRIs to exactly follow internal order
+        // otherwise, time series data may be written to the wrong column
+
+        LinkedHashMap<String, String> orderedScalarIris = new LinkedHashMap<>();
+        for (String measurement : CEAConstants.SCALARS) {
+            orderedScalarIris.put(measurement, scalarIris.get(measurement));
+        }
+        scalarIris.clear();
+        scalarIris.putAll(orderedScalarIris);
+
+        LinkedHashMap<String, String> orderedTsIris = new LinkedHashMap<>();
+        for (String measurement : CEAConstants.TIME_SERIES) {
+            orderedTsIris.put(measurement, tsIris.get(measurement));
+        }
+        tsIris.clear();
+        tsIris.putAll(orderedTsIris);
+
+        if (!new ArrayList<>(scalarIris.keySet()).equals(CEAConstants.SCALARS)
+                || !new ArrayList<>(tsIris.keySet()).equals(CEAConstants.TIME_SERIES)) {
+            throw new IllegalStateException("CEA output IRI order does not match canonical measurement order for building "
+                    + building);
         }
 
         return true;
