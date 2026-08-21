@@ -21,15 +21,15 @@ public class EndpointConfig {
     private static final Logger LOGGER = LogManager.getLogger(EndpointConfig.class);
 
     public EndpointConfig() {
-        BlazegraphEndpointConfig blazegraphEndpointConfig = BlazegraphClient.getInstance().getEndpoint();
+        BlazegraphEndpointConfig blazegraphEndpointConfig = BlazegraphClient.getInstance().readEndpointConfig();
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
 
-        PostGISEndpointConfig postGISEndpointConfig = PostGISClient.getInstance().getEndpoint();
+        PostGISEndpointConfig postGISEndpointConfig = PostGISClient.getInstance().readEndpointConfig();
         this.dburl = postGISEndpointConfig.getJdbcURL("postgres");
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
 
-        ontopUrl = OntopClient.getInstance().getEndpoint().getUrl();
+        ontopUrl = OntopClient.getInstance("ontop").readEndpointConfig().getUrl();
     }
 
     public String getKgurl() {

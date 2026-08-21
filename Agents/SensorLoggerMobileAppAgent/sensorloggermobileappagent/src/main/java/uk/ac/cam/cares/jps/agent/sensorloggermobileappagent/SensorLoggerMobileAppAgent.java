@@ -126,9 +126,12 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                         task.addData(new Payload(payload, sessionId));
                     }
                 } catch (JsonProcessingException jsonError) {
-                    // handle JsonProcessingException
+                    LOGGER.error(jsonError.getMessage());
+                    throw new RuntimeException(jsonError);
                 } catch (IOException ioError) {
                     // handle IOException
+                    LOGGER.error(ioError.getMessage());
+                    throw new RuntimeException(ioError);
                 }
             });
 
