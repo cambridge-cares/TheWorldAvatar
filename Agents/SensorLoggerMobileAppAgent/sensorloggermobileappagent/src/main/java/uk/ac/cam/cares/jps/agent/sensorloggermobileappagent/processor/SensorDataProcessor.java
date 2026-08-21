@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +30,8 @@ public abstract class SensorDataProcessor {
     String tsIri;
     Logger logger;
 
-    public SensorDataProcessor(String sensorName, AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+    public SensorDataProcessor(String sensorName, AgentConfig config, RemoteStoreClient ontopClient,
+            RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
         this.sensorName = sensorName;
         this.config = config;
         this.ontopClient = ontopClient;
@@ -43,7 +45,8 @@ public abstract class SensorDataProcessor {
 
     public abstract void addData(Payload data);
 
-    public abstract TimeSeries<Long> getProcessedTimeSeries() throws Exception;
+    public abstract TimeSeries<Instant> getProcessedTimeSeries() throws Exception;
+
     abstract void initSensorData();
 
     public void initIRIs() {
@@ -54,9 +57,11 @@ public abstract class SensorDataProcessor {
 
         getDataIrisFromKg();
 
-        // If all sensorData iris are null, device not instantiated, so all sensor data IRIs not instantiated with obda mapping
+        // If all sensorData iris are null, device not instantiated, so all sensor data
+        // IRIs not instantiated with obda mapping
 
-        // If have existing deviceIRI, but some sensor data are not linked with time series, which require check of the blazegraph.
+        // If have existing deviceIRI, but some sensor data are not linked with time
+        // series, which require check of the blazegraph.
         // This is handled in the SmartphoneRecordingTask.
     };
 

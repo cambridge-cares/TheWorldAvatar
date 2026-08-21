@@ -13,6 +13,7 @@ import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,8 @@ public class LocationDataProcessor extends SensorDataProcessor {
     private SensorData<Point> geomLocation;
     private SensorData<String> session;
 
-    public LocationDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+    public LocationDataProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient,
+            Node smartphoneIRINode) {
         super("GPSDevice", config, ontopClient, blazegraphClient, smartphoneIRINode);
     }
 
@@ -41,15 +43,14 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<Long> getProcessedTimeSeries() {
+    public TimeSeries<Instant> getProcessedTimeSeries() {
         // todo: do processing of location data
         List<String> dataIRIList = getDataIRIs();
         List<List<?>> valueList = getValues().stream()
-                .map(ArrayList::new)
-                .collect(Collectors.toList());
+                .map(ArrayList::new).collect(Collectors.toList());
 
-        List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli()).toList();
-        TimeSeries<Long> ts = new TimeSeries<>(new ArrayList<>(epochlist), dataIRIList, valueList);
+        List<Instant> instantList = timeList.stream().map(t -> t.toInstant()).toList();
+        TimeSeries<Instant> ts = new TimeSeries<>(new ArrayList<>(instantList), dataIRIList, valueList);
 
         clearData();
         return ts;

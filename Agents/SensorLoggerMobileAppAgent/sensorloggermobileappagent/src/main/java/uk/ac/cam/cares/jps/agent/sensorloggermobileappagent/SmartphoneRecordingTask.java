@@ -20,6 +20,7 @@ import com.cmclinnovations.stack.clients.timeseries.TimeSeriesRDBClient;
 
 import java.awt.*;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class SmartphoneRecordingTask {
 
     private final RemoteStoreClient ontopRemoteStoreClient;
     private final RemoteStoreClient blazegraphStoreClient;
-    private final TimeSeriesClient<Long> tsClient;
+    private final TimeSeriesClient<Instant> tsClient;
     private final AgentConfig config;
 
     private long lastProcessedTime;
@@ -59,7 +60,7 @@ public class SmartphoneRecordingTask {
         logger = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
         this.ontopRemoteStoreClient = ontopRemoteStoreClient;
-        TimeSeriesRDBClient<Long> tsRdbClient = new TimeSeriesRDBClient<>(Long.class);
+        TimeSeriesRDBClient<Instant> tsRdbClient = new TimeSeriesRDBClient<>(Instant.class);
         tsRdbClient.setRdbURL(rdbStoreClient.getRdbURL());
         tsRdbClient.setRdbUser(rdbStoreClient.getUser());
         tsRdbClient.setRdbPassword(rdbStoreClient.getPassword());
@@ -219,8 +220,7 @@ public class SmartphoneRecordingTask {
         }
 
         logger.info("bulk init iris in rdb");
-        List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
-        tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
+        tsClient.bulkInitTimeSeries(dataIris, dataClasses, null, 4326);
 
         sensorDataProcessors.stream()
                 .filter(SensorDataProcessor::isNeedToInitTimeSeries)
@@ -264,7 +264,7 @@ public class SmartphoneRecordingTask {
     }
 
     private void bulkAddTimeSeriesData() throws RuntimeException {
-        List<TimeSeries<Long>> tsList = sensorDataProcessors.stream()
+        List<TimeSeries<Instant>> tsList = sensorDataProcessors.stream()
                 .filter(p -> p.getTimeSeriesLength() > 0)
                 .map(p -> {
                     try {

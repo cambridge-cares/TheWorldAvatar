@@ -8,11 +8,12 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class SensorDataDownsampledProcessor extends SensorDataProcessor{
+public abstract class SensorDataDownsampledProcessor extends SensorDataProcessor {
 
     SensorData<Double> x;
     SensorData<Double> y;
@@ -21,16 +22,17 @@ public abstract class SensorDataDownsampledProcessor extends SensorDataProcessor
     private Long dsResolution;
     private Downsampling.Type dsType;
 
-    public SensorDataDownsampledProcessor(String sensorName, AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode,
-                                          Long dsResolution,
-                                          Downsampling.Type dsType) {
+    public SensorDataDownsampledProcessor(String sensorName, AgentConfig config, RemoteStoreClient ontopClient,
+            RemoteStoreClient blazegraphClient, Node smartphoneIRINode,
+            Long dsResolution,
+            Downsampling.Type dsType) {
         super(sensorName, config, ontopClient, blazegraphClient, smartphoneIRINode);
         this.dsResolution = dsResolution;
         this.dsType = dsType;
     }
 
     @Override
-    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Instant> getProcessedTimeSeries() throws Exception {
         List<String> iriList = getDataIRIs();
         List<List<?>> valueList = getValues().stream()
                 .map(ArrayList::new)
@@ -39,13 +41,14 @@ public abstract class SensorDataDownsampledProcessor extends SensorDataProcessor
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, iriList, valueList);
         ts = Downsampling.downsampleTS(ts, dsResolution, dsType);
 
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
+        List<Instant> instantList = ts.getTimes().stream().map(t -> t.toInstant())
                 .collect(Collectors.toList());
 
-        List<List<?>> downsampledValuesList = getDataIRIs().stream().map(ts::getValuesAsDouble).collect(Collectors.toList());
+        List<List<?>> downsampledValuesList = getDataIRIs().stream().map(ts::getValuesAsDouble)
+                .collect(Collectors.toList());
 
         clearData();
-        return new TimeSeries<>(epochlist, iriList, downsampledValuesList);
+        return new TimeSeries<>(instantList, iriList, downsampledValuesList);
     }
 
 }
