@@ -10,8 +10,6 @@ import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.core.io.ClassPathResource;
 
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.SensorDataProcessor;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +18,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Set;
 
 /**
  * column names need to match with obda file in resources
@@ -35,14 +32,8 @@ public class SensorLoggerPostgresClient {
     private String dbuser;
     private String dbpassword;
     private static final Table<?> DSL_TABLE = DSL.table(DSL.name(DEVICES_TABLE));
-    private static final Table<?> DSL_TABLE_TS_QUANTITIES = DSL.table(DSL.name(TS_QUANTITIES_TABLE));
     private static final Field<String> DEVICE_COLUMN_FIELD = DSL.field(DEVICE_COLUMN, String.class);
     private static final Field<String> SENSOR_COLUMN_FIELD = DSL.field(SENSOR_COLUMN, String.class);
-
-    private static final Field<String> TS_IRI_FIELD = DSL.field("time_series_iri", String.class);
-    private static final Field<String> DATA_IRI_FIELD = DSL.field("data_iri", String.class);
-    private static final Field<String> COLUMN_NAME_FIELD = DSL.field("column_name", String.class);
-    private static final Field<String> TABLE_NAME_FIELD = DSL.field("table_name", String.class);
 
     private static final Logger LOGGER = LogManager.getLogger(SensorLoggerPostgresClient.class);
 
