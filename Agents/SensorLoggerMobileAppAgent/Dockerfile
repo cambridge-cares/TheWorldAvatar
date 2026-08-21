@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-17-slim as retriever
+FROM maven:3.9.16-eclipse-temurin-17-alpine AS retriever
 
 # Copy in Maven settings templates and credentials 
 COPY credentials /root/credentials
@@ -21,7 +21,8 @@ RUN --mount=type=cache,id=m2-cache,target=/root/.m2/repository,sharing=locked mv
 #==================================================================================================
 # Second stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-17-slim as builder
+FROM maven:3.9-eclipse-temurin-17-alpine AS builder
+
 COPY --from=retriever /root/.m2 /root/.m2
 
 WORKDIR /root/code
@@ -32,7 +33,7 @@ RUN --mount=type=cache,id=m2-cache,target=/root/.m2/repository,sharing=locked mv
 #==================================================================================================
 # Third stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0 as agent
+FROM tomcat:9.0 AS agent
 
 WORKDIR /app
 # Copy the compiled jar from the builder
