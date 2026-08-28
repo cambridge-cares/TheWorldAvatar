@@ -16,7 +16,7 @@ WORKDIR /root/code
 
 COPY sensorloggermobileappagent/pom.xml ./pom.xml
 
-RUN --mount=type=cache,id=m2-cache,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
+RUN --mount=type=cache,id=m2-cache,target=/root/.m2/repository,sharing=locked mvn dependency:resolve
 
 #==================================================================================================
 # Second stage: build war file
