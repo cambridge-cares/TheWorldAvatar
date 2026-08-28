@@ -1,5 +1,5 @@
-CREATE OR REPLACE FUNCTION get_column_name(iri TEXT)
-RETURNS TEXT
+CREATE OR REPLACE FUNCTION get_column_name(iri VARCHAR)
+RETURNS VARCHAR
 LANGUAGE sql
 STABLE
 AS $$
@@ -9,43 +9,6 @@ AS $$
         ON a.data_type_index = b.data_type_index
     WHERE a.data_iri = iri;
 $$;
-
-
-CREATE OR REPLACE FUNCTION get_table_name(iri VARCHAR)
-RETURNS VARCHAR AS
-$$
-DECLARE
-    table_name_result VARCHAR;
-BEGIN
-    SELECT table_name
-    INTO table_name_result
-    FROM time_series_quantities
-    WHERE data_iri = iri;
-
-
-    RETURN table_name_result;
-END;
-$$
-LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION get_time_series(iri VARCHAR)
-RETURNS VARCHAR AS
-$$
-DECLARE
-    time_series_result VARCHAR;
-BEGIN
-    SELECT time_series_iri
-    INTO time_series_result
-    FROM time_series_quantities
-    WHERE data_iri = iri;
-
-
-    RETURN time_series_result;
-END;
-$$
-LANGUAGE plpgsql;
-
 
 CREATE OR REPLACE FUNCTION get_user_id(device TEXT)
 RETURNS VARCHAR AS
