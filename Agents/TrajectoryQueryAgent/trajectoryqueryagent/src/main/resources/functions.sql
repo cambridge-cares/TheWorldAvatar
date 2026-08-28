@@ -49,19 +49,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- PostgreSQL cannot change table-return column types with CREATE OR REPLACE.
-DROP FUNCTION IF EXISTS get_location_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_activity_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_geom_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_speed_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_altitude_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_bearing_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_session_id_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_activity_type_table(TEXT[]);
-DROP FUNCTION IF EXISTS get_confidence_level_table(TEXT[]);
-DROP FUNCTION IF EXISTS fill_activity_types(varchar[], double precision[]);
-DROP FUNCTION IF EXISTS fill_activity_types(varchar[], bigint[]);
-
 -- time_series_data.time_as_number is stored in epoch seconds. Variable
 -- helpers retain that source precision so joins happen before conversion.
 CREATE OR REPLACE FUNCTION get_geom_table(
