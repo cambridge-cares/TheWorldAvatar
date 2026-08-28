@@ -66,6 +66,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
 
             return getDatesWithData(timezone, userId);
         } else if (request.getServletPath().contentEquals(CREATE_LAYER_ROUTE)) {
+            getUserId(request); // purely for authentication
             return createLayer();
         }
 
