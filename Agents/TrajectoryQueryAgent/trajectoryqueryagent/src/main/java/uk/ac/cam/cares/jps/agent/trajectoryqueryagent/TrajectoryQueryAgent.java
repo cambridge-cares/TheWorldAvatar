@@ -163,7 +163,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryDeviceId", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryDeviceId",
+                    geoServerVectorSettings);
         }
 
         String lineLayerUserId = null;
@@ -187,7 +188,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserId", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryUserId",
+                    geoServerVectorSettings);
         }
 
         String bufferedLineDeviceId = null;
@@ -210,7 +212,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "bufferedLineDeviceId", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "bufferedLineDeviceId",
+                    geoServerVectorSettings);
         }
 
         String lineLayerUserIdLineSegments = null;
@@ -232,10 +235,9 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("user_id", "null", ".*");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdLineSegments",
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryUserIdLineSegments",
                     geoServerVectorSettings);
         }
-
 
         String lineLayerUserIdByActivity = null;
         try (InputStream is = new ClassPathResource("line_layer_user_id_by_activity.sql").getInputStream()) {
@@ -258,7 +260,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdByActivity", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryUserIdByActivity",
+                    geoServerVectorSettings);
         }
 
     }
