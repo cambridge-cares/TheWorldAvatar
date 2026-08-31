@@ -17,29 +17,29 @@ public class Payload {
     private final List<Double> accelXs = new ArrayList<>();
     private final List<Double> accelYs = new ArrayList<>();
     private final List<Double> accelZs = new ArrayList<>();
-    private final List <OffsetDateTime> magnetometerTs = new ArrayList<>();
-    private final List <Double> magnetometerXs = new ArrayList<>();
-    private final List <Double> magnetometerYs = new ArrayList<>();
-    private final List <Double> magnetometerZs = new ArrayList<>();
-    private final List <OffsetDateTime> gravityTs = new ArrayList<>();
-    private final List <Double> gravityXs = new ArrayList<>();
-    private final List <Double> gravityYs = new ArrayList<>();
-    private final List <Double> gravityZs = new ArrayList<>();
-    private final List <OffsetDateTime> locationTs = new ArrayList<>();
-    private final List <Double> bearings = new ArrayList<>();
-    private final List <Double> speeds = new ArrayList<>();
-    private final List <Double> altitudes = new ArrayList<>();
-    private final List <Point> geomLocations = new ArrayList<>();
-    private final List <String> sessionIds = new ArrayList<>();
-    private final List <OffsetDateTime> dBFSTs = new ArrayList<>();
-    private final List <Double> dBFSs = new ArrayList<>();
-    private final List <OffsetDateTime> lightValueTs = new ArrayList<>();
-    private final List <Double> lightValues = new ArrayList<>();
-    private final List <OffsetDateTime> brightnessTs = new ArrayList<>();
-    private final List <Double> brightness = new ArrayList<>();
-    private final List <OffsetDateTime> activityTs = new ArrayList<>();
-    private final List <Integer> confidences = new ArrayList<>();
-    private final List <String> activityTypes = new ArrayList<>();
+    private final List<OffsetDateTime> magnetometerTs = new ArrayList<>();
+    private final List<Double> magnetometerXs = new ArrayList<>();
+    private final List<Double> magnetometerYs = new ArrayList<>();
+    private final List<Double> magnetometerZs = new ArrayList<>();
+    private final List<OffsetDateTime> gravityTs = new ArrayList<>();
+    private final List<Double> gravityXs = new ArrayList<>();
+    private final List<Double> gravityYs = new ArrayList<>();
+    private final List<Double> gravityZs = new ArrayList<>();
+    private final List<OffsetDateTime> locationTs = new ArrayList<>();
+    private final List<Double> bearings = new ArrayList<>();
+    private final List<Double> speeds = new ArrayList<>();
+    private final List<Double> altitudes = new ArrayList<>();
+    private final List<Point> geomLocations = new ArrayList<>();
+    private final List<String> sessionIds = new ArrayList<>();
+    private final List<OffsetDateTime> dBFSTs = new ArrayList<>();
+    private final List<Double> dBFSs = new ArrayList<>();
+    private final List<OffsetDateTime> lightValueTs = new ArrayList<>();
+    private final List<Double> lightValues = new ArrayList<>();
+    private final List<OffsetDateTime> brightnessTs = new ArrayList<>();
+    private final List<Double> brightness = new ArrayList<>();
+    private final List<OffsetDateTime> activityTs = new ArrayList<>();
+    private final List<Integer> confidences = new ArrayList<>();
+    private final List<String> activityTypes = new ArrayList<>();
 
     public Payload(JSONArray payload, String sessionId)
             throws JsonProcessingException {
@@ -155,7 +155,6 @@ public class Payload {
         return gravityYs;
     }
 
-
     public List<Double> getGravityZs() {
         return gravityZs;
     }
@@ -176,11 +175,9 @@ public class Payload {
         return altitudes;
     }
 
-
     public List<Point> getGeomLocations() {
         return geomLocations;
     }
-
 
     public List<String> getSessionIds() {
         return sessionIds;
@@ -190,7 +187,6 @@ public class Payload {
         return dBFSTs;
     }
 
-
     public List<Double> getdBFSs() {
         return dBFSs;
     }
@@ -198,7 +194,6 @@ public class Payload {
     public List<OffsetDateTime> getLightValueTs() {
         return lightValueTs;
     }
-
 
     public List<Double> getLightValues() {
         return lightValues;
@@ -208,21 +203,17 @@ public class Payload {
         return brightnessTs;
     }
 
-
     public List<Double> getBrightness() {
         return brightness;
     }
-
 
     public List<OffsetDateTime> getActivityTs() {
         return activityTs;
     }
 
-
     public List<Integer> getConfidences() {
         return confidences;
     }
-
 
     public List<String> getActivityTypes() {
         return activityTypes;

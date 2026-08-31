@@ -13,12 +13,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.ClassPathResource;
 
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,7 +28,6 @@ import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
 
-import com.auth0.jwk.InvalidPublicKeyException;
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
@@ -37,8 +38,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import java.security.interfaces.RSAPublicKey;
 
-@WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, "/getDatesWithData" })
-public class TrajectoryQueryAgent extends JPSAgent {
+@WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, TrajectoryQueryAgent.GET_DATES_ROUTE })
+public class TrajectoryQueryAgent extends HttpServlet {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final String TIMEZONE = "timezone";
     private static final Logger LOGGER = LogManager.getLogger(TrajectoryQueryAgent.class);
@@ -53,25 +54,50 @@ public class TrajectoryQueryAgent extends JPSAgent {
     }
 
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        if (request.getServletPath().contentEquals(GET_DATES_ROUTE)) {
-            if (!requestParams.has(TIMEZONE)) {
-                String errmsg = "timezone parameter is missing";
-                LOGGER.error(errmsg);
-                throw new JPSRuntimeException(errmsg);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setContentType("application/json");
+
+        try {
+            JSONObject result;
+            if (request.getServletPath().contentEquals(GET_DATES_ROUTE)) {
+                String timezone = request.getParameter(TIMEZONE);
+                if (timezone == null || timezone.isBlank()) {
+                    writeError(response, HttpServletResponse.SC_BAD_REQUEST, "timezone parameter is missing");
+                    return;
+                }
+
+                String userId = getUserId(request);
+                result = getDatesWithData(timezone, userId);
+            } else if (request.getServletPath().contentEquals(CREATE_LAYER_ROUTE)) {
+                getUserId(request); // authenticate before making any changes
+                result = createLayer();
+            } else {
+                writeError(response, HttpServletResponse.SC_NOT_FOUND, "Path invalid, no operation performed");
+                return;
             }
 
-            String timezone = requestParams.getString(TIMEZONE);
-            String userId = getUserId(request);
-
-            return getDatesWithData(timezone, userId);
-        } else if (request.getServletPath().contentEquals(CREATE_LAYER_ROUTE)) {
-            return createLayer();
+            writeJson(response, HttpServletResponse.SC_OK, result);
+        } catch (AuthenticationException e) {
+            LOGGER.warn("Authentication failed: {}", e.getMessage());
+            response.setHeader("WWW-Authenticate", "Bearer");
+            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+        } catch (RuntimeException e) {
+            LOGGER.error("Failed to process request", e);
+            writeError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
+    }
 
-        JSONObject response = new JSONObject();
-        response.put("message", "Path invalid, no operation performed");
-        return response;
+    private void writeError(HttpServletResponse response, int status, String message) throws IOException {
+        JSONObject body = new JSONObject();
+        body.put("message", message);
+        writeJson(response, status, body);
+    }
+
+    private void writeJson(HttpServletResponse response, int status, JSONObject body) throws IOException {
+        response.setStatus(status);
+        response.getWriter().write(body.toString());
     }
 
     /**
@@ -163,7 +189,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryDeviceId", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryDeviceId",
+                    geoServerVectorSettings);
         }
 
         String lineLayerUserId = null;
@@ -187,7 +214,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserId", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryUserId",
+                    geoServerVectorSettings);
         }
 
         String bufferedLineDeviceId = null;
@@ -210,7 +238,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "bufferedLineDeviceId", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "bufferedLineDeviceId",
+                    geoServerVectorSettings);
         }
 
         String lineLayerUserIdLineSegments = null;
@@ -232,10 +261,9 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("user_id", "null", ".*");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdLineSegments",
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryUserIdLineSegments",
                     geoServerVectorSettings);
         }
-
 
         String lineLayerUserIdByActivity = null;
         try (InputStream is = new ClassPathResource("line_layer_user_id_by_activity.sql").getInputStream()) {
@@ -258,7 +286,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserIdByActivity", geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, "trajectoryUserIdByActivity",
+                    geoServerVectorSettings);
         }
 
     }
@@ -279,60 +308,56 @@ public class TrajectoryQueryAgent extends JPSAgent {
         String token = null;
         Iterator<String> headerIterator = request.getHeaders("Authorization").asIterator();
         while (headerIterator.hasNext() && token == null) {
-            String header = headerIterator.next();
-            if (header.startsWith("Bearer ")) {
-                token = header.substring(7);
+            String header = headerIterator.next().trim();
+            if (header.regionMatches(true, 0, "Bearer ", 0, 7)) {
+                token = header.substring(7).trim();
             }
         }
 
-        DecodedJWT verifiedJwt = validateSignature(token);
+        if (token == null || token.isEmpty()) {
+            throw new AuthenticationException("Bearer token is missing");
+        }
 
-        return verifiedJwt.getSubject();
+        DecodedJWT verifiedJwt = validateSignature(token);
+        String subject = verifiedJwt.getSubject();
+        if (subject == null || subject.isBlank()) {
+            throw new AuthenticationException("Bearer token subject is missing");
+        }
+
+        return subject;
     }
 
     private DecodedJWT validateSignature(String token) {
-        // check signature using public key from KeyCloak server
-        JwkProvider provider = JwkProviderSingleton.getInstance();
-
-        DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
-
-        String keyId = unverifiedDecodedJWT.getKeyId();
-        Jwk jwk;
         try {
-            jwk = provider.get(keyId);
-        } catch (JwkException e) {
-            String errmsg = "Cannot find key ID from token";
-            LOGGER.error(e.getMessage());
-            LOGGER.error(errmsg);
-            throw new RuntimeException(errmsg, e);
+            // Use the unverified key ID only to select a public key from the trusted
+            // Keycloak JWK endpoint. The token is verified before any claim is used.
+            JwkProvider provider = JwkProviderSingleton.getInstance();
+            DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
+            String keyId = unverifiedDecodedJWT.getKeyId();
+            if (keyId == null || keyId.isBlank()) {
+                throw new AuthenticationException("Bearer token key ID is missing");
+            }
+
+            Jwk jwk = provider.get(keyId);
+            RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
+            Algorithm algorithm = Algorithm.RSA256(publicKey);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+
+            return verifier.verify(unverifiedDecodedJWT);
+        } catch (AuthenticationException e) {
+            throw e;
+        } catch (JWTVerificationException | JwkException | ClassCastException | IllegalArgumentException e) {
+            throw new AuthenticationException("Invalid or expired bearer token", e);
+        }
+    }
+
+    private static class AuthenticationException extends RuntimeException {
+        AuthenticationException(String message) {
+            super(message);
         }
 
-        RSAPublicKey publicKey;
-        try {
-            publicKey = (RSAPublicKey) jwk.getPublicKey();
-        } catch (InvalidPublicKeyException e) {
-            String errmsg = "Cannot get public key from provider";
-            LOGGER.error(e.getMessage());
-            LOGGER.error(errmsg);
-            throw new RuntimeException(errmsg, e);
+        AuthenticationException(String message, Throwable cause) {
+            super(message, cause);
         }
-
-        Algorithm algorithm = Algorithm.RSA256(publicKey);
-
-        // Create the JWT verifier
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
-        DecodedJWT verifiedDecodedJWT;
-
-        try {
-            verifiedDecodedJWT = verifier.verify(unverifiedDecodedJWT);
-        } catch (JWTVerificationException e) {
-            String errmsg = "Failed to verify token";
-            LOGGER.error(e.getMessage());
-            LOGGER.error(errmsg);
-            throw new RuntimeException(errmsg, e);
-        }
-
-        return verifiedDecodedJWT;
     }
 }

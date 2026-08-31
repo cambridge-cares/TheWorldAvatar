@@ -12,6 +12,7 @@ import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,8 @@ public class ActivityProcessor extends SensorDataProcessor {
     private SensorData<Integer> confidence;
     private SensorData<String> activityType;
 
-    public ActivityProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient, Node smartphoneIRINode) {
+    public ActivityProcessor(AgentConfig config, RemoteStoreClient ontopClient, RemoteStoreClient blazegraphClient,
+            Node smartphoneIRINode) {
         super("Activity", config, ontopClient, blazegraphClient, smartphoneIRINode);
         logger = LogManager.getLogger(ActivityProcessor.class);
     }
@@ -35,17 +37,16 @@ public class ActivityProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Instant> getProcessedTimeSeries() throws Exception {
         List<String> iriList = getDataIRIs();
         List<List<?>> valueList = getValues().stream()
                 .map(ArrayList::new)
                 .collect(Collectors.toList());
-                
-        List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
-                .collect(Collectors.toList());
+
+        List<Instant> instantList = timeList.stream().map(t -> t.toInstant()).collect(Collectors.toList());
 
         clearData();
-        return new TimeSeries<>(epochlist, iriList, valueList);
+        return new TimeSeries<>(instantList, iriList, valueList);
     }
 
     @Override
