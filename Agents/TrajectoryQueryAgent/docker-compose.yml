@@ -1,4 +1,4 @@
 services:
   trajectoryqueryagent:
-    image: ghcr.io/cambridge-cares/trajectoryqueryagent:6.0.0-1553-update-sensor-logger-agent-timeseries-SNAPSHOT
+    image: ghcr.io/cambridge-cares/trajectoryqueryagent:6.0.0
     build: .
