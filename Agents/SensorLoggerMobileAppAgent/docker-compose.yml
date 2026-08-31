@@ -1,4 +1,4 @@
 services:
   sensorloggermobileappagent:
-    image: sensorloggermobileappagent:5.2.0-1553-update-sensor-logger-agent-timeseries-SNAPSHOT
+    image: ghcr.io/cambridge-cares/sensorloggermobileappagent:6.0.0
     build: .
