@@ -11,6 +11,8 @@ import org.mockito.MockedStatic;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
@@ -169,12 +171,16 @@ public class CEAAgentTest {
                     try (MockedStatic<RouteHelper> routeHelperMock = mockStatic(RouteHelper.class)) {
                         routeHelperMock.when(() -> RouteHelper.checkEndpoint(anyString())).thenReturn(true);
                         routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
-                        CEAGeometryData testGeometry = new CEAGeometryData(new ArrayList<>(), "", "");
+                        CEAGeometryData testGeometry = new CEAGeometryData(Collections.singletonList(
+                                new GeometryFactory().createPoint(new Coordinate(0, 0))), "4326", "");
                         try (MockedStatic<GeometryQueryHelper> geometryQueryHelperMock = mockStatic(GeometryQueryHelper.class)) {
-                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.getBuildingGeometry(anyString(), anyString(), anyBoolean())).thenReturn(testGeometry);
+                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.bulkGetBuildingGeometry(anyList(), anyString()))
+                                    .thenReturn(Collections.singletonList(testGeometry));
+                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.getCountry(any())).thenReturn("test");
                             Map<String, Double> usages = new HashMap<>();
                             try (MockedStatic<BuildingUsageHelper> usageHelpermock = mockStatic(BuildingUsageHelper.class)) {
-                                usageHelpermock.when(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString())).thenReturn(usages);
+                                usageHelpermock.when(() -> BuildingUsageHelper.bulkGetBuildingUsages(anyList(), anyString()))
+                                        .thenReturn(Collections.singletonList(usages));
                                 try (MockedStatic<SurroundingsHelper> surroundingsHelperMock = mockStatic(SurroundingsHelper.class)) {
                                     surroundingsHelperMock.when(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString())).thenReturn(new ArrayList<CEAGeometryData>());
                                     try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
@@ -200,8 +206,8 @@ public class CEAAgentTest {
 
                                                 returnParams = agent.processRequestParameters(requestParams);
 
-                                                geometryQueryHelperMock.verify(() -> GeometryQueryHelper.getBuildingGeometry(anyString(), anyString(), anyBoolean()), times(1));
-                                                usageHelpermock.verify(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString()), times(1));
+                                                geometryQueryHelperMock.verify(() -> GeometryQueryHelper.bulkGetBuildingGeometry(anyList(), anyString()), times(1));
+                                                usageHelpermock.verify(() -> BuildingUsageHelper.bulkGetBuildingUsages(anyList(), anyString()), times(1));
                                                 surroundingsHelperMock.verify(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString()), times(1));
                                                 verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(any(), anyList(), anyString(), anyString(), anyList());
                                                 verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(any(), anyList(), anyString());
