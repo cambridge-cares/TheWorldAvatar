@@ -28,7 +28,7 @@ public class TimeSeriesHelperTest {
 
         doReturn(mockConnection).when(mockRDBClient).getConnection();
 
-        TimeSeriesHelper timeSeriesHelper = new TimeSeriesHelper(mockStoreClient, mockRDBClient);
+        TimeSeriesHelper timeSeriesHelper = new TimeSeriesHelper(mockStoreClient, mockRDBClient, "testDb");
 
         String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
                 "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
@@ -58,7 +58,7 @@ public class TimeSeriesHelperTest {
 
         doReturn(mockConnection).when(mockRDBClient).getConnection();
 
-        TimeSeriesHelper timeSeriesHelper = new TimeSeriesHelper(mockStoreClient, mockRDBClient);
+        TimeSeriesHelper timeSeriesHelper = new TimeSeriesHelper(mockStoreClient, mockRDBClient, "testDb");
         LinkedHashMap<String, String> iris = new LinkedHashMap<>();
         iris.put("test_value_1", "test_iri_1");
         iris.put("test_value_2", "test_iri_2");

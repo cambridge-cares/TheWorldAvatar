@@ -150,7 +150,7 @@ public class CEAAgentTest {
                         })) {
                     try (MockedStatic<DataManager> dataManagerMock = mockStatic(DataManager.class)) {
                         dataManagerMock.when(() -> DataManager.checkBuildingInitialised(anyString(), anyString())).thenReturn(true);
-                        dataManagerMock.when(() -> DataManager.checkDataInitialised(anyString(), any(), any(), anyString())).thenReturn(true);
+                        dataManagerMock.when(() -> DataManager.checkDataInitialised(anyString(), any(), any(), any(), anyString())).thenReturn(true);
                         try (MockedConstruction<TimeSeriesHelper> mockTs = mockConstruction(TimeSeriesHelper.class)) {
                             try (MockedStatic<AnnualValueHelper> annualValueHelperMock = mockStatic(AnnualValueHelper.class)) {
                                 // test update endpoint
