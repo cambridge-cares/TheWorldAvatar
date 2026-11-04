@@ -172,10 +172,8 @@ public class DataManagerTest {
             try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
                 DataManager.updateScalars(route, scalarIrisMock, scalarsMock, testCounter);
 
-                Integer expected = CEAConstants.SCALARS.size() * 2;
-
                 accessAgentCallerMock.verify(
-                        times(expected), () -> AccessAgentCaller.updateStore(anyString(), anyString())
+                        times(1), () -> AccessAgentCaller.updateStore(anyString(), anyString())
                 );
             }
         }

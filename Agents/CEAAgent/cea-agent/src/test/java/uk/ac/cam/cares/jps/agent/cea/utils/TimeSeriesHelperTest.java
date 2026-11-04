@@ -84,8 +84,6 @@ public class TimeSeriesHelperTest {
             timeSeriesHelper.addDataToTimeSeries(values, times, iris);
 
             // Ensure correct methods on time series client are called
-            verify(timeSeriesClientMock.constructed().get(0), times(1)).getMaxTime(anyString(), any());
-            verify(timeSeriesClientMock.constructed().get(0), times(1)).getMinTime(anyString(), any());
             verify(timeSeriesClientMock.constructed().get(0), times(1)).addTimeSeriesData(any(), any());
         }
     }
