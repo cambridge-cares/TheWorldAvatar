@@ -7,11 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.io.ByteArrayInputStream;
@@ -25,20 +21,24 @@ import org.json.JSONObject;
 public class AnnualValueHelperTest {
     @Test
     public void testInstantiateAnnual() {
-        JSONArray typeArray = new JSONArray();
-        typeArray.put(new JSONObject().put("type", "test/test"));
-        JSONArray sArray = new JSONArray();
-        sArray.put(new JSONObject().put("s", "test"));
-
         List<List<?>> testValues = new ArrayList<>();
         LinkedHashMap<String, String> testIris = new LinkedHashMap<>();
+        JSONArray newAnnualValues = new JSONArray();
+        JSONArray existingAnnualValues = new JSONArray();
 
         List<Double> v = new ArrayList<>();
         v.add(1.0);
 
         for (String ts : CEAConstants.TIME_SERIES) {
+            String dataIri = "test/" + ts + "_test";
             testValues.add(v);
-            testIris.put(ts, "test");
+            testIris.put(ts, dataIri);
+            newAnnualValues.put(new JSONObject()
+                    .put("dataIRI", dataIri)
+                    .put("building", "testBuilding"));
+            existingAnnualValues.put(new JSONObject()
+                    .put("dataIRI", dataIri)
+                    .put("measure", "testMeasure/" + ts));
         }
 
         // test when there is no previously existing annual values
@@ -52,26 +52,11 @@ public class AnnualValueHelperTest {
             fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
             try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
                 accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                        .thenAnswer(new Answer() {
-                            private int count = 0;
-
-                            public JSONArray answer(InvocationOnMock invocation) {
-                                count++;
-
-                                if (count % 3 == 1) {
-                                    return typeArray;
-                                }
-                                else if (count % 3 == 2){
-                                    return sArray;
-                                }
-                                else {
-                                    return new JSONArray();
-                                }
-
-                            }
-                        });
+                        .thenReturn(newAnnualValues);
 
                 AnnualValueHelper.instantiateAnnual(testValues, testIris, "");
+                accessAgentCallerMock.verify(
+                        times(1), () -> AccessAgentCaller.queryStore(anyString(), anyString()));
                 accessAgentCallerMock.verify(
                         times(1), () -> AccessAgentCaller.updateStore(anyString(), anyString()));
             }
@@ -82,27 +67,12 @@ public class AnnualValueHelperTest {
             fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
             try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
                 accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                        .thenAnswer(new Answer() {
-                            private int count = 0;
-
-                            public JSONArray answer(InvocationOnMock invocation) {
-                                count++;
-
-                                if (count % 3 == 1) {
-                                    return typeArray;
-                                } else if (count % 3 == 2) {
-                                    return sArray;
-                                } else {
-                                    return new JSONArray().put(new JSONObject().put("measure", "test"));
-                                }
-
-                            }
-                        });
+                        .thenReturn(existingAnnualValues);
 
                 AnnualValueHelper.instantiateAnnual(testValues, testIris, "");
 
                 accessAgentCallerMock.verify(
-                        times(CEAConstants.TIME_SERIES.size() * 3), () -> AccessAgentCaller.queryStore(anyString(), anyString()));
+                        times(1), () -> AccessAgentCaller.queryStore(anyString(), anyString()));
 
                 ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
                 accessAgentCallerMock.verify(

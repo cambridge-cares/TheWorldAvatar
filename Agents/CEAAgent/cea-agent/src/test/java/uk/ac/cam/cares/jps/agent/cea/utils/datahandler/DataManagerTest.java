@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.LinkedHashMap;
 
@@ -58,7 +59,7 @@ public class DataManagerTest {
         try (MockedStatic<uk.ac.cam.cares.jps.agent.cea.utils.FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
             fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
             try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
-                DataManager.initialiseBuilding(uriString, route);
+                DataManager.bulkInitialiseBuilding(Collections.singletonList(uriString), route);
 
                 // test update store is called once
                 accessAgentCallerMock.verify(
@@ -71,16 +72,20 @@ public class DataManagerTest {
     @Test
     public void testCheckDataInitialised() {
         //Test time series data
-        String testUnit = "testUnit";
         String testIri = "testIri";
         String testBuilding = "testBuilding";
 
-        ArrayList<String> testList = new ArrayList<>();
-        testList.add(testIri);
-        testList.add(testUnit);
+        JSONArray testData = new JSONArray();
+        for (String measurement : CEAConstants.SCALARS) {
+            testData.put(new JSONObject().put("measure", testIri + "/" + measurement));
+        }
+        for (String measurement : CEAConstants.TIME_SERIES) {
+            testData.put(new JSONObject().put("measure", testIri + "/" + measurement));
+        }
 
         LinkedHashMap<String, String> tsIris = new LinkedHashMap();
         LinkedHashMap<String, String> scalarIris = new LinkedHashMap();
+        LinkedHashMap<String, JSONObject> outputMap = new LinkedHashMap();
 
         String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
                 "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
@@ -90,17 +95,20 @@ public class DataManagerTest {
         try (MockedStatic<uk.ac.cam.cares.jps.agent.cea.utils.FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
             fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
             try (MockedStatic<DataRetriever> dataRetrieverMock = mockStatic(DataRetriever.class)) {
-                dataRetrieverMock.when(() -> DataRetriever.getDataIRI(anyString(), anyString(), anyString())).thenReturn(testList);
-                Boolean result = DataManager.checkDataInitialised(testBuilding, tsIris, scalarIris, "");
+                dataRetrieverMock.when(() -> DataRetriever.bulkGetDataIRI(anyString(), anyList(), anyString()))
+                        .thenReturn(testData);
+                Boolean result = DataManager.checkDataInitialised(testBuilding, tsIris, scalarIris, outputMap, "");
                 assertTrue(result);
 
                 for (String scalar : CEAConstants.SCALARS) {
-                    assertTrue(scalarIris.get(scalar).contains(testIri));
+                    assertEquals(testIri + "/" + scalar, scalarIris.get(scalar));
                 }
 
                 for (String ts : CEAConstants.TIME_SERIES) {
-                    assertTrue(tsIris.get(ts).contains(testIri));
+                    assertEquals(testIri + "/" + ts, tsIris.get(ts));
                 }
+
+                assertEquals(testData.length(), outputMap.size());
             }
         }
     }
@@ -164,10 +172,8 @@ public class DataManagerTest {
             try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
                 DataManager.updateScalars(route, scalarIrisMock, scalarsMock, testCounter);
 
-                Integer expected = CEAConstants.SCALARS.size() * 2;
-
                 accessAgentCallerMock.verify(
-                        times(expected), () -> AccessAgentCaller.updateStore(anyString(), anyString())
+                        times(1), () -> AccessAgentCaller.updateStore(anyString(), anyString())
                 );
             }
         }

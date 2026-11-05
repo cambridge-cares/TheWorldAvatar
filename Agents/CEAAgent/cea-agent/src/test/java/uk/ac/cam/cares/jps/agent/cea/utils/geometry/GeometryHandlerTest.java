@@ -3,47 +3,16 @@ package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.cts.op.CoordinateOperation;
 import org.junit.jupiter.api.Test;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import org.mockito.MockedStatic;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 public class GeometryHandlerTest {
-    @Test
-    public void testExtractFootprint() throws ParseException {
-        String geometry1 = "POLYGON((0 0, 0 4, 4 4, 4 0, 0 0))";
-        String geometry2 = "POLYGON((4 0, 4 4, 8 4, 8 0, 4 0))";
-
-        String expectedWKT = "POLYGON((0 0, 0 4, 8 4, 8 0, 0 0))";
-
-        Geometry expectedPolygon = new WKTReader().read(expectedWKT);
-
-        String testCRS = "4326";
-        String testEPSG = "<http://www.opengis.net/def/crs/EPSG/0/" + testCRS + ">";
-
-        JSONArray testArray = new JSONArray();
-        testArray.put(new JSONObject().put("wkt", testEPSG + " " + geometry1).put("crs", testEPSG));
-        testArray.put(new JSONObject().put("wkt", testEPSG + " " + geometry2).put("crs", testEPSG));
-
-        List<Geometry> result = GeometryHandler.extractFootprint(testArray, testCRS, 10.0);
-
-        assertEquals(1, result.size());
-
-        Geometry geometry = result.get(0);
-        Geometry intersection = expectedPolygon.intersection(geometry);
-
-        assertEquals(expectedPolygon.getNumPoints(), geometry.getNumPoints());
-        assertTrue(expectedPolygon.distance(geometry) < 0.0001);
-        assertTrue((intersection.getArea() / expectedPolygon.getArea() >= 0.99) && (intersection.getArea() / geometry.getArea() >= 0.99));
-    }
-
     @Test
     public void testBufferPolygon() {
         Coordinate[] coordinates = new Coordinate[] {
@@ -121,34 +90,36 @@ public class GeometryHandlerTest {
         GeometryFactory geometryFactory = new GeometryFactory();
 
         Polygon polygon = geometryFactory.createPolygon(coordinates);
+        Set<CoordinateOperation> operations = Collections.emptySet();
 
         try (MockedStatic<GeometryHandler> geometryHandlerMock = mockStatic(GeometryHandler.class, CALLS_REAL_METHODS)) {
-            geometryHandlerMock.when(() -> GeometryHandler.transformCoordinate(any(), anyString(), anyString())).thenReturn(coordinates[0]);
+            geometryHandlerMock.when(() -> GeometryHandler.getTransformOperations(anyString(), anyString()))
+                    .thenReturn(operations);
+            geometryHandlerMock.when(() -> GeometryHandler.transformCoordinate(any(Coordinate.class), same(operations)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
+
+            assertSame(polygon, GeometryHandler.transformGeometry(polygon, "123", "123"));
 
             // check when CRS is Cartesian
             GeometryHandler.transformGeometry(polygon, "123", "321");
 
-            geometryHandlerMock.verify(times(coordinates.length), () -> GeometryHandler.transformCoordinate(any(), anyString(), anyString()));
+            geometryHandlerMock.verify(times(1), () -> GeometryHandler.getTransformOperations("123", "321"));
+            geometryHandlerMock.verify(times(coordinates.length),
+                    () -> GeometryHandler.transformCoordinate(any(Coordinate.class), same(operations)));
         }
     }
 
     @Test
     public void testTransformCoordinate() throws Exception {
         Coordinate testCoordinate = new Coordinate(1.0, 2.0);
+        CoordinateOperation operation = mock(CoordinateOperation.class);
+        when(operation.transform(any(double[].class))).thenReturn(new double[] { 3.0, 4.0, 5.0 });
 
-        String testSource = "EPSG:32633";
-        String testTarget = "EPSG:4326";
+        Coordinate result = GeometryHandler.transformCoordinate(testCoordinate, Collections.singleton(operation));
 
-        Coordinate result;
-
-        // result should be the same if source and target CRS are the same
-        result = GeometryHandler.transformCoordinate(testCoordinate, testSource, testSource);
-        assertEquals(testCoordinate.getX(), result.getX(), 0.000001);
-        assertEquals(testCoordinate.getY(), result.getY(), 0.000001);
-
-        // result should be different if source and target CRS are the same
-        result = GeometryHandler.transformCoordinate(testCoordinate, testSource, testTarget);
-        assertNotEquals(testCoordinate.getX(), result.getX(), 0.000001);
-        assertNotEquals(testCoordinate.getY(), result.getY(), 0.000001);
+        assertEquals(3.0, result.getX(), 0.000001);
+        assertEquals(4.0, result.getY(), 0.000001);
+        assertEquals(5.0, result.getZ(), 0.000001);
+        verify(operation, times(1)).transform(any(double[].class));
     }
 }

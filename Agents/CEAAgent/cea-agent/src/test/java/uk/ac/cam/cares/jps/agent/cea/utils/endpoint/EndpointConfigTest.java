@@ -5,10 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
 
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.mockito.MockedStatic;
 
@@ -26,18 +25,20 @@ public class EndpointConfigTest {
         doReturn(user).when(postGISEndpointConfigMock).getUsername();
         doReturn(password).when(postGISEndpointConfigMock).getPassword();
 
+        PostGISClient postGISClientMock = mock(PostGISClient.class);
+        doReturn(postGISEndpointConfigMock).when(postGISClientMock).readEndpointConfig();
+
         String url2 = "testUrl2";
 
         OntopEndpointConfig ontopEndpointConfigMock = mock(OntopEndpointConfig.class);
         doReturn(url2).when(ontopEndpointConfigMock).getUrl();
 
         OntopClient clientMock = mock(OntopClient.class);
-        doReturn(ontopEndpointConfigMock).when(clientMock).getEndpoint();
+        doReturn(ontopEndpointConfigMock).when(clientMock).readEndpointConfig();
 
-        try (MockedConstruction<ContainerClient> containerClientMock = mockConstruction(ContainerClient.class,
-                (mock, context) -> {
-                    doReturn(postGISEndpointConfigMock).when(mock).readEndpointConfig(anyString(), any());
-                })) {
+        try (MockedStatic<PostGISClient> postGISClientStaticMock = mockStatic(PostGISClient.class)) {
+            postGISClientStaticMock.when(() -> PostGISClient.getInstance())
+                .thenReturn(postGISClientMock);
             try (MockedStatic<OntopClient> ontopClientMock = mockStatic(OntopClient.class)) {
                 ontopClientMock.when(() -> OntopClient.getInstance())
                     .thenReturn(clientMock);

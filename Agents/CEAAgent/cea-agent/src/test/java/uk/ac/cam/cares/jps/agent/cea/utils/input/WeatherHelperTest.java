@@ -93,7 +93,8 @@ public class WeatherHelperTest {
                 // test when getWeather fails
                 List<Object> testList = new ArrayList<>();
 
-                assertFalse(weatherHelper.getWeather(new CEAGeometryData(), new ArrayList<>(), "", testCRS, testList));
+                assertFalse(weatherHelper.getWeather(new CEAGeometryData(new ArrayList<>(), testCRS, ""),
+                        new ArrayList<>(), "", testCRS, testList));
                 assertEquals(0, testList.size());
 
 

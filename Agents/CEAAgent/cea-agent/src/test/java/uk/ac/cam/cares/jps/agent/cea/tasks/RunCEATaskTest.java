@@ -1,27 +1,16 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
 
-import kong.unirest.*;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
@@ -30,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RunCEATaskTest {
     @Test
     public void testRunProcess() throws Exception {
-        URI testURI = new URI("http://localhost/test");
         ArrayList<CEABuildingData> testData = new ArrayList<CEABuildingData>();
         testData.add(new CEABuildingData(new CEAGeometryData(), (Map<String, Double>) new HashMap<>().put("MULTI_RES", 1.00)));
         CEAMetaData testMetaData = new CEAMetaData(null, null, null, null, null);
@@ -41,7 +29,8 @@ public class RunCEATaskTest {
 
         Process dummyProcess  = mock(Process.class);
 
-        RunCEATask task = new RunCEATask(testData, testMetaData, testURI, testArray, test_thread, test_CRS);
+        RunCEATask task = new RunCEATask(testData, testMetaData, testArray, test_thread, test_CRS,
+                "testDatabase", null, null);
         try (MockedConstruction<ProcessBuilder> builder = mockConstruction(ProcessBuilder.class,  (mock, context) -> {
             when(mock.start()).thenReturn(dummyProcess);
         })) {
@@ -69,7 +58,6 @@ public class RunCEATaskTest {
     @Test
     public void testDeleteDirectoryContents() {
         try {
-            URI testURI = new URI("http://localhost/test");
             ArrayList<CEABuildingData> testData = new ArrayList<CEABuildingData>();
             testData.add(new CEABuildingData(new CEAGeometryData(), (Map<String, Double>) new HashMap<>().put("MULTI_RES", 1.00)));
             CEAMetaData testMetaData = new CEAMetaData(null, null, null, null, null);
@@ -77,7 +65,8 @@ public class RunCEATaskTest {
             testArray.add("testUri");
             Integer test_thread = 0;
             String test_CRS = "27700";
-            RunCEATask task = new RunCEATask(testData, testMetaData, testURI, testArray, test_thread, test_CRS);
+            RunCEATask task = new RunCEATask(testData, testMetaData, testArray, test_thread, test_CRS,
+                    "testDatabase", null, null);
 
             File myTempDir = new File(System.getProperty("java.io.tmpdir"));
             File newDirectory = new File(myTempDir, "new_directory");
@@ -89,80 +78,41 @@ public class RunCEATaskTest {
 
             assertFalse(tempFile.isFile());
         }
-        catch (IOException | URISyntaxException e) {
+        catch (IOException e) {
             System.out.println(e.getMessage());
             fail();
         }
     }
 
     @Test
-    public void testReturnOutputs() {
-        CEAOutputData data = null;
-        RunCEATask task = null;
-        URI testURI = null;
-
-        try {
-            testURI = new URI("http://localhost/test");
-            ArrayList<CEABuildingData> testData = new ArrayList<CEABuildingData>();
-            testData.add(new CEABuildingData(new CEAGeometryData(), (Map<String, Double>) new HashMap<>().put("MULTI_RES", 1.00)));
-            CEAMetaData testMetaData = new CEAMetaData(null, null, null, null, null);
-            ArrayList<String> testArray = new ArrayList<>();
-            testArray.add("testUri");
-            Integer test_thread = 0;
-            String test_CRS = "27700";
-            task = new RunCEATask(testData, testMetaData, testURI, testArray, test_thread, test_CRS);
-
-            data = new CEAOutputData();
-
-        }
-        catch (URISyntaxException e) {
-            fail();
-        }
-
-        HttpResponse<?> response = mock(HttpResponse.class);
-        try (MockedStatic<Unirest> unirest = mockStatic(Unirest.class, RETURNS_MOCKS)) {
-            unirest.when(() -> Unirest.post(anyString())
-                            .header(anyString(), anyString())
-                            .body(anyString())
-                            .socketTimeout(anyInt())
-                            .asEmpty())
-                    .thenReturn(response);
-
-            task.returnOutputs(data);
-        }
-        catch (Exception e) {
-            assertEquals(e.getCause().getMessage(), testURI.toString()+" 0");
-        }
-    }
-
-    @Test
-    public void testRun() throws NoSuchMethodException, URISyntaxException, InvocationTargetException, IllegalAccessException {
-        URI testURI = new URI("http://localhost/test");
+    public void testRun() {
         ArrayList<CEABuildingData> testData = new ArrayList<CEABuildingData>();
         testData.add(new CEABuildingData(new CEAGeometryData(new ArrayList<>(), "", ""), (Map<String, Double>) new HashMap<>().put("MULTI_RES", 1.00)));
-        CEAMetaData testMetaData = new CEAMetaData(null, null, null, null, null);
+        CEAMetaData testMetaData = new CEAMetaData(new ArrayList<>(), null, null, null, null);
         ArrayList<String> testArray = new ArrayList<>();
         testArray.add("testUri");
         Integer test_thread = 0;
         String test_CRS = "27700";
-        RunCEATask task = Mockito.spy(new RunCEATask(testData, testMetaData, testURI, testArray, test_thread, test_CRS));
+        CEAOutputUpdater updater = mock(CEAOutputUpdater.class);
+        RunCEATask task = Mockito.spy(new RunCEATask(testData, testMetaData, testArray, test_thread, test_CRS,
+                "testDatabase", updater, null));
 
 
         Process dummy_process = mock(Process.class);
 
         doReturn(dummy_process).when(task).runProcess(any());
         doNothing().when(task).renamePVT(anyString(), anyString());
-        doNothing().when(task).returnOutputs(any());
+        CEAOutputData outputData = new CEAOutputData();
 
         try (MockedStatic<CEAOutputHandler> ceaOutputHandlerMock = mockStatic(CEAOutputHandler.class)) {
             ceaOutputHandlerMock.when(() ->
                     CEAOutputHandler.extractCEAOutputs(anyString(), anyList()))
-                    .thenReturn(new CEAOutputData());
+                    .thenReturn(outputData);
 
             task.run();
         }
 
         verify(task, times(6)).runProcess(any());
-        verify(task, times(1)).returnOutputs(any());
+        verify(updater, times(1)).updateCEA(outputData);
     }
 }

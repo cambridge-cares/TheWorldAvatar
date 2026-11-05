@@ -11,14 +11,15 @@ import org.mockito.MockedStatic;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.tasks.CEAOutputUpdater;
 import uk.ac.cam.cares.jps.agent.cea.tasks.RunCEATask;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
@@ -38,7 +39,7 @@ public class CEAAgentTest {
     @Test
     public void testCEAAgent() {
         String content = "access.url=test\ncea.label=test\nweather.label=test\nurl.openmeteoagent=test\n" +
-                "terrain.database=test\nterrain.table=test\ncea.database=test" ;
+                "terrain.database=test\nterrain.table=test\ncea.database=test\ncea.defined.databases=test" ;
 
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
 
@@ -128,16 +129,11 @@ public class CEAAgentTest {
         JSONObject returnParams;
 
         String content = "access.url=test\ncea.label=test\nweather.label=test\nurl.openmeteoagent=test\n" +
-                "terrain.database=test\nterrain.table=test\ncea.database=test";
-
-        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
-        InputStream mockInputStream1 = new ByteArrayInputStream(content.getBytes());
-        InputStream mockInputStream2 = new ByteArrayInputStream(content.getBytes());
-
+                "terrain.database=test\nterrain.table=test\ncea.database=test\ncea.defined.databases=test";
 
         try (MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class)) {
-            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream)
-                    .thenReturn(mockInputStream1).thenReturn(mockInputStream2);
+            fileReaderMock.when(() -> FileReader.getStream(anyString()))
+                    .thenAnswer(invocation -> new ByteArrayInputStream(content.getBytes()));
             try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
                 stackClientMock.when(() -> StackClient.getStackName())
                         .thenReturn("");
@@ -148,33 +144,33 @@ public class CEAAgentTest {
                             doReturn("").when(mock).getDbPassword();
                             doReturn("").when(mock).getOntopUrl();
                         })) {
-                    try (MockedStatic<DataManager> dataManagerMock = mockStatic(DataManager.class)) {
-                        dataManagerMock.when(() -> DataManager.checkBuildingInitialised(anyString(), anyString())).thenReturn(true);
-                        dataManagerMock.when(() -> DataManager.checkDataInitialised(anyString(), any(), any(), anyString())).thenReturn(true);
-                        try (MockedConstruction<TimeSeriesHelper> mockTs = mockConstruction(TimeSeriesHelper.class)) {
-                            try (MockedStatic<AnnualValueHelper> annualValueHelperMock = mockStatic(AnnualValueHelper.class)) {
-                                // test update endpoint
-                                CEAAgent agent = new CEAAgent();
-                                returnParams = agent.processRequestParameters(requestParams);
+                    // test update endpoint
+                    CEAAgent updateAgent = new CEAAgent();
+                    CEAOutputUpdater updater = mock(CEAOutputUpdater.class);
+                    Field updaterField = updateAgent.getClass().getDeclaredField("updater");
+                    updaterField.setAccessible(true);
+                    updaterField.set(updateAgent, updater);
 
-                                verify(mockTs.constructed().get(0), times(1)).addDataToTimeSeries(anyList(), anyList(), any());
-                                annualValueHelperMock.verify(() -> AnnualValueHelper.instantiateAnnual(anyList(), any(), any()), times(1));
-                                assertEquals(requestParams, returnParams);
-                            }
-                        }
-                    }
+                    returnParams = updateAgent.processRequestParameters(requestParams);
+
+                    verify(updater, times(1)).updateCEA(any(JSONArray.class), anyList(), anyList(), any());
+                    assertEquals(requestParams, returnParams);
                     List<String> endpoints = new ArrayList<>();
                     endpoints.add("");
                     endpoints.add("");
                     try (MockedStatic<RouteHelper> routeHelperMock = mockStatic(RouteHelper.class)) {
                         routeHelperMock.when(() -> RouteHelper.checkEndpoint(anyString())).thenReturn(true);
                         routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
-                        CEAGeometryData testGeometry = new CEAGeometryData(new ArrayList<>(), "", "");
+                        CEAGeometryData testGeometry = new CEAGeometryData(Collections.singletonList(
+                                new GeometryFactory().createPoint(new Coordinate(0, 0))), "4326", "");
                         try (MockedStatic<GeometryQueryHelper> geometryQueryHelperMock = mockStatic(GeometryQueryHelper.class)) {
-                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.getBuildingGeometry(anyString(), anyString(), anyBoolean())).thenReturn(testGeometry);
+                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.bulkGetBuildingGeometry(anyList(), anyString()))
+                                    .thenReturn(Collections.singletonList(testGeometry));
+                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.getCountry(any())).thenReturn("test");
                             Map<String, Double> usages = new HashMap<>();
                             try (MockedStatic<BuildingUsageHelper> usageHelpermock = mockStatic(BuildingUsageHelper.class)) {
-                                usageHelpermock.when(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString())).thenReturn(usages);
+                                usageHelpermock.when(() -> BuildingUsageHelper.bulkGetBuildingUsages(anyList(), anyString()))
+                                        .thenReturn(Collections.singletonList(usages));
                                 try (MockedStatic<SurroundingsHelper> surroundingsHelperMock = mockStatic(SurroundingsHelper.class)) {
                                     surroundingsHelperMock.when(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString())).thenReturn(new ArrayList<CEAGeometryData>());
                                     try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
@@ -200,8 +196,8 @@ public class CEAAgentTest {
 
                                                 returnParams = agent.processRequestParameters(requestParams);
 
-                                                geometryQueryHelperMock.verify(() -> GeometryQueryHelper.getBuildingGeometry(anyString(), anyString(), anyBoolean()), times(1));
-                                                usageHelpermock.verify(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString()), times(1));
+                                                geometryQueryHelperMock.verify(() -> GeometryQueryHelper.bulkGetBuildingGeometry(anyList(), anyString()), times(1));
+                                                usageHelpermock.verify(() -> BuildingUsageHelper.bulkGetBuildingUsages(anyList(), anyString()), times(1));
                                                 surroundingsHelperMock.verify(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString()), times(1));
                                                 verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(any(), anyList(), anyString(), anyString(), anyList());
                                                 verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(any(), anyList(), anyString());
@@ -221,24 +217,38 @@ public class CEAAgentTest {
                         // test time series data
                         String testUnit = "testUnit";
                         String testScalar = "testScalar";
-                        ArrayList<String> testList = mock(ArrayList.class);
-                        when(testList.get(0)).thenReturn(testScalar);
-                        when(testList.get(1)).thenReturn(testUnit);
                         String testReturnValue = "testAnnual";
-                        TimeSeries<OffsetDateTime> timeSeries = mock(TimeSeries.class);
+                        Map<String, JSONObject> annualObjectMap = new HashMap<>();
 
                         try (MockedStatic<DataManager> dataManagerMock = mockStatic(DataManager.class)) {
                             dataManagerMock.when(() -> DataManager.checkBuildingInitialised(anyString(), anyString())).thenReturn(true);
+                            dataManagerMock.when(() -> DataManager.checkDataInitialised(anyString(), any(), any(), any(), anyString()))
+                                    .thenAnswer(invocation -> {
+                                        LinkedHashMap<String, String> tsIris = invocation.getArgument(1);
+                                        LinkedHashMap<String, String> scalarIris = invocation.getArgument(2);
+                                        LinkedHashMap<String, JSONObject> outputMap = invocation.getArgument(3);
+
+                                        for (String scalar : CEAConstants.SCALARS) {
+                                            String iri = "test/" + scalar;
+                                            scalarIris.put(scalar, iri);
+                                            outputMap.put(iri, new JSONObject()
+                                                    .put("value", testScalar)
+                                                    .put("unit", testUnit));
+                                        }
+                                        for (String ts : CEAConstants.TIME_SERIES) {
+                                            String iri = "test/" + ts;
+                                            tsIris.put(ts, iri);
+                                            annualObjectMap.put(iri, new JSONObject()
+                                                    .put("numericalValue", testReturnValue)
+                                                    .put("unit", testUnit));
+                                        }
+                                        return true;
+                                    });
                             try (MockedStatic<DataRetriever> dataRetrieverMock = mockStatic(DataRetriever.class)) {
-                                dataRetrieverMock.when(() -> DataRetriever.getDataIRI(anyString(), anyString(), anyString())).thenReturn(testList);
                                 dataRetrieverMock.when(() -> DataRetriever.getUnit(anyString())).thenReturn(testUnit);
-                                dataRetrieverMock.when(() -> DataRetriever.getNumericalValue(anyString(), anyString())).thenReturn(testScalar);
-                                try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
-                                    timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
-                                    try (MockedStatic<AnnualValueHelper> annualValueHelperMock = mockStatic(AnnualValueHelper.class)) {
-                                        annualValueHelperMock.when(() -> AnnualValueHelper.getInfo(anyString(), anyString(), anyString())).thenReturn("");
-                                        annualValueHelperMock.when (() -> AnnualValueHelper.getType(anyString(), anyString())).thenReturn("");
-                                        annualValueHelperMock.when(() -> AnnualValueHelper.retrieveAnnualValue(anyString(), anyString(), anyString())).thenReturn(testReturnValue);
+                                try (MockedStatic<AnnualValueHelper> annualValueHelperMock = mockStatic(AnnualValueHelper.class)) {
+                                        annualValueHelperMock.when(() -> AnnualValueHelper.bulkCheckAnnualObject(anyList(), anyString()))
+                                                .thenReturn(annualObjectMap);
                                         CEAAgent agent = new CEAAgent();
 
                                         returnParams = agent.processRequestParameters(requestParams);
@@ -274,7 +284,6 @@ public class CEAAgentTest {
                                             }
                                             assertTrue(result.contains(expected));
                                         }
-                                    }
                                 }
                             }
                         }
@@ -287,7 +296,7 @@ public class CEAAgentTest {
     @Test
     public void testValidateInput() {
         String content = "access.url=test\ncea.label=test\nweather.label=test\nurl.openmeteoagent=test\n" +
-                "terrain.database=test\nterrain.table=test\ncea.database=test" ;
+                "terrain.database=test\nterrain.table=test\ncea.database=test\ncea.defined.databases=test" ;
 
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
 

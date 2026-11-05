@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 
 public class BuildingUsageHelperTest {
@@ -34,9 +35,11 @@ public class BuildingUsageHelperTest {
         usage1 = "test/" + usage1;
 
         JSONObject usageJSON = new JSONObject()
+                .put("building", uriString)
                 .put("BuildingUsage", usage)
                 .put("UsageShare", 0.70);
         JSONObject usageJSON1 = new JSONObject()
+                .put("building", uriString)
                 .put("BuildingUsage", usage1)
                 .put("UsageShare", 0.30);
 
@@ -55,7 +58,7 @@ public class BuildingUsageHelperTest {
                         doReturn(new JSONArray()).when(mock).executeQuery(anyString());
                     })) {
 
-                result = BuildingUsageHelper.getBuildingUsages(uriString, "");
+                result = BuildingUsageHelper.bulkGetBuildingUsages(Collections.singletonList(uriString), "").get(0);
 
                 assertEquals(1, result.size());
 
@@ -73,7 +76,7 @@ public class BuildingUsageHelperTest {
                     (mock, context) -> {
                         doReturn(usageArray).when(mock).executeQuery(anyString());
                     })) {
-                result = BuildingUsageHelper.getBuildingUsages(uriString, "");
+                result = BuildingUsageHelper.bulkGetBuildingUsages(Collections.singletonList(uriString), "").get(0);
 
                 assertEquals(2, result.size());
                 assertTrue(result.containsKey(ceaUsage));
