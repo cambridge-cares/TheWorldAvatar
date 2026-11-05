@@ -1,2 +1,0 @@
-recursive-include jpsdukg/resources *
-global-exclude *.py[cod] __pycache__
